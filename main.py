@@ -6,21 +6,22 @@ import json
 import pandas as pd
 import subprocess
 import tempfile
+import io
 from datetime import datetime
 from io import BytesIO
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CONSTANTS
 # ─────────────────────────────────────────────────────────────────────────────
-THRESHOLD = 95.0
-TOP_N     = 5
-BATCHES_PATH = "dashboards/batches.json"
+THRESHOLD     = 95.0
+TOP_N         = 5
+BATCHES_PATH  = "dashboards/batches.json"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
 def resource_path(rel_path: str) -> str:
-    """Return the absolute path to bundled resources (fonts, bins, etc.)."""
+    """Return absolute path to bundled resources (fonts, binaries, etc.)."""
     if getattr(sys, "frozen", False):
         base = sys._MEIPASS
     else:
@@ -43,13 +44,30 @@ def save_batches(batches: list, path: str = BATCHES_PATH) -> None:
         json.dump(batches, f, indent=2, default=str)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Data Loading & Splitting
+# Data Loading with robust CSV handling
 # ─────────────────────────────────────────────────────────────────────────────
 def load_dataframe(src) -> pd.DataFrame:
-    """Load a CSV or Excel file (path or file-like) into a DataFrame."""
-    if hasattr(src, "read"):
-        # Streamlit upload or file-like
-        return pd.read_csv(src)
+    """
+    Load a CSV or Excel file (path or Streamlit upload) into a DataFrame.
+    For uploads, reads bytes via BytesIO with a forgiving parser.
+    """
+    # Streamlit UploadedFile or similar file-like with .read() and .name
+    if hasattr(src, "read") and hasattr(src, "name"):
+        content = src.getvalue()
+        ext = os.path.splitext(src.name)[1].lower()
+        if ext == ".csv":
+            return pd.read_csv(
+                io.BytesIO(content),
+                encoding="utf-8",
+                engine="python",
+                on_bad_lines="skip"
+            )
+        elif ext in (".xls", ".xlsx"):
+            return pd.read_excel(io.BytesIO(content))
+        else:
+            raise ValueError(f"Unsupported file type: {ext}")
+
+    # Fallback for file paths
     ext = os.path.splitext(src)[1].lower()
     if ext == ".csv":
         return pd.read_csv(src)
@@ -58,17 +76,17 @@ def load_dataframe(src) -> pd.DataFrame:
     else:
         raise ValueError(f"Unsupported file type: {ext}")
 
-def split_by_threshold(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+# ─────────────────────────────────────────────────────────────────────────────
+# Data Splitting & Metrics
+# ─────────────────────────────────────────────────────────────────────────────
+def split_by_threshold(df: pd.DataFrame) -> (pd.DataFrame, pd.DataFrame):
     """Return (below_df, above_df) based on THRESHOLD."""
     above = df[df["Content Quality Score"] >= THRESHOLD].copy()
     below = df[df["Content Quality Score"] <  THRESHOLD].copy()
     return below, above
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Metrics & Tables
-# ─────────────────────────────────────────────────────────────────────────────
 def compute_metrics(df: pd.DataFrame) -> dict:
-    """Compute all dashboard metrics."""
+    """Compute dashboard metrics."""
     below, above = split_by_threshold(df)
     total     = len(df)
     count_above = len(above)
@@ -96,7 +114,7 @@ def get_top_skus(df: pd.DataFrame) -> pd.DataFrame:
     )
 
 def get_skus_below(df: pd.DataFrame) -> pd.DataFrame:
-    """Return all SKUs below the threshold."""
+    """Return all SKUs below the THRESHOLD."""
     return (
         df[df["Content Quality Score"] < THRESHOLD]
         [["Product Name", "Item ID", "Content Quality Score"]]
@@ -107,7 +125,7 @@ def get_skus_below(df: pd.DataFrame) -> pd.DataFrame:
 # Pie Chart Generation
 # ─────────────────────────────────────────────────────────────────────────────
 def make_pie_bytes(metrics: dict) -> BytesIO:
-    """Return a PNG BytesIO of the two‐slice pie chart."""
+    """Return a PNG BytesIO of the two-slice pie chart."""
     import matplotlib.pyplot as plt
 
     fig, ax = plt.subplots(figsize=(3, 3))
@@ -126,7 +144,7 @@ def make_pie_bytes(metrics: dict) -> BytesIO:
     return buf
 
 # ─────────────────────────────────────────────────────────────────────────────
-# HTML Report (with Raleway font, non‐bold)
+# HTML Report (with Raleway font, non-bold)
 # ─────────────────────────────────────────────────────────────────────────────
 def build_html_report(
     df: pd.DataFrame,
@@ -134,7 +152,6 @@ def build_html_report(
     report_date: str
 ) -> str:
     """Construct the full HTML for the dashboard PDF."""
-
     metrics = compute_metrics(df)
     top5    = get_top_skus(df)
     below   = get_skus_below(df)
@@ -156,9 +173,22 @@ def build_html_report(
       }}
       h1 {{ font-size: 24px; margin-bottom: 8px; }}
       h2 {{ font-size: 18px; margin-top: 24px; margin-bottom: 8px; }}
-      .metrics {{ font-size: 14px; line-height: 1.6; margin-bottom: 16px; }}
-      table {{ width: 100%; border-collapse: collapse; margin-top: 8px; }}
-      th, td {{ border: 1px solid #333; padding: 6px; font-size: 14px; font-weight: normal; }}
+      .metrics {{
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 16px;
+      }}
+      table {{
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+      }}
+      th, td {{
+        border: 1px solid #333;
+        padding: 6px;
+        font-size: 14px;
+        font-weight: normal;
+      }}
       th {{ background-color: #f2f2f2; }}
     </style>
     """
@@ -183,7 +213,7 @@ def build_html_report(
         "</div>"
     )
 
-    # Build the full HTML
+    # Build the HTML
     html_parts = [
         "<!DOCTYPE html><html><head><meta charset='utf-8'>",
         css,
@@ -220,7 +250,6 @@ def build_html_report(
         )
 
     html_parts.append("</table></body></html>")
-
     return "\n".join(html_parts)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -230,7 +259,6 @@ def html_to_pdf_bytes(html_str: str) -> bytes:
     wk = resource_path(
         os.path.join("bin", "wkhtmltopdf.exe" if sys.platform.startswith("win") else "wkhtmltopdf")
     )
-    # Write temporary HTML file
     tmp_html = tempfile.NamedTemporaryFile("w", suffix=".html", delete=False)
     tmp_html.write(html_str)
     tmp_html.close()
@@ -241,7 +269,6 @@ def html_to_pdf_bytes(html_str: str) -> bytes:
     with open(pdf_path, "rb") as f:
         pdf_bytes = f.read()
 
-    # Cleanup
     for p in (tmp_html.name, pdf_path):
         try: os.remove(p)
         except: pass
