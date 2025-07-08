@@ -22,7 +22,7 @@ BATCHES_PATH  = "dashboards/batches.json"
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
 def resource_path(rel_path: str) -> str:
-    """Return absolute path to bundled resources (fonts, binaries, etc.)."""
+    """Return absolute path to bundled resources (fonts, etc.)."""
     if getattr(sys, "frozen", False):
         base = sys._MEIPASS
     else:
@@ -30,7 +30,7 @@ def resource_path(rel_path: str) -> str:
     return os.path.join(base, rel_path)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Batches (Groups) Persistence
+# Group Persistence
 # ─────────────────────────────────────────────────────────────────────────────
 def load_batches(path: str = BATCHES_PATH) -> list:
     try:
@@ -45,14 +45,13 @@ def save_batches(batches: list, path: str = BATCHES_PATH) -> None:
         json.dump(batches, f, indent=2, default=str)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Data Loading with robust CSV handling
+# Data Loading
 # ─────────────────────────────────────────────────────────────────────────────
 def load_dataframe(src) -> pd.DataFrame:
     """
     Load a CSV or Excel file (path or Streamlit upload) into a DataFrame.
     For uploads, reads bytes via BytesIO with a forgiving parser.
     """
-    # Streamlit UploadedFile or similar file-like with .read() and .name
     if hasattr(src, "read") and hasattr(src, "name"):
         content = src.getvalue()
         ext = os.path.splitext(src.name)[1].lower()
@@ -68,7 +67,6 @@ def load_dataframe(src) -> pd.DataFrame:
         else:
             raise ValueError(f"Unsupported file type: {ext}")
 
-    # Fallback for file paths
     ext = os.path.splitext(src)[1].lower()
     if ext == ".csv":
         return pd.read_csv(src)
@@ -78,18 +76,16 @@ def load_dataframe(src) -> pd.DataFrame:
         raise ValueError(f"Unsupported file type: {ext}")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Data Splitting & Metrics
+# Metrics & Tables
 # ─────────────────────────────────────────────────────────────────────────────
 from typing import Tuple
 
 def split_by_threshold(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """Return (below_df, above_df) based on THRESHOLD."""
     above = df[df["Content Quality Score"] >= THRESHOLD].copy()
     below = df[df["Content Quality Score"] <  THRESHOLD].copy()
     return below, above
 
 def compute_metrics(df: pd.DataFrame) -> dict:
-    """Compute dashboard metrics."""
     below, above = split_by_threshold(df)
     total       = len(df)
     count_above = len(above)
@@ -108,7 +104,6 @@ def compute_metrics(df: pd.DataFrame) -> dict:
     }
 
 def get_top_skus(df: pd.DataFrame) -> pd.DataFrame:
-    """Return the top TOP_N SKUs by Content Quality Score."""
     return (
         df
         .sort_values("Content Quality Score", ascending=False)
@@ -117,7 +112,6 @@ def get_top_skus(df: pd.DataFrame) -> pd.DataFrame:
     )
 
 def get_skus_below(df: pd.DataFrame) -> pd.DataFrame:
-    """Return all SKUs below the THRESHOLD."""
     return (
         df[df["Content Quality Score"] < THRESHOLD]
         [["Product Name", "Item ID", "Content Quality Score"]]
@@ -125,10 +119,9 @@ def get_skus_below(df: pd.DataFrame) -> pd.DataFrame:
     )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Pie Chart Generation
+# Pie Chart
 # ─────────────────────────────────────────────────────────────────────────────
 def make_pie_bytes(metrics: dict) -> BytesIO:
-    """Return a PNG BytesIO of the two-slice pie chart."""
     import matplotlib.pyplot as plt
 
     fig, ax = plt.subplots(figsize=(3, 3))
@@ -139,7 +132,6 @@ def make_pie_bytes(metrics: dict) -> BytesIO:
         startangle=90
     )
     ax.axis("equal")
-
     buf = BytesIO()
     fig.savefig(buf, format="png", bbox_inches="tight")
     buf.seek(0)
@@ -147,19 +139,17 @@ def make_pie_bytes(metrics: dict) -> BytesIO:
     return buf
 
 # ─────────────────────────────────────────────────────────────────────────────
-# HTML Report (with Raleway font, non-bold)
+# HTML Report
 # ─────────────────────────────────────────────────────────────────────────────
 def build_html_report(
     df: pd.DataFrame,
     client_name: str,
     report_date: str
 ) -> str:
-    """Construct the full HTML for the dashboard PDF."""
     metrics = compute_metrics(df)
     top5    = get_top_skus(df)
     below   = get_skus_below(df)
 
-    # Embed Raleway
     font_file = resource_path(os.path.join("fonts", "Raleway-Regular.ttf"))
     css = f"""
     <style>
@@ -196,7 +186,6 @@ def build_html_report(
     </style>
     """
 
-    # Header & client/date block
     header = (
         f"<div class='metrics'>"
         f"<strong>Client:</strong> {client_name}<br>"
@@ -204,7 +193,6 @@ def build_html_report(
         f"</div>"
     )
 
-    # Metrics block
     m = metrics
     metrics_html = (
         "<div class='metrics'>"
@@ -216,7 +204,6 @@ def build_html_report(
         "</div>"
     )
 
-    # Build the HTML
     html_parts = [
         "<!DOCTYPE html><html><head><meta charset='utf-8'>",
         css,
@@ -256,19 +243,14 @@ def build_html_report(
     return "\n".join(html_parts)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# HTML → PDF Conversion with robust binary lookup
+# HTML → PDF Conversion (system wkhtmltopdf via apt.txt)
 # ─────────────────────────────────────────────────────────────────────────────
 def html_to_pdf_bytes(html_str: str) -> bytes:
-    # Try system-installed wkhtmltopdf first
+    # must have wkhtmltopdf installed via apt.txt
     wk = shutil.which("wkhtmltopdf")
-    if not wk:
-        # Fallback to bundled binary
-        wk = resource_path(
-            os.path.join("bin", "wkhtmltopdf.exe" if sys.platform.startswith("win") else "wkhtmltopdf")
-        )
-    if not os.path.isfile(wk):
+    if not wk or not os.path.isfile(wk):
         raise FileNotFoundError(
-            f"wkhtmltopdf binary not found. Checked PATH and bundled path: {wk}"
+            f"wkhtmltopdf not found in PATH. Please ensure it's installed via apt.txt."
         )
 
     tmp_html = tempfile.NamedTemporaryFile("w", suffix=".html", delete=False)
@@ -295,13 +277,12 @@ def generate_full_report(
     client_name: str,
     report_date: str
 ) -> bytes:
-    """Load data, build HTML report and return PDF bytes."""
     df = load_dataframe(data_src)
     html = build_html_report(df, client_name, report_date)
     return html_to_pdf_bytes(html)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CLI ENTRYPOINT (for local testing)
+# CLI
 # ─────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     import argparse
@@ -310,10 +291,10 @@ if __name__ == "__main__":
     parser.add_argument("input_file", help="CSV or Excel file")
     parser.add_argument("--client", required=True, help="Client name")
     parser.add_argument("--date",   required=True, help="Report date (M/D/YYYY)")
-    parser.add_argument("--out",    default="dashboard.pdf", help="Output PDF file")
+    parser.add_argument("--out",    default="dashboard.pdf", help="Output PDF")
     args = parser.parse_args()
 
-    pdf_bytes = generate_full_report(args.input_file, args.client, args.date)
+    pdf = generate_full_report(args.input_file, args.client, args.date)
     with open(args.out, "wb") as f:
-        f.write(pdf_bytes)
+        f.write(pdf)
     print(f"Wrote {args.out}")
