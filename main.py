@@ -79,7 +79,7 @@ def load_dataframe(src) -> pd.DataFrame:
 # ─────────────────────────────────────────────────────────────────────────────
 # Data Splitting & Metrics
 # ─────────────────────────────────────────────────────────────────────────────
-def split_by_threshold(df: pd.DataFrame) -> (pd.DataFrame, pd.DataFrame):
+def split_by_threshold(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Return (below_df, above_df) based on THRESHOLD."""
     above = df[df["Content Quality Score"] >= THRESHOLD].copy()
     below = df[df["Content Quality Score"] <  THRESHOLD].copy()
