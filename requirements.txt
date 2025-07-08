@@ -4,4 +4,3 @@ openpyxl
 matplotlib
 chardet
 streamlit
-wkhtmltopdf-binary
