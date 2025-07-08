@@ -9,6 +9,7 @@ import tempfile
 import io
 from datetime import datetime
 from io import BytesIO
+import shutil
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CONSTANTS
@@ -79,7 +80,9 @@ def load_dataframe(src) -> pd.DataFrame:
 # ─────────────────────────────────────────────────────────────────────────────
 # Data Splitting & Metrics
 # ─────────────────────────────────────────────────────────────────────────────
-def split_by_threshold(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+from typing import Tuple
+
+def split_by_threshold(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Return (below_df, above_df) based on THRESHOLD."""
     above = df[df["Content Quality Score"] >= THRESHOLD].copy()
     below = df[df["Content Quality Score"] <  THRESHOLD].copy()
@@ -88,11 +91,11 @@ def split_by_threshold(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
 def compute_metrics(df: pd.DataFrame) -> dict:
     """Compute dashboard metrics."""
     below, above = split_by_threshold(df)
-    total     = len(df)
+    total       = len(df)
     count_above = len(above)
-    pct_above = (count_above / total * 100) if total else 0.0
-    avg_cqs   = df["Content Quality Score"].mean() if total else 0.0
-    buybox    = df["Buybox Ownership"].mean() if "Buybox Ownership" in df else 0.0
+    pct_above   = (count_above / total * 100) if total else 0.0
+    avg_cqs     = df["Content Quality Score"].mean() if total else 0.0
+    buybox      = df["Buybox Ownership"].mean() if "Buybox Ownership" in df else 0.0
 
     return {
         "total":     total,
@@ -253,12 +256,21 @@ def build_html_report(
     return "\n".join(html_parts)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# HTML → PDF Conversion
+# HTML → PDF Conversion with robust binary lookup
 # ─────────────────────────────────────────────────────────────────────────────
 def html_to_pdf_bytes(html_str: str) -> bytes:
-    wk = resource_path(
-        os.path.join("bin", "wkhtmltopdf.exe" if sys.platform.startswith("win") else "wkhtmltopdf")
-    )
+    # Try system-installed wkhtmltopdf first
+    wk = shutil.which("wkhtmltopdf")
+    if not wk:
+        # Fallback to bundled binary
+        wk = resource_path(
+            os.path.join("bin", "wkhtmltopdf.exe" if sys.platform.startswith("win") else "wkhtmltopdf")
+        )
+    if not os.path.isfile(wk):
+        raise FileNotFoundError(
+            f"wkhtmltopdf binary not found. Checked PATH and bundled path: {wk}"
+        )
+
     tmp_html = tempfile.NamedTemporaryFile("w", suffix=".html", delete=False)
     tmp_html.write(html_str)
     tmp_html.close()
