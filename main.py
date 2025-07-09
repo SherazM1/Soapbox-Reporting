@@ -244,6 +244,15 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     c.setFillColor(navy)
     c.drawCentredString(pie_panel_x + panel_w / 2, panel_y - title_y_offset, "Score Distribution")
 
+# Underline just below the title, centered and width-matched
+    score_text_width = c.stringWidth("Score Distribution", "Raleway", title_fontsize)
+    center_x = pie_panel_x + panel_w / 2
+    y_underline = panel_y - title_y_offset - 3
+    c.setStrokeColor(navy)
+    c.setLineWidth(1)
+    c.line(center_x - score_text_width / 2, y_underline, center_x + score_text_width / 2, y_underline)
+
+
     # Pie chart centered
     pie_buf = make_pie_bytes(metrics)
     pie = ImageReader(pie_buf)
@@ -306,6 +315,14 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     c.setFillColor(navy)
     c.drawCentredString(summary_title_x, summary_title_y, "Summary")
 
+# Underline just below the title, centered and width-matched
+    summary_text_width = c.stringWidth("Summary", "Raleway", 22)
+    y_underline = summary_title_y - 3
+    c.setStrokeColor(navy)
+    c.setLineWidth(1)
+    c.line(summary_title_x - summary_text_width / 2, y_underline, summary_title_x + summary_text_width / 2, y_underline)
+
+
     # Start bullets further down for less top white space
     y = bullets_start_y
     c.setFont("Raleway", 16)
@@ -337,7 +354,15 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     c.setFont("Raleway", 18)
     c.setFillColor(navy)
     c.drawString(margin, table_title_y, "Top 5 SKUs by Content Quality Score")
+
+# Underline (left-aligned, width matches text)
+    table_title_width = c.stringWidth("Top 5 SKUs by Content Quality Score", "Raleway", 18)
+    c.setStrokeColor(navy)
+    c.setLineWidth(1)
+    c.line(margin, table_title_y - 3, margin + table_title_width, table_title_y - 3)
+
     c.setFillColor(colors.black)
+
 
     # Table data and style
     styles = getSampleStyleSheet()
