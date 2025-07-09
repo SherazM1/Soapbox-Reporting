@@ -314,7 +314,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
 
     # 
         # ─── Top 5 Table Section (now tighter spacing) ──────────────────────────────
-    table_title_y = panel_y - panel_h - 10  # closer to panels above
+    table_title_y = panel_y - panel_h - 14  # closer to panels above
     c.setFont("Raleway", 14)
     c.setFillColor(navy)
     c.drawString(margin,
