@@ -7,7 +7,7 @@ import pandas as pd
 import io
 from io import BytesIO
 from datetime import datetime
-
+import matplotlib.pyplot as plt
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
@@ -127,21 +127,46 @@ def get_skus_below(df: pd.DataFrame) -> pd.DataFrame:
 # Pie Chart Helper
 # ─────────────────────────────────────────────────────────────────────────────
 def make_pie_bytes(metrics: dict) -> BytesIO:
-    import matplotlib.pyplot as plt
-    fig, ax = plt.subplots(figsize=(3, 3))
+    # Get threshold safely (default to 95 if missing)
+    threshold = int(metrics.get("threshold", 95))
+    below = int(metrics.get("below", 0))
+    above = int(metrics.get("above", 0))
+    
+    # Avoid empty pie: if both zero, show one "below" slice
+    if below == 0 and above == 0:
+        below = 1
+        above = 0
+    
+    # Custom colors matching your legend
+    colors = ["#002c47", "#4bc3cf"]  # navy, teal
+
+    # Make the pie chart
+    fig, ax = plt.subplots(figsize=(3, 3), dpi=100)
     ax.pie(
-        [metrics["below"], metrics["above"]],
-        labels=[f"Below {int(THRESHOLD)}%", f"Above {int(THRESHOLD)}%"],
-        autopct="%1.0f%%",
-        startangle=90
+        [below, above],
+        colors=colors,
+        startangle=90,
+        labels=None,         # No labels
+        autopct=None,        # No percentages
+        wedgeprops={'edgecolor': 'white', 'linewidth': 0}
     )
-    ax.axis("equal")
+    ax.axis("equal")        # Keep circle shape
+
+    # Remove all axis and ticks
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.axis("off")
+
+    # Transparent background for figure and axes
+    fig.patch.set_alpha(0.0)
+    ax.patch.set_alpha(0.0)
+
+    # Save to buffer with transparent bg
     buf = BytesIO()
-    fig.savefig(buf, format="png", bbox_inches="tight")
+    fig.savefig(buf, format="png", bbox_inches="tight", transparent=True, pad_inches=0)
     buf.seek(0)
     plt.close(fig)
     return buf
-
 # ─────────────────────────────────────────────────────────────────────────────
 # PDF Generation via ReportLab
 # ─────────────────────────────────────────────────────────────────────────────
