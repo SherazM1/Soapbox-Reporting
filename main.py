@@ -190,24 +190,12 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
                  "Weekly Content Reporting")
     # Date
     c.setFont("Raleway", 15)
-    c.setFillColor(colors.black)
+    c.setFillColor(navy)
     c.drawString(margin + 1.7 * inch,
                  h - margin - 1.21 * inch,
                  report_date)
 
     # ─── Summary Line ────────────────────────────────────────────────
-    total = metrics["total"]
-    above = metrics["above"]
-    summary = (
-        f"{above}/{total} "
-        f"({metrics['pct_above']:.1f}%) products have "
-        f"Content Quality Score ≥ {int(metrics['threshold'])}%."
-    )
-    c.setFont("Raleway", 12)
-    c.drawString(margin,
-                 h - margin - 1.6 * inch,
-                 summary)
-
     # ─── Panels: Pie Chart & Metrics ────────────────────────────────
     panel_y = h - margin - 2.0 * inch
     panel_h = 3.6 * inch
