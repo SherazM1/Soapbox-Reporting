@@ -192,7 +192,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     c.setFont("Raleway", 12)
     c.setFillColor(colors.black)
     c.drawString(margin + 1.7 * inch,
-                 h - margin - 1.35 * inch,
+                 h - margin - 1.31 * inch,
                  report_date)
 
     # ─── Summary Line ────────────────────────────────────────────────
