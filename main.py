@@ -14,6 +14,8 @@ from reportlab.lib.units import inch
 from reportlab.lib import colors
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.platypus import Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib.utils import ImageReader
 
@@ -315,7 +317,16 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     c.setFillColor(colors.black)
 
     # Table
-    data = [top5.columns.tolist()] + top5.astype(str).values.tolist()
+    styles = getSampleStyleSheet()
+    styleN = styles["Normal"]
+    styleN.fontName = "Raleway"
+    styleN.fontSize = 10
+
+    data = [top5.columns.tolist()]
+    for row in top5.astype(str).values.tolist():
+        row[0] = Paragraph(row[0], styleN)  # wrap first column
+        data.append(row)
+
     table_w = w - 2 * margin
     col_widths = [table_w * 0.5, table_w * 0.20, table_w * 0.18]
     table = Table(data, colWidths=col_widths, repeatRows=1)
