@@ -250,18 +250,23 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     # Legend
     legend_y = panel_y - panel_h + 22
     square_size = 9
-    # Below
+    gap = 7  # Space between the box and text
+
+    # Below 95%
+    below_box_x = pie_panel_x + 78
     c.setFillColor(navy)
-    c.drawString(pie_panel_x + 18 + square_size + 6, legend_y + 1, f"Below {int(metrics['threshold'])}%")
-    c.rect(pie_panel_x + 78, legend_y, square_size, square_size, fill=1, stroke=0)
+    c.rect(below_box_x, legend_y, square_size, square_size, fill=1, stroke=0)
     c.setFillColor(colors.black)
     c.setFont("Raleway", 10)
-    c.rect(pie_panel_x + 78, legend_y, square_size, square_size, fill=1, stroke=0)    # Above
+    c.drawString(below_box_x + square_size + gap, legend_y + 1, f"Below {int(metrics['threshold'])}%")
+
+    # Above 95%
+    above_box_x = below_box_x + 100  # adjust 100 for more/less space between keys
     c.setFillColor(teal)
-    x2 = pie_panel_x + 180
-    c.rect(x2, legend_y, square_size, square_size, fill=1, stroke=0)
+    c.rect(above_box_x, legend_y, square_size, square_size, fill=1, stroke=0)
     c.setFillColor(colors.black)
-    c.drawString(x2 + square_size + 6, legend_y + 1, f"Above {int(metrics['threshold'])}%")
+    c.drawString(above_box_x + square_size + gap, legend_y + 1, f"Above {int(metrics['threshold'])}%")
+
 
     # Summary Panel (Bullets Box, RIGHT, teal background)
     box_w = panel_w
