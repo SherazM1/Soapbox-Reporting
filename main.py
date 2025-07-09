@@ -186,7 +186,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     c.setFillColor(navy)
     c.setFont("Raleway", 22)
     c.drawString(margin + 1.7 * inch,
-                 h - margin - 0.6 * inch,
+                 h - margin - 0.4 * inch,
                  "Weekly Content Reporting")
     # Date
     c.setFont("Raleway", 12)
