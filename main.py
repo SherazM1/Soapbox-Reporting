@@ -304,6 +304,10 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
                 stroke=1,
                 fill=0)
     # Bullets
+    y = title_y - 32
+    bullet_offset_x = 16
+    text_offset_x = 38
+    line_height = 32
     bullets_left = box_x + text_offset_x  # Align with the bullets/text, not box_x
     bullets_width =  (box_w - (text_offset_x - bullet_offset_x))  # width of text region
     title_x = bullets_left + bullets_width / 2
@@ -313,11 +317,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     c.drawString(title_x, title_y, "Summary")
     
     c.setFont("Raleway", 16)
-    y = title_y - 32
-    bullet_offset_x = 16
-    text_offset_x = 38
-    line_height = 32
-
+    
     for label, key in [
     ("Average CQS",        "avg_cqs"),
     ("SKUs Above 95%",     "above"),
