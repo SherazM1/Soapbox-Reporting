@@ -5,14 +5,16 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import date
-import shutil, streamlit as st
 
 from main import (
-    load_batches as load_groups,   # still loading from dashboards/batches.json
+    load_batches as load_groups,
     save_batches as save_groups,
-    load_dataframe, compute_metrics,
-    get_top_skus, get_skus_below,
-    make_pie_bytes, generate_full_report
+    load_dataframe,
+    compute_metrics,
+    get_top_skus,
+    get_skus_below,
+    make_pie_bytes,
+    generate_full_report
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -24,11 +26,13 @@ st.set_page_config(
     layout="wide",
 )
 
-if os.path.exists("retailogo.png"):
-    st.image("retailogo.png", width=180)
+if os.path.exists("retaillogo.png"):
+    st.image("retaillogo.png", width=180)
 
 st.title("Weekly Content Reporting")
-st.markdown("Upload your data, manage your groups, and export the full dashboard PDF with client & date.")
+st.markdown(
+    "Upload your data, manage your groups, and export the full dashboard PDF with client & date."
+)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Group Management
@@ -127,7 +131,6 @@ st.markdown("---")
 # Export Full Dashboard PDF
 # ─────────────────────────────────────────────────────────────────────────────
 st.header("Export Dashboard PDF")
-st.write("🛠 wkhtmltopdf path:", shutil.which("wkhtmltopdf"))
 if st.button("📄 Generate Dashboard PDF"):
     pdf_bytes = generate_full_report(uploaded, client_name, rpt_date)
     st.success("✅ Dashboard PDF ready!")
