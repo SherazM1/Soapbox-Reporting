@@ -216,7 +216,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     c.setFillColor(navy)
     c.drawString(margin + 1.7 * inch, h - margin - 1.21 * inch, report_date)
 
-    # ─── Panel Sizes and Positions ─────────────────────────────
+    # Panel Sizes and Positions
     panel_w = 3.7 * inch
     panel_h = 3.6 * inch
     panel_y = h - margin - 2.0 * inch
@@ -225,16 +225,18 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     pie_panel_x     = margin
     summary_panel_x = pie_panel_x + panel_w + 0.15 * inch  # small gap between panels
 
-    # ─── Pie Chart Panel ──────────────────────────────────────
+    # Pie Chart Panel (LEFT)
     c.setFillColor(panel_bg)
     c.roundRect(pie_panel_x, panel_y - panel_h, panel_w, panel_h, radius=10, stroke=0, fill=1)
     c.setStrokeColor(navy)
     c.roundRect(pie_panel_x, panel_y - panel_h, panel_w, panel_h, radius=10, stroke=1, fill=0)
 
     # Panel title - bigger and lower
-    c.setFont("Raleway", 22)
+    title_fontsize = 22
+    title_y_offset = 38  # how far down from top edge
+    c.setFont("Raleway", title_fontsize)
     c.setFillColor(navy)
-    c.drawCentredString(pie_panel_x + panel_w / 2, panel_y - 38, "Score Distribution")
+    c.drawCentredString(pie_panel_x + panel_w / 2, panel_y - title_y_offset, "Score Distribution")
 
     # Pie chart centered
     pie_buf = make_pie_bytes(metrics)
@@ -261,34 +263,38 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     c.setFillColor(colors.black)
     c.drawString(x2 + square_size + 6, legend_y + 1, f"Above {int(metrics['threshold'])}%")
 
-    # ─── Summary Panel (Bullets Box) ──────────────────────────
-    c.setFillColor(panel_bg)
-    c.roundRect(summary_panel_x, panel_y - panel_h, panel_w, panel_h, radius=10, stroke=0, fill=1)
+    # Summary Panel (Bullets Box, RIGHT, teal background)
+    box_w = panel_w
+    box_h = panel_h
+    box_x = summary_panel_x
+    box_y = panel_y
+
+    c.setFillColor(teal)  # TEAL BACKGROUND!
+    c.roundRect(box_x, box_y - box_h, box_w, box_h, radius=10, stroke=0, fill=1)
     c.setStrokeColor(navy)
-    c.roundRect(summary_panel_x, panel_y - panel_h, panel_w, panel_h, radius=10, stroke=1, fill=0)
+    c.roundRect(box_x, box_y - box_h, box_w, box_h, radius=10, stroke=1, fill=0)
 
     # Bullets and Title
     bullet_offset_x = 16
     text_offset_x = 38
     line_height = 32
 
-    # Title placement (centered over the text area)
-    box_w = panel_w
-    box_h = panel_h
-    box_x = summary_panel_x
-    box_y = panel_y
+    # Make the "Summary" title same size/vertical distance as "Score Distribution"
+    summary_title_fontsize = title_fontsize
+    summary_title_y = box_y - title_y_offset
+    bullets_start_y = summary_title_y - 38  # moved further down to take up some white space
 
-    title_y = box_y - 20
+    # Draw the Summary title (centered in box)
     bullets_left = box_x + text_offset_x
     bullets_width = box_w - (text_offset_x - bullet_offset_x) * 2
-    title_x = bullets_left + bullets_width / 2
+    summary_title_x = box_x + box_w / 2  # perfectly centered in box
 
-    c.setFont("Raleway", 18)
+    c.setFont("Raleway", summary_title_fontsize)
     c.setFillColor(navy)
-    c.drawCentredString(title_x - 17, title_y, "Summary")
+    c.drawCentredString(summary_title_x, summary_title_y, "Summary")
 
-    # Start bullets below the title
-    y = title_y - 32
+    # Start bullets further down for less top white space
+    y = bullets_start_y
     c.setFont("Raleway", 16)
 
     for label, key in [
@@ -313,7 +319,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
 
     c.setFillColor(colors.black)
 
-    # ─── Top 5 Table Section ──────────────────────────────────
+    # Top 5 Table Section (now tighter spacing)
     table_title_y = panel_y - panel_h - 32
     c.setFont("Raleway", 18)
     c.setFillColor(navy)
