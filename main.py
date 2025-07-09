@@ -219,7 +219,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
                 stroke=1,
                 fill=0)
     # Panel title
-    c.setFont("Raleway", 13)
+    c.setFont("Raleway", 16)
     c.setFillColor(navy)
     c.drawCentredString(margin + panel_w/2,
                         panel_y - 18,
