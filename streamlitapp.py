@@ -16,6 +16,10 @@ from main import (
     make_pie_bytes,
     generate_full_report
 )
+   # You know this works because st.image() works
+
+# Pass logo_path into your PDF generator
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Page config & branding
