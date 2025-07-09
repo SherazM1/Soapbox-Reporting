@@ -250,22 +250,27 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     # Legend
     legend_y = panel_y - panel_h + 22
     square_size = 9
-    gap = 7  # Space between the box and text
+    gap = 7  # space between box and text
 
-    # Below 95%
-    below_box_x = pie_panel_x + 78
+    # Starting point for the leftmost legend item
+    below_box_x = pie_panel_x + 40  # move further left as needed
+
+    # Draw the navy box first, then the text to the right
     c.setFillColor(navy)
     c.rect(below_box_x, legend_y, square_size, square_size, fill=1, stroke=0)
     c.setFillColor(colors.black)
     c.setFont("Raleway", 10)
     c.drawString(below_box_x + square_size + gap, legend_y + 1, f"Below {int(metrics['threshold'])}%")
 
-    # Above 95%
-    above_box_x = below_box_x + 100  # adjust 100 for more/less space between keys
+    # Spacing for second legend item
+    above_box_x = below_box_x + 120  # increase/decrease for desired gap
+
+    # Draw the teal box, then text
     c.setFillColor(teal)
     c.rect(above_box_x, legend_y, square_size, square_size, fill=1, stroke=0)
     c.setFillColor(colors.black)
     c.drawString(above_box_x + square_size + gap, legend_y + 1, f"Above {int(metrics['threshold'])}%")
+
 
 
     # Summary Panel (Bullets Box, RIGHT, teal background)
