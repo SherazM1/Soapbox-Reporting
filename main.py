@@ -216,38 +216,32 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     c.setFillColor(navy)
     c.drawString(margin + 1.7 * inch, h - margin - 1.21 * inch, report_date)
 
-    # Panels: Pie Chart & Metrics
-    panel_y = h - margin - 2.0 * inch
-    panel_h = 3.6 * inch
+    # ─── Panel Sizes and Positions ─────────────────────────────
     panel_w = 3.7 * inch
+    panel_h = 3.6 * inch
+    panel_y = h - margin - 2.0 * inch
 
-    # Pie Chart Panel
+    # Panel X positions
+    pie_panel_x     = margin
+    summary_panel_x = pie_panel_x + panel_w + 0.15 * inch  # small gap between panels
+
+    # ─── Pie Chart Panel ──────────────────────────────────────
     c.setFillColor(panel_bg)
-    c.roundRect(margin,
-                panel_y - panel_h,
-                panel_w,
-                panel_h,
-                radius=10,
-                stroke=0,
-                fill=1)
+    c.roundRect(pie_panel_x, panel_y - panel_h, panel_w, panel_h, radius=10, stroke=0, fill=1)
     c.setStrokeColor(navy)
-    c.roundRect(margin,
-                panel_y - panel_h,
-                panel_w,
-                panel_h,
-                radius=10,
-                stroke=1,
-                fill=0)
-    # Panel title - now bigger and lower
+    c.roundRect(pie_panel_x, panel_y - panel_h, panel_w, panel_h, radius=10, stroke=1, fill=0)
+
+    # Panel title - bigger and lower
     c.setFont("Raleway", 22)
     c.setFillColor(navy)
-    c.drawCentredString(margin + panel_w / 2, panel_y - 38, "Score Distribution")
+    c.drawCentredString(pie_panel_x + panel_w / 2, panel_y - 38, "Score Distribution")
+
     # Pie chart centered
     pie_buf = make_pie_bytes(metrics)
     pie = ImageReader(pie_buf)
     pie_size = 2.2 * inch
     c.drawImage(pie,
-                x=margin + (panel_w - pie_size) / 2,
+                x=pie_panel_x + (panel_w - pie_size) / 2,
                 y=panel_y - panel_h / 2 - pie_size / 2 - 0.1 * inch,
                 width=pie_size,
                 height=pie_size)
@@ -256,28 +250,22 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     square_size = 9
     # Below
     c.setFillColor(navy)
-    c.rect(margin + 18, legend_y, square_size, square_size, fill=1, stroke=0)
+    c.rect(pie_panel_x + 18, legend_y, square_size, square_size, fill=1, stroke=0)
     c.setFillColor(colors.black)
     c.setFont("Raleway", 10)
-    c.drawString(margin + 18 + square_size + 6, legend_y + 1, f"Below {int(metrics['threshold'])}%")
+    c.drawString(pie_panel_x + 18 + square_size + 6, legend_y + 1, f"Below {int(metrics['threshold'])}%")
     # Above
     c.setFillColor(teal)
-    x2 = margin + 120
+    x2 = pie_panel_x + 120
     c.rect(x2, legend_y, square_size, square_size, fill=1, stroke=0)
     c.setFillColor(colors.black)
     c.drawString(x2 + square_size + 6, legend_y + 1, f"Above {int(metrics['threshold'])}%")
 
-    # Metrics Panel (Summary Box with Bullets) - now same size as pie panel
-    box_w = panel_w
-    box_h = panel_h
-    box_x = margin + panel_w + 0.15 * inch
-    box_y = panel_y - 0.18 * inch
-
-    # Background + border
+    # ─── Summary Panel (Bullets Box) ──────────────────────────
     c.setFillColor(panel_bg)
-    c.roundRect(box_x, box_y - box_h, box_w, box_h, radius=10, stroke=0, fill=1)
+    c.roundRect(summary_panel_x, panel_y - panel_h, panel_w, panel_h, radius=10, stroke=0, fill=1)
     c.setStrokeColor(navy)
-    c.roundRect(box_x, box_y - box_h, box_w, box_h, radius=10, stroke=1, fill=0)
+    c.roundRect(summary_panel_x, panel_y - panel_h, panel_w, panel_h, radius=10, stroke=1, fill=0)
 
     # Bullets and Title
     bullet_offset_x = 16
@@ -285,6 +273,11 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     line_height = 32
 
     # Title placement (centered over the text area)
+    box_w = panel_w
+    box_h = panel_h
+    box_x = summary_panel_x
+    box_y = panel_y
+
     title_y = box_y - 20
     bullets_left = box_x + text_offset_x
     bullets_width = box_w - (text_offset_x - bullet_offset_x) * 2
@@ -320,7 +313,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
 
     c.setFillColor(colors.black)
 
-    # Top 5 Table Section (now tighter spacing)
+    # ─── Top 5 Table Section ──────────────────────────────────
     table_title_y = panel_y - panel_h - 32
     c.setFont("Raleway", 18)
     c.setFillColor(navy)
@@ -366,6 +359,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     c.save()
     buf.seek(0)
     return buf.getvalue()
+
   # <--- THIS LINE is important!
 
 # ...existing code...
