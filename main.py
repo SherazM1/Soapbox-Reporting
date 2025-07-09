@@ -144,48 +144,80 @@ def make_pie_bytes(metrics: dict) -> BytesIO:
 # PDF Generation via ReportLab
 # ─────────────────────────────────────────────────────────────────────────────
 def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
-    # Load and compute
+    # Load data and compute
     df      = load_dataframe(data_src)
     metrics = compute_metrics(df)
     top5    = get_top_skus(df)
     below   = get_skus_below(df)
 
+    # Prepare PDF canvas
     buf = BytesIO()
     c   = canvas.Canvas(buf, pagesize=letter)
     w, h = letter
 
-    # Logo
+    # ─── Header ────────────────────────────────────────────────────────────────
+    # Draw logo at top-left
     logo = ImageReader(resource_path("retaillogo.png"))
-    c.drawImage(logo, inch*0.5, h - inch*1.2, width=1.5*inch, preserveAspectRatio=True, mask="auto")
+    c.drawImage(
+        logo,
+        x=inch * 0.5,
+        y=h - inch * 0.75,
+        width=1.25 * inch,
+        preserveAspectRatio=True,
+        mask="auto"
+    )
 
-    # Title & Header
+    # Client name in teal
+    teal = colors.HexColor("#4CC9C8")
+    c.setFillColor(teal)
+    c.setFont("Raleway", 14)
+    c.drawString(inch * 2.0, h - inch * 0.6, client_name)
+
+    # Title in dark navy
+    navy = colors.HexColor("#003554")
+    c.setFillColor(navy)
     c.setFont("Raleway", 18)
-    c.drawString(inch*2.2, h - inch*0.8, "Weekly Content Reporting")
-    c.setFont("Raleway", 10)
-    c.drawString(inch*2.2, h - inch*1.1, f"{client_name}    {report_date}")
+    c.drawString(inch * 2.0, h - inch * 0.9, "Weekly Content Reporting")
 
-    # Summary line
+    # Date below title
+    c.setFont("Raleway", 10)
+    c.drawString(inch * 2.0, h - inch * 1.15, report_date)
+
+    # Reset fill color
+    c.setFillColor(colors.black)
+
+    # ─── Summary Line ─────────────────────────────────────────────────────────
     total = metrics["total"]
     above = metrics["above"]
-    summary = f"{above}/{total} ({metrics['pct_above']:.1f}%) products have Content Quality Score ≥ {int(THRESHOLD)}%."
+    summary = (
+        f"{above}/{total} "
+        f"({metrics['pct_above']:.1f}%) products have "
+        f"Content Quality Score ≥ {int(metrics['threshold'])}%."
+    )
     c.setFont("Raleway", 12)
-    c.drawString(inch*0.5, h - inch*1.5, summary)
+    c.drawString(inch * 0.5, h - inch * 1.5, summary)
 
-    # Pie chart
+    # ─── Pie Chart ─────────────────────────────────────────────────────────────
     pie_buf = make_pie_bytes(metrics)
     pie     = ImageReader(pie_buf)
-    c.drawImage(pie, inch*0.5, h - inch*4.0, width=3*inch, height=3*inch)
+    c.drawImage(
+        pie,
+        x=inch * 0.5,
+        y=h - inch * 4.0,
+        width=3 * inch,
+        height=3 * inch
+    )
 
-    # Metrics panel
-    box_x, box_y = inch*4.0, h - inch*1.8
-    box_w, box_h = inch*3.5, inch*2.5
+    # ─── Metrics Panel ─────────────────────────────────────────────────────────
+    box_x, box_y = inch * 4.0, h - inch * 1.8
+    box_w, box_h = inch * 3.5, inch * 2.5
     c.roundRect(box_x, box_y - box_h, box_w, box_h, radius=10, stroke=1, fill=0)
     c.setFont("Raleway", 10)
     y = box_y - 14
     for label, key in [
         ("Average CQS", "avg_cqs"),
-        (f"SKUs ≥ {int(THRESHOLD)}%", "above"),
-        (f"SKUs < {int(THRESHOLD)}%", "below"),
+        (f"SKUs ≥ {int(metrics['threshold'])}%", "above"),
+        (f"SKUs < {int(metrics['threshold'])}%", "below"),
         ("Buybox Ownership", "buybox")
     ]:
         val = metrics[key]
@@ -196,20 +228,24 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
         c.drawString(box_x + 8, y, f"• {label}: {val}")
         y -= 14
 
-    # Top 5 table
+    # ─── Top 5 Table ───────────────────────────────────────────────────────────
     data = [top5.columns.tolist()] + top5.astype(str).values.tolist()
-    table = Table(data, colWidths=[2.5*inch, 1*inch, 1*inch])
+    table = Table(data, colWidths=[2.5 * inch, 1 * inch, 1 * inch])
     table.setStyle(TableStyle([
-        ("FONTNAME", (0,0), (-1,-1), "Raleway"),
-        ("FONTSIZE", (0,0), (-1,-1), 8),
-        ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#003554")),
-        ("TEXTCOLOR", (0,0), (-1,0), colors.white),
-        ("GRID", (0,0), (-1,-1), 0.5, colors.grey),
+        ("FONTNAME", (0, 0), (-1, -1), "Raleway"),
+        ("FONTSIZE", (0, 0), (-1, -1), 8),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#003554")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
     ]))
     tw, th = table.wrapOn(c, w, h)
-    table.drawOn(c, inch*0.5, box_y - box_h - inch*0.2 - th)
+    table.drawOn(
+        c,
+        inch * 0.5,
+        box_y - box_h - inch * 0.2 - th
+    )
 
-    # Finish
+    # ────────────────────────────────────────────────────────────────────────────
     c.showPage()
     c.save()
 
