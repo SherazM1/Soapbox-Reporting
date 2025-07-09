@@ -5,6 +5,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import date
+import shutil, streamlit as st
 
 from main import (
     load_batches as load_groups,   # still loading from dashboards/batches.json
@@ -126,6 +127,7 @@ st.markdown("---")
 # Export Full Dashboard PDF
 # ─────────────────────────────────────────────────────────────────────────────
 st.header("Export Dashboard PDF")
+st.write("🛠 wkhtmltopdf path:", shutil.which("wkhtmltopdf"))
 if st.button("📄 Generate Dashboard PDF"):
     pdf_bytes = generate_full_report(uploaded, client_name, rpt_date)
     st.success("✅ Dashboard PDF ready!")
