@@ -202,16 +202,46 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     c.drawString(inch * 0.5, h - inch * 1.6, summary)
 
     # ─── Pie Chart ─────────────────────────────────────────────────────────────
-    pie_buf = make_pie_bytes(metrics)
-    pie     = ImageReader(pie_buf)
-    c.drawImage(
-        pie,
-        x=inch * 0.5,
-        y=h - inch * 4.0,
-        width=3 * inch,
-        height=3 * inch
-    )
+    panel_x, panel_top = inch * 0.5, h - inch * 1.8
+    panel_w, panel_h = 3.5 * inch, 3.0 * inch
 
+    # Draw rounded border
+    c.setStrokeColor(navy)
+    c.setLineWidth(1)
+    c.roundRect(panel_x, panel_top - panel_h, panel_w, panel_h, radius=8, stroke=1, fill=0)
+
+    # Insert pie chart (centered in panel)
+    pie_buf = make_pie_bytes(metrics)
+    pie = ImageReader(pie_buf)
+    pie_size = 2.2 * inch
+    pie_x = panel_x + (panel_w - pie_size) / 2
+    pie_y = panel_top - inch * 1.0  # adjust down for title space
+    c.drawImage(pie, pie_x, pie_y - pie_size, width=pie_size, height=pie_size)
+
+    # Panel title
+    c.setFont("Raleway", 12)
+    c.setFillColor(navy)
+    c.drawCentredString(panel_x + panel_w/2, panel_top - 14, "Score Distribution")
+
+    # Legend squares + labels
+    legend_y = pie_y - pie_size - 20
+    square_size = 8
+    text_x = panel_x + 20
+    # Below 95%
+    c.setFillColor(navy)
+    c.rect(panel_x + 15, legend_y, square_size, square_size, fill=1, stroke=0)
+    c.setFillColor(colors.black)
+    c.setFont("Raleway", 10)
+    c.drawString(text_x, legend_y + 1, f"Below {int(THRESHOLD)}%")
+    # Above 95%
+    c.setFillColor(teal)
+    c.rect(text_x + 80, legend_y, square_size, square_size, fill=1, stroke=0)
+    c.setFillColor(colors.black)
+    c.drawString(text_x + 80 + square_size + 4, legend_y + 1, f"Above {int(THRESHOLD)}%")
+
+    # Reset color
+    c.setFillColor(colors.black)
+    
     # ─── Metrics Panel ─────────────────────────────────────────────────────────
     box_x, box_y = inch * 4.0, h - inch * 1.8
     box_w, box_h = inch * 3.5, inch * 2.5
