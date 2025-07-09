@@ -126,44 +126,43 @@ def get_skus_below(df: pd.DataFrame) -> pd.DataFrame:
 # ─────────────────────────────────────────────────────────────────────────────
 # Pie Chart Helper
 # ─────────────────────────────────────────────────────────────────────────────
+from io import BytesIO
+import matplotlib.pyplot as plt
+
 def make_pie_bytes(metrics: dict) -> BytesIO:
-    # Get threshold safely (default to 95 if missing)
     threshold = int(metrics.get("threshold", 95))
     below = int(metrics.get("below", 0))
     above = int(metrics.get("above", 0))
     
-    # Avoid empty pie: if both zero, show one "below" slice
+    # If no data, show as all "below"
     if below == 0 and above == 0:
         below = 1
         above = 0
-    
-    # Custom colors matching your legend
-    colors = ["#002c47", "#4bc3cf"]  # navy, teal
 
-    # Make the pie chart
-    fig, ax = plt.subplots(figsize=(3, 3), dpi=100)
+    # Use your preferred navy/teal
+    colors = ["#002c47", "#4bc3cf"]
+
+    # Make pie chart
+    fig, ax = plt.subplots(figsize=(2.2, 2.2), dpi=100)  # 2.2" matches your usage, but you can tweak
+
+    # Draw pie with a crisp border between slices
     ax.pie(
         [below, above],
         colors=colors,
         startangle=90,
-        labels=None,         # No labels
-        autopct=None,        # No percentages
-        wedgeprops={'edgecolor': 'white', 'linewidth': 0}
+        labels=None,
+        autopct=None,
+        wedgeprops={'edgecolor': 'white', 'linewidth': 2}  # This is the key for a crisp white border
     )
-    ax.axis("equal")        # Keep circle shape
+    ax.set(aspect="equal")  # Keep it a circle
+    ax.axis("off")          # Hide all axes/ticks
 
-    # Remove all axis and ticks
-    ax.set_xticks([])
-    ax.set_yticks([])
-    ax.axis("off")
-
-    # Transparent background for figure and axes
+    # Transparent figure background
     fig.patch.set_alpha(0.0)
     ax.patch.set_alpha(0.0)
 
-    # Save to buffer with transparent bg
     buf = BytesIO()
-    fig.savefig(buf, format="png", bbox_inches="tight", transparent=True, pad_inches=0)
+    fig.savefig(buf, format="png", bbox_inches="tight", transparent=True, pad_inches=0.05)  # Small pad for no cropping
     buf.seek(0)
     plt.close(fig)
     return buf
