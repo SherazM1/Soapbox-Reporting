@@ -184,16 +184,16 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     c   = canvas.Canvas(buf, pagesize=letter)
     w, h = letter
 
-    # ─── Colors & Spacing ─────────────────────────────────────────────
+    # Colors & Spacing
     margin      = inch * 0.75
-    section_gap = 0.55 * inch  # more vertical gap for clarity
+    section_gap = 0.55 * inch
     navy        = colors.HexColor("#002c47")
     teal        = colors.HexColor("#4bc3cf")
     panel_bg    = colors.HexColor("#ffffff")
     header_bg   = navy
     row_bg      = colors.HexColor("#eaf3fa")
 
-    # ─── Header ──────────────────────────────────────────────────────
+    # Header
     logo_path = resource_path("retaillogo.png")
     if os.path.isfile(logo_path):
         logo = ImageReader(logo_path)
@@ -206,24 +206,17 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     # Client name
     c.setFillColor(teal)
     c.setFont("Raleway", 19)
-    c.drawString(margin + 1.7 * inch,
-                 h - margin - 0.5 * inch,
-                 client_name)
+    c.drawString(margin + 1.7 * inch, h - margin - 0.5 * inch, client_name)
     # Title
     c.setFillColor(navy)
     c.setFont("Raleway", 22)
-    c.drawString(margin + 1.7 * inch,
-                 h - margin - 0.9 * inch,
-                 "Weekly Content Reporting")
+    c.drawString(margin + 1.7 * inch, h - margin - 0.9 * inch, "Weekly Content Reporting")
     # Date
     c.setFont("Raleway", 15)
     c.setFillColor(navy)
-    c.drawString(margin + 1.7 * inch,
-                 h - margin - 1.21 * inch,
-                 report_date)
+    c.drawString(margin + 1.7 * inch, h - margin - 1.21 * inch, report_date)
 
-    # ─── Summary Line ────────────────────────────────────────────────
-    # ─── Panels: Pie Chart & Metrics ────────────────────────────────
+    # Panels: Pie Chart & Metrics
     panel_y = h - margin - 2.0 * inch
     panel_h = 3.6 * inch
     panel_w = 3.7 * inch
@@ -248,108 +241,93 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     # Panel title
     c.setFont("Raleway", 16)
     c.setFillColor(navy)
-    c.drawCentredString(margin + panel_w/2,
-                        panel_y - 18,
-                        "Score Distribution")
+    c.drawCentredString(margin + panel_w / 2, panel_y - 18, "Score Distribution")
     # Pie chart centered
     pie_buf = make_pie_bytes(metrics)
-    pie     = ImageReader(pie_buf)
+    pie = ImageReader(pie_buf)
     pie_size = 2.2 * inch
     c.drawImage(pie,
-                x=margin + (panel_w - pie_size)/2,
-                y=panel_y - panel_h/2 - pie_size/2 - 0.1 * inch,  # slight downward adjust
+                x=margin + (panel_w - pie_size) / 2,
+                y=panel_y - panel_h / 2 - pie_size / 2 - 0.1 * inch,
                 width=pie_size,
                 height=pie_size)
     # Legend
-    legend_y    = panel_y - panel_h + 22
+    legend_y = panel_y - panel_h + 22
     square_size = 9
     # Below
     c.setFillColor(navy)
     c.rect(margin + 18, legend_y, square_size, square_size, fill=1, stroke=0)
     c.setFillColor(colors.black)
     c.setFont("Raleway", 10)
-    c.drawString(margin + 18 + square_size + 6,
-                 legend_y + 1,
-                 f"Below {int(metrics['threshold'])}%")
+    c.drawString(margin + 18 + square_size + 6, legend_y + 1, f"Below {int(metrics['threshold'])}%")
     # Above
     c.setFillColor(teal)
     x2 = margin + 120
     c.rect(x2, legend_y, square_size, square_size, fill=1, stroke=0)
     c.setFillColor(colors.black)
-    c.drawString(x2 + square_size + 6,
-                 legend_y + 1,
-                 f"Above {int(metrics['threshold'])}%")
+    c.drawString(x2 + square_size + 6, legend_y + 1, f"Above {int(metrics['threshold'])}%")
 
-    # ─── Metrics Panel (resize/shrink left & bigger bullets) ─────────────
-    box_w = 3.3 * inch  # shrink width to keep on page
+    # Metrics Panel (Summary Box with Bullets)
+    box_w = 3.3 * inch
     box_h = 3.0 * inch
-    box_x = margin + panel_w + 0.15 * inch  # pulled left
-    box_y = panel_y - 0.18 * inch           # move slightly down
+    box_x = margin + panel_w + 0.15 * inch
+    box_y = panel_y - 0.18 * inch
 
     # Background + border
     c.setFillColor(panel_bg)
-    c.roundRect(box_x,
-                box_y - box_h,
-                box_w,
-                box_h,
-                radius=10,
-                stroke=0,
-                fill=1)
+    c.roundRect(box_x, box_y - box_h, box_w, box_h, radius=10, stroke=0, fill=1)
     c.setStrokeColor(navy)
-    c.roundRect(box_x,
-                box_y - box_h,
-                box_w,
-                box_h,
-                radius=10,
-                stroke=1,
-                fill=0)
-    # Bullets
-    y = title_y - 32
+    c.roundRect(box_x, box_y - box_h, box_w, box_h, radius=10, stroke=1, fill=0)
+
+    # Bullets and Title
     bullet_offset_x = 16
     text_offset_x = 38
     line_height = 32
-    bullets_left = box_x + text_offset_x  # Align with the bullets/text, not box_x
-    bullets_width =  (box_w - (text_offset_x - bullet_offset_x))  # width of text region
-    title_x = bullets_left + bullets_width / 2
+
+    # Title placement (centered over the text area)
     title_y = box_y - 20
+    bullets_left = box_x + text_offset_x
+    bullets_width = box_w - (text_offset_x - bullet_offset_x) * 2
+    title_x = bullets_left + bullets_width / 2
+
     c.setFont("Raleway", 18)
     c.setFillColor(navy)
-    c.drawString(title_x, title_y, "Summary")
-    
+    c.drawCentredString(title_x, title_y, "Summary")
+
+    # Start bullets below the title
+    y = title_y - 32
     c.setFont("Raleway", 16)
-    
+
     for label, key in [
-    ("Average CQS",        "avg_cqs"),
-    ("SKUs Above 95%",     "above"),
-    ("SKUs Below 95%",     "below"),
-    ("Buybox Ownership",   "buybox"),
-]:
+        ("Average CQS",        "avg_cqs"),
+        ("SKUs Above 95%",     "above"),
+        ("SKUs Below 95%",     "below"),
+        ("Buybox Ownership",   "buybox"),
+    ]:
         val = metrics[key]
         if key in ("above", "below"):
             val = int(val)
         elif isinstance(val, float):
             val = f"{val:.1f}%"
-        # navy bullet
+        # Draw navy bullet
         c.setFillColor(navy)
         c.circle(box_x + bullet_offset_x, y + 4, 4, fill=1)
-        # text
+        # Draw text
         c.setFillColor(navy)
         c.setFont("Raleway", 16)
         c.drawString(box_x + text_offset_x, y, f"{label}: {val}")
         y -= line_height
+
     c.setFillColor(colors.black)
 
-    # 
-        # ─── Top 5 Table Section (now tighter spacing) ──────────────────────────────
-    table_title_y = panel_y - panel_h - 32 # closer to panels above
+    # Top 5 Table Section (now tighter spacing)
+    table_title_y = panel_y - panel_h - 32
     c.setFont("Raleway", 18)
     c.setFillColor(navy)
-    c.drawString(margin,
-                 table_title_y,
-                 "Top 5 SKUs by Content Quality Score")
+    c.drawString(margin, table_title_y, "Top 5 SKUs by Content Quality Score")
     c.setFillColor(colors.black)
 
-    # Table
+    # Table data and style
     styles = getSampleStyleSheet()
     styleN = styles["Normal"]
     styleN.fontName = "Raleway"
@@ -362,6 +340,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
 
     table_w = w - 2 * margin
     col_widths = [table_w * 0.5, table_w * 0.20, table_w * 0.28]
+
     table = Table(data, colWidths=col_widths, repeatRows=1)
     table.setStyle(TableStyle([
         ("FONTNAME",    (0, 0), (-1, -1), "Raleway"),
@@ -376,18 +355,18 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
         ("BOTTOMPADDING",(0, 0), (-1, -1), 6),
     ]))
     tw, th = table.wrap(table_w, h)
-    # Only a small gap under the title!
     table.drawOn(c, margin, table_title_y - 14 - th)
 
+    # Footer
     c.setFont("Raleway", 8)
     c.setFillColor(colors.HexColor("#200453"))
     c.drawCentredString(w / 2, 0.45 * inch, f"Generated by SOAPBOX • {datetime.now().strftime('%B %d, %Y')}")
     c.setFillColor(colors.black)
 
-
     c.save()
     buf.seek(0)
-    return buf.getvalue()  # <--- THIS LINE is important!
+    return buf.getvalue()
+  # <--- THIS LINE is important!
 
 # ...existing code...
 # ─────────────────────────────────────────────────────────────────────────────
