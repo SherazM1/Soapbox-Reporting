@@ -239,9 +239,9 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
                 stroke=1,
                 fill=0)
     # Panel title
-    c.setFont("Raleway", 16)
+    c.setFont("Raleway", 18)
     c.setFillColor(navy)
-    c.drawCentredString(margin + panel_w / 2, panel_y - 18, "Score Distribution")
+    c.drawCentredString(margin + panel_w / 2, panel_y - 24, "Score Distribution")
     # Pie chart centered
     pie_buf = make_pie_bytes(metrics)
     pie = ImageReader(pie_buf)
@@ -268,8 +268,8 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     c.drawString(x2 + square_size + 6, legend_y + 1, f"Above {int(metrics['threshold'])}%")
 
     # Metrics Panel (Summary Box with Bullets)
-    box_w = 3.3 * inch
-    box_h = 3.0 * inch
+    box_w = 3.7 * inch
+    box_h = 3.6 * inch
     box_x = margin + panel_w + 0.15 * inch
     box_y = panel_y - 0.18 * inch
 
@@ -292,7 +292,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
 
     c.setFont("Raleway", 18)
     c.setFillColor(navy)
-    c.drawCentredString(title_x - 16, title_y, "Summary")
+    c.drawCentredString(title_x - 17, title_y, "Summary")
 
     # Start bullets below the title
     y = title_y - 32
