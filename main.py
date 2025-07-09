@@ -209,22 +209,23 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
 
     left_x = margin
 
+    # Move header UP by 0.5 inch (was -0.5, -0.9, -1.21; now -0.0, -0.4, -0.71)
     c.setFillColor(teal)
     c.setFont("Raleway", 19)
-    c.drawString(margin, h - margin - 0.5 * inch, client_name)
+    c.drawString(margin, h - margin - 0.0 * inch, client_name)
 
     c.setFillColor(navy)
     c.setFont("Raleway", 22)
-    c.drawString(margin, h - margin - 0.9 * inch, "Weekly Content Reporting")
+    c.drawString(margin, h - margin - 0.4 * inch, "Weekly Content Reporting")
 
     c.setFont("Raleway", 15)
     c.setFillColor(navy)
-    c.drawString(margin, h - margin - 1.21 * inch, report_date)
+    c.drawString(margin, h - margin - 0.71 * inch, report_date)
 
     # Panel Sizes and Positions
     panel_w = 3.7 * inch
     panel_h = 3.6 * inch
-    panel_y = h - margin - 1.0 * inch   # <--- moved up from 2.0 to 1.0
+    panel_y = h - margin - 1.0 * inch   # panel boxes still start at 1.0" down
 
     # Panel X positions
     pie_panel_x     = margin
