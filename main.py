@@ -290,7 +290,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     ("Buybox Ownership",   "buybox"),
 ]:
         val = metrics[key]
-        if isinstance ("above", "below"):
+        if key in ("above", "below"):
             val = int(val)
         elif isinstance(val, float):
             val = f"{val:.1f}%"
