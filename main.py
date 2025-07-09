@@ -252,11 +252,11 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     square_size = 9
     # Below
     c.setFillColor(navy)
+    c.drawString(pie_panel_x + 18 + square_size + 6, legend_y + 1, f"Below {int(metrics['threshold'])}%")
     c.rect(pie_panel_x + 78, legend_y, square_size, square_size, fill=1, stroke=0)
     c.setFillColor(colors.black)
     c.setFont("Raleway", 10)
-    c.drawString(pie_panel_x + 18 + square_size + 6, legend_y + 1, f"Below {int(metrics['threshold'])}%")
-    # Above
+    c.rect(pie_panel_x + 78, legend_y, square_size, square_size, fill=1, stroke=0)    # Above
     c.setFillColor(teal)
     x2 = pie_panel_x + 180
     c.rect(x2, legend_y, square_size, square_size, fill=1, stroke=0)
