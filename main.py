@@ -144,47 +144,114 @@ def make_pie_bytes(metrics: dict) -> BytesIO:
 # PDF Generation via ReportLab
 # ─────────────────────────────────────────────────────────────────────────────
 def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
-    # Load data and compute
+    # Load data & compute
     df      = load_dataframe(data_src)
     metrics = compute_metrics(df)
     top5    = get_top_skus(df)
     below   = get_skus_below(df)
 
-    # Prepare PDF canvas
+    # Prepare canvas
     buf = BytesIO()
     c   = canvas.Canvas(buf, pagesize=letter)
     w, h = letter
 
     # ─── Header ────────────────────────────────────────────────────────────────
-    # Draw logo at top-left
-    logo = ImageReader(resource_path("retaillogo.png"))
-    c.drawImage(
-        logo,
-        x=inch * 0.5,
-        y=h - inch * 0.5,       # flush closer to top
-        width=1.5 * inch,
-        preserveAspectRatio=True,
-        mask="auto"
-    )
+    # Draw logo at fixed top-left
+    logo_path = resource_path("retaillogo.png")
+    if os.path.isfile(logo_path):
+        logo = ImageReader(logo_path)
+        c.drawImage(
+            logo,
+            x=inch * 0.5,
+            y=h - inch * 0.5,
+            width=1.5 * inch,
+            preserveAspectRatio=True,
+            mask="auto"
+        )
+    else:
+        # Optional: draw a placeholder box so you can see where it should be
+        c.setStrokeColor(colors.red)
+        c.rect(inch * 0.5, h - inch * 0.5, 1.5 * inch, 1.5 * inch)
 
     # Client name in teal, larger
     teal = colors.HexColor("#4CC9C8")
     c.setFillColor(teal)
-    c.setFont("Raleway", 16)    # increased from 14
+    c.setFont("Raleway", 16)
     c.drawString(inch * 2.0, h - inch * 0.6, client_name)
 
     # Title in dark navy, much larger
     navy = colors.HexColor("#003554")
     c.setFillColor(navy)
-    c.setFont("Raleway", 24)    # increased from 18
+    c.setFont("Raleway", 24)
     c.drawString(inch * 2.0, h - inch * 1.0, "Weekly Content Reporting")
 
     # Date below title
-    c.setFont("Raleway", 12)    # bumped from 10
+    c.setFont("Raleway", 12)
     c.drawString(inch * 2.0, h - inch * 1.3, report_date)
 
-    # Reset fill color
-    c.setFillColor(colors.black)
+    c.setFillColor(colors.black)  # reset
+
+    # ─── Summary Line ─────────────────────────────────────────────────────────
+    total = metrics["total"]; above = metrics["above"]
+    summary = (
+        f"{above}/{total} "
+        f"({metrics['pct_above']:.1f}%) products have "
+        f"Content Quality Score ≥ {int(metrics['threshold'])}%."
+    )
+    c.setFont("Raleway", 12)
+    c.drawString(inch * 0.5, h - inch * 1.6, summary)
+
+    # ─── Pie Chart ─────────────────────────────────────────────────────────────
+    pie_buf = make_pie_bytes(metrics)
+    pie     = ImageReader(pie_buf)
+    c.drawImage(
+        pie,
+        x=inch * 0.5,
+        y=h - inch * 4.0,
+        width=3 * inch,
+        height=3 * inch
+    )
+
+    # ─── Metrics Panel ─────────────────────────────────────────────────────────
+    box_x, box_y = inch * 4.0, h - inch * 1.8
+    box_w, box_h = inch * 3.5, inch * 2.5
+    c.roundRect(box_x, box_y - box_h, box_w, box_h, radius=10, stroke=1, fill=0)
+    c.setFont("Raleway", 10)
+    y = box_y - 14
+    for label, key in [
+        ("Average CQS", "avg_cqs"),
+        (f"SKUs ≥ {int(metrics['threshold'])}%", "above"),
+        (f"SKUs < {int(metrics['threshold'])}%", "below"),
+        ("Buybox Ownership", "buybox")
+    ]:
+        val = metrics[key]
+        if key in ("above", "below"):
+            val = int(val)
+        elif isinstance(val, float):
+            val = f"{val:.1f}%"
+        c.drawString(box_x + 8, y, f"• {label}: {val}")
+        y -= 14
+
+    # ─── Top 5 Table ───────────────────────────────────────────────────────────
+    data = [top5.columns.tolist()] + top5.astype(str).values.tolist()
+    table = Table(data, colWidths=[2.5 * inch, 1 * inch, 1 * inch])
+    table.setStyle(TableStyle([
+        ("FONTNAME", (0, 0), (-1, -1), "Raleway"),
+        ("FONTSIZE", (0, 0), (-1, -1), 8),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#003554")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+    ]))
+    tw, th = table.wrapOn(c, w, h)
+    table.drawOn(c, inch * 0.5, box_y - box_h - inch * 0.2 - th)
+
+    # Finish up
+    c.showPage()
+    c.save()
+
+    buf.seek(0)
+    return buf.getvalue()
+
     # ─── Summary Line ─────────────────────────────────────────────────────────
     total = metrics["total"]
     above = metrics["above"]
