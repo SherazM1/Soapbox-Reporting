@@ -304,7 +304,11 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
                 stroke=1,
                 fill=0)
     # Bullets
-    c.setFont("Raleway", 16)  # much bigger
+    c.setFont("Raleway", 18)
+    c.setFillColor(navy)
+    c.drawString(box_x, box_y, "Summary")
+    
+    c.setFont("Raleway", 16)
     y = box_y - 32
     bullet_offset_x = 16
     text_offset_x = 38
