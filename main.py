@@ -14,15 +14,15 @@ import shutil
 # ─────────────────────────────────────────────────────────────────────────────
 # CONSTANTS
 # ─────────────────────────────────────────────────────────────────────────────
-THRESHOLD     = 95.0
-TOP_N         = 5
-BATCHES_PATH  = "dashboards/batches.json"
+THRESHOLD    = 95.0
+TOP_N        = 5
+BATCHES_PATH = "dashboards/batches.json"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
 def resource_path(rel_path: str) -> str:
-    """Return absolute path to bundled resources (fonts, etc.)."""
+    """Return absolute path to bundled resources (fonts, binaries, etc.)."""
     if getattr(sys, "frozen", False):
         base = sys._MEIPASS
     else:
@@ -52,21 +52,22 @@ def load_dataframe(src) -> pd.DataFrame:
     Load a CSV or Excel file (path or Streamlit upload) into a DataFrame.
     For uploads, reads bytes via BytesIO with a forgiving parser.
     """
+    # Streamlit UploadedFile or similar
     if hasattr(src, "read") and hasattr(src, "name"):
-        content = src.getvalue()
+        data = src.getvalue()
         ext = os.path.splitext(src.name)[1].lower()
         if ext == ".csv":
             return pd.read_csv(
-                io.BytesIO(content),
+                io.BytesIO(data),
                 encoding="utf-8",
                 engine="python",
                 on_bad_lines="skip"
             )
         elif ext in (".xls", ".xlsx"):
-            return pd.read_excel(io.BytesIO(content))
+            return pd.read_excel(io.BytesIO(data))
         else:
             raise ValueError(f"Unsupported file type: {ext}")
-
+    # File path
     ext = os.path.splitext(src)[1].lower()
     if ext == ".csv":
         return pd.read_csv(src)
@@ -78,11 +79,9 @@ def load_dataframe(src) -> pd.DataFrame:
 # ─────────────────────────────────────────────────────────────────────────────
 # Metrics & Tables
 # ─────────────────────────────────────────────────────────────────────────────
-from typing import Tuple
-
-def split_by_threshold(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def split_by_threshold(df: pd.DataFrame):
     above = df[df["Content Quality Score"] >= THRESHOLD].copy()
-    below = df[df["Content Quality Score"] <  THRESHOLD].copy()
+    below = df[df["Content Quality Score"] < THRESHOLD].copy()
     return below, above
 
 def compute_metrics(df: pd.DataFrame) -> dict:
@@ -92,7 +91,6 @@ def compute_metrics(df: pd.DataFrame) -> dict:
     pct_above   = (count_above / total * 100) if total else 0.0
     avg_cqs     = df["Content Quality Score"].mean() if total else 0.0
     buybox      = df["Buybox Ownership"].mean() if "Buybox Ownership" in df else 0.0
-
     return {
         "total":     total,
         "above":     count_above,
@@ -119,11 +117,10 @@ def get_skus_below(df: pd.DataFrame) -> pd.DataFrame:
     )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Pie Chart
+# Pie Chart Generation
 # ─────────────────────────────────────────────────────────────────────────────
 def make_pie_bytes(metrics: dict) -> BytesIO:
     import matplotlib.pyplot as plt
-
     fig, ax = plt.subplots(figsize=(3, 3))
     ax.pie(
         [metrics["below"], metrics["above"]],
@@ -139,13 +136,9 @@ def make_pie_bytes(metrics: dict) -> BytesIO:
     return buf
 
 # ─────────────────────────────────────────────────────────────────────────────
-# HTML Report
+# HTML Report Builder
 # ─────────────────────────────────────────────────────────────────────────────
-def build_html_report(
-    df: pd.DataFrame,
-    client_name: str,
-    report_date: str
-) -> str:
+def build_html_report(df: pd.DataFrame, client_name: str, report_date: str) -> str:
     metrics = compute_metrics(df)
     top5    = get_top_skus(df)
     below   = get_skus_below(df)
@@ -164,25 +157,12 @@ def build_html_report(
         font-weight: normal;
         margin: 30px;
       }}
-      h1 {{ font-size: 24px; margin-bottom: 8px; }}
-      h2 {{ font-size: 18px; margin-top: 24px; margin-bottom: 8px; }}
-      .metrics {{
-        font-size: 14px;
-        line-height: 1.6;
-        margin-bottom: 16px;
-      }}
-      table {{
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 8px;
-      }}
-      th, td {{
-        border: 1px solid #333;
-        padding: 6px;
-        font-size: 14px;
-        font-weight: normal;
-      }}
-      th {{ background-color: #f2f2f2; }}
+      h1 {{ font-size:24px; margin-bottom:8px; }}
+      h2 {{ font-size:18px; margin-top:24px; margin-bottom:8px; }}
+      .metrics {{ font-size:14px; line-height:1.6; margin-bottom:16px; }}
+      table {{ width:100%; border-collapse:collapse; margin-top:8px; }}
+      th,td {{ border:1px solid #333; padding:6px; font-size:14px; font-weight:normal; }}
+      th {{ background-color:#f2f2f2; }}
     </style>
     """
 
@@ -243,16 +223,33 @@ def build_html_report(
     return "\n".join(html_parts)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# HTML → PDF Conversion (system wkhtmltopdf via apt.txt)
+# HTML → PDF Conversion with Fallbacks
 # ─────────────────────────────────────────────────────────────────────────────
 def html_to_pdf_bytes(html_str: str) -> bytes:
-    # must have wkhtmltopdf installed via apt.txt
+    # 1) Try system-installed wkhtmltopdf
     wk = shutil.which("wkhtmltopdf")
+
+    # 2) Fallback: Linux binary in bin/
+    if not wk:
+        linux_path = resource_path(os.path.join("bin", "wkhtmltopdf"))
+        if os.path.isfile(linux_path) and os.access(linux_path, os.X_OK):
+            wk = linux_path
+
+    # 3) Fallback: Windows EXE in bin/
+    if not wk:
+        win_path = resource_path(os.path.join("bin", "wkhtmltopdf.exe"))
+        if os.path.isfile(win_path):
+            wk = win_path
+
+    # 4) If still not found, error out
     if not wk or not os.path.isfile(wk):
         raise FileNotFoundError(
-            f"wkhtmltopdf not found in PATH. Please ensure it's installed via apt.txt."
+            "wkhtmltopdf binary not found. "
+            "Please include a Linux binary at bin/wkhtmltopdf or "
+            "the Windows EXE at bin/wkhtmltopdf.exe."
         )
 
+    # Write HTML to temp file
     tmp_html = tempfile.NamedTemporaryFile("w", suffix=".html", delete=False)
     tmp_html.write(html_str)
     tmp_html.close()
@@ -263,38 +260,34 @@ def html_to_pdf_bytes(html_str: str) -> bytes:
     with open(pdf_path, "rb") as f:
         pdf_bytes = f.read()
 
-    for p in (tmp_html.name, pdf_path):
-        try: os.remove(p)
+    # Clean up
+    for path in (tmp_html.name, pdf_path):
+        try: os.remove(path)
         except: pass
 
     return pdf_bytes
 
 # ─────────────────────────────────────────────────────────────────────────────
-# One-call PDF Generator
+# One-Call PDF Generator
 # ─────────────────────────────────────────────────────────────────────────────
-def generate_full_report(
-    data_src,
-    client_name: str,
-    report_date: str
-) -> bytes:
-    df = load_dataframe(data_src)
+def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
+    df   = load_dataframe(data_src)
     html = build_html_report(df, client_name, report_date)
     return html_to_pdf_bytes(html)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CLI
+# CLI ENTRYPOINT
 # ─────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     import argparse
-
     parser = argparse.ArgumentParser(description="Generate dashboard PDF")
     parser.add_argument("input_file", help="CSV or Excel file")
     parser.add_argument("--client", required=True, help="Client name")
     parser.add_argument("--date",   required=True, help="Report date (M/D/YYYY)")
-    parser.add_argument("--out",    default="dashboard.pdf", help="Output PDF")
+    parser.add_argument("--out",    default="dashboard.pdf", help="Output filename")
     args = parser.parse_args()
 
-    pdf = generate_full_report(args.input_file, args.client, args.date)
+    pdf_bytes = generate_full_report(args.input_file, args.client, args.date)
     with open(args.out, "wb") as f:
-        f.write(pdf)
+        f.write(pdf_bytes)
     print(f"Wrote {args.out}")
