@@ -292,7 +292,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
 
     c.setFont("Raleway", 18)
     c.setFillColor(navy)
-    c.drawCentredString(title_x - 10, title_y, "Summary")
+    c.drawCentredString(title_x - 12, title_y, "Summary")
 
     # Start bullets below the title
     y = title_y - 32
