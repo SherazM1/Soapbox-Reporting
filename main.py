@@ -197,13 +197,13 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
 
     
 # Look for any retaillogo.png in current dir and all subdirs
-    logo_path = "retaillogo.png"
+    logo_path = os.path.join(os.path.dirname(__file__), "retaillogo.png")
     if os.path.isfile(logo_path):
         logo = ImageReader(logo_path)
         c.drawImage(
         logo,
         x=margin,
-        y=h - margin - 1.2 * inch,  # your original Y
+        y=h - margin - 1.2 * inch,
         width=1.5 * inch,
         preserveAspectRatio=True,
         mask="auto"
