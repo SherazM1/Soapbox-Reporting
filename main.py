@@ -284,13 +284,13 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     line_height = 32
 
     for label, key in [
-        ("Average CQS",        "avg_cqs"),
-        (f"SKUs ≥ {int(metrics['threshold'])}%", "above"),
-        (f"SKUs < {int(metrics['threshold'])}%", "below"),
-        ("Buybox Ownership",   "buybox"),
-    ]:
+    ("Average CQS",        "avg_cqs"),
+    ("SKUs above 95%",     "above"),
+    ("SKUs below 95%",     "below"),
+    ("Buybox Ownership",   "buybox"),
+]:
         val = metrics[key]
-        if key in ("above", "below"):
+        if isinstance ("above", "below"):
             val = int(val)
         elif isinstance(val, float):
             val = f"{val:.1f}%"
