@@ -198,7 +198,7 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
 
     
 # Look for any retaillogo.png in current dir and all subdirs
-    logo_path = resource_path("logo.jpg")
+    logo_path = resource_path("logo.png")
     if os.path.isfile(logo_path):
         logo = ImageReader(logo_path)
         c.drawImage(
