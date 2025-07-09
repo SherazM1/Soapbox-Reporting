@@ -304,7 +304,9 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
                 stroke=1,
                 fill=0)
     # Bullets
-    title_x = box_x + box_w / 2
+    bullets_left = box_x + text_offset_x  # Align with the bullets/text, not box_x
+    bullets_width =  (box_w - (text_offset_x - bullet_offset_x))  # width of text region
+    title_x = bullets_left + bullets_width / 2
     title_y = box_y - 20
     c.setFont("Raleway", 18)
     c.setFillColor(navy)
