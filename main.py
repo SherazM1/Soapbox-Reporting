@@ -285,8 +285,8 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
 
     for label, key in [
     ("Average CQS",        "avg_cqs"),
-    ("SKUs above 95%",     "above"),
-    ("SKUs below 95%",     "below"),
+    ("SKUs Above 95%",     "above"),
+    ("SKUs Below 95%",     "below"),
     ("Buybox Ownership",   "buybox"),
 ]:
         val = metrics[key]
@@ -317,7 +317,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     # Table
     data = [top5.columns.tolist()] + top5.astype(str).values.tolist()
     table_w = w - 2 * margin
-    col_widths = [table_w * 0.60, table_w * 0.40, table_w * 0.40]
+    col_widths = [table_w * 0.5, table_w * 0.25, table_w * 0.25]
     table = Table(data, colWidths=col_widths, repeatRows=1)
     table.setStyle(TableStyle([
         ("FONTNAME",    (0, 0), (-1, -1), "Raleway"),
