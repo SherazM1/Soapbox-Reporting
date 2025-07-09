@@ -28,7 +28,7 @@ def resource_path(rel_path: str) -> str:
     if getattr(sys, "frozen", False):
         base = sys._MEIPASS
     else:
-        base = os.path.abspath(".")
+        base = os.path.dirname(os.path.abspath(__file__))  # <-- Use script's directory
     return os.path.join(base, rel_path)
 
 # ─────────────────────────────────────────────────────────────────────────────
