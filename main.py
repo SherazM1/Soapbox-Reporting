@@ -144,6 +144,7 @@ def make_pie_bytes(metrics: dict) -> BytesIO:
 
     # Make pie chart
     fig, ax = plt.subplots(figsize=(2.2, 2.2), dpi=100)  # 2.2" matches your usage, but you can tweak
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
     # Draw pie with a crisp border between slices
     ax.pie(
@@ -162,7 +163,7 @@ def make_pie_bytes(metrics: dict) -> BytesIO:
     ax.patch.set_alpha(0.0)
 
     buf = BytesIO()
-    fig.savefig(buf, format="png", bbox_inches="tight", transparent=True, pad_inches=0.05)  # Small pad for no cropping
+    fig.savefig(buf, format="png", bbox_inches="tight", transparent=True, pad_inches=0.0)  # Small pad for no cropping
     buf.seek(0)
     plt.close(fig)
     return buf
