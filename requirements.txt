@@ -4,4 +4,4 @@ openpyxl
 matplotlib
 chardet
 streamlit
-weasyprint
+reportlab
