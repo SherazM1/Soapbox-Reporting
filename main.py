@@ -269,9 +269,9 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     box_x = summary_panel_x
     box_y = panel_y
 
-    c.setFillColor(teal)  # TEAL BACKGROUND!
+    c.setFillColor(panel_bg)  # TEAL BACKGROUND!
     c.roundRect(box_x, box_y - box_h, box_w, box_h, radius=10, stroke=0, fill=1)
-    c.setStrokeColor(navy)
+    c.setStrokeColor(teal)
     c.roundRect(box_x, box_y - box_h, box_w, box_h, radius=10, stroke=1, fill=0)
 
     # Bullets and Title
