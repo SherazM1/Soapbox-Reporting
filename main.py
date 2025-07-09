@@ -279,6 +279,10 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     # Bullets
     c.setFont("Raleway", 16)  # much bigger
     y = box_y - 32
+    bullet_offset_x = 16
+    text_offset_x = 38
+    line_height = 32
+
     for label, key in [
         ("Average CQS",        "avg_cqs"),
         (f"SKUs ≥ {int(metrics['threshold'])}%", "above"),
@@ -292,12 +296,12 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
             val = f"{val:.1f}%"
         # navy bullet
         c.setFillColor(navy)
-        c.drawString(box_x + 16, y, "●")
+        c.circle(box_x + bullet_offset_x, y + 4, 4, fill=1)
         # text
-        c.setFillColor(colors.black)
+        c.setFillColor(navy)
         c.setFont("Raleway", 16)
-        c.drawString(box_x + 38, y, f"{label}: {val}")
-        y -= 32
+        c.drawString(box_x + text_offset_x, y, f"{label}: {val}")
+        y -= line_height
     c.setFillColor(colors.black)
 
     # 
