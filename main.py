@@ -161,31 +161,30 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     c.drawImage(
         logo,
         x=inch * 0.5,
-        y=h - inch * 0.75,
-        width=1.25 * inch,
+        y=h - inch * 0.5,       # flush closer to top
+        width=1.5 * inch,
         preserveAspectRatio=True,
         mask="auto"
     )
 
-    # Client name in teal
+    # Client name in teal, larger
     teal = colors.HexColor("#4CC9C8")
     c.setFillColor(teal)
-    c.setFont("Raleway", 14)
+    c.setFont("Raleway", 16)    # increased from 14
     c.drawString(inch * 2.0, h - inch * 0.6, client_name)
 
-    # Title in dark navy
+    # Title in dark navy, much larger
     navy = colors.HexColor("#003554")
     c.setFillColor(navy)
-    c.setFont("Raleway", 18)
-    c.drawString(inch * 2.0, h - inch * 0.9, "Weekly Content Reporting")
+    c.setFont("Raleway", 24)    # increased from 18
+    c.drawString(inch * 2.0, h - inch * 1.0, "Weekly Content Reporting")
 
     # Date below title
-    c.setFont("Raleway", 10)
-    c.drawString(inch * 2.0, h - inch * 1.15, report_date)
+    c.setFont("Raleway", 12)    # bumped from 10
+    c.drawString(inch * 2.0, h - inch * 1.3, report_date)
 
     # Reset fill color
     c.setFillColor(colors.black)
-
     # ─── Summary Line ─────────────────────────────────────────────────────────
     total = metrics["total"]
     above = metrics["above"]
