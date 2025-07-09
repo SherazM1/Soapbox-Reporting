@@ -328,7 +328,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
         data.append(row)
 
     table_w = w - 2 * margin
-    col_widths = [table_w * 0.5, table_w * 0.20, table_w * 0.18]
+    col_widths = [table_w * 0.5, table_w * 0.20, table_w * 0.30]
     table = Table(data, colWidths=col_widths, repeatRows=1)
     table.setStyle(TableStyle([
         ("FONTNAME",    (0, 0), (-1, -1), "Raleway"),
