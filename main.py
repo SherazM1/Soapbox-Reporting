@@ -195,9 +195,6 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     row_bg      = colors.HexColor("#eaf3fa")
 
     # Header
-
-    
-# Look for any retaillogo.png in current dir and all subdirs
     logo_path = resource_path("logo.png")
     if os.path.isfile(logo_path):
         logo = ImageReader(logo_path)
@@ -216,19 +213,18 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     c.setFont("Raleway", 19)
     c.drawString(margin, h - margin - 0.5 * inch, client_name)
 
-# Title
     c.setFillColor(navy)
     c.setFont("Raleway", 22)
     c.drawString(margin, h - margin - 0.9 * inch, "Weekly Content Reporting")
 
-# Date
     c.setFont("Raleway", 15)
     c.setFillColor(navy)
     c.drawString(margin, h - margin - 1.21 * inch, report_date)
+
     # Panel Sizes and Positions
     panel_w = 3.7 * inch
     panel_h = 3.6 * inch
-    panel_y = h - margin - 2.0 * inch
+    panel_y = h - margin - 1.0 * inch   # <--- moved up from 2.0 to 1.0
 
     # Panel X positions
     pie_panel_x     = margin
@@ -280,8 +276,6 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     c.setFillColor(colors.black)
     c.drawString(above_box_x + square_size + gap, legend_y + 1, f"Above {int(metrics['threshold'])}%")
 
-
-
     # Summary Panel (Bullets Box, RIGHT, teal background)
     box_w = panel_w
     box_h = panel_h
@@ -299,7 +293,6 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     line_height = 32
 
     # Make the "Summary" title same size/vertical distance as "Score Distribution"
-    
     summary_title_y = box_y - title_y_offset
     bullets_start_y = summary_title_y - 50  # moved further down to take up some white space
 
