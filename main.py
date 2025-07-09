@@ -194,7 +194,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     row_bg      = colors.HexColor("#eaf3fa")
 
     # Header
-    logo_path = resource_path("retaillogo.png")
+    logo_path = os.path.join(os.path.dirname(__file__), "retaillogo.png")
     if os.path.isfile(logo_path):
         logo = ImageReader(logo_path)
         c.drawImage(logo,
