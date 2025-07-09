@@ -194,31 +194,20 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     row_bg      = colors.HexColor("#eaf3fa")
 
     # Header
-    print("==== PDF LOGO DEBUG ====")
-    print("Current working directory:", os.getcwd())
-    print("__file__ directory:", os.path.dirname(__file__))
-    print("Is 'retaillogo.png' in cwd?:", os.path.isfile("retaillogo.png"))
-    print("Is 'retaillogo.png' in __file__ dir?:", os.path.isfile(os.path.join(os.path.dirname(__file__), "retaillogo.png")))
-    print("========================")
+
     logo_path = os.path.join(os.path.dirname(__file__), "retaillogo.png")
-    print("Logo path:", logo_path)  # Debugging
-    logo_path = "retaillogo.png"
-    if not os.path.isfile(logo_path):
-        logo_path = os.path.join(os.path.dirname(__file__), "retaillogo.png")
-    print("Using logo path:", os.path.abspath(logo_path))
     if os.path.isfile(logo_path):
         logo = ImageReader(logo_path)
         c.drawImage(
         logo,
         x=margin,
-        y=h - margin - 3.0 * inch,
+        y=h - margin - 3.0 * inch,  # Or wherever you want
         width=1.5 * inch,
         preserveAspectRatio=True,
         mask="auto"
     )
     else:
-        print("Logo NOT FOUND at:", logo_path)
-
+     print("Logo NOT FOUND at:", logo_path)
 
     c.setFillColor(teal)
     c.setFont("Raleway", 19)
