@@ -198,7 +198,7 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
 
     
 # Look for any retaillogo.png in current dir and all subdirs
-    logo_path = "retaillogo.png"
+    logo_path = r"C:\Users\shera\OneDrive\Desktop\soapbox-web\retaillogo.png"
     if os.path.isfile(logo_path):
         img = Image.open(logo_path)
         if img.mode in ('RGBA', 'LA'):
