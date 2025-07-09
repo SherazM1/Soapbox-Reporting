@@ -199,19 +199,20 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
 # Look for any retaillogo.png in current dir and all subdirs
     from reportlab.lib.utils import ImageReader
 
-    logo_path = r"C:\Users\shera\OneDrive\Desktop\soapbox-web\retaillogo.png"
-    if os.path.isfile(logo_path):
-        logo = ImageReader(logo_path)
-        c.drawImage(
-        logo,
-        x=margin,
-        y=h - margin - 1.2 * inch,   # Or adjust 'y' as you wish
-        width=1.5 * inch,
-        preserveAspectRatio=True,
-        mask="auto"
-    )
-    else:
-        print("Logo NOT FOUND at:", logo_path)
+    # Draw a placeholder rectangle where the logo would go
+    logo_x = margin
+    logo_y = h - margin - 1.2 * inch  # same as before
+    logo_w = 1.5 * inch
+    logo_h = 1.5 * inch  # square, but adjust as needed
+
+    c.setFillColorRGB(0.85, 0.85, 0.85)  # light gray fill
+    c.rect(logo_x, logo_y, logo_w, logo_h, fill=1, stroke=1)
+    c.setFillColorRGB(0, 0, 0)           # black outline
+
+# Optional: Add some text inside the box to say "LOGO"
+    c.setFont("Helvetica-Bold", 10)
+    c.drawCentredString(logo_x + logo_w / 2, logo_y + logo_h / 2 - 5, "LOGO")
+
 
     c.setFillColor(teal)
     c.setFont("Raleway", 19)
