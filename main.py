@@ -172,7 +172,7 @@ def make_pie_bytes(metrics: dict) -> BytesIO:
 # ─────────────────────────────────────────────────────────────────────────────
 # ...existing code...
 
-def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
+def generate_full_report(data_src, client_name: str, report_date: str, logo_path: str = None) -> bytes:
     # Load data & compute
     df      = load_dataframe(data_src)
     metrics = compute_metrics(df)
@@ -195,23 +195,20 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
 
     # Header
 
-    import glob
+    
 # Look for any retaillogo.png in current dir and all subdirs
-    matches = glob.glob("**/retaillogo.png", recursive=True)
-    if matches:
-        logo_path = matches[0]
-        print("Found logo at:", logo_path)
+    if logo_path and os.path.isfile(logo_path):
         logo = ImageReader(logo_path)
         c.drawImage(
-        logo,
-        x=margin,
-        y=h - margin - 3.0 * inch,
-        width=1.5 * inch,
-        preserveAspectRatio=True,
-        mask="auto"
-    )
+            logo,
+            x=margin,
+            y=h - margin - 3.0 * inch,
+            width=1.5 * inch,
+            preserveAspectRatio=True,
+            mask="auto"
+        )
     else:
-     print("Logo NOT FOUND anywhere in project")
+        print("Logo NOT FOUND at:", logo_path)
 
     c.setFillColor(teal)
     c.setFont("Raleway", 19)
