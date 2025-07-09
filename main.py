@@ -280,16 +280,16 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     line_height = 32
 
     # Make the "Summary" title same size/vertical distance as "Score Distribution"
-    summary_title_fontsize = title_fontsize
+    
     summary_title_y = box_y - title_y_offset
-    bullets_start_y = summary_title_y - 38  # moved further down to take up some white space
+    bullets_start_y = summary_title_y - 50  # moved further down to take up some white space
 
     # Draw the Summary title (centered in box)
     bullets_left = box_x + text_offset_x
     bullets_width = box_w - (text_offset_x - bullet_offset_x) * 2
     summary_title_x = box_x + box_w / 2  # perfectly centered in box
 
-    c.setFont("Raleway", summary_title_fontsize)
+    c.setFont("Raleway", 22)
     c.setFillColor(navy)
     c.drawCentredString(summary_title_x, summary_title_y, "Summary")
 
