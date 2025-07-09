@@ -195,15 +195,21 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
 
     # Header
     logo_path = os.path.join(os.path.dirname(__file__), "retaillogo.png")
+    print("Logo path:", logo_path)  # Debugging
+
     if os.path.isfile(logo_path):
         logo = ImageReader(logo_path)
-        c.drawImage(logo,
-                    x=margin,
-                    y=h - margin - 1.2 * inch,
-                    width=1.5 * inch,
-                    preserveAspectRatio=True,
-                    mask="auto")
-    # Client name
+        c.drawImage(
+            logo,
+            x=margin,
+            y=h - margin - 3.0 * inch,  # 3 inches from top, clearly visible
+            width=1.5 * inch,
+            preserveAspectRatio=True,
+            mask="auto"
+        )
+    else:
+        print("Logo NOT FOUND at:", logo_path)
+
     c.setFillColor(teal)
     c.setFont("Raleway", 19)
     c.drawString(margin + 1.7 * inch, h - margin - 0.5 * inch, client_name)
