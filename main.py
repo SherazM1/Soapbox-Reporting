@@ -189,7 +189,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     section_gap = 0.55 * inch  # more vertical gap for clarity
     navy        = colors.HexColor("#002c47")
     teal        = colors.HexColor("#4bc3cf")
-    panel_bg    = colors.HexColor("#f4fbfd")
+    panel_bg    = colors.HexColor("#ffffff")
     header_bg   = navy
     row_bg      = colors.HexColor("#eaf3fa")
 
