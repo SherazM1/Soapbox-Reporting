@@ -1,5 +1,0 @@
-wkhtmltopdf
-libxrender1
-libxext6
-libx11-6
-libfontconfig1
