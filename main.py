@@ -226,41 +226,58 @@ def build_html_report(df: pd.DataFrame, client_name: str, report_date: str) -> s
 # HTML → PDF Conversion with Fallbacks
 # ─────────────────────────────────────────────────────────────────────────────
 def html_to_pdf_bytes(html_str: str) -> bytes:
-    # 1) Try system-installed wkhtmltopdf
+    # 1) system-installed
     wk = shutil.which("wkhtmltopdf")
 
-    # 2) Fallback: Linux binary in bin/
+    # 2) Fallback: Linux binary
     if not wk:
         linux_path = resource_path(os.path.join("bin", "wkhtmltopdf"))
         if os.path.isfile(linux_path) and os.access(linux_path, os.X_OK):
             wk = linux_path
 
-    # 3) Fallback: Windows EXE in bin/
+    # 3) Fallback: Windows EXE
     if not wk:
         win_path = resource_path(os.path.join("bin", "wkhtmltopdf.exe"))
         if os.path.isfile(win_path):
             wk = win_path
 
-    # 4) If still not found, error out
+    # 4) Error if still missing
     if not wk or not os.path.isfile(wk):
         raise FileNotFoundError(
-            "wkhtmltopdf binary not found. "
-            "Please include a Linux binary at bin/wkhtmltopdf or "
-            "the Windows EXE at bin/wkhtmltopdf.exe."
+            "wkhtmltopdf binary not found. Please include a Linux binary at bin/wkhtmltopdf "
+            "or the Windows EXE at bin/wkhtmltopdf.exe."
         )
 
-    # Write HTML to temp file
+    # Write HTML to a temporary file
     tmp_html = tempfile.NamedTemporaryFile("w", suffix=".html", delete=False)
     tmp_html.write(html_str)
     tmp_html.close()
-
     pdf_path = tmp_html.name.replace(".html", ".pdf")
-    subprocess.run([wk, tmp_html.name, pdf_path], check=True)
 
+    # Build the command with --enable-local-file-access
+    cmd = [
+        wk,
+        "--enable-local-file-access",
+        tmp_html.name,
+        pdf_path
+    ]
+
+    # Run and capture stderr for debugging
+    result = subprocess.run(cmd, check=False, capture_output=True, text=True)
+    if result.returncode != 0:
+        # Clean up temp HTML before raising
+        try: os.remove(tmp_html.name)
+        except: pass
+        raise RuntimeError(
+            f"wkhtmltopdf failed (exit code {result.returncode}):\n"
+            f"{result.stderr}"
+        )
+
+    # Read in the PDF bytes
     with open(pdf_path, "rb") as f:
         pdf_bytes = f.read()
 
-    # Clean up
+    # Cleanup
     for path in (tmp_html.name, pdf_path):
         try: os.remove(path)
         except: pass
