@@ -312,9 +312,9 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
         y -= 32
     c.setFillColor(colors.black)
 
-    # ─── Top 5 Table Section (moved way down) ──────────────────────────────
+    # 
         # ─── Top 5 Table Section (now tighter spacing) ──────────────────────────────
-    table_title_y = panel_y - panel_h - 8  # closer to panels above
+    table_title_y = panel_y - panel_h - 10  # closer to panels above
     c.setFont("Raleway", 14)
     c.setFillColor(navy)
     c.drawString(margin,
@@ -341,7 +341,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     ]))
     tw, th = table.wrap(table_w, h)
     # Only a small gap under the title!
-    table.drawOn(c, margin, table_title_y - 12 - th)
+    table.drawOn(c, margin, table_title_y - 14 - th)
 
     c.setFont("Raleway", 8)
     c.setFillColor(colors.HexColor("#888888"))
