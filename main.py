@@ -210,18 +210,21 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
             mask="auto"
         )
 
+    left_x = margin
+
     c.setFillColor(teal)
     c.setFont("Raleway", 19)
-    c.drawString(margin + 1.7 * inch, h - margin - 0.5 * inch, client_name)
-    # Title
+    c.drawString(left_x, h - margin - 0.5 * inch, client_name)
+
+# Title
     c.setFillColor(navy)
     c.setFont("Raleway", 22)
-    c.drawString(margin + 1.7 * inch, h - margin - 0.9 * inch, "Weekly Content Reporting")
-    # Date
+    c.drawString(left_x, h - margin - 0.9 * inch, "Weekly Content Reporting")
+
+# Date
     c.setFont("Raleway", 15)
     c.setFillColor(navy)
-    c.drawString(margin + 1.7 * inch, h - margin - 1.21 * inch, report_date)
-
+    c.drawString(left_x, h - margin - 1.21 * inch, report_date)
     # Panel Sizes and Positions
     panel_w = 3.7 * inch
     panel_h = 3.6 * inch
