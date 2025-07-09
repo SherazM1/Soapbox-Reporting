@@ -194,6 +194,12 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     row_bg      = colors.HexColor("#eaf3fa")
 
     # Header
+    print("==== PDF LOGO DEBUG ====")
+    print("Current working directory:", os.getcwd())
+    print("__file__ directory:", os.path.dirname(__file__))
+    print("Is 'retaillogo.png' in cwd?:", os.path.isfile("retaillogo.png"))
+    print("Is 'retaillogo.png' in __file__ dir?:", os.path.isfile(os.path.join(os.path.dirname(__file__), "retaillogo.png")))
+    print("========================")
     logo_path = os.path.join(os.path.dirname(__file__), "retaillogo.png")
     print("Logo path:", logo_path)  # Debugging
     logo_path = "retaillogo.png"
