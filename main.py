@@ -178,7 +178,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
                     mask="auto")
     # Client name
     c.setFillColor(teal)
-    c.setFont("Raleway", 18)
+    c.setFont("Raleway", 19)
     c.drawString(margin + 1.7 * inch,
                  h - margin - 0.5 * inch,
                  client_name)
@@ -189,10 +189,10 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
                  h - margin - 0.9 * inch,
                  "Weekly Content Reporting")
     # Date
-    c.setFont("Raleway", 12)
+    c.setFont("Raleway", 15)
     c.setFillColor(colors.black)
     c.drawString(margin + 1.7 * inch,
-                 h - margin - 1.24 * inch,
+                 h - margin - 1.21 * inch,
                  report_date)
 
     # ─── Summary Line ────────────────────────────────────────────────
