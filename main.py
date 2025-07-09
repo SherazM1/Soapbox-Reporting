@@ -254,22 +254,34 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     # ─── Metrics Panel ─────────────────────────────────────────────────────────
     box_x, box_y = inch * 4.0, h - inch * 1.8
     box_w, box_h = inch * 3.5, inch * 2.5
-    c.roundRect(box_x, box_y - box_h, box_w, box_h, radius=10, stroke=1, fill=0)
-    c.setFont("Raleway", 10)
-    y = box_y - 14
+    c.setStrokeColor(navy)
+    c.roundRect(box_x, box_y - box_h, box_w, box_h, radius=8, stroke=1, fill=0)
+
+    # Draw each bullet line
+    c.setFont("Raleway", 12)               # bump up font size
+    y = box_y - 20
     for label, key in [
-        ("Average CQS", "avg_cqs"),
+        ("Average CQS",    "avg_cqs"),
         (f"SKUs ≥ {int(metrics['threshold'])}%", "above"),
         (f"SKUs < {int(metrics['threshold'])}%", "below"),
-        ("Buybox Ownership", "buybox")
+        ("Buybox Ownership","buybox"),
     ]:
         val = metrics[key]
         if key in ("above", "below"):
             val = int(val)
         elif isinstance(val, float):
             val = f"{val:.1f}%"
-        c.drawString(box_x + 8, y, f"• {label}: {val}")
-        y -= 14
+
+        # Draw a navy bullet
+        c.setFillColor(navy)
+        c.drawString(box_x + 8, y, "•")  
+
+        # Draw the text in black (or keep navy if you prefer)
+        c.setFillColor(colors.black)
+        c.drawString(box_x + 24, y, f"{label}: {val}")
+        y -= 18  # increase line spacing
+
+    c.setFillColor(colors.black)
 
     # ─── Top 5 Table ───────────────────────────────────────────────────────────
     data = [top5.columns.tolist()] + top5.astype(str).values.tolist()
@@ -285,7 +297,33 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     table.drawOn(c, inch * 0.5, box_y - box_h - inch * 0.2 - th)
 
     # Finish up
-    c.showPage()
+    data = [top5.columns.tolist()] + top5.astype(str).values.tolist()
+
+    # Compute table width and column widths
+    margin = inch * 0.5
+    table_w = w - 2 * margin
+    col_widths = [
+        table_w * 0.60,  # Product Name takes 60%
+        table_w * 0.20,  # Item ID 20%
+        table_w * 0.20,  # CQS 20%
+    ]
+
+    table = Table(data, colWidths=col_widths)
+    table.setStyle(TableStyle([
+        ("FONTNAME",   (0, 0), (-1, -1), "Raleway"),
+        ("FONTSIZE",   (0, 0), (-1, -1), 10),  # a bit larger
+        ("BACKGROUND",(0, 0), (-1, 0), navy),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("GRID",       (0, 0), (-1, -1), 0.5, colors.grey),
+        ("LEFTPADDING",(0, 0), (-1, -1), 6),
+        ("RIGHTPADDING",(0,0), (-1,-1), 6),
+        ("TOPPADDING",  (0, 0), (-1, -1), 4),
+        ("BOTTOMPADDING",(0,0),(-1,-1), 4),
+    ]))
+
+    # Draw the table at the bottom, just above the page margin
+    tw, th = table.wrap(table_w, h)
+    table.drawOn(c, margin, box_y - box_h - inch * 0.3 - th)
     c.save()
 
     buf.seek(0)
