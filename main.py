@@ -195,19 +195,23 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
 
     # Header
 
-    logo_path = os.path.join(os.path.dirname(__file__), "retaillogo.png")
-    if os.path.isfile(logo_path):
+    import glob
+# Look for any retaillogo.png in current dir and all subdirs
+    matches = glob.glob("**/retaillogo.png", recursive=True)
+    if matches:
+        logo_path = matches[0]
+        print("Found logo at:", logo_path)
         logo = ImageReader(logo_path)
         c.drawImage(
         logo,
         x=margin,
-        y=h - margin - 3.0 * inch,  # Or wherever you want
+        y=h - margin - 3.0 * inch,
         width=1.5 * inch,
         preserveAspectRatio=True,
         mask="auto"
     )
     else:
-     print("Logo NOT FOUND at:", logo_path)
+     print("Logo NOT FOUND anywhere in project")
 
     c.setFillColor(teal)
     c.setFont("Raleway", 19)
