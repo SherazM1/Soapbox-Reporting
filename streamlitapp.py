@@ -30,8 +30,8 @@ st.set_page_config(
     layout="wide",
 )
 
-if os.path.exists("retaillogo.png"):
-    st.image("retaillogo.png", width=180)
+if os.path.exists("logo.jpg"):
+    st.image("logo.jpg", width=180)
 
 st.title("Weekly Content Reporting")
 st.markdown(
