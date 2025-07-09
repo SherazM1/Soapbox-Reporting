@@ -159,7 +159,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
 
     # ─── Colors & Spacing ─────────────────────────────────────────────
     margin      = inch * 0.75
-    section_gap = 0.35 * inch
+    section_gap = 0.55 * inch  # more vertical gap for clarity
     navy        = colors.HexColor("#003554")
     teal        = colors.HexColor("#4CC9C8")
     panel_bg    = colors.HexColor("#f4fbfd")
@@ -242,7 +242,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     pie_size = 2.2 * inch
     c.drawImage(pie,
                 x=margin + (panel_w - pie_size)/2,
-                y=panel_y - panel_h/2 - pie_size/2,
+                y=panel_y - panel_h/2 - pie_size/2 - 0.1 * inch,  # slight downward adjust
                 width=pie_size,
                 height=pie_size)
     # Legend
@@ -265,11 +265,12 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
                  legend_y + 1,
                  f"Above {int(metrics['threshold'])}%")
 
-    # ─── Metrics Panel (bigger bullets & taller box) ────────────────────
-    box_x = margin + panel_w + 0.5 * inch
-    box_y = panel_y
-    box_w = 3.7 * inch
-    box_h = 3.0 * inch   # increased height
+    # ─── Metrics Panel (resize/shrink left & bigger bullets) ─────────────
+    box_w = 3.3 * inch  # shrink width to keep on page
+    box_h = 3.0 * inch
+    box_x = margin + panel_w + 0.15 * inch  # pulled left
+    box_y = panel_y - 0.18 * inch           # move slightly down
+
     # Background + border
     c.setFillColor(panel_bg)
     c.roundRect(box_x,
@@ -288,8 +289,8 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
                 stroke=1,
                 fill=0)
     # Bullets
-    c.setFont("Raleway", 14)
-    y = box_y - 24
+    c.setFont("Raleway", 16)  # much bigger
+    y = box_y - 32
     for label, key in [
         ("Average CQS",        "avg_cqs"),
         (f"SKUs ≥ {int(metrics['threshold'])}%", "above"),
@@ -306,12 +307,13 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
         c.drawString(box_x + 16, y, "●")
         # text
         c.setFillColor(colors.black)
-        c.drawString(box_x + 32, y, f"{label}: {val}")
-        y -= 24
+        c.setFont("Raleway", 16)
+        c.drawString(box_x + 38, y, f"{label}: {val}")
+        y -= 32
     c.setFillColor(colors.black)
 
-    # ─── Top 5 Table Section (moved down) ──────────────────────────────
-    table_title_y = box_y - box_h - section_gap
+    # ─── Top 5 Table Section (moved way down) ──────────────────────────────
+    table_title_y = panel_y - panel_h - section_gap - 0.8 * inch  # move much further down
     c.setFont("Raleway", 14)
     c.setFillColor(navy)
     c.drawString(margin,
@@ -339,7 +341,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     tw, th = table.wrap(table_w, h)
     table.drawOn(c,
                  margin,
-                 table_title_y - 18 - th)
+                 table_title_y - 20 - th - 0.7 * inch)  # even further down
 
     # ─── Footer ─────────────────────────────────────────────────────
     c.setFont("Raleway", 8)
@@ -353,6 +355,7 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     c.save()
     buf.seek(0)
     return buf.getvalue()
+
 # ...existing code...
 # ─────────────────────────────────────────────────────────────────────────────
 # CLI Entrypoint
