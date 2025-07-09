@@ -158,161 +158,198 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
     w, h = letter
 
     # ─── Colors & Spacing ─────────────────────────────────────────────
-    margin = inch * 0.75
+    margin      = inch * 0.75
     section_gap = 0.35 * inch
-    table_gap = 0.25 * inch
-    navy = colors.HexColor("#003554")
-    teal = colors.HexColor("#4CC9C8")
-    panel_bg = colors.HexColor("#f4fbfd")
-    header_bg = navy
-    row_bg = colors.HexColor("#eaf3fa")
+    navy        = colors.HexColor("#003554")
+    teal        = colors.HexColor("#4CC9C8")
+    panel_bg    = colors.HexColor("#f4fbfd")
+    header_bg   = navy
+    row_bg      = colors.HexColor("#eaf3fa")
 
     # ─── Header ──────────────────────────────────────────────────────
     logo_path = resource_path("retaillogo.png")
     if os.path.isfile(logo_path):
         logo = ImageReader(logo_path)
-        c.drawImage(
-            logo,
-            x=margin,
-            y=h - margin - 1.2 * inch,
-            width=1.5 * inch,
-            preserveAspectRatio=True,
-            mask="auto"
-        )
-
+        c.drawImage(logo,
+                    x=margin,
+                    y=h - margin - 1.2 * inch,
+                    width=1.5 * inch,
+                    preserveAspectRatio=True,
+                    mask="auto")
     # Client name
     c.setFillColor(teal)
     c.setFont("Raleway", 18)
-    c.drawString(margin + 1.7 * inch, h - margin - 0.3 * inch, client_name)
-
+    c.drawString(margin + 1.7 * inch,
+                 h - margin - 0.3 * inch,
+                 client_name)
     # Title
     c.setFillColor(navy)
     c.setFont("Raleway", 26)
-    c.drawString(margin + 1.7 * inch, h - margin - 0.8 * inch, "Weekly Content Reporting")
-
+    c.drawString(margin + 1.7 * inch,
+                 h - margin - 0.8 * inch,
+                 "Weekly Content Reporting")
     # Date
     c.setFont("Raleway", 12)
     c.setFillColor(colors.black)
-    c.drawString(margin + 1.7 * inch, h - margin - 1.15 * inch, report_date)
+    c.drawString(margin + 1.7 * inch,
+                 h - margin - 1.15 * inch,
+                 report_date)
 
     # ─── Summary Line ────────────────────────────────────────────────
-    total = metrics["total"]; above = metrics["above"]
+    total = metrics["total"]
+    above = metrics["above"]
     summary = (
         f"{above}/{total} "
         f"({metrics['pct_above']:.1f}%) products have "
         f"Content Quality Score ≥ {int(metrics['threshold'])}%."
     )
     c.setFont("Raleway", 12)
-    c.drawString(margin, h - margin - 1.6 * inch, summary)
+    c.drawString(margin,
+                 h - margin - 1.6 * inch,
+                 summary)
 
     # ─── Panels: Pie Chart & Metrics ────────────────────────────────
     panel_y = h - margin - 2.0 * inch
     panel_h = 3.6 * inch
     panel_w = 3.7 * inch
 
-    # Pie Chart Panel (with background)
+    # Pie Chart Panel
     c.setFillColor(panel_bg)
-    c.roundRect(margin, panel_y - panel_h, panel_w, panel_h, radius=10, stroke=0, fill=1)
+    c.roundRect(margin,
+                panel_y - panel_h,
+                panel_w,
+                panel_h,
+                radius=10,
+                stroke=0,
+                fill=1)
     c.setStrokeColor(navy)
-    c.roundRect(margin, panel_y - panel_h, panel_w, panel_h, radius=10, stroke=1, fill=0)
-
+    c.roundRect(margin,
+                panel_y - panel_h,
+                panel_w,
+                panel_h,
+                radius=10,
+                stroke=1,
+                fill=0)
     # Panel title
     c.setFont("Raleway", 13)
     c.setFillColor(navy)
-    c.drawCentredString(margin + panel_w/2, panel_y - 18, "Score Distribution")
-
-    # Pie chart
+    c.drawCentredString(margin + panel_w/2,
+                        panel_y - 18,
+                        "Score Distribution")
+    # Pie chart centered
     pie_buf = make_pie_bytes(metrics)
     pie     = ImageReader(pie_buf)
     pie_size = 2.2 * inch
-    c.drawImage(
-        pie,
-        x=margin + panel_w/2 - pie_size/2,
-        y=panel_y - panel_h/2 - pie_size/2,
-        width=pie_size,
-        height=pie_size
-    )
-
+    c.drawImage(pie,
+                x=margin + (panel_w - pie_size)/2,
+                y=panel_y - panel_h/2 - pie_size/2,
+                width=pie_size,
+                height=pie_size)
     # Legend
-    legend_y = panel_y - panel_h + 22
+    legend_y    = panel_y - panel_h + 22
     square_size = 9
+    # Below
     c.setFillColor(navy)
     c.rect(margin + 18, legend_y, square_size, square_size, fill=1, stroke=0)
     c.setFillColor(colors.black)
     c.setFont("Raleway", 10)
-    c.drawString(margin + 18 + square_size + 6, legend_y + 1, f"Below {int(metrics['threshold'])}%")
+    c.drawString(margin + 18 + square_size + 6,
+                 legend_y + 1,
+                 f"Below {int(metrics['threshold'])}%")
+    # Above
     c.setFillColor(teal)
-    c.rect(margin + 120, legend_y, square_size, square_size, fill=1, stroke=0)
+    x2 = margin + 120
+    c.rect(x2, legend_y, square_size, square_size, fill=1, stroke=0)
     c.setFillColor(colors.black)
-    c.drawString(margin + 120 + square_size + 6, legend_y + 1, f"Above {int(metrics['threshold'])}%")
+    c.drawString(x2 + square_size + 6,
+                 legend_y + 1,
+                 f"Above {int(metrics['threshold'])}%")
 
-    # Metrics Panel (with background)
+    # ─── Metrics Panel (bigger bullets & taller box) ────────────────────
     box_x = margin + panel_w + 0.5 * inch
     box_y = panel_y
     box_w = 3.7 * inch
-    box_h = 2.5 * inch
+    box_h = 3.0 * inch   # increased height
+    # Background + border
     c.setFillColor(panel_bg)
-    c.roundRect(box_x, box_y - box_h, box_w, box_h, radius=10, stroke=0, fill=1)
+    c.roundRect(box_x,
+                box_y - box_h,
+                box_w,
+                box_h,
+                radius=10,
+                stroke=0,
+                fill=1)
     c.setStrokeColor(navy)
-    c.roundRect(box_x, box_y - box_h, box_w, box_h, radius=10, stroke=1, fill=0)
-
-    # Metrics bullets
-    c.setFont("Raleway", 12)
+    c.roundRect(box_x,
+                box_y - box_h,
+                box_w,
+                box_h,
+                radius=10,
+                stroke=1,
+                fill=0)
+    # Bullets
+    c.setFont("Raleway", 14)
     y = box_y - 24
     for label, key in [
-        ("Average CQS",    "avg_cqs"),
+        ("Average CQS",        "avg_cqs"),
         (f"SKUs ≥ {int(metrics['threshold'])}%", "above"),
         (f"SKUs < {int(metrics['threshold'])}%", "below"),
-        ("Buybox Ownership","buybox"),
+        ("Buybox Ownership",   "buybox"),
     ]:
         val = metrics[key]
         if key in ("above", "below"):
             val = int(val)
         elif isinstance(val, float):
             val = f"{val:.1f}%"
+        # navy bullet
         c.setFillColor(navy)
-        c.drawString(box_x + 16, y, "•")
+        c.drawString(box_x + 16, y, "●")
+        # text
         c.setFillColor(colors.black)
         c.drawString(box_x + 32, y, f"{label}: {val}")
-        y -= 22
-
-    # ─── Top 5 Table Section ────────────────────────────────────────
-    table_y = box_y - box_h - section_gap
-    c.setFont("Raleway", 14)
-    c.setFillColor(navy)
-    c.drawString(margin, table_y, "Top 5 SKUs by Content Quality Score")
+        y -= 24
     c.setFillColor(colors.black)
 
-    # Table data and style
+    # ─── Top 5 Table Section (moved down) ──────────────────────────────
+    table_title_y = box_y - box_h - section_gap
+    c.setFont("Raleway", 14)
+    c.setFillColor(navy)
+    c.drawString(margin,
+                 table_title_y,
+                 "Top 5 SKUs by Content Quality Score")
+    c.setFillColor(colors.black)
+
+    # Table
     data = [top5.columns.tolist()] + top5.astype(str).values.tolist()
     table_w = w - 2 * margin
-    col_widths = [
-        table_w * 0.60,
-        table_w * 0.20,
-        table_w * 0.20,
-    ]
+    col_widths = [table_w * 0.60, table_w * 0.20, table_w * 0.20]
     table = Table(data, colWidths=col_widths, repeatRows=1)
     table.setStyle(TableStyle([
-        ("FONTNAME", (0, 0), (-1, -1), "Raleway"),
-        ("FONTSIZE", (0, 0), (-1, -1), 10),
+        ("FONTNAME",    (0, 0), (-1, -1), "Raleway"),
+        ("FONTSIZE",    (0, 0), (-1, -1), 10),
         ("BACKGROUND", (0, 0), (-1, 0), header_bg),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("TEXTCOLOR",  (0, 0), (-1, 0), colors.white),
         ("BACKGROUND", (0, 1), (-1, -1), row_bg),
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#b0b0b0")),
-        ("LEFTPADDING", (0, 0), (-1, -1), 10),
+        ("GRID",        (0, 0), (-1, -1), 0.5, colors.HexColor("#b0b0b0")),
+        ("LEFTPADDING",  (0, 0), (-1, -1), 10),
         ("RIGHTPADDING", (0, 0), (-1, -1), 10),
-        ("TOPPADDING", (0, 0), (-1, -1), 6),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+        ("TOPPADDING",   (0, 0), (-1, -1), 6),
+        ("BOTTOMPADDING",(0, 0), (-1, -1), 6),
     ]))
     tw, th = table.wrap(table_w, h)
-    table.drawOn(c, margin, table_y - 18 - th)
+    table.drawOn(c,
+                 margin,
+                 table_title_y - 18 - th)
 
     # ─── Footer ─────────────────────────────────────────────────────
     c.setFont("Raleway", 8)
     c.setFillColor(colors.HexColor("#888888"))
-    c.drawCentredString(w / 2, 0.45 * inch, f"Generated by SOAPBOX • {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    c.drawCentredString(w / 2,
+                        0.45 * inch,
+                        f"Generated by SOAPBOX • {datetime.now().strftime('%Y-%m-%d %H:%M')}")
     c.setFillColor(colors.black)
 
+    # Finish & return
     c.save()
     buf.seek(0)
     return buf.getvalue()
