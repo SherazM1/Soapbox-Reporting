@@ -304,12 +304,13 @@ def generate_full_report(data_src, client_name: str, report_date: str) -> bytes:
                 stroke=1,
                 fill=0)
     # Bullets
+    title_y = box_y - 20
     c.setFont("Raleway", 18)
     c.setFillColor(navy)
-    c.drawString(box_x, box_y, "Summary")
+    c.drawString(box_x + 16, title_y, "Summary")
     
     c.setFont("Raleway", 16)
-    y = box_y - 32
+    y = title_y - 32
     bullet_offset_x = 16
     text_offset_x = 38
     line_height = 32
