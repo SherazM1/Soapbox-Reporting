@@ -248,8 +248,8 @@ def generate_full_report(
 
     if logo_path.is_file():
         logo = ImageReader(str(logo_path))
-        width = 1.8 * inch       # smaller width
-        height = 1.8 * inch      # smaller height
+        width = 1.3 * inch       # smaller width
+        height = 1.3 * inch      # smaller height
         x_margin = 0.4 * inch    # horizontal margin from right edge
         y_margin = 0.6 * inch    # vertical margin from top edge
         x = w - x_margin - width
