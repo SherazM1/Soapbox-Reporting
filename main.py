@@ -392,71 +392,55 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     col_widths = [table_w * 0.5, table_w * 0.20, table_w * 0.28]
 
     #----bottom table
-    
-    table = Table(data, colWidths=col_widths, repeatRows=1)
-    table.setStyle(TableStyle([
-        ("FONTNAME",    (0, 0), (-1, -1), "Raleway"),
-        ("FONTSIZE",    (0, 0), (-1, -1), 10),
-        ("BACKGROUND", (0, 0), (-1, 0), header_bg),
-        ("TEXTCOLOR",  (0, 0), (-1, 0), colors.white),
-        ("BACKGROUND", (0, 1), (-1, -1), row_bg),
-        ("GRID",        (0, 0), (-1, -1), 0.5, colors.HexColor("#002c47")),
-        ("LEFTPADDING",  (0, 0), (-1, -1), 10),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 10),
-        ("TOPPADDING",   (0, 0), (-1, -1), 6),
-        ("BOTTOMPADDING",(0, 0), (-1, -1), 6),
-        ("ALIGN", (2,1), (2,-1), "CENTER"),
-    ]))
-    tw, th = table.wrap(table_w, h)
-    table.drawOn(c, margin, table_title_y - 14 - th)
 
-    # ---------------------------
-    # NEW: Add Conventions Box
-    # ---------------------------
+    table_title_y = panel_y - panel_h - 32
+    table_bottom_y = table_title_y - 14 - th  # y where table starts drawing (lower left)
+    spacing = 24  # space between table and box
+    box_y = table_bottom_y - spacing  # top of new box
 
-    convention_text = (
-    "<b>Sizing/Wrapping Conventions</b><br/>"
-    "- All text wraps to new lines if long.<br/>"
-    "- The box grows vertically as needed.<br/>"
-    "- User-provided text from the dashboard appears here."
-)
+# Draw the title ABOVE the box (left-aligned)
+    c.setFont("Raleway-Bold", 18)
+    c.setFillColor(navy)
+    title_y = box_y + 14  # Adjust "+ 14" for vertical spacing above the box
+    c.drawString(margin, title_y, "Content Notes")
 
 # Match summary box style
     para_style = ParagraphStyle(
-        name='ConventionBox',
-        fontName="Raleway",
-        fontSize=16,
-        leading=20,
-        textColor=navy,
-        spaceAfter=0,
-    )
+    name='ConventionBox',
+    fontName="Raleway",
+    fontSize=14,
+    leading=20,
+    textColor=navy,
+    spaceAfter=0,
+)
 
     box_x = margin
     box_w = table_w
     box_padding = 28  # visually close to summary box
     para_width = box_w - 2 * box_padding
 
+# Your text here:
+    convention_text = (
+    "• Testing the size of text.<br/>"
+    "• The box grows vertically as needed.<br/>"
+    "• Test text Test text Test text."
+)
+
 # Wrap paragraph
     para = Paragraph(convention_text, para_style)
     _, para_height = para.wrap(para_width, h)
     box_height = para_height + 2 * box_padding
 
-# Position: right below the table, with a little gap
-    table_bottom_y = table_title_y - 14 - th  # y where table starts drawing (lower left)
-    spacing = 24  # space between table and box
-    box_y = table_bottom_y - spacing  # top of new box
-
 # Draw filled box (white, like summary)
     c.setFillColor(panel_bg)
     c.roundRect(box_x, box_y - box_height, box_w, box_height, radius=10, stroke=0, fill=1)
-# Draw navy border
-    c.setStrokeColor(navy)
+# Draw white border (invisible on white background)
+    c.setStrokeColor("#FFFFFF")
     c.setLineWidth(1.2)
     c.roundRect(box_x, box_y - box_height, box_w, box_height, radius=10, stroke=1, fill=0)
 
-# Draw the text
+# Draw the text inside the box
     para.drawOn(c, box_x + box_padding, box_y - box_padding - para_height)
-
     c.save()
     buf.seek(0)
     return buf.getvalue()
