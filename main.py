@@ -242,8 +242,11 @@ def generate_full_report(
     panel_y = h - margin - 1.0 * inch   # panel boxes still start at 1.0" down
 
     # Panel X positions
-    pie_panel_x     = margin
-    summary_panel_x = pie_panel_x + panel_w + 0.15 * inch  # small gap between panels
+    panels_total_width = 2 * panel_w + 0.15 * inch
+    side_margin = (w - panels_total_width) / 2
+    pie_panel_x = side_margin
+    summary_panel_x = pie_panel_x + panel_w + 0.15 * inch
+
 
     # Pie Chart Panel (LEFT)
     c.setFillColor(panel_bg)
