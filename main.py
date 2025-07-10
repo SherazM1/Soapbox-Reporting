@@ -52,7 +52,7 @@ pdfmetrics.registerFont(
 # ─────────────────────────────────────────────────────────────────────────────
 # Constants & Persistence
 # ─────────────────────────────────────────────────────────────────────────────
-THRESHOLD    = 95.0
+THRESHOLD    = 0.95
 TOP_N        = 5
 BATCHES_PATH = "dashboards/batches.json"
 
@@ -104,33 +104,43 @@ def compute_metrics(df: pd.DataFrame) -> dict:
     below, above = split_by_threshold(df)
     total       = len(df)
     count_above = len(above)
-    pct_above   = (count_above / total * 100) if total else 0.0
-    avg_cqs     = df["Content Quality Score"].mean() if total else 0.0
-    buybox      = df["Buybox Ownership"].mean() if "Buybox Ownership" in df else 0.0
+    avg_cqs_raw = df["Content Quality Score"].mean() if total else 0.0
+    avg_cqs_pct = int(round(avg_cqs_raw * 100))
+    pct_above   = int(round((count_above / total * 100))) if total else 0
+    buybox = df["Buybox Ownership"].mean() if "Buybox Ownership" in df else 0.0
+    buybox_pct = int(round(buybox * 100))
+
     return {
         "total":     total,
         "above":     count_above,
         "below":     len(below),
-        "pct_above": pct_above,
-        "avg_cqs":   avg_cqs,
-        "buybox":    buybox,
-        "threshold": THRESHOLD
+        "pct_above": pct_above,                # int percent (e.g. 83)
+        "avg_cqs":   avg_cqs_pct,              # int percent (e.g. 92)
+        "buybox":    buybox_pct,               # int percent
+        "threshold": int(round(THRESHOLD*100)) # for display (95)
     }
 
+
 def get_top_skus(df: pd.DataFrame) -> pd.DataFrame:
-    return (
+    table = (
         df
         .sort_values("Content Quality Score", ascending=False)
-        .head(TOP_N)[["Product Name","Item ID","Content Quality Score"]]
+        .head(TOP_N)[["Product Name", "Item ID", "Content Quality Score"]]
         .copy()
     )
+    # Convert Content Quality Score to percent and round
+    table["Content Quality Score"] = (table["Content Quality Score"] * 100).round().astype(int)
+    return table
+
 
 def get_skus_below(df: pd.DataFrame) -> pd.DataFrame:
-    return (
+    table = (
         df[df["Content Quality Score"] < THRESHOLD]
-        [["Product Name","Item ID","Content Quality Score"]]
+        [["Product Name", "Item ID", "Content Quality Score"]]
         .copy()
     )
+    table["Content Quality Score"] = (table["Content Quality Score"] * 100).round().astype(int)
+    return table
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Pie Chart Helper
