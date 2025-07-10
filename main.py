@@ -391,7 +391,7 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     # Draw the title ABOVE the box (left-aligned)
     c.setFont("Raleway-Bold", 18)
     c.setFillColor(navy)
-    title_y = box_y + 14
+    title_y = box_y + 24
     c.drawString(margin, title_y, "Content Notes")
 
     para_style = ParagraphStyle(
@@ -427,7 +427,7 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     c.setLineWidth(1.2)
     c.roundRect(box_x, box_y - box_height, box_w, box_height, radius=10, stroke=1, fill=0)
     # Draw the text inside the box
-    para.drawOn(c, box_x + box_padding, box_y - box_padding - para_height)
+    para.drawOn(c, margin, box_y - box_padding - para_height)
 
     # --- Footer (unchanged) ---
     c.setFont("Raleway", 8)
