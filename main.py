@@ -385,9 +385,9 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     # --- Content Notes Section (BOTTOM) ---
     # Set up positions and sizing
     table_bottom_y = table_title_y - 14 - th
-    extra_space = 24
-    box_y = box_y - extra_space
-
+    spacing = 24
+    box_y = table_bottom_y - spacing
+    
     # Draw the title ABOVE the box (left-aligned)
     c.setFont("Raleway-Bold", 18)
     c.setFillColor(navy)
