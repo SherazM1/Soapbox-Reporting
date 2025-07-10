@@ -242,14 +242,20 @@ def generate_full_report(
     logo_path = resource_path("logo.png")
     if os.path.isfile(logo_path):
         logo = ImageReader(logo_path)
-        c.drawImage(
-            logo,
-            x=pie_panel_x,
-            y=h - margin - 1.2 * inch,
-            width=1.5 * inch,
-            preserveAspectRatio=True,
-            mask="auto"
-        )
+        width = 1.5 * inch
+        height = 1.5 * inch
+        x = w - margin - width
+        y = h - margin - height
+
+    c.drawImage(
+        logo,
+        x=x,
+        y=y,
+        width=width,
+        height=height,
+        preserveAspectRatio=True,
+        mask="auto"
+    )
 
     c.setFillColor(teal)
     c.setFont("Raleway-Bold", 19)
