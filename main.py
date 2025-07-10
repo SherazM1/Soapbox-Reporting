@@ -405,7 +405,7 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
 
     box_x = margin
     box_w = table_w
-    box_padding = 24
+    box_padding = 20
     para_width = box_w - 2 * box_padding
 
     # Your content notes text here
