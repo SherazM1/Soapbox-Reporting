@@ -219,7 +219,7 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
 
     # Move header UP by 0.5 inch (was -0.5, -0.9, -1.21; now -0.0, -0.4, -0.71)
     c.setFillColor(teal)
-    c.setFont("Raleway_Bold", 19)
+    c.setFont("Raleway-Bold", 19)
     c.drawString(margin, h - margin - 0.0 * inch, client_name)
 
     c.setFillColor(navy)
