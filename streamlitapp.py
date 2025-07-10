@@ -77,7 +77,7 @@ st.header("Inputs")
 uploaded = st.file_uploader("Upload Excel or CSV", type=["xlsx", "csv"])
 client_name = st.text_input("Client Name", value="Country Fresh")
 rpt_date = st.date_input("Report Date", value=date.today()).strftime("%-m/%-d/%Y")
-
+client_notes = st.text_input("Enter Client Notes", value="Add Notes")
 if not uploaded:
     st.info("Please upload a data file to see the dashboard below.")
     st.stop()

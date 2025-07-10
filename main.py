@@ -181,7 +181,13 @@ def make_pie_bytes(metrics: dict) -> BytesIO:
 # ─────────────────────────────────────────────────────────────────────────────
 # ...existing code...
 
-def generate_full_report(data_src, client_name: str, report_date: str, logo_path: str = None) -> bytes:
+def generate_full_report(
+    data_src, 
+    client_name: str, 
+    report_date: str, 
+    client_notes: str,    # <-- added this parameter
+    logo_path: str = None
+) -> bytes:
     # Load data & compute
     df      = load_dataframe(data_src)
     metrics = compute_metrics(df)
@@ -252,18 +258,17 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     c.setFillColor(navy)
     c.drawCentredString(pie_panel_x + panel_w / 2, panel_y - title_y_offset, "Score Distribution")
 
-# Underline just below the title, centered and width-matche
-
-
     # Pie chart centered
     pie_buf = make_pie_bytes(metrics)
     pie = ImageReader(pie_buf)
     pie_size = 2.2 * inch
-    c.drawImage(pie,
-                x=pie_panel_x + (panel_w - pie_size) / 2,
-                y=panel_y - panel_h / 2 - pie_size / 2 - 0.1 * inch,
-                width=pie_size,
-                height=pie_size)
+    c.drawImage(
+        pie,
+        x=pie_panel_x + (panel_w - pie_size) / 2,
+        y=panel_y - panel_h / 2 - pie_size / 2 - 0.1 * inch,
+        width=pie_size,
+        height=pie_size
+    )
     # Legend
     legend_y = panel_y - panel_h + 22
     square_size = 9
@@ -317,7 +322,6 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     c.setFillColor(navy)
     c.drawCentredString(summary_title_x, summary_title_y, "Summary")
 
-
     # Start bullets further down for less top white space
     y = bullets_start_y
     c.setFont("Raleway", 16)
@@ -351,7 +355,6 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     c.setFillColor(navy)
     c.drawString(margin, table_title_y, "Top 5 SKUs by Content Quality Score")
 
-
     # Table data and style
     styles = getSampleStyleSheet()
     styleN = styles["Normal"]
@@ -383,15 +386,14 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     table.drawOn(c, margin, table_title_y - 14 - th)
 
     # --- Content Notes Section (BOTTOM) ---
-    # Set up positions and sizing
     table_bottom_y = table_title_y - 14 - th
     spacing = 24
     box_y = table_bottom_y - spacing
-    
+
     # Draw the title ABOVE the box (left-aligned)
     c.setFont("Raleway-Bold", 18)
     c.setFillColor(navy)
-    title_y = box_y + .01
+    title_y = box_y + 20  # Adjust this value for more or less space above box
     c.drawString(margin, title_y, "Content Notes")
 
     para_style = ParagraphStyle(
@@ -408,11 +410,8 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     box_padding = 20
     para_width = box_w - 2 * box_padding
 
-    # Your content notes text here
-    convention_text = (
-        "Testing the size of text. Test text Test text Test text. Hi HI HI. does the text go off the page or not?"
-        
-    )
+    # Use the user input here!
+    convention_text = client_notes.replace("\n", "<br/>")
 
     para = Paragraph(convention_text, para_style)
     _, para_height = para.wrap(para_width, h)
@@ -421,11 +420,11 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     # Draw filled box (white)
     c.setFillColor(panel_bg)
     c.roundRect(box_x, box_y - box_height, box_w, box_height, radius=10, stroke=0, fill=1)
-    # Draw invisible border (fully white, but stroke=1 for legacy)
+    # Draw invisible border (fully white)
     c.setStrokeColor(colors.white)
     c.setLineWidth(1.2)
     c.roundRect(box_x, box_y - box_height, box_w, box_height, radius=10, stroke=1, fill=0)
-    # Draw the text inside the box
+    # Draw the text inside the box, left-aligned
     para.drawOn(c, margin, box_y - box_padding - para_height)
 
     # --- Footer (unchanged) ---
@@ -437,6 +436,7 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     c.save()
     buf.seek(0)
     return buf.getvalue()
+
 
   # <--- THIS LINE is important!
 
