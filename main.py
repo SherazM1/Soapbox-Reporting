@@ -391,7 +391,7 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     # Draw the title ABOVE the box (left-aligned)
     c.setFont("Raleway-Bold", 18)
     c.setFillColor(navy)
-    title_y = box_y + 6
+    title_y = box_y + 3
     c.drawString(margin, title_y, "Content Notes")
 
     para_style = ParagraphStyle(
@@ -405,7 +405,7 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
 
     box_x = margin
     box_w = table_w
-    box_padding = 28
+    box_padding = 24
     para_width = box_w - 2 * box_padding
 
     # Your content notes text here
