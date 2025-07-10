@@ -159,7 +159,7 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 
 def make_pie_bytes(metrics: dict) -> BytesIO:
-    threshold = int(metrics.get("threshold", 95))
+    threshold = int(metrics.get("threshold", .95))
     below = int(metrics.get("below", 0))
     above = int(metrics.get("above", 0))
     
@@ -206,7 +206,7 @@ def generate_full_report(
     client_name: str, 
     report_date: str, 
     client_notes: str,
-    logo_path: str = None
+    logo_path: str 
 ) -> bytes:
     # Load data & compute
     df      = load_dataframe(data_src)
