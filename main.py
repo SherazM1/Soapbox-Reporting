@@ -248,10 +248,12 @@ def generate_full_report(
 
     if logo_path.is_file():
         logo = ImageReader(str(logo_path))
-        width = 1.5 * inch
-        height = 1.5 * inch
-        x = w - margin - width
-        y = h - margin - height
+        width = 1.0 * inch       # smaller width
+        height = 1.0 * inch      # smaller height
+        x_margin = 0.4 * inch    # horizontal margin from right edge
+        y_margin = 0.3 * inch    # vertical margin from top edge
+        x = w - x_margin - width
+        y = h - y_margin - height
         c.drawImage(
         logo,
         x=x,
@@ -260,9 +262,10 @@ def generate_full_report(
         height=height,
         preserveAspectRatio=True,
         mask="auto"
-            )
+    )
     else:
         print("Logo file not found; skipping logo drawing.")
+
 
     c.setFillColor(teal)
     c.setFont("Raleway-Bold", 19)
