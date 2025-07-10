@@ -322,7 +322,7 @@ def generate_full_report(
     y = bullets_start_y
     c.setFont("Raleway", 16)
     for label, key in [
-        ("Average CQS",        "avg_cqs%"),
+        ("Average CQS",        "avg_cqs"),
         ("SKUs Above 95%",     "above"),
         ("SKUs Below 95%",     "below"),
         ("Buybox Ownership",   "buybox"),
@@ -330,8 +330,8 @@ def generate_full_report(
         val = metrics.get(key, "")
         if key in ("above", "below") and val != "":
             val = int(val)
-        elif isinstance(val, float):
-            val = f"{val:.1f}%"
+        if key in ("avg_cqs", "buybox") and val != "":
+            val = f"{val}%"
         c.setFillColor(navy)
         c.setStrokeColor(navy)
         c.circle(box_x + bullet_offset_x, y + 4, 4, fill=1)
