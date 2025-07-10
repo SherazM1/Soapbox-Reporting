@@ -185,7 +185,7 @@ def generate_full_report(
     data_src, 
     client_name: str, 
     report_date: str, 
-    client_notes: str,    # <-- added this parameter
+    client_notes: str,
     logo_path: str = None
 ) -> bytes:
     # Load data & compute
@@ -208,45 +208,40 @@ def generate_full_report(
     header_bg   = navy
     row_bg      = colors.HexColor("#eaf3fa")
 
-    # Header
+    # Panel Sizes and Positions
+    panel_w = 3.7 * inch
+    panel_h = 3.6 * inch
+    panel_y = h - margin - 1.0 * inch
+
+    panels_total_width = 2 * panel_w + 0.15 * inch
+    side_margin = (w - panels_total_width) / 2
+    pie_panel_x = side_margin
+    summary_panel_x = pie_panel_x + panel_w + 0.15 * inch
+
+    # Header (now left-aligned to pie_panel_x)
     logo_path = resource_path("logo.png")
     if os.path.isfile(logo_path):
         logo = ImageReader(logo_path)
         c.drawImage(
             logo,
-            x=margin,
+            x=pie_panel_x,
             y=h - margin - 1.2 * inch,
             width=1.5 * inch,
             preserveAspectRatio=True,
             mask="auto"
         )
 
-    left_x = margin
-
-    # Move header UP by 0.5 inch (was -0.5, -0.9, -1.21; now -0.0, -0.4, -0.71)
     c.setFillColor(teal)
     c.setFont("Raleway-Bold", 19)
-    c.drawString(margin, h - margin - 0.0 * inch, client_name)
+    c.drawString(pie_panel_x, h - margin - 0.0 * inch, client_name)
 
     c.setFillColor(navy)
     c.setFont("Raleway", 22)
-    c.drawString(margin, h - margin - 0.4 * inch, "Weekly Content Reporting")
+    c.drawString(pie_panel_x, h - margin - 0.4 * inch, "Weekly Content Reporting")
 
     c.setFont("Raleway", 15)
     c.setFillColor(navy)
-    c.drawString(margin, h - margin - 0.71 * inch, report_date)
-
-    # Panel Sizes and Positions
-    panel_w = 3.7 * inch
-    panel_h = 3.6 * inch
-    panel_y = h - margin - 1.0 * inch   # panel boxes still start at 1.0" down
-
-    # Panel X positions
-    panels_total_width = 2 * panel_w + 0.15 * inch
-    side_margin = (w - panels_total_width) / 2
-    pie_panel_x = side_margin
-    summary_panel_x = pie_panel_x + panel_w + 0.15 * inch
-
+    c.drawString(pie_panel_x, h - margin - 0.71 * inch, report_date)
 
     # Pie Chart Panel (LEFT)
     c.setFillColor(panel_bg)
@@ -256,7 +251,7 @@ def generate_full_report(
 
     # Panel title - bigger and lower
     title_fontsize = 22
-    title_y_offset = 38  # how far down from top edge
+    title_y_offset = 38
     c.setFont("Raleway-Bold", title_fontsize)
     c.setFillColor(navy)
     c.drawCentredString(pie_panel_x + panel_w / 2, panel_y - title_y_offset, "Score Distribution")
@@ -272,25 +267,20 @@ def generate_full_report(
         width=pie_size,
         height=pie_size
     )
+
     # Legend
     legend_y = panel_y - panel_h + 22
     square_size = 9
-    gap = 7  # space between box and text
+    gap = 7
 
-    # Starting point for the leftmost legend item
-    below_box_x = pie_panel_x + 40  # move further left as needed
-
-    # Draw the navy box first, then the text to the right
+    below_box_x = pie_panel_x + 40
     c.setFillColor(navy)
     c.rect(below_box_x, legend_y, square_size, square_size, fill=1, stroke=0)
     c.setFillColor(colors.black)
     c.setFont("Raleway", 10)
     c.drawString(below_box_x + square_size + gap, legend_y + 1, f"Below {int(metrics['threshold'])}%")
 
-    # Spacing for second legend item
-    above_box_x = below_box_x + 120  # increase/decrease for desired gap
-
-    # Draw the teal box, then text
+    above_box_x = below_box_x + 120
     c.setFillColor(teal)
     c.rect(above_box_x, legend_y, square_size, square_size, fill=1, stroke=0)
     c.setFillColor(colors.black)
@@ -302,33 +292,25 @@ def generate_full_report(
     box_x = summary_panel_x
     box_y = panel_y
 
-    c.setFillColor(panel_bg)  # TEAL BACKGROUND!
+    c.setFillColor(panel_bg)
     c.roundRect(box_x, box_y - box_h, box_w, box_h, radius=10, stroke=0, fill=1)
     c.setStrokeColor(teal)
     c.roundRect(box_x, box_y - box_h, box_w, box_h, radius=10, stroke=1, fill=0)
 
-    # Bullets and Title
     bullet_offset_x = 16
     text_offset_x = 38
     line_height = 32
 
-    # Make the "Summary" title same size/vertical distance as "Score Distribution"
     summary_title_y = box_y - title_y_offset
-    bullets_start_y = summary_title_y - 50  # moved further down to take up some white space
+    bullets_start_y = summary_title_y - 50
 
-    # Draw the Summary title (centered in box)
-    bullets_left = box_x + text_offset_x
-    bullets_width = box_w - (text_offset_x - bullet_offset_x) * 2
-    summary_title_x = box_x + box_w / 2  # perfectly centered in box
-
+    summary_title_x = box_x + box_w / 2
     c.setFont("Raleway-Bold", 22)
     c.setFillColor(navy)
     c.drawCentredString(summary_title_x, summary_title_y, "Summary")
 
-    # Start bullets further down for less top white space
     y = bullets_start_y
     c.setFont("Raleway", 16)
-
     for label, key in [
         ("Average CQS",        "avg_cqs"),
         ("SKUs Above 95%",     "above"),
@@ -340,11 +322,9 @@ def generate_full_report(
             val = int(val)
         elif isinstance(val, float):
             val = f"{val:.1f}%"
-        # Draw navy bullet
         c.setFillColor(navy)
         c.setStrokeColor(navy)
         c.circle(box_x + bullet_offset_x, y + 4, 4, fill=1)
-        # Draw text
         c.setFillColor(navy)
         c.setFont("Raleway", 16)
         c.drawString(box_x + text_offset_x, y, f"{label}: {val}")
@@ -356,7 +336,7 @@ def generate_full_report(
     table_title_y = panel_y - panel_h - 32
     c.setFont("Raleway-Bold", 18)
     c.setFillColor(navy)
-    c.drawString(margin, table_title_y, "Top 5 SKUs by Content Quality Score")
+    c.drawString(pie_panel_x, table_title_y, "Top 5 SKUs by Content Quality Score")
 
     # Table data and style
     styles = getSampleStyleSheet()
@@ -366,10 +346,10 @@ def generate_full_report(
 
     data = [top5.columns.tolist()]
     for row in top5.astype(str).values.tolist():
-        row[0] = Paragraph(row[0], styleN)  # wrap first column
+        row[0] = Paragraph(row[0], styleN)
         data.append(row)
 
-    table_w = w - 2 * margin
+    table_w = w - 2 * pie_panel_x
     col_widths = [table_w * 0.5, table_w * 0.20, table_w * 0.28]
     table = Table(data, colWidths=col_widths, repeatRows=1)
     table.setStyle(TableStyle([
@@ -386,21 +366,18 @@ def generate_full_report(
         ("ALIGN", (2,1), (2,-1), "CENTER"),
     ]))
     tw, th = table.wrap(table_w, h)
-    table.drawOn(c, margin, table_title_y - 14 - th)
+    table.drawOn(c, pie_panel_x, table_title_y - 14 - th)
 
     # --- Content Notes Section (BOTTOM) ---
     table_bottom_y = table_title_y - 14 - th
     spacing = 48
     box_y = table_bottom_y - spacing
 
-# User input
     convention_text = client_notes.replace("\n", "<br/>")
-
-# Title (left-aligned)
     c.setFont("Raleway-Bold", 18)
     c.setFillColor(navy)
-    title_y = box_y + 20  # adjust as needed
-    c.drawString(margin, title_y, "Content Updates")
+    title_y = box_y + 20
+    c.drawString(pie_panel_x, title_y, "Content Updates")
 
     para_style = ParagraphStyle(
         name='ConventionBox',
@@ -409,27 +386,22 @@ def generate_full_report(
         leading=20,
         textColor=navy,
         spaceAfter=0,
-)
+    )
 
-    box_x = margin
+    box_x = pie_panel_x
     box_w = table_w
     box_padding = 20
     para_width = box_w - 2 * box_padding
 
-# Create paragraph, get height for layout/box sizing
     para = Paragraph(convention_text, para_style)
     _, para_height = para.wrap(para_width, h)
-    box_height = para_height + 2 * box_padding  # even if not visible, keeps spacing logic
+    box_height = para_height + 2 * box_padding
 
-# Draw transparent box (no fill, no stroke—just for layout, invisible)
     c.roundRect(box_x, box_y - box_height, box_w, box_height, radius=10, stroke=0, fill=0)
-
-# Draw notes text just below the title
     gap = 5
     note_y = title_y - gap
-    para.drawOn(c, margin, note_y - para_height)
+    para.drawOn(c, pie_panel_x, note_y - para_height)
 
-    # --- Footer (unchanged) ---
     c.setFont("Raleway", 8)
     c.setFillColor(colors.HexColor("#200453"))
     c.drawCentredString(w / 2, 0.45 * inch, f"Generated by Soapbox Retail • {datetime.now().strftime('%B %d, %Y')}")
