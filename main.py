@@ -40,6 +40,12 @@ pdfmetrics.registerFont(
         resource_path(os.path.join("fonts", "Raleway-Regular.ttf"))
     )
 )
+pdfmetrics.registerFont(
+    TTFont(
+        "Raleway-Bold",
+        resource_path(os.path.join("fonts", "Raleway-Bold.ttf"))
+    )
+)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Constants & Persistence
@@ -240,17 +246,11 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     # Panel title - bigger and lower
     title_fontsize = 22
     title_y_offset = 38  # how far down from top edge
-    c.setFont("Raleway", title_fontsize)
+    c.setFont("Raleway-Bold", title_fontsize)
     c.setFillColor(navy)
     c.drawCentredString(pie_panel_x + panel_w / 2, panel_y - title_y_offset, "Score Distribution")
 
-# Underline just below the title, centered and width-matched
-    score_text_width = c.stringWidth("Score Distribution", "Raleway", title_fontsize)
-    center_x = pie_panel_x + panel_w / 2
-    y_underline = panel_y - title_y_offset - 3
-    c.setStrokeColor(navy)
-    c.setLineWidth(1)
-    c.line(center_x - score_text_width / 2, y_underline, center_x + score_text_width / 2, y_underline)
+# Underline just below the title, centered and width-matche
 
 
     # Pie chart centered
@@ -311,7 +311,7 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     bullets_width = box_w - (text_offset_x - bullet_offset_x) * 2
     summary_title_x = box_x + box_w / 2  # perfectly centered in box
 
-    c.setFont("Raleway", 22)
+    c.setFont("Raleway-Bold", 22)
     c.setFillColor(navy)
     c.drawCentredString(summary_title_x, summary_title_y, "Summary")
 
@@ -351,7 +351,7 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
 
     # Top 5 Table Section (now tighter spacing)
     table_title_y = panel_y - panel_h - 32
-    c.setFont("Raleway", 18)
+    c.setFont("Raleway-Bold", 18)
     c.setFillColor(navy)
     c.drawString(margin, table_title_y, "Top 5 SKUs by Content Quality Score")
 
