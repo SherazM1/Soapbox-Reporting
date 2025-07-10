@@ -391,7 +391,7 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     # Draw the title ABOVE the box (left-aligned)
     c.setFont("Raleway-Bold", 18)
     c.setFillColor(navy)
-    title_y = box_y + .5
+    title_y = box_y + .01
     c.drawString(margin, title_y, "Content Notes")
 
     para_style = ParagraphStyle(
