@@ -17,9 +17,10 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Table, TableStyle
-from reportlab.lib.utils import ImageReader
-from PIL import Image
 from reportlab.lib.styles import ParagraphStyle
+import pathlib
+from reportlab.lib.units import inch
+from reportlab.lib.utils import ImageReader
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -239,15 +240,19 @@ def generate_full_report(
     summary_panel_x = pie_panel_x + panel_w + 0.15 * inch
 
     # Header (now left-aligned to pie_panel_x)
-    logo_path = resource_path("logo.png")
-    if os.path.isfile(logo_path):
-        logo = ImageReader(logo_path)
+    base_path = pathlib.Path(__file__).parent.resolve()
+    logo_path = base_path / "logo.png"
+
+    print(f"Resolved logo path: {logo_path}")
+    print(f"Logo file exists? {logo_path.is_file()}")
+
+    if logo_path.is_file():
+        logo = ImageReader(str(logo_path))
         width = 1.5 * inch
         height = 1.5 * inch
         x = w - margin - width
         y = h - margin - height
-
-    c.drawImage(
+        c.drawImage(
         logo,
         x=x,
         y=y,
@@ -255,7 +260,9 @@ def generate_full_report(
         height=height,
         preserveAspectRatio=True,
         mask="auto"
-    )
+            )
+    else:
+        print("Logo file not found; skipping logo drawing.")
 
     c.setFillColor(teal)
     c.setFont("Raleway-Bold", 19)
