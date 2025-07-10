@@ -251,7 +251,7 @@ def generate_full_report(
         width = 1.3 * inch       # smaller width
         height = 1.3 * inch      # smaller height
         x_margin = 0.4 * inch    # horizontal margin from right edge
-        y_margin = 0.6 * inch    # vertical margin from top edge
+        y_margin = 0.45 * inch    # vertical margin from top edge
         x = w - x_margin - width
         y = h - y_margin - height
         c.drawImage(
