@@ -136,7 +136,7 @@ st.markdown("---")
 # ─────────────────────────────────────────────────────────────────────────────
 st.header("Export Dashboard PDF")
 if st.button("📄 Generate Dashboard PDF"):
-    pdf_bytes = generate_full_report(uploaded, client_name, rpt_date)
+    pdf_bytes = generate_full_report(uploaded, client_name, rpt_date, client_notes)
     st.success("✅ Dashboard PDF ready!")
     st.download_button(
         "⬇️ Download Dashboard PDF",
