@@ -129,7 +129,7 @@ def get_top_skus(df: pd.DataFrame) -> pd.DataFrame:
         .copy()
     )
     # Convert Content Quality Score to percent and round
-    table["Content Quality Score"] = (table["Content Quality Score"] * 100).round().astype(int)
+    table["Content Quality Score"] = (table["Content Quality Score"] * 100).round().astype(int).astype(str) + "%"
     return table
 
 
@@ -139,7 +139,7 @@ def get_skus_below(df: pd.DataFrame) -> pd.DataFrame:
         [["Product Name", "Item ID", "Content Quality Score"]]
         .copy()
     )
-    table["Content Quality Score"] = (table["Content Quality Score"] * 100).round().astype(int)
+    table["Content Quality Score"] = (table["Content Quality Score"] * 100).round().astype(int).astype(str) + "%"
     return table
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -322,7 +322,7 @@ def generate_full_report(
     y = bullets_start_y
     c.setFont("Raleway", 16)
     for label, key in [
-        ("Average CQS",        "avg_cqs"),
+        ("Average CQS",        "avg_cqs%"),
         ("SKUs Above 95%",     "above"),
         ("SKUs Below 95%",     "below"),
         ("Buybox Ownership",   "buybox"),
