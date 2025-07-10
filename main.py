@@ -387,7 +387,7 @@ def generate_full_report(
 
     # --- Content Notes Section (BOTTOM) ---
     table_bottom_y = table_title_y - 14 - th
-    spacing = 40
+    spacing = 48
     box_y = table_bottom_y - spacing
 
     # Draw the title ABOVE the box (left-aligned)
