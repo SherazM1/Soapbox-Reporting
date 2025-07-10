@@ -107,7 +107,7 @@ def compute_metrics(df: pd.DataFrame) -> dict:
     avg_cqs_raw = df["Content Quality Score"].mean() if total else 0.0
     avg_cqs_pct = int(round(avg_cqs_raw * 100))
     pct_above   = int(round((count_above / total * 100))) if total else 0
-    buybox = df["Buybox Ownership"].mean() if "Buybox Ownership" in df else 0.0
+    buybox = compute_buybox_ownership(df)
     buybox_pct = int(round(buybox * 100))
 
     return {
@@ -141,6 +141,16 @@ def get_skus_below(df: pd.DataFrame) -> pd.DataFrame:
     )
     table["Content Quality Score"] = (table["Content Quality Score"] * 100).round().astype(int).astype(str) + "%"
     return table
+
+def compute_buybox_ownership(df: pd.DataFrame) -> float:
+    if "Buy Box Winner" not in df.columns:
+        return 0.0
+    total = len(df)
+    if total == 0:
+        return 0.0
+    buybox_yes = df["Buy Box Winner"].str.strip().str.lower().eq("yes").sum()
+    return buybox_yes / total  # decimal fraction
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Pie Chart Helper
