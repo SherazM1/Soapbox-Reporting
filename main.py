@@ -422,7 +422,7 @@ def generate_full_report(
     c.roundRect(box_x, box_y - box_height, box_w, box_height, radius=10, stroke=0, fill=0)
 
 # Draw notes text just below the title
-    gap = 4
+    gap = 4.5
     note_y = title_y - gap
     para.drawOn(c, margin, note_y - para_height)
 
