@@ -315,8 +315,6 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     c.setFillColor(navy)
     c.drawCentredString(summary_title_x, summary_title_y, "Summary")
 
-# Underline just below the title, centered and width-matched
-
 
     # Start bullets further down for less top white space
     y = bullets_start_y
@@ -335,6 +333,7 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
             val = f"{val:.1f}%"
         # Draw navy bullet
         c.setFillColor(navy)
+        c.setStrokeColor(navy)
         c.circle(box_x + bullet_offset_x, y + 4, 4, fill=1)
         # Draw text
         c.setFillColor(navy)
@@ -349,8 +348,6 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     c.setFont("Raleway-Bold", 18)
     c.setFillColor(navy)
     c.drawString(margin, table_title_y, "Top 5 SKUs by Content Quality Score")
-
-# Underline (left-aligned, width matches text)
 
 
     # Table data and style
@@ -379,6 +376,7 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
         ("RIGHTPADDING", (0, 0), (-1, -1), 10),
         ("TOPPADDING",   (0, 0), (-1, -1), 6),
         ("BOTTOMPADDING",(0, 0), (-1, -1), 6),
+        ("ALIGN", (2,1), (2,-1), "CENTER"),
     ]))
     tw, th = table.wrap(table_w, h)
     table.drawOn(c, margin, table_title_y - 14 - th)
