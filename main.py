@@ -415,12 +415,13 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     # ---------------------------
 
     convention_text = (
-        "<b>Sizing/Wrapping Conventions</b><br/>"
-        "- All text wraps to new lines if long.<br/>"
-        "- The box grows vertically as needed.<br/>"
-        "- User-provided text from the dashboard appears here."
-    )
-    # Style for the paragraph to match Summary box
+    "<b>Sizing/Wrapping Conventions</b><br/>"
+    "- All text wraps to new lines if long.<br/>"
+    "- The box grows vertically as needed.<br/>"
+    "- User-provided text from the dashboard appears here."
+)
+
+# Match summary box style
     para_style = ParagraphStyle(
         name='ConventionBox',
         fontName="Raleway",
@@ -432,22 +433,28 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
 
     box_x = margin
     box_w = table_w
-    spacing = 28  # Match summary box spacing if you want
-    box_y = table_title_y - 14 - th - spacing  # directly under table
-
-    box_padding = 28  # This is visually close to your summary box padding
+    box_padding = 28  # visually close to summary box
     para_width = box_w - 2 * box_padding
 
+# Wrap paragraph
     para = Paragraph(convention_text, para_style)
     _, para_height = para.wrap(para_width, h)
     box_height = para_height + 2 * box_padding
 
-    # Fill (white) and navy border, rounded corners to match summary
+# Position: right below the table, with a little gap
+    table_bottom_y = table_title_y - 14 - th  # y where table starts drawing (lower left)
+    spacing = 24  # space between table and box
+    box_y = table_bottom_y - spacing  # top of new box
+
+# Draw filled box (white, like summary)
     c.setFillColor(panel_bg)
     c.roundRect(box_x, box_y - box_height, box_w, box_height, radius=10, stroke=0, fill=1)
+# Draw navy border
     c.setStrokeColor(navy)
     c.setLineWidth(1.2)
     c.roundRect(box_x, box_y - box_height, box_w, box_height, radius=10, stroke=1, fill=0)
+
+# Draw the text
     para.drawOn(c, box_x + box_padding, box_y - box_padding - para_height)
 
     c.save()
