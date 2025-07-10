@@ -410,7 +410,7 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
 
     # Your content notes text here
     convention_text = (
-        "Testing the size of text. Test text Test text Test text. Hi HI HI "
+        "Testing the size of text. Test text Test text Test text. Hi HI HI. does the text go off the page or not?"
         
     )
 
