@@ -316,11 +316,6 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     c.drawCentredString(summary_title_x, summary_title_y, "Summary")
 
 # Underline just below the title, centered and width-matched
-    summary_text_width = c.stringWidth("Summary", "Raleway", 22)
-    y_underline = summary_title_y - 3
-    c.setStrokeColor(navy)
-    c.setLineWidth(1)
-    c.line(summary_title_x - summary_text_width / 2, y_underline, summary_title_x + summary_text_width / 2, y_underline)
 
 
     # Start bullets further down for less top white space
@@ -356,12 +351,6 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     c.drawString(margin, table_title_y, "Top 5 SKUs by Content Quality Score")
 
 # Underline (left-aligned, width matches text)
-    table_title_width = c.stringWidth("Top 5 SKUs by Content Quality Score", "Raleway", 18)
-    c.setStrokeColor(navy)
-    c.setLineWidth(1)
-    c.line(margin, table_title_y - 3, margin + table_title_width, table_title_y - 3)
-
-    c.setFillColor(colors.black)
 
 
     # Table data and style
