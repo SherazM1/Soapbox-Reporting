@@ -206,7 +206,7 @@ def generate_full_report(
     client_name: str, 
     report_date: str, 
     client_notes: str,
-    logo_path: str 
+    logo_path: str = None
 ) -> bytes:
     # Load data & compute
     df      = load_dataframe(data_src)
