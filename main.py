@@ -387,14 +387,14 @@ def generate_full_report(
 
     # --- Content Notes Section (BOTTOM) ---
     table_bottom_y = table_title_y - 14 - th
-    spacing = 24
+    spacing = 40
     box_y = table_bottom_y - spacing
 
     # Draw the title ABOVE the box (left-aligned)
     c.setFont("Raleway-Bold", 18)
     c.setFillColor(navy)
     title_y = box_y + 20  # Adjust this value for more or less space above box
-    c.drawString(margin, title_y, "Content Notes")
+    c.drawString(margin, title_y, "Content Updates")
 
     para_style = ParagraphStyle(
         name='ConventionBox',
