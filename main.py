@@ -391,7 +391,7 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
     # Draw the title ABOVE the box (left-aligned)
     c.setFont("Raleway-Bold", 18)
     c.setFillColor(navy)
-    title_y = box_y + 3
+    title_y = box_y + 1.5
     c.drawString(margin, title_y, "Content Notes")
 
     para_style = ParagraphStyle(
@@ -410,9 +410,8 @@ def generate_full_report(data_src, client_name: str, report_date: str, logo_path
 
     # Your content notes text here
     convention_text = (
-        "• Testing the size of text.<br/>"
-        "• The box grows vertically as needed.<br/>"
-        "• Test text Test text Test text."
+        "Testing the size of text. Test text Test text Test text. Hi HI HI "
+        
     )
 
     para = Paragraph(convention_text, para_style)
