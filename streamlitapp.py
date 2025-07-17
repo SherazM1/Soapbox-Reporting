@@ -41,16 +41,16 @@ st.markdown(
 # ─────────────────────────────────────────────────────────────────────────────
 # Group Management
 # ─────────────────────────────────────────────────────────────────────────────
-st.header("Manage Groups")
+st.header("Manage Clients")
 groups = load_groups()
 
 if groups:
-    st.write("Existing Groups:", ", ".join(g["name"] for g in groups))
+    st.write("Existing Clients:", ", ".join(g["name"] for g in groups))
 else:
     st.write("_No groups defined yet._")
 
-new_group = st.text_input("New group name")
-if st.button("➕ Add Group"):
+new_group = st.text_input("New Client name")
+if st.button("➕ Add Client"):
     if new_group and new_group not in [g["name"] for g in groups]:
         groups.append({
             "name": new_group,
@@ -59,11 +59,11 @@ if st.button("➕ Add Group"):
         save_groups(groups)
         st.experimental_rerun()
     else:
-        st.warning("Enter a unique group name.")
+        st.warning("Enter a unique client name.")
 
 if groups:
-    to_delete = st.selectbox("Group to delete", [g["name"] for g in groups])
-    if st.button("🗑️ Delete Group"):
+    to_delete = st.selectbox("Client to delete", [g["name"] for g in groups])
+    if st.button("🗑️ Delete Client"):
         groups = [g for g in groups if g["name"] != to_delete]
         save_groups(groups)
         st.experimental_rerun()
