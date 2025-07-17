@@ -47,7 +47,7 @@ groups = load_groups()
 if groups:
     st.write("Existing Clients:", ", ".join(g["name"] for g in groups))
 else:
-    st.write("_No groups defined yet._")
+    st.write("_No clients defined yet._")
 
 new_group = st.text_input("New Client name")
 if st.button("➕ Add Client"):
