@@ -97,8 +97,10 @@ def load_dataframe(src) -> pd.DataFrame:
 # Metrics & Tables
 # ─────────────────────────────────────────────────────────────────────────────
 def split_by_threshold(df: pd.DataFrame):
-    above = df[df["Content Quality Score"] >= THRESHOLD].copy()
-    below = df[df["Content Quality Score"] <  THRESHOLD].copy()
+    # ROUNDING: ensure values like 0.945 (rounded to 0.95) are included in the "above"
+    rounded = df["Content Quality Score"].round(2)
+    above = df[rounded >= THRESHOLD].copy()
+    below = df[rounded <  THRESHOLD].copy()
     return below, above
 
 def compute_metrics(df: pd.DataFrame) -> dict:
@@ -121,7 +123,6 @@ def compute_metrics(df: pd.DataFrame) -> dict:
         "threshold": int(round(THRESHOLD*100)) # for display (95)
     }
 
-
 def get_top_skus(df: pd.DataFrame) -> pd.DataFrame:
     table = (
         df
@@ -133,10 +134,11 @@ def get_top_skus(df: pd.DataFrame) -> pd.DataFrame:
     table["Content Quality Score"] = (table["Content Quality Score"] * 100).round().astype(int).astype(str) + "%"
     return table
 
-
 def get_skus_below(df: pd.DataFrame) -> pd.DataFrame:
+    # Apply same rounding before comparison for consistency
+    rounded = df["Content Quality Score"].round(2)
     table = (
-        df[df["Content Quality Score"] < THRESHOLD]
+        df[rounded < THRESHOLD]
         [["Product Name", "Item ID", "Content Quality Score"]]
         .copy()
     )
