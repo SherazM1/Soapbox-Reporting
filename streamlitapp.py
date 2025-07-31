@@ -70,6 +70,76 @@ if clients:
 
 st.markdown("---")
 
+st.header("View Saved Previews")
+
+# Use the same client groups from before
+view_client_names = [c["client_name"] for c in clients]
+view_client_ids = {c["client_name"]: c["client_id"] for c in clients}
+
+if not view_client_names:
+    st.info("No client groups exist. Add one above to begin saving and viewing previews.")
+else:
+    view_selected_client_name = st.selectbox(
+        "Select Client Group to View Previews",
+        view_client_names,
+        key="view_client_dropdown"
+    )
+    view_selected_client_id = view_client_ids[view_selected_client_name]
+
+    # Fetch previews for this client group
+    previews = get_previews_for_client(view_selected_client_id)
+
+    if not previews:
+        st.info(f"No saved previews yet for {view_selected_client_name}.")
+    else:
+        # Let user pick a preview by name and date
+        preview_options = [
+            f"{p['preview_name']} ({p['report_date']})" for p in previews
+        ]
+        option_to_preview = {f"{p['preview_name']} ({p['report_date']})": p for p in previews}
+
+        selected_option = st.selectbox(
+            "Select a saved preview to view",
+            preview_options,
+            key="saved_preview_select"
+        )
+        selected_preview = option_to_preview[selected_option]
+
+        # Show preview details
+        st.markdown(f"**Report Date:** {selected_preview['report_date']}")
+        st.markdown(f"**Preview Name:** {selected_preview['preview_name']}")
+        st.markdown(f"**Notes:** {selected_preview['notes']}")
+        st.markdown(f"**Date Saved:** {selected_preview['date_created']}")
+
+        # Display metrics
+        m2 = selected_preview["data_json"]["metrics"]
+        st.subheader("Saved Metrics")
+        st.write(f"- **Average CQS:** {m2['avg_cqs']}%")
+        st.write(f"- **SKUs ≥ {int(m2['threshold'])}%:** {m2['above']}")
+        st.write(f"- **SKUs < {int(m2['threshold'])}%:** {m2['below']}")
+        st.write(f"- **Buybox Ownership:** {m2['buybox']}%")
+
+        # Top 5 Table
+        st.subheader("Top 5 SKUs by Content Quality Score (Saved)")
+        top5_df = pd.DataFrame(selected_preview["data_json"]["top5"])
+        st.dataframe(top5_df, height=200)
+
+        # SKUs Below Table
+        st.subheader(f"SKUs Below {int(m2['threshold'])}% (Saved)")
+        below_df = pd.DataFrame(selected_preview["data_json"]["skus_below"])
+        st.dataframe(below_df, height=300)
+
+        # Notes
+        st.markdown("**Content Notes (Saved):**")
+        st.markdown(selected_preview["data_json"].get("client_notes", ""))
+    # Add Delete Preview button (after showing the loaded preview)
+    
+        if st.button("🗑️ Delete This Preview"):
+            delete_preview(selected_preview["preview_id"])
+            st.success("Preview deleted!")
+            st.experimental_rerun()  # Refresh page to update the list
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Inputs: File, Client, Date
 # ─────────────────────────────────────────────────────────────────────────────
@@ -176,79 +246,6 @@ else:
         st.success("Preview saved! See below to view all saved previews.")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# View & Load Saved Previews
-# ─────────────────────────────────────────────────────────────────────────────
-st.header("View Saved Previews")
-
-# Use the same client groups from before
-view_client_names = [c["client_name"] for c in clients]
-view_client_ids = {c["client_name"]: c["client_id"] for c in clients}
-
-if not view_client_names:
-    st.info("No client groups exist. Add one above to begin saving and viewing previews.")
-else:
-    view_selected_client_name = st.selectbox(
-        "Select Client Group to View Previews",
-        view_client_names,
-        key="view_client_dropdown"
-    )
-    view_selected_client_id = view_client_ids[view_selected_client_name]
-
-    # Fetch previews for this client group
-    previews = get_previews_for_client(view_selected_client_id)
-
-    if not previews:
-        st.info(f"No saved previews yet for {view_selected_client_name}.")
-    else:
-        # Let user pick a preview by name and date
-        preview_options = [
-            f"{p['preview_name']} ({p['report_date']})" for p in previews
-        ]
-        option_to_preview = {f"{p['preview_name']} ({p['report_date']})": p for p in previews}
-
-        selected_option = st.selectbox(
-            "Select a saved preview to view",
-            preview_options,
-            key="saved_preview_select"
-        )
-        selected_preview = option_to_preview[selected_option]
-
-        # Show preview details
-        st.markdown(f"**Report Date:** {selected_preview['report_date']}")
-        st.markdown(f"**Preview Name:** {selected_preview['preview_name']}")
-        st.markdown(f"**Notes:** {selected_preview['notes']}")
-        st.markdown(f"**Date Saved:** {selected_preview['date_created']}")
-
-        # Display metrics
-        m2 = selected_preview["data_json"]["metrics"]
-        st.subheader("Saved Metrics")
-        st.write(f"- **Average CQS:** {m2['avg_cqs']}%")
-        st.write(f"- **SKUs ≥ {int(m2['threshold'])}%:** {m2['above']}")
-        st.write(f"- **SKUs < {int(m2['threshold'])}%:** {m2['below']}")
-        st.write(f"- **Buybox Ownership:** {m2['buybox']}%")
-
-        # Top 5 Table
-        st.subheader("Top 5 SKUs by Content Quality Score (Saved)")
-        top5_df = pd.DataFrame(selected_preview["data_json"]["top5"])
-        st.dataframe(top5_df, height=200)
-
-        # SKUs Below Table
-        st.subheader(f"SKUs Below {int(m2['threshold'])}% (Saved)")
-        below_df = pd.DataFrame(selected_preview["data_json"]["skus_below"])
-        st.dataframe(below_df, height=300)
-
-        # Notes
-        st.markdown("**Content Notes (Saved):**")
-        st.markdown(selected_preview["data_json"].get("client_notes", ""))
-    # Add Delete Preview button (after showing the loaded preview)
-    
-        if st.button("🗑️ Delete This Preview"):
-            delete_preview(selected_preview["preview_id"])
-            st.success("Preview deleted!")
-            st.experimental_rerun()  # Refresh page to update the list
-
-       
 # ─────────────────────────────────────────────────────────────────────────────
 # Export Full Dashboard PDF
 # ─────────────────────────────────────────────────────────────────────────────
