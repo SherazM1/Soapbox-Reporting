@@ -68,6 +68,8 @@ if clients:
         delete_client(name_to_id[to_delete])
         st.experimental_rerun()
 
+uploaded = st.file_uploader("Upload Excel or CSV", type=["xlsx", "csv"])
+
 st.markdown("---")
 
 st.header("View Saved Previews")
@@ -144,7 +146,6 @@ else:
 # Inputs: File, Client, Date
 # ─────────────────────────────────────────────────────────────────────────────
 st.header("Inputs")
-uploaded = st.file_uploader("Upload Excel or CSV", type=["xlsx", "csv"])
 client_name = st.text_input("Client Name", value="Country Fresh")
 rpt_date = st.date_input("Report Date", value=date.today()).strftime("%-m/%-d/%Y")
 client_notes = st.text_area("Content Notes", value="", height=100)
