@@ -1,0 +1,22 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+
+# Virtual envs
+.venv/
+venv/
+ENV/
+
+# Editors/OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/launch.json
+!.vscode/settings.json
+
+# Data/artifacts
+*.db
+*.log
+reports/
