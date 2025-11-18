@@ -140,7 +140,22 @@ with c2:
 with c3:
     file_z = st.file_uploader("Upload Search Insights", type=["xlsx", "csv"], key="uploader_3p_z")
 
-metrics_3p_text = st.text_area("Metrics (manual entry)", value="", height=100, key="metrics_3p_text")
+# Replace textarea with dropdown + numeric value (keeps downstream variable name)
+metric_period_3p = st.selectbox(
+    "Metric period",
+    [
+        "today",
+        "yesterday",
+        "last 7 days",
+        "last 30 days",
+        "month to date (MTD)",
+        "year to date (YTD)",
+    ],
+    key="metric_period_3p",
+)
+metric_value_3p = st.number_input("Value", value=0.0, step=0.1, key="metric_value_3p")
+# Preserve existing export call signature by composing a string payload.
+metrics_3p_text = f"{metric_period_3p}: {metric_value_3p}"
 
 # Previews (3P) — simple head previews if files present
 preview_cols = st.columns(3)
@@ -172,6 +187,7 @@ if st.button("📄 Generate 3P Dashboard PDF", key="export_pdf_3p"):
         st.info("3P export is a placeholder until backend logic is added.")
 
 st.divider()
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 3) Save Preview (Snapshot) — bottom, enabled only if 1P metrics exist
