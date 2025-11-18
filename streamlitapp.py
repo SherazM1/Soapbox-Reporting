@@ -159,7 +159,7 @@ metrics_3p_text = f"{metric_period_3p}: {metric_value_3p}"
 
 # Previews (3P) — simple head previews if files present
 preview_cols = st.columns(3)
-for idx, (lbl, f, col) in enumerate([("X", file_x, preview_cols[0]), ("Y", file_y, preview_cols[1]), ("Z", file_z, preview_cols[2])], start=1):
+for idx, (lbl, f, col) in enumerate([("Item Sales", file_x, preview_cols[0]), ("Inventory", file_y, preview_cols[1]), ("Search Insights", file_z, preview_cols[2])], start=1):
     with col:
         st.caption(f"Data Preview ({lbl})")
         if f:
