@@ -47,7 +47,7 @@ init_db()
 # ─────────────────────────────────────────────────────────────────────────────
 # Page config & branding
 # ─────────────────────────────────────────────────────────────────────────────
-st.set_page_config(page_title="SOAPBOX Reporting", page_icon="🧼", layout="wide")
+st.set_page_config(page_title="SOAPBOX Reporting", layout="wide")
 
 if os.path.exists("logo.png"):
     st.image("logo.png", width=180)
@@ -134,11 +134,11 @@ st.markdown("## 3P — Weekly Content Reporting")
 st.markdown("**Upload excel(s) or csv — these will each be labeled**")
 c1, c2, c3 = st.columns(3)
 with c1:
-    file_x = st.file_uploader("Upload X", type=["xlsx", "csv"], key="uploader_3p_x")
+    file_x = st.file_uploader("Upload Item Sales Report", type=["xlsx", "csv"], key="uploader_3p_x")
 with c2:
-    file_y = st.file_uploader("Upload Y", type=["xlsx", "csv"], key="uploader_3p_y")
+    file_y = st.file_uploader("Upload Inventory Report", type=["xlsx", "csv"], key="uploader_3p_y")
 with c3:
-    file_z = st.file_uploader("Upload Z", type=["xlsx", "csv"], key="uploader_3p_z")
+    file_z = st.file_uploader("Upload Search Insights", type=["xlsx", "csv"], key="uploader_3p_z")
 
 metrics_3p_text = st.text_area("Metrics (manual entry)", value="", height=100, key="metrics_3p_text")
 
