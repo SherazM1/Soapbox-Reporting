@@ -171,10 +171,6 @@ for idx, (lbl, f, col) in enumerate([("X", file_x, preview_cols[0]), ("Y", file_
         else:
             st.info(f"Upload {lbl} to preview.")
 
-# Placeholder metrics/tables (3P) — will wire real logic later
-with st.expander("Metrics & Tables (3P) — placeholders", expanded=False):
-    st.write("- metrics: today, yesterday, last 7 days, last 30 days, month to date (MTD), year to date (YTD)")
-    st.write("- tables: add when 3P logic is ready")
 
 # Export 3P PDF
 st.markdown("### Export 3P PDF")
