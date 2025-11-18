@@ -131,6 +131,19 @@ st.divider()
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown("## 3P — Weekly Content Reporting")
 
+# Mode selector: Catalog vs Managed (UI-only; no filtering yet)
+mode_3p = st.radio("Mode", ["Catalog", "Managed"], horizontal=True, key="mode_3p")
+
+# If Managed, show an extra uploader for the managed SKUs list
+managed_file = None
+if mode_3p == "Managed":
+    managed_file = st.file_uploader(
+        "Managed SKUs (IDs list)",
+        type=["xlsx", "csv"],
+        key="uploader_3p_managed",
+        help="Upload a file containing the SKU/Item ID list to limit calculations to managed items."
+    )
+
 st.markdown("**Upload excel(s) or csv — these will each be labeled**")
 c1, c2, c3 = st.columns(3)
 with c1:
@@ -140,7 +153,7 @@ with c2:
 with c3:
     file_z = st.file_uploader("Upload Search Insights", type=["xlsx", "csv"], key="uploader_3p_z")
 
-# Replace textarea with dropdown + numeric value (keeps downstream variable name)
+# Replace textarea with dropdown + integer value (keeps downstream variable name)
 metric_period_3p = st.selectbox(
     "Metric period",
     [
@@ -153,13 +166,25 @@ metric_period_3p = st.selectbox(
     ],
     key="metric_period_3p",
 )
-metric_value_3p = st.number_input("Value", value=0.0, step=0.1, key="metric_value_3p")
+metric_value_3p = st.number_input("Value", value=0, step=1, format="%d", key="metric_value_3p")
 # Preserve existing export call signature by composing a string payload.
 metrics_3p_text = f"{metric_period_3p}: {metric_value_3p}"
 
-# Previews (3P) — simple head previews if files present
+# Previews (3P) — simple head previews if files present (UI only; no filtering yet)
+if mode_3p == "Managed" and managed_file is not None:
+    st.caption("Mode: **Managed** • Managed SKUs file uploaded")
+elif mode_3p == "Managed":
+    st.info("Mode: **Managed** — Please upload the Managed SKUs (IDs list).")
+
 preview_cols = st.columns(3)
-for idx, (lbl, f, col) in enumerate([("Item Sales", file_x, preview_cols[0]), ("Inventory", file_y, preview_cols[1]), ("Search Insights", file_z, preview_cols[2])], start=1):
+for idx, (lbl, f, col) in enumerate(
+    [
+        ("Item Sales", file_x, preview_cols[0]),
+        ("Inventory", file_y, preview_cols[1]),
+        ("Search Insights", file_z, preview_cols[2]),
+    ],
+    start=1
+):
     with col:
         st.caption(f"Data Preview ({lbl})")
         if f:
@@ -170,7 +195,6 @@ for idx, (lbl, f, col) in enumerate([("Item Sales", file_x, preview_cols[0]), ("
                 st.warning(f"Could not preview {lbl} — unsupported format or read error.")
         else:
             st.info(f"Upload {lbl} to preview.")
-
 
 # Export 3P PDF
 st.markdown("### Export 3P PDF")
