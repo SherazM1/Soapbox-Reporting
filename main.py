@@ -135,7 +135,88 @@ def load_search_insights(src) -> pd.DataFrame:
     # Return only the required columns in the canonical order
     return df[SEARCH_INSIGHTS_REQUIRED].copy()
 
+# Inventory schema 
+INVENTORY_REQUIRED = [
+    "Item ID",
+    "Item Name",
+    "Daily sales",
+    "Daily units sold",
+    "Stock status",
+]
 
+# Lowercase alias map for each canonical column
+_INVENTORY_ALIASES = {
+    "Item ID": {"item id", "item_id", "id"},
+    "Item Name": {"item name", "item_name", "product name", "name"},
+    "Daily sales": {"daily sales", "net sales", "sales ($)", "sales"},
+    "Daily units sold": {"daily units sold", "units sold", "daily units"},
+    "Stock status": {"stock status", "status"},
+}
+
+def _resolve_inventory_columns(cols):
+    """Map actual headers to canonical names using case-insensitive aliases."""
+    lc_to_actual = {str(c).strip().lower(): c for c in cols}
+    mapping = {}
+    missing = []
+    for canon, aliases in _INVENTORY_ALIASES.items():
+        found = next((lc_to_actual[a] for a in aliases if a in lc_to_actual), None)
+        if found is None:
+            missing.append(canon)
+        else:
+            mapping[canon] = found
+    return mapping, missing
+
+def load_inventory(src) -> pd.DataFrame:
+    """
+    Read the Inventory report and return required columns with clean types.
+
+    Returns columns (in order):
+      Item ID (str), Item Name (str),
+      Daily sales (float), Daily units sold (float),
+      Stock status (str: In Stock | Out of Stock | At Risk | other)
+    """
+    df = load_dataframe(src)
+
+    mapping, missing = _resolve_inventory_columns(df.columns)
+    if missing:
+        raise ValueError(
+            "Inventory file is missing required columns: " + ", ".join(missing)
+        )
+
+    # Select and rename to canonical headers
+    df = df.rename(columns={v: k for k, v in mapping.items()})[INVENTORY_REQUIRED].copy()
+
+    # Types
+    df["Item ID"] = df["Item ID"].astype(str).str.strip()
+    df["Item Name"] = df["Item Name"].astype(str).str.strip()
+
+    for col in ("Daily sales", "Daily units sold"):
+        # currency/float tolerant parsing
+        df[col] = (
+            pd.to_numeric(
+                df[col]
+                .astype(str)
+                .str.replace(",", "", regex=False)
+                .str.replace("$", "", regex=False),
+                errors="coerce",
+            )
+            .astype(float)
+        )
+
+    # Normalize status to title-case, but keep original values if outside expected set
+    def _norm_status(s):
+        s = str(s).strip().lower()
+        if s in {"in stock", "instock"}:
+            return "In Stock"
+        if s in {"out of stock", "oos"}:
+            return "Out of Stock"
+        if s in {"at risk", "risk"}:
+            return "At Risk"
+        return s.title() if s else ""
+
+    df["Stock status"] = df["Stock status"].map(_norm_status)
+
+    return df
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Metrics & Tables

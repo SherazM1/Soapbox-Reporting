@@ -168,11 +168,9 @@ metric_period_3p = st.selectbox(
     key="metric_period_3p",
 )
 metric_value_3p = st.number_input("Value", value=0, step=1, format="%d", key="metric_value_3p")
-# Preserve existing export call signature by composing a string payload.
 metrics_3p_text = f"{metric_period_3p}: {metric_value_3p}"
 
 # 1) AT THE TOP OF streamlitapp.py — extend your existing import-from-main
-# Find your current block that looks like this and ADD load_search_insights
 from main import (
     load_batches as load_groups,
     save_batches as save_groups,
@@ -182,7 +180,8 @@ from main import (
     get_skus_below,
     make_pie_bytes,
     generate_full_report,
-    load_search_insights,   # ← ADD THIS
+    load_search_insights,   # ← already added
+    load_inventory,         # ← ADD THIS
 )
 
 # 2) IN THE 3P SECTION — REPLACE ONLY THE "Previews (3P)" BLOCK WITH THIS
@@ -207,15 +206,19 @@ with preview_cols[0]:
     else:
         st.info("Upload Item Sales Report to preview.")
 
-# Y — Inventory (generic loader for now)
+# Y — Inventory (validated loader; shows only the extracted fields)
 with preview_cols[1]:
     st.caption("Data Preview (Inventory)")
     if file_y:
         try:
-            df_tmp_y = load_dataframe(file_y)
+            df_tmp_y = load_inventory(file_y)  # validates headers, coerces types
             st.dataframe(df_tmp_y.head(15), height=260, use_container_width=True)
         except Exception as e:
-            st.error(f"Could not preview Inventory: {e}")
+            st.error(
+                "Inventory file doesn’t match required columns. "
+                "Expecting (canonical): Item ID, Item Name, Daily sales, Daily units sold, Stock status.\n\n"
+                f"Details: {e}"
+            )
     else:
         st.info("Upload Inventory Report to preview.")
 
@@ -224,7 +227,7 @@ with preview_cols[2]:
     st.caption("Data Preview (Search Insights)")
     if file_z:
         try:
-            df_tmp_z = load_search_insights(file_z)  # ← validation + type coercion
+            df_tmp_z = load_search_insights(file_z)
             st.dataframe(df_tmp_z.head(15), height=260, use_container_width=True)
         except Exception as e:
             st.error(
