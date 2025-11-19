@@ -55,7 +55,7 @@ if os.path.exists("logo.png"):
     st.image("logo.png", width=180)
 
 st.title("Weekly Content Reporting")
-st.caption("Upload your data, manage clients, and export dashboards (1P & 3P).")
+st.caption("Upload your data, manage clients, and export reports (1P & 3P).")
 
 # Keep some state handles (why: enable Save Preview later)
 _1p = {"has_data": False, "df": None, "metrics": None, "top5": None, "below": None, "client_name": None, "rpt_date": None, "notes": None}
