@@ -27,7 +27,8 @@ from main import (
     get_skus_below,
     make_pie_bytes,
     generate_full_report,
-    load_search_insights  # 1P
+    load_search_insights,
+    load_inventory  # 1P
 )
 
 # 3P export hook (why: keep UI now, wire backend later)
