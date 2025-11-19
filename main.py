@@ -92,6 +92,50 @@ def load_dataframe(src) -> pd.DataFrame:
         return pd.read_excel(src)
     else:
         raise ValueError(f"Unsupported file type: {ext}")
+    
+
+# Search Insights schema 
+SEARCH_INSIGHTS_REQUIRED = [
+    "Item ID",
+    "Item Name",
+    "Impressions Rank",
+    "Clicks Rank",
+    "Added to Cart Rank",
+    "Sales Rank",
+]
+
+def load_search_insights(src) -> pd.DataFrame:
+    """
+    """
+    df = load_dataframe(src)
+
+    # Validate required headers
+    missing = [c for c in SEARCH_INSIGHTS_REQUIRED if c not in df.columns]
+    if missing:
+        raise ValueError(
+            "Search Insights file is missing required columns: "
+            + ", ".join(missing)
+        )
+
+    # Preserve leading zeros / ensure strings
+    df["Item ID"] = df["Item ID"].astype(str).str.strip()
+    df["Item Name"] = df["Item Name"].astype(str).str.strip()
+
+    # Coerce ranks to integers (nullable)
+    rank_cols = [
+        "Impressions Rank",
+        "Clicks Rank",
+        "Added to Cart Rank",
+        "Sales Rank",
+    ]
+    for col in rank_cols:
+        # tolerant parse; blanks become <NA>
+        df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
+
+    # Return only the required columns in the canonical order
+    return df[SEARCH_INSIGHTS_REQUIRED].copy()
+
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Metrics & Tables

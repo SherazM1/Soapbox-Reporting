@@ -26,7 +26,8 @@ from main import (
     get_top_skus,
     get_skus_below,
     make_pie_bytes,
-    generate_full_report,  # 1P
+    generate_full_report,
+    load_search_insights  # 1P
 )
 
 # 3P export hook (why: keep UI now, wire backend later)
@@ -170,31 +171,71 @@ metric_value_3p = st.number_input("Value", value=0, step=1, format="%d", key="me
 # Preserve existing export call signature by composing a string payload.
 metrics_3p_text = f"{metric_period_3p}: {metric_value_3p}"
 
-# Previews (3P) — simple head previews if files present (UI only; no filtering yet)
+# 1) AT THE TOP OF streamlitapp.py — extend your existing import-from-main
+# Find your current block that looks like this and ADD load_search_insights
+from main import (
+    load_batches as load_groups,
+    save_batches as save_groups,
+    load_dataframe,
+    compute_metrics,
+    get_top_skus,
+    get_skus_below,
+    make_pie_bytes,
+    generate_full_report,
+    load_search_insights,   # ← ADD THIS
+)
+
+# 2) IN THE 3P SECTION — REPLACE ONLY THE "Previews (3P)" BLOCK WITH THIS
+
+# Previews (3P) — simple head previews; Z uses the dedicated loader + validation
 if mode_3p == "Managed" and managed_file is not None:
     st.caption("Mode: **Managed** • Managed SKUs file uploaded")
 elif mode_3p == "Managed":
     st.info("Mode: **Managed** — Please upload the Managed SKUs (IDs list).")
 
 preview_cols = st.columns(3)
-for idx, (lbl, f, col) in enumerate(
-    [
-        ("Item Sales", file_x, preview_cols[0]),
-        ("Inventory", file_y, preview_cols[1]),
-        ("Search Insights", file_z, preview_cols[2]),
-    ],
-    start=1
-):
-    with col:
-        st.caption(f"Data Preview ({lbl})")
-        if f:
-            try:
-                df_tmp = load_dataframe(f)
-                st.dataframe(df_tmp.head(10), height=200, use_container_width=True)
-            except Exception:
-                st.warning(f"Could not preview {lbl} — unsupported format or read error.")
-        else:
-            st.info(f"Upload {lbl} to preview.")
+
+# X — Item Sales (generic loader for now)
+with preview_cols[0]:
+    st.caption("Data Preview (Item Sales)")
+    if file_x:
+        try:
+            df_tmp_x = load_dataframe(file_x)
+            st.dataframe(df_tmp_x.head(15), height=260, use_container_width=True)
+        except Exception as e:
+            st.error(f"Could not preview Item Sales: {e}")
+    else:
+        st.info("Upload Item Sales Report to preview.")
+
+# Y — Inventory (generic loader for now)
+with preview_cols[1]:
+    st.caption("Data Preview (Inventory)")
+    if file_y:
+        try:
+            df_tmp_y = load_dataframe(file_y)
+            st.dataframe(df_tmp_y.head(15), height=260, use_container_width=True)
+        except Exception as e:
+            st.error(f"Could not preview Inventory: {e}")
+    else:
+        st.info("Upload Inventory Report to preview.")
+
+# Z — Search Insights (uses the dedicated validated loader)
+with preview_cols[2]:
+    st.caption("Data Preview (Search Insights)")
+    if file_z:
+        try:
+            df_tmp_z = load_search_insights(file_z)  # ← validation + type coercion
+            st.dataframe(df_tmp_z.head(15), height=260, use_container_width=True)
+        except Exception as e:
+            st.error(
+                "Search Insights file doesn’t match required columns. "
+                "Expecting: Item ID, Item Name, Impressions Rank, Clicks Rank, "
+                "Added to Cart Rank, Sales Rank.\n\n"
+                f"Details: {e}"
+            )
+    else:
+        st.info("Upload Search Insights to preview.")
+
 
 # Export 3P PDF
 st.markdown("### Export 3P PDF")
