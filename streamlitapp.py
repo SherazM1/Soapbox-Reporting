@@ -119,10 +119,10 @@ if uploaded_1p:
 
     # Export 1P PDF (right under tables)
     st.markdown("### Export 1P PDF")
-    if st.button("📄 Generate 1P Dashboard PDF", key="export_pdf_1p"):
+    if st.button("📄 Generate 1P PDF", key="export_pdf_1p"):
         pdf_bytes = generate_full_report(uploaded_1p, client_name_1p, rpt_date_str_1p, notes_1p)
-        st.success("✅ 1P Dashboard PDF ready!")
-        st.download_button("⬇️ Download 1P PDF", data=pdf_bytes, file_name="dashboard_1p.pdf", mime="application/pdf")
+        st.success("✅ 1P PDF ready!")
+        st.download_button("⬇️ Download 1P PDF", data=pdf_bytes, file_name="1p.pdf", mime="application/pdf")
 else:
     st.info("Upload a 1P data file to see preview and metrics.")
 
