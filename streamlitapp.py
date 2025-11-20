@@ -28,7 +28,8 @@ from main import (
     make_pie_bytes,
     generate_full_report,
     load_search_insights,
-    load_inventory  # 1P
+    load_inventory,
+    load_item_sales  
 )
 
 # 3P export hook (why: keep UI now, wire backend later)
@@ -171,22 +172,6 @@ metric_period_3p = st.selectbox(
 metric_value_3p = st.number_input("Value", value=0, step=1, format="%d", key="metric_value_3p")
 metrics_3p_text = f"{metric_period_3p}: {metric_value_3p}"
 
-# 1) AT THE TOP OF streamlitapp.py — extend your existing import-from-main
-from main import (
-    load_batches as load_groups,
-    save_batches as save_groups,
-    load_dataframe,
-    compute_metrics,
-    get_top_skus,
-    get_skus_below,
-    make_pie_bytes,
-    generate_full_report,
-    load_search_insights,   # ← already added
-    load_inventory,         # ← ADD THIS
-)
-
-# 2) IN THE 3P SECTION — REPLACE ONLY THE "Previews (3P)" BLOCK WITH THIS
-
 # Previews (3P) — simple head previews; Z uses the dedicated loader + validation
 if mode_3p == "Managed" and managed_file is not None:
     st.caption("Mode: **Managed** • Managed SKUs file uploaded")
@@ -195,15 +180,21 @@ elif mode_3p == "Managed":
 
 preview_cols = st.columns(3)
 
-# X — Item Sales (generic loader for now)
+# X — Item Sales (validated loader; shows only the extracted fields)
+# NOTE: ensure you imported `load_item_sales` from main at the top.
 with preview_cols[0]:
     st.caption("Data Preview (Item Sales)")
     if file_x:
         try:
-            df_tmp_x = load_dataframe(file_x)
+            df_tmp_x = load_item_sales(file_x)  # validated + typed
             st.dataframe(df_tmp_x.head(15), height=260, use_container_width=True)
         except Exception as e:
-            st.error(f"Could not preview Item Sales: {e}")
+            st.error(
+                "Item Sales file doesn’t match required columns. "
+                "Expecting (canonical): Item ID, Item Name, Orders, Units Sold, "
+                "Auth Sales, Item pageviews, Item conversion.\n\n"
+                f"Details: {e}"
+            )
     else:
         st.info("Upload Item Sales Report to preview.")
 
@@ -239,6 +230,7 @@ with preview_cols[2]:
             )
     else:
         st.info("Upload Search Insights to preview.")
+
 
 
 # Export 3P PDF

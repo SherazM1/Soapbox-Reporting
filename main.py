@@ -218,6 +218,119 @@ def load_inventory(src) -> pd.DataFrame:
 
     return df
 
+# Item Sales schema (canonical column names)
+ITEM_SALES_REQUIRED = [
+    "Item ID",
+    "Item Name",
+    "Orders",
+    "Units Sold",
+    "Auth Sales",
+    "Item pageviews",
+    "Item conversion",
+]
+
+# Case/underscore-insensitive aliases for each canonical field
+_ITEM_SALES_ALIASES = {
+    # For Item ID we support both Item_id and Base_Item_Id; we will prefer Item_id when present.
+    "Item_id": {"item_id", "item id", "itemid"},
+    "Base_Item_Id": {"base_item_id", "base item id", "baseitemid"},
+    "Item Name": {"item_name", "item name"},
+    "Orders": {"orders", "order"},
+    "Units Sold": {"units_sold", "units sold"},
+    "Auth Sales": {"auth_sales", "auth sales", "gmv", "net sales"},  # keep 'gmv' as potential alias if export uses it
+    "Item pageviews": {"item_pageviews", "item pageviews"},
+    "Item conversion": {"item_conversion", "item conversion", "conversion", "item_conver"},
+}
+
+def _normalize_header_map(cols):
+    """Return a dict of normalized->actual header names for fast alias lookup."""
+    def norm(s: str) -> str:
+        return str(s).strip().lower().replace("_", "").replace(" ", "")
+    return {norm(c): c for c in cols}
+
+def load_item_sales(src) -> pd.DataFrame:
+
+    df = load_dataframe(src)
+    norm_map = _normalize_header_map(df.columns)
+
+    # Resolve Item ID (prefer Item_id, fallback Base_Item_Id)
+    item_id_actual = None
+    for candidate in _ITEM_SALES_ALIASES["Item_id"]:
+        if candidate.replace("_","").replace(" ","") in norm_map:
+            item_id_actual = norm_map[candidate.replace("_","").replace(" ","")]
+            break
+    if item_id_actual is None:
+        for candidate in _ITEM_SALES_ALIASES["Base_Item_Id"]:
+            if candidate.replace("_","").replace(" ","") in norm_map:
+                item_id_actual = norm_map[candidate.replace("_","").replace(" ","")]
+                break
+
+    # Resolve the rest
+    def resolve(canon: str) -> str | None:
+        for alias in _ITEM_SALES_ALIASES[canon]:
+            key = alias.replace("_","").replace(" ","")
+            if key in norm_map:
+                return norm_map[key]
+        return None
+
+    item_name_actual   = resolve("Item Name")
+    orders_actual      = resolve("Orders")
+    units_actual       = resolve("Units Sold")
+    auth_sales_actual  = resolve("Auth Sales")
+    pageviews_actual   = resolve("Item pageviews")
+    conversion_actual  = resolve("Item conversion")
+
+    missing = []
+    if item_name_actual is None:
+        missing.append("Item Name")
+    if item_id_actual is None:
+        missing.append("Item ID (Item_id or Base_Item_Id)")
+    for canon, actual in [
+        ("Orders", orders_actual),
+        ("Units Sold", units_actual),
+        ("Auth Sales", auth_sales_actual),
+        ("Item pageviews", pageviews_actual),
+        ("Item conversion", conversion_actual),
+    ]:
+        if actual is None:
+            missing.append(canon)
+
+    if missing:
+        raise ValueError(
+            "Item Sales file is missing required columns: " + ", ".join(missing)
+        )
+
+    # Build a working frame with canonical names
+    df_work = df.rename(columns={
+        item_id_actual: "Item ID",
+        item_name_actual: "Item Name",
+        orders_actual: "Orders",
+        units_actual: "Units Sold",
+        auth_sales_actual: "Auth Sales",
+        pageviews_actual: "Item pageviews",
+        conversion_actual: "Item conversion",
+    })[ITEM_SALES_REQUIRED].copy()
+
+    # Types/coercions
+    df_work["Item ID"] = df_work["Item ID"].astype(str).str.strip()
+    df_work["Item Name"] = df_work["Item Name"].astype(str).str.strip()
+
+    for col in ("Orders", "Units Sold", "Item pageviews"):
+        df_work[col] = pd.to_numeric(df_work[col], errors="coerce").astype("Int64")
+
+    # Currency/float for Auth Sales
+    df_work["Auth Sales"] = (
+        df_work["Auth Sales"]
+        .astype(str)
+        .str.replace(",", "", regex=False)
+        .str.replace("$", "", regex=False)
+    )
+    df_work["Auth Sales"] = pd.to_numeric(df_work["Auth Sales"], errors="coerce").astype(float)
+
+    # Percent/float for Item conversion (assume already 0–100 per your export)
+    df_work["Item conversion"] = pd.to_numeric(df_work["Item conversion"], errors="coerce").astype(float)
+
+    return df_work
 # ─────────────────────────────────────────────────────────────────────────────
 # Metrics & Tables
 # ─────────────────────────────────────────────────────────────────────────────
