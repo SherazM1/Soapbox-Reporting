@@ -39,18 +39,21 @@ def resource_path(rel_path: str) -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 # Register Raleway font
 # ─────────────────────────────────────────────────────────────────────────────
-pdfmetrics.registerFont(
-    TTFont(
-        "Raleway",
-        resource_path(os.path.join("fonts", "Raleway-Regular.ttf"))
-    )
-)
-pdfmetrics.registerFont(
-    TTFont(
-        "Raleway-Bold",
-        resource_path(os.path.join("fonts", "Raleway-Bold.ttf"))
-    )
-)
+def _safe_register_font(name: str, rel_path: str) -> None:
+    """Register a TTF font if present; never raise at import-time."""
+    try:
+        full_path = resource_path(os.path.join("fonts", rel_path))
+        if os.path.isfile(full_path):
+            pdfmetrics.registerFont(TTFont(name, full_path))
+        else:
+            # Optional: log to console; do not fail import
+            print(f"[fonts] Skipping {name}: not found at {full_path}")
+    except Exception as e:
+        print(f"[fonts] Skipping {name}: {e}")
+
+# Register Raleway variants only if available
+_safe_register_font("Raleway", "Raleway-Regular.ttf")
+_safe_register_font("Raleway-Bold", "Raleway-Bold.ttf")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Constants & Persistence
