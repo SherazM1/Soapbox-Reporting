@@ -32,7 +32,9 @@ from main import (
     generate_full_report,
     load_search_insights,
     load_inventory,
-    load_item_sales  
+    load_item_sales,
+    load_managed_keys,     
+    filter_by_managed,     
 )
 
 # 3P export hook (why: keep UI now, wire backend later)
@@ -137,7 +139,7 @@ st.divider()
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown("## 3P — Weekly Content Reporting")
 
-# Mode selector: Catalog vs Managed (UI-only; no filtering yet)
+# Mode selector: Catalog vs Managed
 mode_3p = st.radio("Mode", ["Catalog", "Managed"], horizontal=True, key="mode_3p")
 
 # If Managed, show an extra uploader for the managed SKUs list
@@ -175,22 +177,34 @@ metric_period_3p = st.selectbox(
 metric_value_3p = st.number_input("Value", value=0, step=1, format="%d", key="metric_value_3p")
 metrics_3p_text = f"{metric_period_3p}: {metric_value_3p}"
 
-# Previews (3P) — simple head previews; Z uses the dedicated loader + validation
+# Managed context (IDs/Names sets)
+managed_ids, managed_names = set(), set()
 if mode_3p == "Managed" and managed_file is not None:
-    st.caption("Mode: **Managed** • Managed SKUs file uploaded")
+    try:
+        managed_ids, managed_names = load_managed_keys(managed_file)
+        st.caption(f"Mode: **Managed** • Loaded {len(managed_ids) or len(managed_names)} SKUs")
+    except Exception as e:
+        st.error(f"Managed SKUs file error: {e}")
 elif mode_3p == "Managed":
     st.info("Mode: **Managed** — Please upload the Managed SKUs (IDs list).")
 
+# Previews (3P) — Managed-aware filtering; Z uses the dedicated loader + validation
 preview_cols = st.columns(3)
 
-# X — Item Sales (validated loader; shows only the extracted fields)
-# NOTE: ensure you imported `load_item_sales` from main at the top.
+# X — Item Sales (validated loader; filtered if Managed)
 with preview_cols[0]:
     st.caption("Data Preview (Item Sales)")
     if file_x:
         try:
-            df_tmp_x = load_item_sales(file_x)  # validated + typed
-            st.dataframe(df_tmp_x.head(15), height=260, use_container_width=True)
+            df_x = load_item_sales(file_x)  # validated + typed
+            if mode_3p == "Managed" and (managed_ids or managed_names):
+                df_fx, stats_x = filter_by_managed(df_x, managed_ids, managed_names)
+                st.write(f"Showing {stats_x['matched']} of {stats_x['total']} (managed subset)")
+                if stats_x["matched"] == 0 and stats_x["unmatched_sample"]:
+                    st.warning(f"No matches. Sample unmatched IDs: {', '.join(stats_x['unmatched_sample'])}")
+                st.dataframe(df_fx.head(15), height=260, use_container_width=True)
+            else:
+                st.dataframe(df_x.head(15), height=260, use_container_width=True)
         except Exception as e:
             st.error(
                 "Item Sales file doesn’t match required columns. "
@@ -201,13 +215,20 @@ with preview_cols[0]:
     else:
         st.info("Upload Item Sales Report to preview.")
 
-# Y — Inventory (validated loader; shows only the extracted fields)
+# Y — Inventory (validated loader; filtered if Managed)
 with preview_cols[1]:
     st.caption("Data Preview (Inventory)")
     if file_y:
         try:
-            df_tmp_y = load_inventory(file_y)  # validates headers, coerces types
-            st.dataframe(df_tmp_y.head(15), height=260, use_container_width=True)
+            df_y = load_inventory(file_y)  # validates headers, coerces types
+            if mode_3p == "Managed" and (managed_ids or managed_names):
+                df_fy, stats_y = filter_by_managed(df_y, managed_ids, managed_names)
+                st.write(f"Showing {stats_y['matched']} of {stats_y['total']} (managed subset)")
+                if stats_y["matched"] == 0 and stats_y["unmatched_sample"]:
+                    st.warning(f"No matches. Sample unmatched IDs: {', '.join(stats_y['unmatched_sample'])}")
+                st.dataframe(df_fy.head(15), height=260, use_container_width=True)
+            else:
+                st.dataframe(df_y.head(15), height=260, use_container_width=True)
         except Exception as e:
             st.error(
                 "Inventory file doesn’t match required columns. "
@@ -217,13 +238,20 @@ with preview_cols[1]:
     else:
         st.info("Upload Inventory Report to preview.")
 
-# Z — Search Insights (uses the dedicated validated loader)
+# Z — Search Insights (validated loader; filtered if Managed)
 with preview_cols[2]:
     st.caption("Data Preview (Search Insights)")
     if file_z:
         try:
-            df_tmp_z = load_search_insights(file_z)
-            st.dataframe(df_tmp_z.head(15), height=260, use_container_width=True)
+            df_z = load_search_insights(file_z)
+            if mode_3p == "Managed" and (managed_ids or managed_names):
+                df_fz, stats_z = filter_by_managed(df_z, managed_ids, managed_names)
+                st.write(f"Showing {stats_z['matched']} of {stats_z['total']} (managed subset)")
+                if stats_z["matched"] == 0 and stats_z["unmatched_sample"]:
+                    st.warning(f"No matches. Sample unmatched IDs: {', '.join(stats_z['unmatched_sample'])}")
+                st.dataframe(df_fz.head(15), height=260, use_container_width=True)
+            else:
+                st.dataframe(df_z.head(15), height=260, use_container_width=True)
         except Exception as e:
             st.error(
                 "Search Insights file doesn’t match required columns. "
@@ -233,8 +261,6 @@ with preview_cols[2]:
             )
     else:
         st.info("Upload Search Insights to preview.")
-
-
 
 # Export 3P PDF
 st.markdown("### Export 3P PDF")

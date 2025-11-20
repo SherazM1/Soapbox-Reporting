@@ -21,7 +21,7 @@ from reportlab.lib.styles import ParagraphStyle
 import pathlib
 from reportlab.lib.units import inch
 from reportlab.lib.utils import ImageReader
-from typing import Optional
+from typing import Optional, Set, Tuple
 
 
 
@@ -329,6 +329,103 @@ def load_item_sales(src) -> pd.DataFrame:
     df_work["Item conversion"] = pd.to_numeric(df_work["Item conversion"], errors="coerce").astype(float)
 
     return df_work
+
+_MANAGED_ALIASES = {
+    "Item ID": {"item id", "item_id", "itemid", "base item id", "base_item_id", "baseitemid"},
+    "Item Name": {"item name", "item_name", "product name", "name"},
+}
+
+def _normalize_headers_map(cols):
+    def norm(s):
+        return str(s).strip().lower().replace("_", "").replace(" ", "")
+    return {norm(c): c for c in cols}
+
+def _resolve_managed_columns(cols) -> Tuple[Optional[str], Optional[str]]:
+    """Return actual header names for Item ID and Item Name if present."""
+    norm_map = _normalize_headers_map(cols)
+    item_id_actual = None
+    item_name_actual = None
+
+    # Item ID (preferred)
+    for a in _MANAGED_ALIASES["Item ID"]:
+        k = a.replace("_", "").replace(" ", "")
+        if k in norm_map:
+            item_id_actual = norm_map[k]
+            break
+    # Item Name (optional/fallback)
+    for a in _MANAGED_ALIASES["Item Name"]:
+        k = a.replace("_", "").replace(" ", "")
+        if k in norm_map:
+            item_name_actual = norm_map[k]
+            break
+    return item_id_actual, item_name_actual
+
+def load_managed_keys(src) -> Tuple[Set[str], Set[str]]:
+    """
+    Read Managed SKUs list, returning (ids_set, names_set).
+    Prefers Item ID; also accepts Item Name for fallback matching.
+    """
+    df = load_dataframe(src)
+    item_id_actual, item_name_actual = _resolve_managed_columns(df.columns)
+    if not item_id_actual and not item_name_actual:
+        raise ValueError("Managed SKUs file must include 'Item ID' or 'Item Name'.")
+
+    ids_set: Set[str] = set()
+    names_set: Set[str] = set()
+
+    if item_id_actual:
+        ids_set = set(
+            df[item_id_actual].astype(str).str.strip().replace("nan", pd.NA).dropna().tolist()
+        )
+    if item_name_actual:
+        names_set = set(
+            df[item_name_actual].astype(str).str.strip().replace("nan", pd.NA).dropna().tolist()
+        )
+    return ids_set, names_set
+
+def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) -> Tuple[pd.DataFrame, dict]:
+    
+    total = len(df)
+    if total == 0:
+        return df.copy(), {"total": 0, "matched": 0, "unmatched_count": len(ids_set), "unmatched_sample": []}
+
+    # Ensure string columns for matching
+    if "Item ID" in df.columns:
+        id_series = df["Item ID"].astype(str).str.strip()
+    else:
+        id_series = None
+    if "Item Name" in df.columns:
+        name_series = df["Item Name"].astype(str).str.strip()
+    else:
+        name_series = None
+
+    # Prefer ID filtering when possible
+    mask = None
+    if id_series is not None and ids_set:
+        mask = id_series.isin(ids_set)
+    elif name_series is not None and names_set:
+        mask = name_series.isin(names_set)
+
+    if mask is None:
+        # nothing to filter against
+        return df.iloc[0:0].copy(), {"total": total, "matched": 0, "unmatched_count": len(ids_set), "unmatched_sample": list(sorted(ids_set))[:10]}
+
+    filtered = df[mask].copy()
+    matched = len(filtered)
+
+    # Unmatched sample (only meaningful when filtering by IDs)
+    unmatched_sample = []
+    if id_series is not None and ids_set:
+        matched_ids = set(filtered["Item ID"].astype(str).str.strip())
+        unmatched = ids_set - matched_ids
+        unmatched_sample = list(sorted(unmatched))[:10]
+
+    return filtered, {
+        "total": total,
+        "matched": matched,
+        "unmatched_count": (len(ids_set) - len(filtered)) if ids_set else 0,
+        "unmatched_sample": unmatched_sample,
+    }
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Metrics & Tables
