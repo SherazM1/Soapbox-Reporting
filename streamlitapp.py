@@ -38,12 +38,12 @@ from main import (
 )
 
 # 3P export hook (why: keep UI now, wire backend later)
+# 3P export hook: prefer new generator, fallback to legacy name
 try:
-    from main import generate_full_report_3p  # type: ignore[attr-defined]
+    from main import generate_3p_report  # returns PDF bytes
 except Exception:
-    def generate_full_report_3p(*_args, **_kwargs):  # noqa: D401
-        """Placeholder until 3P backend is ready."""
-        return None
+    from main import generate_full_report_3p as generate_3p_report  # legacy alias
+
 
 # why: Windows-safe date formatting (no %-m/%-d)
 def fmt_mdy(d: date) -> str:
@@ -265,12 +265,23 @@ with preview_cols[2]:
 # Export 3P PDF
 st.markdown("### Export 3P PDF")
 if st.button("📄 Generate 3P Dashboard PDF", key="export_pdf_3p"):
-    pdf3 = generate_full_report_3p(file_x, file_y, file_z, metrics_3p_text)
-    if pdf3:
+    try:
+        # Preferred: new 3P template generator (no data required yet)
+        pdf3 = generate_3p_report(
+            data_src=None,
+            client_name=client_name_1p if 'client_name_1p' in locals() else "Client",
+            report_date=fmt_mdy(date.today()),
+            logo_path=None,  # falls back to ./logo.png
+        )
+    except TypeError:
+        # Fallback to legacy signature if your function still uses it
+        pdf3 = generate_3p_report(file_x, file_y, file_z, metrics_3p_text)  # type: ignore
+
+    if not pdf3:
+        st.error("3P generator returned no bytes. Ensure main.py defines generate_3p_report(...).")
+    else:
         st.success("✅ 3P Dashboard PDF ready!")
         st.download_button("⬇️ Download 3P PDF", data=pdf3, file_name="dashboard_3p.pdf", mime="application/pdf")
-    else:
-        st.info("3P export is a placeholder until backend logic is added.")
 
 st.divider()
 
