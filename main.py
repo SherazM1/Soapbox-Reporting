@@ -237,9 +237,9 @@ ITEM_SALES_REQUIRED = [
 
 # Case/underscore-insensitive aliases for each canonical field
 _ITEM_SALES_ALIASES = {
-    # We will use Item_id ONLY for canonical Item ID. Base_Item_Id is NOT used.
+    # Canonical Item ID comes ONLY from Item_id. We do not use Base_Item_Id.
     "Item_id": {"item_id", "item id", "itemid"},
-    "Base_Item_Id": {"base_item_id", "base item id", "baseitemid"},  # parsed if present, but NOT used
+    "Base_Item_Id": {"base_item_id", "base item id", "baseitemid"},  # parsed if present (debug only)
     "Item Name": {"item_name", "item name"},
     "Orders": {"orders", "order"},
     "Units Sold": {"units_sold", "units sold"},
@@ -297,15 +297,7 @@ def load_item_sales(src) -> pd.DataFrame:
             item_id_actual = norm_map[key]
             break
 
-    # We still resolve Base_Item_Id for completeness, but we will NOT use it to build canonical Item ID.
-    base_item_id_actual = None
-    for candidate in _ITEM_SALES_ALIASES["Base_Item_Id"]:
-        key = candidate.replace("_", "").replace(" ", "")
-        if key in norm_map:
-            base_item_id_actual = norm_map[key]
-            break
-
-    # Resolve the rest
+    # Resolve the rest (Base_Item_Id optional for debug visibility only)
     def resolve(canon):
         for alias in _ITEM_SALES_ALIASES[canon]:
             key = alias.replace("_", "").replace(" ", "")
@@ -313,13 +305,14 @@ def load_item_sales(src) -> pd.DataFrame:
                 return norm_map[key]
         return None
 
-    item_name_actual  = resolve("Item Name")
-    orders_actual     = resolve("Orders")
-    units_actual      = resolve("Units Sold")
-    auth_sales_actual = resolve("Auth Sales")
-    pageviews_actual  = resolve("Item pageviews")
-    conversion_actual = resolve("Item conversion")
-    sku_actual        = resolve("SKU")  # optional
+    base_item_id_actual = resolve("Base_Item_Id")  # not used for canonical
+    item_name_actual    = resolve("Item Name")
+    orders_actual       = resolve("Orders")
+    units_actual        = resolve("Units Sold")
+    auth_sales_actual   = resolve("Auth Sales")
+    pageviews_actual    = resolve("Item pageviews")
+    conversion_actual   = resolve("Item conversion")
+    sku_actual          = resolve("SKU")  # optional
 
     missing = []
     if item_name_actual is None:
@@ -342,12 +335,9 @@ def load_item_sales(src) -> pd.DataFrame:
         )
 
     # Rename → canonical working columns
-    rename_map = {}
-    if item_id_actual:
-        rename_map[item_id_actual] = "Item_id_raw"
-    # We can rename Base_Item_Id if present for debugging, but we WON'T use it for filtering or canonical ID.
+    rename_map = {item_id_actual: "Item_id_raw"}
     if base_item_id_actual:
-        rename_map[base_item_id_actual] = "Base_Item_Id"
+        rename_map[base_item_id_actual] = "Base_Item_Id"  # debug only
     rename_map.update(
         {
             item_name_actual: "Item Name",
@@ -363,13 +353,13 @@ def load_item_sales(src) -> pd.DataFrame:
 
     df_work = df.rename(columns=rename_map)
 
-    # Build canonical "Item ID" STRICTLY from Item_id_raw (no Base_Item_Id fallback)
+    # Canonical "Item ID" comes STRICTLY from Item_id_raw
     s_item = df_work.get("Item_id_raw")
     if s_item is not None:
         s_item = s_item.astype(str).str.strip()
-    df_work["Item ID"] = s_item  # may contain blanks if Item_id_raw missing
+    df_work["Item ID"] = s_item
 
-    # Now restrict to canonical columns (+ optional SKU when present)
+    # Restrict to canonical columns (+ optional SKU, Base_Item_Id for visibility only)
     cols = [
         "Item ID",
         "Item Name",
@@ -382,8 +372,7 @@ def load_item_sales(src) -> pd.DataFrame:
     if "SKU" in df_work.columns:
         cols.append("SKU")
     if "Base_Item_Id" in df_work.columns:
-        # Keep for visibility/debugging if present; harmless to downstream filtering.
-        cols.append("Base_Item_Id")
+        cols.append("Base_Item_Id")  # visible, not used for filtering
     df_work = df_work[cols].copy()
 
     # Types/coercions (only non-ID fields)
@@ -415,9 +404,8 @@ def load_item_sales(src) -> pd.DataFrame:
 
 
 _MANAGED_ALIASES = {
-    "Item ID": {"item id", "item_id", "itemid"},
+    "Item ID": {"item id", "item_id", "itemid", "base item id", "base_item_id", "baseitemid"},
     "Item Name": {"item name", "item_name", "product name", "name"},
-    "SKU #": {"sku #", "sku", "sku#", "sku number", "sku_no", "sku id", "skuid"},
 }
 
 def _normalize_headers_map(cols):
@@ -425,12 +413,11 @@ def _normalize_headers_map(cols):
         return str(s).strip().lower().replace("_", "").replace(" ", "")
     return {norm(c): c for c in cols}
 
-def _resolve_managed_columns(cols) -> Tuple[Optional[str], Optional[str], Optional[str]]:
-    """Return actual header names for Item ID, Item Name, and SKU # if present."""
+def _resolve_managed_columns(cols) -> Tuple[Optional[str], Optional[str]]:
+    """Return actual header names for Item ID and Item Name if present."""
     norm_map = _normalize_headers_map(cols)
     item_id_actual = None
     item_name_actual = None
-    sku_actual = None
 
     for a in _MANAGED_ALIASES["Item ID"]:
         k = a.replace("_", "").replace(" ", "")
@@ -442,41 +429,37 @@ def _resolve_managed_columns(cols) -> Tuple[Optional[str], Optional[str], Option
         if k in norm_map:
             item_name_actual = norm_map[k]
             break
-    for a in _MANAGED_ALIASES["SKU #"]:
-        k = a.replace("_", "").replace(" ", "")
-        if k in norm_map:
-            sku_actual = norm_map[k]
-            break
-    return item_id_actual, item_name_actual, sku_actual
+    return item_id_actual, item_name_actual
 
 def load_managed_keys(src) -> Tuple[Set[str], Set[str]]:
     """
-    Read Managed SKUs list, returning (ids_set, skus_set).
-    Source of truth for filtering Item Sales.
+    Read Managed SKUs list, returning (ids_set, names_set).
+    Source of truth for strict filtering by Item ID OR Item Name.
     """
     df = load_dataframe(src)
-    item_id_actual, _item_name_actual, sku_actual = _resolve_managed_columns(df.columns)
-    if not item_id_actual and not sku_actual:
-        raise ValueError("Managed SKUs file must include 'Item ID' or 'SKU #'.")
+    item_id_actual, item_name_actual = _resolve_managed_columns(df.columns)
+    if not item_id_actual and not item_name_actual:
+        raise ValueError("Managed SKUs file must include 'Item ID' or 'Item Name'.")
 
     ids_set: Set[str] = set()
-    skus_set: Set[str] = set()
+    names_set: Set[str] = set()
 
     if item_id_actual:
         ids_set = set(
             df[item_id_actual].astype(str).str.strip().replace("nan", pd.NA).dropna().tolist()
         )
-    if sku_actual:
-        skus_set = set(
-            df[sku_actual].astype(str).str.strip().replace("nan", pd.NA).dropna().tolist()
+    if item_name_actual:
+        names_set = set(
+            df[item_name_actual].astype(str).str.strip().str.casefold().replace("nan", pd.NA).dropna().tolist()
         )
-    return ids_set, skus_set
+    return ids_set, names_set
 
-def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], skus_set: Set[str]) -> Tuple[pd.DataFrame, dict]:
+def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) -> Tuple[pd.DataFrame, dict]:
     """
-    STRICT filter: keep rows that match Managed by Item ID OR SKU.
-      - Item ID match uses canonical 'Item ID' column in the report (built from Item_id only).
-      - SKU match uses 'SKU' (or 'SKU #' if present).
+    STRICT filter: keep rows that match Managed by Item ID OR Item Name.
+      - Item ID match uses canonical 'Item ID' in the report (built from Item_id only).
+      - Item Name match is exact after trim + casefold (case-insensitive).
+      - No SKU, no Base_Item_Id, no fuzzy rules.
     """
     total = len(df)
     if total == 0:
@@ -489,18 +472,16 @@ def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], skus_set: Set[str]) -
 
     # Normalize series
     id_series = df["Item ID"].astype(str).str.strip() if "Item ID" in df.columns else None
-
-    # Try common SKU header variants
-    sku_col = "SKU" if "SKU" in df.columns else ("SKU #" if "SKU #" in df.columns else None)
-    sku_series = df[sku_col].astype(str).str.strip() if sku_col else None
+    name_series = df["Item Name"].astype(str).str.strip() if "Item Name" in df.columns else None
+    name_series_cf = name_series.str.casefold() if name_series is not None else None
 
     ids_set_norm = {s.strip() for s in ids_set} if ids_set else set()
-    skus_set_norm = {s.strip() for s in skus_set} if skus_set else set()
+    names_set_norm = {s.strip() for s in names_set} if names_set else set()
 
     id_mask = id_series.isin(ids_set_norm) if id_series is not None and ids_set_norm else False
-    sku_mask = sku_series.isin(skus_set_norm) if sku_series is not None and skus_set_norm else False
+    name_mask = name_series_cf.isin(names_set_norm) if name_series_cf is not None and names_set_norm else False
 
-    mask = id_mask | sku_mask
+    mask = id_mask | name_mask
     filtered = df[mask].copy()
     matched = int(mask.sum())
 
@@ -513,13 +494,10 @@ def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], skus_set: Set[str]) -
     return filtered, {
         "total": total,
         "matched": matched,
-        "unmatched_count": (
-            len(ids_set_norm) - len(set(filtered["Item ID"]))
-            if ids_set_norm and "Item ID" in filtered.columns
-            else 0
-        ),
+        "unmatched_count": len(unmatched_sample),
         "unmatched_sample": unmatched_sample,
     }
+
 
 
 
