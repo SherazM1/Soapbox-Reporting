@@ -1021,7 +1021,7 @@ def generate_3p_report(
     draw_card_shell(x, y_top, card_w, card_h, "Inventory")
     bullets_inv = [
         "In-stock rate: __%",
-        "OOS incidents: __ SKUs / __ days",
+        "OOS incidents: __ SKUs / 7 days",
         "At-risk SKUs: __",
     ]
     y_cursor = draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_inv)
