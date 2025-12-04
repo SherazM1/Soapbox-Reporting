@@ -77,7 +77,6 @@ def save_batches(batches: list, path: str = BATCHES_PATH) -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 # Data Loading
 # ─────────────────────────────────────────────────────────────────────────────
-# --- PATCH IMPORTS (safe to keep even if already present) ---
 def load_dataframe(src) -> pd.DataFrame:
     # Streamlit upload
     if hasattr(src, "read") and hasattr(src, "name"):
@@ -240,7 +239,7 @@ ITEM_SALES_REQUIRED = [
 _ITEM_SALES_ALIASES = {
     # Canonical Item ID comes ONLY from Item_id. We do not use Base_Item_Id.
     "Item_id": {"item_id", "item id", "itemid"},
-    "Base_Item_Id": {"base_item_id", "base item id", "baseitemid"},  # parsed if present (debug only)
+    "Base_Item_Id": {"base_item_id", "base item id", "baseitemid"},  # parsed if present (used only for gated fallback)
     "Item Name": {"item_name", "item name"},
     "Orders": {"orders", "order"},
     "Units Sold": {"units_sold", "units sold"},
@@ -298,7 +297,7 @@ def load_item_sales(src) -> pd.DataFrame:
             item_id_actual = norm_map[key]
             break
 
-    # Resolve the rest (Base_Item_Id optional for debug visibility only)
+    # Resolve the rest (Base_Item_Id kept only for gated fallback / debug)
     def resolve(canon):
         for alias in _ITEM_SALES_ALIASES[canon]:
             key = alias.replace("_", "").replace(" ", "")
@@ -306,7 +305,7 @@ def load_item_sales(src) -> pd.DataFrame:
                 return norm_map[key]
         return None
 
-    base_item_id_actual = resolve("Base_Item_Id")  # not used for canonical
+    base_item_id_actual = resolve("Base_Item_Id")
     item_name_actual    = resolve("Item Name")
     orders_actual       = resolve("Orders")
     units_actual        = resolve("Units Sold")
@@ -338,7 +337,7 @@ def load_item_sales(src) -> pd.DataFrame:
     # Rename → canonical working columns
     rename_map = {item_id_actual: "Item_id_raw"}
     if base_item_id_actual:
-        rename_map[base_item_id_actual] = "Base_Item_Id"  # debug only
+        rename_map[base_item_id_actual] = "Base_Item_Id"  # visible for gated fallback
     rename_map.update(
         {
             item_name_actual: "Item Name",
@@ -360,7 +359,7 @@ def load_item_sales(src) -> pd.DataFrame:
         s_item = s_item.astype(str).str.strip()
     df_work["Item ID"] = s_item
 
-    # Restrict to canonical columns (+ optional SKU, Base_Item_Id for visibility only)
+    # Restrict to canonical columns (+ optional SKU, Base_Item_Id for gated fallback)
     cols = [
         "Item ID",
         "Item Name",
@@ -373,7 +372,7 @@ def load_item_sales(src) -> pd.DataFrame:
     if "SKU" in df_work.columns:
         cols.append("SKU")
     if "Base_Item_Id" in df_work.columns:
-        cols.append("Base_Item_Id")  # visible, not used for filtering
+        cols.append("Base_Item_Id")  # used only in fallback when name confirms identity
     df_work = df_work[cols].copy()
 
     # Types/coercions (only non-ID fields)
@@ -404,7 +403,7 @@ def load_item_sales(src) -> pd.DataFrame:
     return df_work
 
 
-# -------- Robust Item Name normalization (ID-or-Name matching) --------
+# -------- Robust Item Name normalization (for ID-or-Name & gated fallback) --------
 import re, unicodedata
 
 def _norm_name_strict(s: str) -> str:
@@ -413,7 +412,7 @@ def _norm_name_strict(s: str) -> str:
       - Unicode NFKC
       - remove trademark/encoding artifacts: ® ™ ¬Æ
       - unify dashes: – — → -
-      - drop most punctuation/separators (e.g., | , : /) → space
+      - drop most punctuation/separators (non-alnum & non-hyphen) → space
       - collapse whitespace
       - casefold
     """
@@ -424,7 +423,6 @@ def _norm_name_strict(s: str) -> str:
     s = s.replace("®", "").replace("™", "").replace("¬Æ", "")
     s = s.replace("\u00AE", "").replace("\u2122", "")
     s = s.replace("–", "-").replace("—", "-")
-    # replace any char that is not alnum, space, or hyphen with a space
     s = re.sub(r"[^0-9A-Za-z\- ]+", " ", s)
     s = re.sub(r"\s+", " ", s)
     return s.strip().casefold()
@@ -461,7 +459,7 @@ def _resolve_managed_columns(cols) -> Tuple[Optional[str], Optional[str]]:
 def load_managed_keys(src) -> Tuple[Set[str], Set[str]]:
     """
     Read Managed SKUs list, returning (ids_set, names_set).
-    Source of truth for strict filtering by Item ID OR Item Name.
+    Source of truth for filtering by Item ID OR Item Name; also used for gated Base-ID fallback.
     """
     df = load_dataframe(src)
     item_id_actual, item_name_actual = _resolve_managed_columns(df.columns)
@@ -488,10 +486,15 @@ def load_managed_keys(src) -> Tuple[Set[str], Set[str]]:
 
 def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) -> Tuple[pd.DataFrame, dict]:
     """
-    STRICT filter: keep rows that match Managed by Item ID OR Item Name.
-      - Item ID match uses canonical 'Item ID' in the report (built from Item_id only).
-      - Item Name match uses robust normalized equality (_norm_name_strict).
-      - No SKU, no Base_Item_Id.
+    Filter to managed SKUs with a controlled Base-ID fallback.
+
+    Rule:
+      1) Keep a row if (Item ID ∈ managed_ids) OR (normalized Item Name ∈ managed_names).
+      2) If still not matched, allow a gated fallback:
+         Keep the row if (Base_Item_Id ∈ managed_ids) AND (normalized Item Name ∈ managed_names).
+         (Prevents unrelated child variants from leaking in.)
+
+    Returns (filtered_df, stats).
     """
     total = len(df)
     if total == 0:
@@ -507,18 +510,28 @@ def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) 
     name_series = df["Item Name"].astype(str) if "Item Name" in df.columns else None
     name_series_norm = name_series.map(_norm_name_strict) if name_series is not None else None
 
+    base_series = df["Base_Item_Id"].astype(str).str.strip() if "Base_Item_Id" in df.columns else None
+
     ids_set_norm = {s.strip() for s in ids_set} if ids_set else set()
     names_set_norm = {s for s in names_set} if names_set else set()
 
-    id_mask = id_series.isin(ids_set_norm) if id_series is not None and ids_set_norm else False
-    name_mask = name_series_norm.isin(names_set_norm) if name_series_norm is not None and names_set_norm else False
+    # 1) Primary: Item ID or Name
+    id_mask   = id_series.isin(ids_set_norm) if (id_series is not None and ids_set_norm) else False
+    name_mask = name_series_norm.isin(names_set_norm) if (name_series_norm is not None and names_set_norm) else False
+    primary_mask = id_mask | name_mask
 
-    mask = id_mask | name_mask
+    # 2) Gated fallback: Base ID + Name
+    base_mask = False
+    if base_series is not None and ids_set_norm and name_series_norm is not None and names_set_norm:
+        base_mask = base_series.isin(ids_set_norm) & name_series_norm.isin(names_set_norm)
+
+    mask = primary_mask | base_mask
     filtered = df[mask].copy()
     matched = int(mask.sum())
 
-    unmatched_sample = []
-    if id_series is not None and ids_set_norm:
+    # Unmatched sample based on managed IDs not present as Item ID in result (debug aid)
+    unmatched_sample: list[str] = []
+    if id_series is not None and ids_set_norm and "Item ID" in filtered.columns:
         matched_ids = set(filtered["Item ID"].astype(str).str.strip())
         unmatched = ids_set_norm - matched_ids
         unmatched_sample = list(sorted(unmatched))[:10]
@@ -529,7 +542,6 @@ def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) 
         "unmatched_count": len(unmatched_sample),
         "unmatched_sample": unmatched_sample,
     }
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Metrics & Tables
