@@ -470,38 +470,55 @@ def load_managed_keys(src) -> Tuple[Set[str], Set[str]]:
     return ids_set, names_set
 
 def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) -> Tuple[pd.DataFrame, dict]:
-    
+    """
+    Filter a report DataFrame to managed SKUs.
+
+    Rule:
+      - Prefer matching on BOTH Item ID AND Item Name when both are available.
+      - Fallback to Item ID only, then Item Name only if needed.
+
+    Returns (filtered_df, stats).
+    """
     total = len(df)
     if total == 0:
-        return df.copy(), {"total": 0, "matched": 0, "unmatched_count": len(ids_set), "unmatched_sample": []}
+        return df.copy(), {
+            "total": 0,
+            "matched": 0,
+            "unmatched_count": len(ids_set),
+            "unmatched_sample": [],
+        }
 
-    # Ensure string columns for matching
-    if "Item ID" in df.columns:
-        id_series = df["Item ID"].astype(str).str.strip()
-    else:
-        id_series = None
-    if "Item Name" in df.columns:
-        name_series = df["Item Name"].astype(str).str.strip()
-    else:
-        name_series = None
+    # Normalize ID/Name for matching
+    id_series = df["Item ID"].astype(str).str.strip() if "Item ID" in df.columns else None
+    name_series = df["Item Name"].astype(str).str.strip() if "Item Name" in df.columns else None
 
-    # Prefer ID filtering when possible
     mask = None
-    if id_series is not None and ids_set:
+
+    # 🔑 Prefer composite match: Item ID AND Item Name
+    if id_series is not None and ids_set and name_series is not None and names_set:
+        mask = id_series.isin(ids_set) & name_series.isin(names_set)
+    # Fallback: ID-only
+    elif id_series is not None and ids_set:
         mask = id_series.isin(ids_set)
+    # Fallback: Name-only
     elif name_series is not None and names_set:
         mask = name_series.isin(names_set)
 
     if mask is None:
-        # nothing to filter against
-        return df.iloc[0:0].copy(), {"total": total, "matched": 0, "unmatched_count": len(ids_set), "unmatched_sample": list(sorted(ids_set))[:10]}
+        # Nothing to filter against
+        return df.iloc[0:0].copy(), {
+            "total": total,
+            "matched": 0,
+            "unmatched_count": len(ids_set),
+            "unmatched_sample": list(sorted(ids_set))[:10],
+        }
 
     filtered = df[mask].copy()
     matched = len(filtered)
 
-    # Unmatched sample (only meaningful when filtering by IDs)
-    unmatched_sample = []
-    if id_series is not None and ids_set:
+    # Unmatched sample based on IDs (most useful for debugging)
+    unmatched_sample: list[str] = []
+    if id_series is not None and ids_set and "Item ID" in filtered.columns:
         matched_ids = set(filtered["Item ID"].astype(str).str.strip())
         unmatched = ids_set - matched_ids
         unmatched_sample = list(sorted(unmatched))[:10]
@@ -509,9 +526,14 @@ def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) 
     return filtered, {
         "total": total,
         "matched": matched,
-        "unmatched_count": (len(ids_set) - len(filtered)) if ids_set else 0,
+        "unmatched_count": (
+            len(ids_set) - len(set(filtered["Item ID"]))
+            if ids_set and "Item ID" in filtered.columns
+            else 0
+        ),
         "unmatched_sample": unmatched_sample,
     }
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Metrics & Tables
