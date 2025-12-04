@@ -77,6 +77,10 @@ def save_batches(batches: list, path: str = BATCHES_PATH) -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 # Data Loading
 # ─────────────────────────────────────────────────────────────────────────────
+# --- PATCH IMPORTS (safe to keep even if already present) ---
+import re
+import unicodedata
+
 def load_dataframe(src) -> pd.DataFrame:
     # Streamlit upload
     if hasattr(src, "read") and hasattr(src, "name"):
@@ -403,6 +407,26 @@ def load_item_sales(src) -> pd.DataFrame:
     return df_work
 
 
+# --- NAME NORMALIZATION (new) ---
+def _norm_name_strict(s: str) -> str:
+    """
+    Normalize names for robust exact equality:
+      - Unicode normalize (NFKC)
+      - remove common trademark/encoding artifacts (®, ™, ¬Æ)
+      - collapse whitespace (incl. non-breaking)
+      - strip
+      - casefold
+    """
+    if s is None:
+        return ""
+    s = str(s)
+    s = unicodedata.normalize("NFKC", s)
+    s = s.replace("®", "").replace("™", "").replace("¬Æ", "")
+    s = s.replace("\u00AE", "").replace("\u2122", "")
+    s = re.sub(r"[\s\u00A0]+", " ", s)
+    return s.strip().casefold()
+
+
 _MANAGED_ALIASES = {
     "Item ID": {"item id", "item_id", "itemid", "base item id", "base_item_id", "baseitemid"},
     "Item Name": {"item name", "item_name", "product name", "name"},
@@ -450,7 +474,12 @@ def load_managed_keys(src) -> Tuple[Set[str], Set[str]]:
         )
     if item_name_actual:
         names_set = set(
-            df[item_name_actual].astype(str).str.strip().str.casefold().replace("nan", pd.NA).dropna().tolist()
+            df[item_name_actual]
+            .astype(str)
+            .map(_norm_name_strict)
+            .replace("nan", pd.NA)
+            .dropna()
+            .tolist()
         )
     return ids_set, names_set
 
@@ -458,8 +487,8 @@ def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) 
     """
     STRICT filter: keep rows that match Managed by Item ID OR Item Name.
       - Item ID match uses canonical 'Item ID' in the report (built from Item_id only).
-      - Item Name match is exact after trim + casefold (case-insensitive).
-      - No SKU, no Base_Item_Id, no fuzzy rules.
+      - Item Name match is exact after robust normalization.
+      - No SKU, no Base_Item_Id, no fuzzy rules beyond normalization.
     """
     total = len(df)
     if total == 0:
@@ -472,14 +501,14 @@ def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) 
 
     # Normalize series
     id_series = df["Item ID"].astype(str).str.strip() if "Item ID" in df.columns else None
-    name_series = df["Item Name"].astype(str).str.strip() if "Item Name" in df.columns else None
-    name_series_cf = name_series.str.casefold() if name_series is not None else None
+    name_series = df["Item Name"].astype(str) if "Item Name" in df.columns else None
+    name_series_norm = name_series.map(_norm_name_strict) if name_series is not None else None
 
     ids_set_norm = {s.strip() for s in ids_set} if ids_set else set()
-    names_set_norm = {s.strip() for s in names_set} if names_set else set()
+    names_set_norm = {s for s in names_set} if names_set else set()
 
     id_mask = id_series.isin(ids_set_norm) if id_series is not None and ids_set_norm else False
-    name_mask = name_series_cf.isin(names_set_norm) if name_series_cf is not None and names_set_norm else False
+    name_mask = name_series_norm.isin(names_set_norm) if name_series_norm is not None and names_set_norm else False
 
     mask = id_mask | name_mask
     filtered = df[mask].copy()
@@ -497,10 +526,6 @@ def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) 
         "unmatched_count": len(unmatched_sample),
         "unmatched_sample": unmatched_sample,
     }
-
-
-
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Metrics & Tables
