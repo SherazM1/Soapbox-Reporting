@@ -1008,9 +1008,9 @@ def generate_3p_report(
     x, y_top = x_left, row1_top
     draw_card_shell(x, y_top, card_w, card_h, "Item Sales")
     bullets_sales = [
-        "Units Sold: __  (+__% WoW)",
-        "Auth Sales: $__  (+__% WoW)",
-        "Avg Conversion: __%  (__ pts)",
+        "Units Sold: __",
+        "Auth Sales: $__",
+        "Avg Conversion: __%",
     ]
     y_cursor = draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_sales)
     # write-in area
@@ -1031,7 +1031,7 @@ def generate_3p_report(
     x, y_top = x_left, row2_top
     draw_card_shell(x, y_top, card_w, card_h, "Search Insights")
     bullets_search = [
-        "Avg Impressions Rank: __ (vs __ LW)",
+        "Avg Impressions Rank: __",
         "__ SKUs in Top 10 Impressions",
         "__ SKUs in Top 10 Sales Rank",
     ]
