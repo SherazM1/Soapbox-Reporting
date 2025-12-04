@@ -939,7 +939,7 @@ def generate_3p_report(
 
     c.setFillColor(navy)
     c.setFont("Raleway", 22)
-    c.drawString(margin, h - margin - 0.40 * inch, "Weekly Reporting (3P)")
+    c.drawString(margin, h - margin - 0.40 * inch, "Weekly Reporting")
 
     c.setFont("Raleway", 15)
     c.setFillColor(navy)
