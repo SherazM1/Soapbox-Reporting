@@ -254,7 +254,25 @@ def _normalize_header_map(cols):
     return {norm(c): c for c in cols}
 
 def load_item_sales(src) -> pd.DataFrame:
-    df = load_dataframe(src)
+    # Force-read as strings to avoid scientific-notation/precision loss on IDs.
+    if hasattr(src, "read") and hasattr(src, "name"):
+        data = src.getvalue()
+        ext = os.path.splitext(src.name)[1].lower()
+        if ext in (".xls", ".xlsx"):
+            df = pd.read_excel(io.BytesIO(data), dtype=str)
+        elif ext == ".csv":
+            df = pd.read_csv(io.BytesIO(data), dtype=str, encoding="utf-8", engine="python", on_bad_lines="skip")
+        else:
+            raise ValueError(f"Unsupported file type: {ext}")
+    else:
+        ext = os.path.splitext(str(src))[1].lower()
+        if ext in (".xls", ".xlsx"):
+            df = pd.read_excel(src, dtype=str)
+        elif ext == ".csv":
+            df = pd.read_csv(src, dtype=str, encoding="utf-8", engine="python", on_bad_lines="skip")
+        else:
+            raise ValueError(f"Unsupported file type: {ext}")
+
     norm_map = _normalize_header_map(df.columns)
 
     # Resolve Item ID (prefer Item_id, fallback Base_Item_Id)
@@ -264,11 +282,19 @@ def load_item_sales(src) -> pd.DataFrame:
         if key in norm_map:
             item_id_actual = norm_map[key]
             break
+    base_item_id_actual = None
     if item_id_actual is None:
         for candidate in _ITEM_SALES_ALIASES["Base_Item_Id"]:
             key = candidate.replace("_", "").replace(" ", "")
             if key in norm_map:
-                item_id_actual = norm_map[key]
+                base_item_id_actual = norm_map[key]
+                break
+    else:
+        # Even if Item_id exists, we still probe Base_Item_Id for fallback merge
+        for candidate in _ITEM_SALES_ALIASES["Base_Item_Id"]:
+            key = candidate.replace("_", "").replace(" ", "")
+            if key in norm_map:
+                base_item_id_actual = norm_map[key]
                 break
 
     # Resolve the rest
@@ -289,7 +315,7 @@ def load_item_sales(src) -> pd.DataFrame:
     missing = []
     if item_name_actual is None:
         missing.append("Item Name")
-    if item_id_actual is None:
+    if item_id_actual is None and base_item_id_actual is None:
         missing.append("Item ID (Item_id or Base_Item_Id)")
     for canon, actual in [
         ("Orders", orders_actual),
@@ -305,17 +331,42 @@ def load_item_sales(src) -> pd.DataFrame:
         raise ValueError("Item Sales file is missing required columns: " + ", ".join(missing))
 
     # Rename → canonical and select only required columns
-    df_work = df.rename(columns={
-        item_id_actual: "Item ID",
-        item_name_actual: "Item Name",
-        orders_actual: "Orders",
-        units_actual: "Units Sold",
+    rename_map = {}
+    if item_id_actual:
+        rename_map[item_id_actual] = "Item ID"     # temporary; will overwrite with canonical below
+    if base_item_id_actual:
+        rename_map[base_item_id_actual] = "Base_Item_Id"  # keep for fallback combine
+    rename_map.update({
+        item_name_actual:  "Item Name",
+        orders_actual:     "Orders",
+        units_actual:      "Units Sold",
         auth_sales_actual: "Auth Sales",
-        pageviews_actual: "Item pageviews",
+        pageviews_actual:  "Item pageviews",
         conversion_actual: "Item conversion",
-    })[ITEM_SALES_REQUIRED].copy()
+    })
 
-    # Types/coercions
+    df_work = df.rename(columns=rename_map)
+
+    # Build canonical "Item ID" (prefer Item_id when present/non-empty; else Base_Item_Id)
+    s_item  = df_work.get("Item ID")
+    s_base  = df_work.get("Base_Item_Id")
+    # normalize whitespace; keep as string
+    if s_item is not None:
+        s_item = s_item.astype(str).str.strip()
+    if s_base is not None:
+        s_base = s_base.astype(str).str.strip()
+
+    if s_item is not None and s_base is not None:
+        df_work["Item ID"] = s_item.where(s_item.ne("").fillna(False), s_base)
+    elif s_item is not None:
+        df_work["Item ID"] = s_item
+    else:
+        df_work["Item ID"] = s_base  # guaranteed not None by validation above
+
+    # Now restrict to canonical columns
+    df_work = df_work[["Item ID", "Item Name", "Orders", "Units Sold", "Auth Sales", "Item pageviews", "Item conversion"]].copy()
+
+    # Types/coercions (only non-ID fields)
     df_work["Item ID"] = df_work["Item ID"].astype(str).str.strip()
     df_work["Item Name"] = df_work["Item Name"].astype(str).str.strip()
 
@@ -337,6 +388,7 @@ _MANAGED_ALIASES = {
     "Item ID": {"item id", "item_id", "itemid", "base item id", "base_item_id", "baseitemid"},
     "Item Name": {"item name", "item_name", "product name", "name"},
 }
+
 
 def _normalize_headers_map(cols):
     def norm(s):
