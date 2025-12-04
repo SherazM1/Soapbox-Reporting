@@ -1040,7 +1040,7 @@ def generate_3p_report(
 
     # --- Box 4: General Metrics (3 placeholder bullets) ---
     x, y_top = x_right, row2_top
-    draw_card_shell(x, y_top, card_w, card_h, "General Metrics")
+    draw_card_shell(x, y_top, card_w, card_h, "Advertising")
     bullets_general = [
         "Metric A: __",
         "Metric B: __",
