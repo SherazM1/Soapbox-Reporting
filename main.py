@@ -473,9 +473,9 @@ def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) 
     """
     Filter a report DataFrame to managed SKUs.
 
-    Rule:
-      - Prefer matching on BOTH Item ID AND Item Name when both are available.
-      - If that yields 0 matches, fallback to Item ID only, then Item Name only.
+    Updated rule:
+      - Match any row whose Item ID OR Item Name is in the managed set.
+      - Prefer Item ID match; if ID is missing or not matched, fall back to Item Name.
 
     Returns (filtered_df, stats).
     """
@@ -488,7 +488,6 @@ def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) 
             "unmatched_sample": [],
         }
 
-    # Normalize ID/Name for matching
     id_series = df["Item ID"].astype(str).str.strip() if "Item ID" in df.columns else None
     name_series = df["Item Name"].astype(str).str.strip() if "Item Name" in df.columns else None
     name_series_lc = name_series.str.lower() if name_series is not None else None
@@ -496,38 +495,15 @@ def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) 
     ids_set_norm = {s.strip() for s in ids_set} if ids_set else set()
     names_set_lc = {s.strip().lower() for s in names_set} if names_set else set()
 
-    mask = None
-    matched = 0
+    id_mask = id_series.isin(ids_set_norm) if id_series is not None else False
+    name_mask = name_series_lc.isin(names_set_lc) if name_series_lc is not None else False
 
-    # 1) Prefer composite match: Item ID AND Item Name (case-insensitive)
-    if id_series is not None and ids_set_norm and name_series_lc is not None and names_set_lc:
-        mask = id_series.isin(ids_set_norm) & name_series_lc.isin(names_set_lc)
-        matched = int(mask.sum())
-
-    # 2) Fallback: ID-only if composite gave 0 matches
-    if (mask is None or matched == 0) and id_series is not None and ids_set_norm:
-        mask = id_series.isin(ids_set_norm)
-        matched = int(mask.sum())
-
-    # 3) Fallback: Name-only if still 0
-    if (mask is None or matched == 0) and name_series_lc is not None and names_set_lc:
-        mask = name_series_lc.isin(names_set_lc)
-        matched = int(mask.sum())
-
-    if mask is None:
-        # Nothing to filter against
-        return df.iloc[0:0].copy(), {
-            "total": total,
-            "matched": 0,
-            "unmatched_count": len(ids_set),
-            "unmatched_sample": list(sorted(ids_set))[:10],
-        }
-
+    mask = id_mask | name_mask  # Match if either ID or Name is found
     filtered = df[mask].copy()
+    matched = int(mask.sum())
 
-    # Unmatched sample based on IDs (most useful for debugging)
-    unmatched_sample: list[str] = []
-    if id_series is not None and ids_set_norm and "Item ID" in filtered.columns:
+    unmatched_sample = []
+    if id_series is not None and ids_set_norm:
         matched_ids = set(filtered["Item ID"].astype(str).str.strip())
         unmatched = ids_set_norm - matched_ids
         unmatched_sample = list(sorted(unmatched))[:10]
