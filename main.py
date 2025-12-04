@@ -261,7 +261,13 @@ def load_item_sales(src) -> pd.DataFrame:
         if ext in (".xls", ".xlsx"):
             df = pd.read_excel(io.BytesIO(data), dtype=str)
         elif ext == ".csv":
-            df = pd.read_csv(io.BytesIO(data), dtype=str, encoding="utf-8", engine="python", on_bad_lines="skip")
+            df = pd.read_csv(
+                io.BytesIO(data),
+                dtype=str,
+                encoding="utf-8",
+                engine="python",
+                on_bad_lines="skip",
+            )
         else:
             raise ValueError(f"Unsupported file type: {ext}")
     else:
@@ -269,33 +275,32 @@ def load_item_sales(src) -> pd.DataFrame:
         if ext in (".xls", ".xlsx"):
             df = pd.read_excel(src, dtype=str)
         elif ext == ".csv":
-            df = pd.read_csv(src, dtype=str, encoding="utf-8", engine="python", on_bad_lines="skip")
+            df = pd.read_csv(
+                src,
+                dtype=str,
+                encoding="utf-8",
+                engine="python",
+                on_bad_lines="skip",
+            )
         else:
             raise ValueError(f"Unsupported file type: {ext}")
 
     norm_map = _normalize_header_map(df.columns)
 
-    # Resolve Item ID (prefer Item_id, fallback Base_Item_Id)
+    # Resolve Item ID (prefer Item_id, but we'll still build canonical from Base_Item_Id when present)
     item_id_actual = None
     for candidate in _ITEM_SALES_ALIASES["Item_id"]:
         key = candidate.replace("_", "").replace(" ", "")
         if key in norm_map:
             item_id_actual = norm_map[key]
             break
+
     base_item_id_actual = None
-    if item_id_actual is None:
-        for candidate in _ITEM_SALES_ALIASES["Base_Item_Id"]:
-            key = candidate.replace("_", "").replace(" ", "")
-            if key in norm_map:
-                base_item_id_actual = norm_map[key]
-                break
-    else:
-        # Even if Item_id exists, we still probe Base_Item_Id for fallback merge
-        for candidate in _ITEM_SALES_ALIASES["Base_Item_Id"]:
-            key = candidate.replace("_", "").replace(" ", "")
-            if key in norm_map:
-                base_item_id_actual = norm_map[key]
-                break
+    for candidate in _ITEM_SALES_ALIASES["Base_Item_Id"]:
+        key = candidate.replace("_", "").replace(" ", "")
+        if key in norm_map:
+            base_item_id_actual = norm_map[key]
+            break
 
     # Resolve the rest
     def resolve(canon):
@@ -328,43 +333,61 @@ def load_item_sales(src) -> pd.DataFrame:
             missing.append(canon)
 
     if missing:
-        raise ValueError("Item Sales file is missing required columns: " + ", ".join(missing))
+        raise ValueError(
+            "Item Sales file is missing required columns: " + ", ".join(missing)
+        )
 
-    # Rename → canonical and select only required columns
+    # Rename → canonical working columns
     rename_map = {}
     if item_id_actual:
-        rename_map[item_id_actual] = "Item ID"     # temporary; will overwrite with canonical below
+        rename_map[item_id_actual] = "Item_id_raw"
     if base_item_id_actual:
-        rename_map[base_item_id_actual] = "Base_Item_Id"  # keep for fallback combine
-    rename_map.update({
-        item_name_actual:  "Item Name",
-        orders_actual:     "Orders",
-        units_actual:      "Units Sold",
-        auth_sales_actual: "Auth Sales",
-        pageviews_actual:  "Item pageviews",
-        conversion_actual: "Item conversion",
-    })
+        rename_map[base_item_id_actual] = "Base_Item_Id"
+    rename_map.update(
+        {
+            item_name_actual: "Item Name",
+            orders_actual: "Orders",
+            units_actual: "Units Sold",
+            auth_sales_actual: "Auth Sales",
+            pageviews_actual: "Item pageviews",
+            conversion_actual: "Item conversion",
+        }
+    )
 
     df_work = df.rename(columns=rename_map)
 
-    # Build canonical "Item ID" (prefer Item_id when present/non-empty; else Base_Item_Id)
-    s_item  = df_work.get("Item ID")
-    s_base  = df_work.get("Base_Item_Id")
-    # normalize whitespace; keep as string
+    # Build canonical "Item ID"
+    s_item = df_work.get("Item_id_raw")
+    s_base = df_work.get("Base_Item_Id")
+
     if s_item is not None:
         s_item = s_item.astype(str).str.strip()
     if s_base is not None:
         s_base = s_base.astype(str).str.strip()
 
-    if s_item is not None and s_base is not None:
-        df_work["Item ID"] = s_item.where(s_item.ne("").fillna(False), s_base)
-    elif s_item is not None:
-        df_work["Item ID"] = s_item
+    if s_base is not None and s_item is not None:
+        # 🔑 Prefer Base_Item_Id when present; fallback to Item_id_raw
+        df_work["Item ID"] = s_base.where(
+            s_base.ne("").fillna(False),
+            s_item,
+        )
+    elif s_base is not None:
+        df_work["Item ID"] = s_base
     else:
-        df_work["Item ID"] = s_base  # guaranteed not None by validation above
+        df_work["Item ID"] = s_item
 
     # Now restrict to canonical columns
-    df_work = df_work[["Item ID", "Item Name", "Orders", "Units Sold", "Auth Sales", "Item pageviews", "Item conversion"]].copy()
+    df_work = df_work[
+        [
+            "Item ID",
+            "Item Name",
+            "Orders",
+            "Units Sold",
+            "Auth Sales",
+            "Item pageviews",
+            "Item conversion",
+        ]
+    ].copy()
 
     # Types/coercions (only non-ID fields)
     df_work["Item ID"] = df_work["Item ID"].astype(str).str.strip()
@@ -374,15 +397,23 @@ def load_item_sales(src) -> pd.DataFrame:
         df_work[col] = pd.to_numeric(df_work[col], errors="coerce").astype("Int64")
 
     df_work["Auth Sales"] = (
-        df_work["Auth Sales"].astype(str)
+        df_work["Auth Sales"]
+        .astype(str)
         .str.replace(",", "", regex=False)
         .str.replace("$", "", regex=False)
     )
-    df_work["Auth Sales"] = pd.to_numeric(df_work["Auth Sales"], errors="coerce").astype(float)
+    df_work["Auth Sales"] = pd.to_numeric(
+        df_work["Auth Sales"],
+        errors="coerce",
+    ).astype(float)
 
-    df_work["Item conversion"] = pd.to_numeric(df_work["Item conversion"], errors="coerce").astype(float)
+    df_work["Item conversion"] = pd.to_numeric(
+        df_work["Item conversion"],
+        errors="coerce",
+    ).astype(float)
 
     return df_work
+
 
 _MANAGED_ALIASES = {
     "Item ID": {"item id", "item_id", "itemid", "base item id", "base_item_id", "baseitemid"},
