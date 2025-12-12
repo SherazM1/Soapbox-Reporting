@@ -900,185 +900,201 @@ def generate_full_report(
     return buf.getvalue()
 
 def generate_3p_report(
-    data_src=None,                # kept for parity; unused here
-    client_name: str = "",
-    report_date: str = "",
+    item_sales_src,
+    inventory_src,
+    search_insights_src,
+    managed_src,
+    mode: str,                                # "catalog" | "managed"
+    client_name: str,
+    report_date: str,
+    top_skus_text: str = "",                  # manual (Item Sales box)
+    inventory_callouts_text: str = "",        # manual (Inventory box)
+    search_highlights_text: str = "",         # manual (Search box)
     logo_path: str | None = None
 ) -> bytes:
     """
-    3P template PDF (with persistent bullets in each box):
-      Box 1 — Item Sales
-        • Units Sold: __  (+__% WoW)
-        • Auth Sales: $__  (+__% WoW)
-        • Avg Conversion: __%  (__ pts)
-        Top SKUs:  [manual entry area]
-
-      Box 2 — Inventory
-        • In-stock rate: __%
-        • OOS incidents: __ SKUs / __ days
-        • At-risk SKUs: __
-        Key Callouts:  [manual entry area]
-
-      Box 3 — Search Insights
-        • Avg Impressions Rank: __ (vs __ LW)
-        • __ SKUs in Top 10 Impressions
-        • __ SKUs in Top 10 Sales Rank
-        Highlights:  [manual entry area]
-
-      Box 4 — General Metrics
-        • Metric A: __
-        • Metric B: __
-        • Metric C: __
-
-    Returns PDF bytes.
+    3P template PDF populated from three reports after Catalog/Managed filtering.
+    Manual text areas are rendered in dashed boxes (navy, Raleway). Returns PDF bytes.
     """
+    # ── Load data (reuse your loaders)
+    df_sales  = load_item_sales(item_sales_src)
+    df_inv    = load_inventory(inventory_src)
+    df_search = load_search_insights(search_insights_src)
+
+    # ── Managed filter (ID OR Name + gated Base+Name as already implemented)
+    if str(mode).strip().lower() == "managed":
+        ids_set, names_set = load_managed_keys(managed_src)
+        df_sales,  _ = filter_by_managed(df_sales,  ids_set, names_set)
+        df_inv,    _ = filter_by_managed(df_inv,    ids_set, names_set)
+        df_search, _ = filter_by_managed(df_search, ids_set, names_set)
+
+    # ── Helpers (formatting + coercion)
+    def _coerce_conversion_pp(series: pd.Series) -> pd.Series:
+        # Why: normalize Item conversion to 0..100 percent points
+        s = series.astype(str).str.replace("%", "", regex=False).str.replace(",", "", regex=False).str.strip()
+        s = pd.to_numeric(s, errors="coerce").fillna(0.0)
+        nonnull = s[s.notna()]
+        if len(nonnull):
+            # Detect if values are 0..1 fractions rather than 0..100 points
+            share_gt1 = (nonnull > 1.0).mean()
+            if share_gt1 < 0.8:
+                s = s * 100.0
+        return s.clip(0.0, 100.0).astype(float)
+
+    def _avg_impressions_rank_whole(series: pd.Series) -> int:
+        s = pd.to_numeric(series, errors="coerce").dropna()
+        return int(round(float(s.mean()))) if len(s) else 0
+
+    def _count_top_n(series: pd.Series, n: int) -> int:
+        s = pd.to_numeric(series, errors="coerce")
+        return int((s <= n).sum())
+
+    def _draw_writein_block(x: float, y: float, w_: float, title: str, body_text: str, min_lines: int = 3) -> None:
+        # Dashed container
+        c.setFont("Raleway-Bold", 14); c.setFillColor(navy); c.drawString(x, y, title)
+        box_top = y - 8
+        box_margin = 10
+        box_h = max(24 * min_lines + 2 * box_margin, 80)
+        c.saveState()
+        c.setDash(4, 4); c.setStrokeColor(colors.Color(teal.red, teal.green, teal.blue, alpha=0.6))
+        c.rect(x, box_top - box_h, w_, box_h, stroke=1, fill=0)
+        c.restoreState()
+        # Body (manual text) in navy, preserving line breaks
+        content = body_text if (body_text or "").strip() else "Add content later"
+        para_style = ParagraphStyle(
+            name="ManualText",
+            fontName="Raleway",
+            fontSize=12,
+            leading=16,
+            textColor=navy,
+        )
+        para = Paragraph(content.replace("\n", "<br/>"), para_style)
+        usable_w = w_ - 2 * box_margin
+        _, ph = para.wrap(usable_w, box_h - 2 * box_margin)
+        para.drawOn(c, x + box_margin, box_top - box_h + box_margin + (box_h - 2 * box_margin - ph))
+
+    # ── Compute: Item Sales
+    units_total = int(pd.to_numeric(df_sales.get("Units Sold"), errors="coerce").fillna(0).sum()) if not df_sales.empty else 0
+    sales_total = float(pd.to_numeric(df_sales.get("Auth Sales"), errors="coerce").fillna(0.0).sum()) if not df_sales.empty else 0.0
+    conv_pp = _coerce_conversion_pp(df_sales.get("Item conversion", pd.Series(dtype=float))) if not df_sales.empty else pd.Series([], dtype=float)
+    avg_conv_pct = int(round(float(conv_pp.mean()))) if len(conv_pp) else 0
+
+    # ── Compute: Inventory (support "Status" or "Stock status")
+    status_col = "Status" if "Status" in df_inv.columns else ("Stock status" if "Stock status" in df_inv.columns else None)
+    in_stock_rate_pct = 0
+    oos_count = 0
+    at_risk_count = 0
+    if status_col and not df_inv.empty:
+        status_norm = df_inv[status_col].astype(str).str.strip().str.lower()
+        total_inv = len(status_norm)
+        if total_inv > 0:
+            in_stock_rate_pct = int(round((status_norm == "in stock").sum() / total_inv * 100))
+        oos_count = int((status_norm == "out of stock").sum())
+        at_risk_count = int((status_norm == "at risk").sum())
+
+    # ── Compute: Search Insights
+    avg_impr_rank = _avg_impressions_rank_whole(df_search.get("Impressions Rank", pd.Series(dtype=float))) if not df_search.empty else 0
+    top10_impr = _count_top_n(df_search.get("Impressions Rank", pd.Series(dtype=float)), 10) if not df_search.empty else 0
+    top10_sales = _count_top_n(df_search.get("Sales Rank", pd.Series(dtype=float)), 10) if not df_search.empty else 0
+
+    # ── PDF drawing (match your style)
     buf = BytesIO()
     c   = canvas.Canvas(buf, pagesize=letter)
     w, h = letter
 
-    # Visual tokens (match full report)
     margin   = inch * 0.75
     navy     = colors.HexColor("#002c47")
     teal     = colors.HexColor("#4bc3cf")
     panel_bg = colors.white
 
-    # --- Header ---
+    # Header
     base_path = pathlib.Path(__file__).parent.resolve()
     auto_logo = base_path / "logo.png"
     chosen_logo = (pathlib.Path(logo_path) if logo_path else auto_logo) if (logo_path or auto_logo.is_file()) else None
     if chosen_logo and chosen_logo.is_file():
         logo   = ImageReader(str(chosen_logo))
-        width  = 1.3 * inch
-        height = 1.3 * inch
+        width  = 1.3 * inch; height = 1.3 * inch
         x_margin, y_margin = 0.4 * inch, 0.45 * inch
-        x = w - x_margin - width
-        y = h - y_margin - height
-        c.drawImage(logo, x=x, y=y, width=width, height=height, preserveAspectRatio=True, mask="auto")
+        c.drawImage(logo, x=w - x_margin - width, y=h - y_margin - height, width=width, height=height, preserveAspectRatio=True, mask="auto")
 
-    c.setFillColor(teal)
-    c.setFont("Raleway-Bold", 19)
-    c.drawString(margin, h - margin - 0.00 * inch, client_name)
+    c.setFillColor(teal);  c.setFont("Raleway-Bold", 19); c.drawString(margin, h - margin - 0.00 * inch, client_name)
+    c.setFillColor(navy);  c.setFont("Raleway", 22);      c.drawString(margin, h - margin - 0.40 * inch, "Weekly Reporting")
+    c.setFont("Raleway", 15); c.setFillColor(navy);       c.drawString(margin, h - margin - 0.71 * inch, report_date)
 
-    c.setFillColor(navy)
-    c.setFont("Raleway", 22)
-    c.drawString(margin, h - margin - 0.40 * inch, "Weekly Reporting")
-
-    c.setFont("Raleway", 15)
-    c.setFillColor(navy)
-    c.drawString(margin, h - margin - 0.71 * inch, report_date)
-
-    # --- 2×2 Grid layout (same sizing as before) ---
-    card_w = 3.7 * inch
-    card_h = 3.6 * inch
-    gap    = 0.15 * inch
-
+    # Grid
+    card_w = 3.7 * inch; card_h = 3.6 * inch; gap = 0.15 * inch
     row1_top = h - margin - 1.0 * inch
     row2_top = row1_top - card_h - gap
-
     total_w = (2 * card_w) + gap
     side_margin = (w - total_w) / 2.0
     x_left  = side_margin
     x_right = x_left + card_w + gap
 
-    # --- Helpers (consistent spacing & visuals) ---
-    def draw_card_shell(x: float, y_top: float, w_: float, h_: float, title: str) -> None:
+    def _draw_card_shell(x: float, y_top: float, w_: float, h_: float, title: str) -> None:
         c.setFillColor(panel_bg)
         c.roundRect(x, y_top - h_, w_, h_, radius=10, stroke=0, fill=1)
         c.setStrokeColor(teal)
         c.roundRect(x, y_top - h_, w_, h_, radius=10, stroke=1, fill=0)
-        c.setFont("Raleway-Bold", 22)
-        c.setFillColor(navy)
+        c.setFont("Raleway-Bold", 22); c.setFillColor(navy)
         c.drawCentredString(x + w_ / 2.0, y_top - 38, title)
 
-    def draw_bullets(x: float, y_top: float, w_: float, start_offset: float, bullets: list[str]) -> float:
-        """
-        Draw uniform bullets; returns next y cursor.
-        """
+    def _draw_bullets(x: float, y_top: float, w_: float, start_offset: float, bullets: list[str]) -> float:
         y = y_top - start_offset
         c.setFont("Raleway", 13)
         for line in bullets:
-            # bullet dot
-            c.setFillColor(navy)
-            c.setStrokeColor(navy)
-            c.circle(x + 16, y + 3.5, 3.5, fill=1)
-            # text
-            c.setFillColor(navy)
-            c.drawString(x + 38, y - 2, line)
-            y -= 24  # uniform spacing
+            c.setFillColor(navy); c.setStrokeColor(navy); c.circle(x + 16, y + 3.5, 3.5, fill=1)
+            c.setFillColor(navy); c.drawString(x + 38, y - 2, line)
+            y -= 24
         return y
 
-    def draw_writein_block(x: float, y: float, w_: float, title: str, min_lines: int = 3) -> None:
-        """
-        Dashed box for manual entry with a small title.
-        """
-        c.setFont("Raleway-Bold", 14)
-        c.setFillColor(navy)
-        c.drawString(x, y, title)
-        box_top = y - 8
-        box_margin = 10
-        box_h = max(24 * min_lines + 2 * box_margin, 80)
-        c.saveState()
-        c.setDash(4, 4)
-        c.setStrokeColor(colors.Color(teal.red, teal.green, teal.blue, alpha=0.6))
-        c.rect(x, box_top - box_h, w_, box_h, stroke=1, fill=0)
-        c.restoreState()
-        c.setFont("Raleway", 10)
-        c.setFillColor(colors.Color(navy.red, navy.green, navy.blue, alpha=0.7))
-        c.drawCentredString(x + w_ / 2.0, box_top - box_h + 6, "Add content later")
-
-    # --- Box 1: Item Sales (Brand Summary + Top SKUs write-in) ---
+    # Box 1 — Item Sales
     x, y_top = x_left, row1_top
-    draw_card_shell(x, y_top, card_w, card_h, "Item Sales")
+    _draw_card_shell(x, y_top, card_w, card_h, "Item Sales")
     bullets_sales = [
-        "Units Sold: __",
-        "Auth Sales: $__",
-        "Avg Conversion: __%",
+        f"Units Sold: {units_total:,}",
+        f"Auth Sales: ${int(round(sales_total)):,}",
+        f"Avg Conversion: {avg_conv_pct}%",
     ]
-    y_cursor = draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_sales)
-    # write-in area
-    draw_writein_block(x + 16, y_cursor - 6, card_w - 32, "Top SKUs:")
+    y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_sales)
+    _draw_writein_block(x + 16, y_cursor - 6, card_w - 32, "Top SKUs (Item Sales) — manual:", top_skus_text)
 
-    # --- Box 2: Inventory (In-Stock Health + Key Callouts write-in) ---
+    # Box 2 — Inventory
     x, y_top = x_right, row1_top
-    draw_card_shell(x, y_top, card_w, card_h, "Inventory")
+    _draw_card_shell(x, y_top, card_w, card_h, "Inventory")
     bullets_inv = [
-        "In-stock rate: __%",
-        "OOS incidents: __ SKUs / 7 days",
-        "At-risk SKUs: __",
+        f"In-stock rate: {in_stock_rate_pct}%",
+        f"OOS SKUs: {oos_count}",
+        f"At-risk SKUs: {at_risk_count}",
     ]
-    y_cursor = draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_inv)
-    draw_writein_block(x + 16, y_cursor - 6, card_w - 32, "Key Callouts:")
+    y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_inv)
+    _draw_writein_block(x + 16, y_cursor - 6, card_w - 32, "Key Callouts (Inventory) — manual:", inventory_callouts_text)
 
-    # --- Box 3: Search Insights (Visibility + Highlights write-in) ---
+    # Box 3 — Search Insights
     x, y_top = x_left, row2_top
-    draw_card_shell(x, y_top, card_w, card_h, "Search Insights")
+    _draw_card_shell(x, y_top, card_w, card_h, "Search Insights")
     bullets_search = [
-        "Avg Impressions Rank: __",
-        "__ SKUs in Top 10 Impressions",
-        "__ SKUs in Top 10 Sales Rank",
+        f"Avg Impressions Rank: {avg_impr_rank}",
+        f"{top10_impr} SKUs in Top 10 Impressions",
+        f"{top10_sales} SKUs in Top 10 Sales Rank",
     ]
-    y_cursor = draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_search)
-    draw_writein_block(x + 16, y_cursor - 6, card_w - 32, "Highlights:")
+    y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_search)
+    _draw_writein_block(x + 16, y_cursor - 6, card_w - 32, "Highlights (Search Insights) — manual:", search_highlights_text)
 
-    # --- Box 4: General Metrics (3 placeholder bullets) ---
+    # Box 4 — Advertising (placeholders)
     x, y_top = x_right, row2_top
-    draw_card_shell(x, y_top, card_w, card_h, "Advertising")
-    bullets_general = [
-        "Metric A: __",
-        "Metric B: __",
-        "Metric C: __",
-    ]
-    _ = draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_general)
+    _draw_card_shell(x, y_top, card_w, card_h, "Advertising")
+    bullets_general = ["Metric A: __", "Metric B: __", "Metric C: __"]
+    _ = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_general)
 
-    # --- Footer ---
-    c.setFont("Raleway", 8)
-    c.setFillColor(colors.HexColor("#200453"))
+    # Footer
+    c.setFont("Raleway", 8); c.setFillColor(colors.HexColor("#200453"))
     c.drawCentredString(w / 2, 0.45 * inch, f"Generated by Soapbox Retail • {datetime.now().strftime('%B %d, %Y')}")
     c.setFillColor(colors.black)
 
     c.save()
     buf.seek(0)
     return buf.getvalue()
+
 
 
   # <--- THIS LINE is important!

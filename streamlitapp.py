@@ -3,7 +3,6 @@
 import os
 import sys
 from datetime import date
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
@@ -142,11 +141,18 @@ st.markdown("## 3P — Weekly Content Reporting")
 # Mode selector: Catalog vs Managed
 mode_3p = st.radio("Mode", ["Catalog", "Managed"], horizontal=True, key="mode_3p")
 
+# 3P header inputs (separate from 1P)
+c_hdr1, c_hdr2 = st.columns([2, 1])
+with c_hdr1:
+    client_name_3p = st.text_input("Client Name (3P)", value="", key="client_name_3p")
+with c_hdr2:
+    report_date_3p = st.date_input("Report Date (3P)", value=date.today(), key="report_date_3p")
+
 # If Managed, show an extra uploader for the managed SKUs list
 managed_file = None
 if mode_3p == "Managed":
     managed_file = st.file_uploader(
-        "Managed SKUs (IDs list)",
+        "Managed SKUs (IDs/Names list)",
         type=["xlsx", "csv"],
         key="uploader_3p_managed",
         help="Upload a file containing the SKU/Item ID list to limit calculations to managed items."
@@ -161,21 +167,15 @@ with c2:
 with c3:
     file_z = st.file_uploader("Upload Search Insights", type=["xlsx", "csv"], key="uploader_3p_z")
 
-# Replace textarea with dropdown + integer value (keeps downstream variable name)
-metric_period_3p = st.selectbox(
-    "Metric period",
-    [
-        "today",
-        "yesterday",
-        "last 7 days",
-        "last 30 days",
-        "month to date (MTD)",
-        "year to date (YTD)",
-    ],
-    key="metric_period_3p",
-)
-metric_value_3p = st.number_input("Value", value=0, step=1, format="%d", key="metric_value_3p")
-metrics_3p_text = f"{metric_period_3p}: {metric_value_3p}"
+# Manual textareas (always visible; non-persistent)
+st.markdown("### Manual Content (renders in dashed areas on the PDF)")
+c_txt1, c_txt2, c_txt3 = st.columns(3)
+with c_txt1:
+    manual_top_skus = st.text_area("Top SKUs (Item Sales) — manual", height=150, key="manual_top_skus")
+with c_txt2:
+    manual_inventory_callouts = st.text_area("Key Callouts (Inventory) — manual", height=150, key="manual_inventory_callouts")
+with c_txt3:
+    manual_search_highlights = st.text_area("Highlights (Search Insights) — manual", height=150, key="manual_search_highlights")
 
 # Managed context (IDs/Names sets)
 managed_ids, managed_names = set(), set()
@@ -186,25 +186,48 @@ if mode_3p == "Managed" and managed_file is not None:
     except Exception as e:
         st.error(f"Managed SKUs file error: {e}")
 elif mode_3p == "Managed":
-    st.info("Mode: **Managed** — Please upload the Managed SKUs (IDs list).")
+    st.info("Mode: **Managed** — Please upload the Managed SKUs (IDs/Names list).")
 
-# Previews (3P) — Managed-aware filtering; Z uses the dedicated loader + validation
+# Previews (3P) — Managed-aware filtering
 preview_cols = st.columns(3)
 
-# X — Item Sales (validated loader; filtered if Managed)
+# Helper: normalize Item conversion to 0..100 (simple and robust, blanks→0)
+def _coerce_conversion_pp(series: pd.Series) -> pd.Series:
+    s = series.astype(str).str.replace("%", "", regex=False).str.replace(",", "", regex=False).str.strip()
+    s = pd.to_numeric(s, errors="coerce").fillna(0.0)
+    nonnull = s[s.notna()]
+    if len(nonnull):
+        share_gt1 = (nonnull > 1.0).mean()
+        if share_gt1 < 0.8:
+            s = s * 100.0
+    return s.clip(0.0, 100.0).astype(float)
+
+# ---------- X — Item Sales ----------
 with preview_cols[0]:
     st.caption("Data Preview (Item Sales)")
+    df_x = None
     if file_x:
         try:
-            df_x = load_item_sales(file_x)  # validated + typed
+            df_x = load_item_sales(file_x)
+            df_view = df_x
+            stats_x = None
             if mode_3p == "Managed" and (managed_ids or managed_names):
-                df_fx, stats_x = filter_by_managed(df_x, managed_ids, managed_names)
+                df_view, stats_x = filter_by_managed(df_x, managed_ids, managed_names)
                 st.write(f"Showing {stats_x['matched']} of {stats_x['total']} (managed subset)")
                 if stats_x["matched"] == 0 and stats_x["unmatched_sample"]:
                     st.warning(f"No matches. Sample unmatched IDs: {', '.join(stats_x['unmatched_sample'])}")
-                st.dataframe(df_fx.head(15), height=260, use_container_width=True)
-            else:
-                st.dataframe(df_x.head(15), height=260, use_container_width=True)
+            st.dataframe(df_view.head(15), height=260, use_container_width=True)
+
+            # Calculated preview: Units, Auth Sales, Avg Conversion (whole %)
+            units_total = int(pd.to_numeric(df_view.get("Units Sold"), errors="coerce").fillna(0).sum()) if not df_view.empty else 0
+            sales_total = float(pd.to_numeric(df_view.get("Auth Sales"), errors="coerce").fillna(0.0).sum()) if not df_view.empty else 0.0
+            conv_pp = _coerce_conversion_pp(df_view.get("Item conversion", pd.Series(dtype=float))) if not df_view.empty else pd.Series([], dtype=float)
+            avg_conv_pct = int(round(float(conv_pp.mean()))) if len(conv_pp) else 0
+
+            st.markdown("**Calculated (Item Sales):**")
+            st.write(f"- Units Sold: {units_total:,}")
+            st.write(f"- Auth Sales: ${int(round(sales_total)):,}")
+            st.write(f"- Avg Conversion: {avg_conv_pct}%")
         except Exception as e:
             st.error(
                 "Item Sales file doesn’t match required columns. "
@@ -215,20 +238,38 @@ with preview_cols[0]:
     else:
         st.info("Upload Item Sales Report to preview.")
 
-# Y — Inventory (validated loader; filtered if Managed)
+# ---------- Y — Inventory ----------
 with preview_cols[1]:
     st.caption("Data Preview (Inventory)")
+    df_y = None
     if file_y:
         try:
-            df_y = load_inventory(file_y)  # validates headers, coerces types
+            df_y = load_inventory(file_y)
+            df_view = df_y
+            stats_y = None
             if mode_3p == "Managed" and (managed_ids or managed_names):
-                df_fy, stats_y = filter_by_managed(df_y, managed_ids, managed_names)
+                df_view, stats_y = filter_by_managed(df_y, managed_ids, managed_names)
                 st.write(f"Showing {stats_y['matched']} of {stats_y['total']} (managed subset)")
                 if stats_y["matched"] == 0 and stats_y["unmatched_sample"]:
                     st.warning(f"No matches. Sample unmatched IDs: {', '.join(stats_y['unmatched_sample'])}")
-                st.dataframe(df_fy.head(15), height=260, use_container_width=True)
-            else:
-                st.dataframe(df_y.head(15), height=260, use_container_width=True)
+            st.dataframe(df_view.head(15), height=260, use_container_width=True)
+
+            # Calculated preview: In-stock rate (whole %), raw counts (preview only)
+            status_col = "Status" if "Status" in df_view.columns else ("Stock status" if "Stock status" in df_view.columns else None)
+            in_stock_rate_pct = 0
+            raw_in = raw_total = raw_oos = raw_risk = 0
+            if status_col and not df_view.empty:
+                status_norm = df_view[status_col].astype(str).str.strip().str.lower()
+                raw_total = len(status_norm)
+                raw_in = int((status_norm == "in stock").sum())
+                raw_oos = int((status_norm == "out of stock").sum())
+                raw_risk = int((status_norm == "at risk").sum())
+                in_stock_rate_pct = int(round((raw_in / raw_total) * 100)) if raw_total else 0
+
+            st.markdown("**Calculated (Inventory):**")
+            st.write(f"- In-stock rate: {in_stock_rate_pct}%  _(preview: {raw_in}/{raw_total} in stock)_")
+            st.write(f"- OOS SKUs: {raw_oos}")
+            st.write(f"- At-risk SKUs: {raw_risk}")
         except Exception as e:
             st.error(
                 "Inventory file doesn’t match required columns. "
@@ -238,20 +279,33 @@ with preview_cols[1]:
     else:
         st.info("Upload Inventory Report to preview.")
 
-# Z — Search Insights (validated loader; filtered if Managed)
+# ---------- Z — Search Insights ----------
 with preview_cols[2]:
     st.caption("Data Preview (Search Insights)")
+    df_z = None
     if file_z:
         try:
             df_z = load_search_insights(file_z)
+            df_view = df_z
+            stats_z = None
             if mode_3p == "Managed" and (managed_ids or managed_names):
-                df_fz, stats_z = filter_by_managed(df_z, managed_ids, managed_names)
+                df_view, stats_z = filter_by_managed(df_z, managed_ids, managed_names)
                 st.write(f"Showing {stats_z['matched']} of {stats_z['total']} (managed subset)")
                 if stats_z["matched"] == 0 and stats_z["unmatched_sample"]:
                     st.warning(f"No matches. Sample unmatched IDs: {', '.join(stats_z['unmatched_sample'])}")
-                st.dataframe(df_fz.head(15), height=260, use_container_width=True)
-            else:
-                st.dataframe(df_z.head(15), height=260, use_container_width=True)
+            st.dataframe(df_view.head(15), height=260, use_container_width=True)
+
+            # Calculated preview: Avg Impressions Rank (whole), Top-10 counts
+            impr = pd.to_numeric(df_view.get("Impressions Rank"), errors="coerce").dropna()
+            avg_impr_rank = int(round(float(impr.mean()))) if len(impr) else 0
+            top10_impr = int((impr <= 10).sum())
+            sales_rank = pd.to_numeric(df_view.get("Sales Rank"), errors="coerce")
+            top10_sales = int((sales_rank <= 10).sum()) if "Sales Rank" in df_view.columns else 0
+
+            st.markdown("**Calculated (Search Insights):**")
+            st.write(f"- Avg Impressions Rank: {avg_impr_rank}")
+            st.write(f"- SKUs in Top 10 Impressions: {top10_impr}")
+            st.write(f"- SKUs in Top 10 Sales Rank: {top10_sales}")
         except Exception as e:
             st.error(
                 "Search Insights file doesn’t match required columns. "
@@ -264,21 +318,38 @@ with preview_cols[2]:
 
 # Export 3P PDF
 st.markdown("### Export 3P PDF")
-if st.button("📄 Generate 3P Dashboard PDF", key="export_pdf_3p"):
+export_disabled = any(v is None for v in [file_x, file_y, file_z]) or (mode_3p == "Managed" and managed_file is None)
+if export_disabled:
+    st.info("Upload Item Sales, Inventory, and Search Insights (and Managed list if Managed mode) to enable export.")
+
+if st.button("📄 Generate 3P Dashboard PDF", key="export_pdf_3p", disabled=export_disabled):
     try:
-        # Preferred: new 3P template generator (no data required yet)
+        # Prefer new 3P signature (mirrors 1P pattern but for three files + manual text)
         pdf3 = generate_3p_report(
-            data_src=None,
-            client_name=client_name_1p if 'client_name_1p' in locals() else "Client",
-            report_date=fmt_mdy(date.today()),
+            item_sales_src=file_x,
+            inventory_src=file_y,
+            search_insights_src=file_z,
+            managed_src=managed_file,
+            mode=mode_3p.lower(),
+            client_name=client_name_3p or "Client",
+            report_date=fmt_mdy(report_date_3p) if "fmt_mdy" in globals() else report_date_3p.strftime("%B %d, %Y"),
+            top_skus_text=manual_top_skus or "",
+            inventory_callouts_text=manual_inventory_callouts or "",
+            search_highlights_text=manual_search_highlights or "",
             logo_path=None,  # falls back to ./logo.png
         )
     except TypeError:
         # Fallback to legacy signature if your function still uses it
-        pdf3 = generate_3p_report(file_x, file_y, file_z, metrics_3p_text)  # type: ignore
+        # (kept to avoid breaking while you roll backend changes)
+        pdf3 = generate_3p_report(
+            data_src=None,
+            client_name=client_name_3p or "Client",
+            report_date=fmt_mdy(report_date_3p) if "fmt_mdy" in globals() else report_date_3p.strftime("%B %d, %Y"),
+            logo_path=None,
+        )  # type: ignore
 
     if not pdf3:
-        st.error("3P generator returned no bytes. Ensure main.py defines generate_3p_report(...).")
+        st.error("3P generator returned no bytes. Ensure main.py defines the updated generate_3p_report(...).")
     else:
         st.success("✅ 3P Dashboard PDF ready!")
         st.download_button("⬇️ Download 3P PDF", data=pdf3, file_name="dashboard_3p.pdf", mime="application/pdf")
