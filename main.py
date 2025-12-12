@@ -950,28 +950,38 @@ def generate_3p_report(
         return int((s <= n).sum())
 
     def _draw_writein_block(x: float, y: float, w_: float, title: str, body_text: str, min_lines: int = 3) -> None:
-        # Dashed container
-        c.setFont("Raleway-Bold", 14); c.setFillColor(navy); c.drawString(x, y, title)
+        """Dashed box for manual entry; no placeholder when empty (fixed height)."""
+        c.setFont("Raleway-Bold", 14)
+        c.setFillColor(navy)
+        c.drawString(x, y, title)
+
         box_top = y - 8
         box_margin = 10
         box_h = max(24 * min_lines + 2 * box_margin, 80)
+
+        # Shell
         c.saveState()
-        c.setDash(4, 4); c.setStrokeColor(colors.Color(teal.red, teal.green, teal.blue, alpha=0.6))
+        c.setDash(4, 4)
+        c.setStrokeColor(colors.Color(teal.red, teal.green, teal.blue, alpha=0.6))
         c.rect(x, box_top - box_h, w_, box_h, stroke=1, fill=0)
         c.restoreState()
-        # Body (manual text) in navy, preserving line breaks
-        content = body_text if (body_text or "").strip() else "Add content later"
-        para_style = ParagraphStyle(
-            name="ManualText",
-            fontName="Raleway",
-            fontSize=12,
-            leading=16,
-            textColor=navy,
-        )
-        para = Paragraph(content.replace("\n", "<br/>"), para_style)
-        usable_w = w_ - 2 * box_margin
-        _, ph = para.wrap(usable_w, box_h - 2 * box_margin)
-        para.drawOn(c, x + box_margin, box_top - box_h + box_margin + (box_h - 2 * box_margin - ph))
+
+        # Body text only if provided
+        content = (body_text or "").strip()
+        if content:
+            para_style = ParagraphStyle(
+                name="ManualText",
+                fontName="Raleway",
+                fontSize=12,
+                leading=16,
+                textColor=navy,
+            )
+            para = Paragraph(content.replace("\n", "<br/>"), para_style)
+            usable_w = w_ - 2 * box_margin
+            usable_h = box_h - 2 * box_margin
+            _, ph = para.wrap(usable_w, usable_h)
+            v_offset = (usable_h - ph) / 2 if usable_h > ph else 0  # center vertically if short
+            para.drawOn(c, x + box_margin, box_top - box_h + box_margin + v_offset)
 
     # ── Compute: Item Sales
     units_total = int(pd.to_numeric(df_sales.get("Units Sold"), errors="coerce").fillna(0).sum()) if not df_sales.empty else 0
@@ -1116,4 +1126,3 @@ if __name__ == "__main__":
     with open(args.out, "wb") as f:
         f.write(pdf)
     print(f"Wrote {args.out}")
-
