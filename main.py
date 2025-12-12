@@ -914,30 +914,27 @@ def generate_3p_report(
 ) -> bytes:
     """
     3P template PDF populated from three reports after Catalog/Managed filtering.
-    Manual text areas are rendered in dashed boxes (navy, Raleway). Returns PDF bytes.
+    Manual text areas are rendered as plain text (no dashed boxes). Returns PDF bytes.
     """
-    # ── Load data (reuse your loaders)
+    # ── Load data
     df_sales  = load_item_sales(item_sales_src)
     df_inv    = load_inventory(inventory_src)
     df_search = load_search_insights(search_insights_src)
 
-    # ── Managed filter (ID OR Name + gated Base+Name as already implemented)
+    # ── Managed filter (ID OR Name + gated Base+Name as implemented elsewhere)
     if str(mode).strip().lower() == "managed":
         ids_set, names_set = load_managed_keys(managed_src)
         df_sales,  _ = filter_by_managed(df_sales,  ids_set, names_set)
         df_inv,    _ = filter_by_managed(df_inv,    ids_set, names_set)
         df_search, _ = filter_by_managed(df_search, ids_set, names_set)
 
-    # ── Helpers (formatting + coercion)
+    # ── Helpers
     def _coerce_conversion_pp(series: pd.Series) -> pd.Series:
-        # Why: normalize Item conversion to 0..100 percent points
         s = series.astype(str).str.replace("%", "", regex=False).str.replace(",", "", regex=False).str.strip()
         s = pd.to_numeric(s, errors="coerce").fillna(0.0)
         nonnull = s[s.notna()]
         if len(nonnull):
-            # Detect if values are 0..1 fractions rather than 0..100 points
-            share_gt1 = (nonnull > 1.0).mean()
-            if share_gt1 < 0.8:
+            if (nonnull > 1.0).mean() < 0.8:  # likely 0..1
                 s = s * 100.0
         return s.clip(0.0, 100.0).astype(float)
 
@@ -949,25 +946,15 @@ def generate_3p_report(
         s = pd.to_numeric(series, errors="coerce")
         return int((s <= n).sum())
 
-    def _draw_writein_block(x: float, y: float, w_: float, title: str, body_text: str, min_lines: int = 3) -> None:
-        """Dashed box for manual entry; no placeholder when empty (fixed height)."""
+    def _writein_text(x: float, y: float, w_: float, title: str, body_text: str, min_height: float = 80.0) -> float:
+        """Title + optional body text. No box. Returns bottom Y for spacing."""
+        # Title
         c.setFont("Raleway-Bold", 14)
         c.setFillColor(navy)
         c.drawString(x, y, title)
-
-        box_top = y - 8
-        box_margin = 10
-        box_h = max(24 * min_lines + 2 * box_margin, 80)
-
-        # Shell
-        c.saveState()
-        c.setDash(4, 4)
-        c.setStrokeColor(colors.Color(teal.red, teal.green, teal.blue, alpha=0.6))
-        c.rect(x, box_top - box_h, w_, box_h, stroke=1, fill=0)
-        c.restoreState()
-
-        # Body text only if provided
+        # Body (optional)
         content = (body_text or "").strip()
+        used_h = 0.0
         if content:
             para_style = ParagraphStyle(
                 name="ManualText",
@@ -977,19 +964,20 @@ def generate_3p_report(
                 textColor=navy,
             )
             para = Paragraph(content.replace("\n", "<br/>"), para_style)
-            usable_w = w_ - 2 * box_margin
-            usable_h = box_h - 2 * box_margin
-            _, ph = para.wrap(usable_w, usable_h)
-            v_offset = (usable_h - ph) / 2 if usable_h > ph else 0  # center vertically if short
-            para.drawOn(c, x + box_margin, box_top - box_h + box_margin + v_offset)
+            usable_w = w_
+            _, ph = para.wrap(usable_w, min_height)
+            para.drawOn(c, x, y - 16 - ph)
+            used_h = 16 + ph  # title gap + paragraph
+        # Enforce fixed minimum height for layout consistency
+        block_h = max(min_height, used_h or 16)  # at least title line
+        return y - block_h
 
-    # ── Compute: Item Sales
+    # ── Compute metrics
     units_total = int(pd.to_numeric(df_sales.get("Units Sold"), errors="coerce").fillna(0).sum()) if not df_sales.empty else 0
     sales_total = float(pd.to_numeric(df_sales.get("Auth Sales"), errors="coerce").fillna(0.0).sum()) if not df_sales.empty else 0.0
     conv_pp = _coerce_conversion_pp(df_sales.get("Item conversion", pd.Series(dtype=float))) if not df_sales.empty else pd.Series([], dtype=float)
     avg_conv_pct = int(round(float(conv_pp.mean()))) if len(conv_pp) else 0
 
-    # ── Compute: Inventory (support "Status" or "Stock status")
     status_col = "Status" if "Status" in df_inv.columns else ("Stock status" if "Stock status" in df_inv.columns else None)
     in_stock_rate_pct = 0
     oos_count = 0
@@ -1002,12 +990,11 @@ def generate_3p_report(
         oos_count = int((status_norm == "out of stock").sum())
         at_risk_count = int((status_norm == "at risk").sum())
 
-    # ── Compute: Search Insights
     avg_impr_rank = _avg_impressions_rank_whole(df_search.get("Impressions Rank", pd.Series(dtype=float))) if not df_search.empty else 0
     top10_impr = _count_top_n(df_search.get("Impressions Rank", pd.Series(dtype=float)), 10) if not df_search.empty else 0
     top10_sales = _count_top_n(df_search.get("Sales Rank", pd.Series(dtype=float)), 10) if not df_search.empty else 0
 
-    # ── PDF drawing (match your style)
+    # ── PDF drawing
     buf = BytesIO()
     c   = canvas.Canvas(buf, pagesize=letter)
     w, h = letter
@@ -1066,7 +1053,7 @@ def generate_3p_report(
         f"Avg Conversion: {avg_conv_pct}%",
     ]
     y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_sales)
-    _draw_writein_block(x + 16, y_cursor - 6, card_w - 32, "Top SKUs:", top_skus_text)
+    _ = _writein_text(x + 16, y_cursor - 6, card_w - 32, "Top SKUs:", top_skus_text, min_height=80)
 
     # Box 2 — Inventory
     x, y_top = x_right, row1_top
@@ -1077,7 +1064,7 @@ def generate_3p_report(
         f"At-risk SKUs: {at_risk_count}",
     ]
     y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_inv)
-    _draw_writein_block(x + 16, y_cursor - 6, card_w - 32, "Key Callouts:", inventory_callouts_text)
+    _ = _writein_text(x + 16, y_cursor - 6, card_w - 32, "Key Callouts:", inventory_callouts_text, min_height=100)
 
     # Box 3 — Search Insights
     x, y_top = x_left, row2_top
@@ -1088,7 +1075,7 @@ def generate_3p_report(
         f"{top10_sales} SKUs in Top 10 Sales Rank",
     ]
     y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_search)
-    _draw_writein_block(x + 16, y_cursor - 6, card_w - 32, "Highlights:", search_highlights_text)
+    _ = _writein_text(x + 16, y_cursor - 6, card_w - 32, "Highlights:", search_highlights_text, min_height=100)
 
     # Box 4 — Advertising (placeholders)
     x, y_top = x_right, row2_top
