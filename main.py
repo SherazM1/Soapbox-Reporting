@@ -1056,7 +1056,7 @@ def generate_3p_report(
         f"Avg Conversion: {avg_conv_pct}%",
     ]
     y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_sales)
-    _draw_writein_block(x + 16, y_cursor - 6, card_w - 32, "Top SKUs (Item Sales) — manual:", top_skus_text)
+    _draw_writein_block(x + 16, y_cursor - 6, card_w - 32, "Top SKUs:", top_skus_text)
 
     # Box 2 — Inventory
     x, y_top = x_right, row1_top
@@ -1067,7 +1067,7 @@ def generate_3p_report(
         f"At-risk SKUs: {at_risk_count}",
     ]
     y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_inv)
-    _draw_writein_block(x + 16, y_cursor - 6, card_w - 32, "Key Callouts (Inventory) — manual:", inventory_callouts_text)
+    _draw_writein_block(x + 16, y_cursor - 6, card_w - 32, "Key Callouts:", inventory_callouts_text)
 
     # Box 3 — Search Insights
     x, y_top = x_left, row2_top
@@ -1078,7 +1078,7 @@ def generate_3p_report(
         f"{top10_sales} SKUs in Top 10 Sales Rank",
     ]
     y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_search)
-    _draw_writein_block(x + 16, y_cursor - 6, card_w - 32, "Highlights (Search Insights) — manual:", search_highlights_text)
+    _draw_writein_block(x + 16, y_cursor - 6, card_w - 32, "Highlights:", search_highlights_text)
 
     # Box 4 — Advertising (placeholders)
     x, y_top = x_right, row2_top
