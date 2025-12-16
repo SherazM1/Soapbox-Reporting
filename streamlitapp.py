@@ -191,7 +191,7 @@ elif mode_3p == "Managed":
 # Previews (3P) — Managed-aware filtering
 preview_cols = st.columns(3)
 
-# Helper: normalize Item conversion to 0..100 (simple and robust, blanks→0)
+# Helper A: normalize Item conversion to 0..100 (blanks→0) — retained for other uses
 def _coerce_conversion_pp(series: pd.Series) -> pd.Series:
     s = series.astype(str).str.replace("%", "", regex=False).str.replace(",", "", regex=False).str.strip()
     s = pd.to_numeric(s, errors="coerce").fillna(0.0)
@@ -201,6 +201,24 @@ def _coerce_conversion_pp(series: pd.Series) -> pd.Series:
         if share_gt1 < 0.8:
             s = s * 100.0
     return s.clip(0.0, 100.0).astype(float)
+
+# Helper B: Excel-style mean for conversion (🟨 used for preview Avg Conversion)
+def _excel_mean_conversion_pp(series: pd.Series) -> float:
+    # strip symbols -> numeric; blanks stay NaN and are excluded from mean
+    s = (
+        series.astype(str)
+        .str.replace("%", "", regex=False)
+        .str.replace(",", "", regex=False)
+        .str.strip()
+    )
+    s = pd.to_numeric(s, errors="coerce")  # blanks -> NaN
+    nonnull = s.dropna()
+    if nonnull.empty:
+        return 0.0
+    # scale detection: if most values ≤ 1, treat as fractions
+    if (nonnull <= 1.0).mean() >= 0.8:
+        nonnull = nonnull * 100.0
+    return float(nonnull.mean())
 
 # ---------- X — Item Sales ----------
 with preview_cols[0]:
@@ -218,16 +236,15 @@ with preview_cols[0]:
                     st.warning(f"No matches. Sample unmatched IDs: {', '.join(stats_x['unmatched_sample'])}")
             st.dataframe(df_view.head(15), height=260, use_container_width=True)
 
-            # Calculated preview: Units, Auth Sales, Avg Conversion (whole %)
+            # Calculated preview: Units, Auth Sales (with cents), Avg Conversion (Excel-style mean, 2 decimals)
             units_total = int(pd.to_numeric(df_view.get("Units Sold"), errors="coerce").fillna(0).sum()) if not df_view.empty else 0
-            sales_total = float(pd.to_numeric(df_view.get("Auth Sales"), errors="coerce").fillna(0.0).sum()) if not df_view.empty else 0.0
-            conv_pp = _coerce_conversion_pp(df_view.get("Item conversion", pd.Series(dtype=float))) if not df_view.empty else pd.Series([], dtype=float)
-            avg_conv_pct = int(round(float(conv_pp.mean()))) if len(conv_pp) else 0
+            sales_total = float(pd.to_numeric(df_view.get("Auth Sales"), errors="coerce").sum()) if not df_view.empty else 0.0
+            avg_conv_pct = _excel_mean_conversion_pp(df_view.get("Item conversion", pd.Series(dtype=float))) if not df_view.empty else 0.0
 
             st.markdown("**Calculated (Item Sales):**")
             st.write(f"- Units Sold: {units_total:,}")
-            st.write(f"- Auth Sales: ${int(round(sales_total)):,}")
-            st.write(f"- Avg Conversion: {avg_conv_pct}%")
+            st.write(f"- Auth Sales: ${sales_total:,.2f}")          # <-- show cents
+            st.write(f"- Avg Conversion: {avg_conv_pct:.2f}%")      # <-- Excel-style mean, 2 decimals
         except Exception as e:
             st.error(
                 "Item Sales file doesn’t match required columns. "
@@ -324,7 +341,6 @@ if export_disabled:
 
 if st.button("📄 Generate 3P Dashboard PDF", key="export_pdf_3p", disabled=export_disabled):
     try:
-        # Prefer new 3P signature (mirrors 1P pattern but for three files + manual text)
         pdf3 = generate_3p_report(
             item_sales_src=file_x,
             inventory_src=file_y,
@@ -336,11 +352,9 @@ if st.button("📄 Generate 3P Dashboard PDF", key="export_pdf_3p", disabled=exp
             top_skus_text=manual_top_skus or "",
             inventory_callouts_text=manual_inventory_callouts or "",
             search_highlights_text=manual_search_highlights or "",
-            logo_path=None,  # falls back to ./logo.png
+            logo_path=None,
         )
     except TypeError:
-        # Fallback to legacy signature if your function still uses it
-        # (kept to avoid breaking while you roll backend changes)
         pdf3 = generate_3p_report(
             data_src=None,
             client_name=client_name_3p or "Client",
