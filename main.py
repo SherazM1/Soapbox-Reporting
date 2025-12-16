@@ -1076,9 +1076,9 @@ def generate_3p_report(
     x, y_top = x_right, row1_top
     _draw_card_shell(x, y_top, card_w, card_h, "Inventory")
     bullets_inv = [
-        f"In-stock rate: {in_stock_rate_pct}%",
+        f"In-Stock Rate: {in_stock_rate_pct}%",
         f"OOS SKUs: {oos_count}",
-        f"At-risk SKUs: {at_risk_count}",
+        f"At-Risk SKUs: {at_risk_count}",
     ]
     y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_inv)
     _ = _writein_text(x + 16, y_cursor - 6, card_w - 32, "Key Callouts:", inventory_callouts_text, min_height=100)
