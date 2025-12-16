@@ -929,14 +929,29 @@ def generate_3p_report(
         df_search, _ = filter_by_managed(df_search, ids_set, names_set)
 
     # ── Helpers
-    def _coerce_conversion_pp(series: pd.Series) -> pd.Series:
-        s = series.astype(str).str.replace("%", "", regex=False).str.replace(",", "", regex=False).str.strip()
-        s = pd.to_numeric(s, errors="coerce").fillna(0.0)
-        nonnull = s[s.notna()]
-        if len(nonnull):
-            if (nonnull > 1.0).mean() < 0.8:  # likely 0..1
-                s = s * 100.0
-        return s.clip(0.0, 100.0).astype(float)
+    def _mean_conversion_pp_excel(series: pd.Series) -> float:
+        """
+        Excel-like mean for conversion:
+        - Blanks ignored (NaN); zeros included.
+        - Detect scale: if most non-null values ≤ 1 → treat as fractions (×100).
+        - Return mean as percent points (0..100) with decimals preserved.
+        """
+        if series is None or len(series) == 0:
+            return 0.0
+        s = (
+            series.astype(str)
+            .str.replace("%", "", regex=False)
+            .str.replace(",", "", regex=False)
+            .str.strip()
+        )
+        s = pd.to_numeric(s, errors="coerce")  # blanks -> NaN
+        nonnull = s.dropna()
+        if nonnull.empty:
+            return 0.0
+        # Scale detection: consider as fractions if most values are ≤ 1
+        if (nonnull <= 1.0).mean() >= 0.8:
+            nonnull = nonnull * 100.0
+        return float(nonnull.mean())
 
     def _avg_impressions_rank_whole(series: pd.Series) -> int:
         s = pd.to_numeric(series, errors="coerce").dropna()
@@ -948,11 +963,9 @@ def generate_3p_report(
 
     def _writein_text(x: float, y: float, w_: float, title: str, body_text: str, min_height: float = 80.0) -> float:
         """Title + optional body text. No box. Returns bottom Y for spacing."""
-        # Title
         c.setFont("Raleway-Bold", 14)
         c.setFillColor(navy)
         c.drawString(x, y, title)
-        # Body (optional)
         content = (body_text or "").strip()
         used_h = 0.0
         if content:
@@ -968,16 +981,19 @@ def generate_3p_report(
             _, ph = para.wrap(usable_w, min_height)
             para.drawOn(c, x, y - 16 - ph)
             used_h = 16 + ph  # title gap + paragraph
-        # Enforce fixed minimum height for layout consistency
-        block_h = max(min_height, used_h or 16)  # at least title line
+        block_h = max(min_height, used_h or 16)
         return y - block_h
 
-    # ── Compute metrics
+    # ── Compute metrics (Excel-consistent)
     units_total = int(pd.to_numeric(df_sales.get("Units Sold"), errors="coerce").fillna(0).sum()) if not df_sales.empty else 0
-    sales_total = float(pd.to_numeric(df_sales.get("Auth Sales"), errors="coerce").fillna(0.0).sum()) if not df_sales.empty else 0.0
-    conv_pp = _coerce_conversion_pp(df_sales.get("Item conversion", pd.Series(dtype=float))) if not df_sales.empty else pd.Series([], dtype=float)
-    avg_conv_pct = int(round(float(conv_pp.mean()))) if len(conv_pp) else 0
 
+    # keep cents for Auth Sales; display with 2 decimals
+    sales_total = float(pd.to_numeric(df_sales.get("Auth Sales"), errors="coerce").sum()) if not df_sales.empty else 0.0
+
+    # Avg conversion: ignore blanks, include zeros; 2 decimals for display
+    avg_conv_pct = _mean_conversion_pp_excel(df_sales.get("Item conversion", pd.Series(dtype=float))) if not df_sales.empty else 0.0
+
+    # Inventory (support "Status" or "Stock status")
     status_col = "Status" if "Status" in df_inv.columns else ("Stock status" if "Stock status" in df_inv.columns else None)
     in_stock_rate_pct = 0
     oos_count = 0
@@ -990,6 +1006,7 @@ def generate_3p_report(
         oos_count = int((status_norm == "out of stock").sum())
         at_risk_count = int((status_norm == "at risk").sum())
 
+    # Search Insights
     avg_impr_rank = _avg_impressions_rank_whole(df_search.get("Impressions Rank", pd.Series(dtype=float))) if not df_search.empty else 0
     top10_impr = _count_top_n(df_search.get("Impressions Rank", pd.Series(dtype=float)), 10) if not df_search.empty else 0
     top10_sales = _count_top_n(df_search.get("Sales Rank", pd.Series(dtype=float)), 10) if not df_search.empty else 0
@@ -1049,8 +1066,8 @@ def generate_3p_report(
     _draw_card_shell(x, y_top, card_w, card_h, "Item Sales")
     bullets_sales = [
         f"Units Sold: {units_total:,}",
-        f"Auth Sales: ${int(round(sales_total)):,}",
-        f"Avg Conversion: {avg_conv_pct}%",
+        f"Auth Sales: ${sales_total:,.2f}",        # cents preserved
+        f"Avg Conversion: {avg_conv_pct:.2f}%",    # two decimals
     ]
     y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_sales)
     _ = _writein_text(x + 16, y_cursor - 6, card_w - 32, "Top SKUs:", top_skus_text, min_height=80)
@@ -1092,11 +1109,6 @@ def generate_3p_report(
     buf.seek(0)
     return buf.getvalue()
 
-
-
-  # <--- THIS LINE is important!
-
-# ...existing code...
 # ─────────────────────────────────────────────────────────────────────────────
 # CLI Entrypoint
 # ─────────────────────────────────────────────────────────────────────────────
