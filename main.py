@@ -1068,14 +1068,18 @@ def generate_3p_report(
         df_raw = load_dataframe(src)
 
         # Build a case/spacing/alias-insensitive map
-        def _norm(s): return str(s).strip().lower().replace("_", "").replace(" ", "")
-        colmap = {_norm(c): c for c in df_raw.columns}
+        import re
+        def _norm(s):
+            return re.sub(r"[^0-9a-z]+", "", str(s).strip().lower())
+
+        cmap = {_norm(c): c for c in df_adv.columns}
+
 
         def _find(*aliases):
             for a in aliases:
                 k = _norm(a)
-                if k in colmap:
-                    return colmap[k]
+                if k in cmap:
+                    return cmap[k]
             return None
 
         col_spend = _find("Ad Spend", "Spend", "Ad_Spend", "adspend")

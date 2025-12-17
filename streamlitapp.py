@@ -343,8 +343,13 @@ with preview_cols[3]:
             # Lightweight, tolerant loader (frontend-only)
             df_adv_raw = load_dataframe(file_adv)
 
-            def _norm(s): return str(s).strip().lower().replace("_", "").replace(" ", "")
+            import re
+            def _norm(s):
+    # lower, remove every non-alphanumeric char (kills spaces, underscores, hyphens, en-dashes, commas, etc.)
+                return re.sub(r"[^0-9a-z]+", "", str(s).strip().lower())
+
             cmap = {_norm(c): c for c in df_adv_raw.columns}
+
 
             def _find(*aliases):
                 for a in aliases:
@@ -353,10 +358,19 @@ with preview_cols[3]:
                         return cmap[k]
                 return None
 
-            col_spend = _find("ad spend", "spend", "adspend", "adspend$", "adspend($)")
-            col_conv  = _find("conversionrate–14day", "conversionrate-14day", "conversionrate14day",
-                              "conversionrate", "conversionrate%", "conversionrate %")
-            col_roas  = _find("roas–14day", "roas-14day", "roas14day", "roas", "returnonadspend")
+            col_spend = _find(
+    "Ad Spend", "Spend", "Ad_Spend", "adspend", "Total Spend", "Total Ad Spend"
+)
+            col_conv  = _find(
+    "Conversion Rate - 14 Day", "Conversion Rate – 14 Day",  # hyphen & en-dash
+    "Conversion Rate 14 Day", "Conversion Rate",
+    "Conv Rate - 14 Day", "CR - 14 Day", "CR 14 Day"
+)
+            col_roas  = _find(
+    "RoAS - 14 Day", "RoAS – 14 Day",   # hyphen & en-dash
+    "RoAS 14 Day", "ROAS", "Return on Ad Spend"
+)
+
 
             def _to_currency(s: pd.Series) -> pd.Series:
                 return pd.to_numeric(
