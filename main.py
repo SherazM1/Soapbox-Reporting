@@ -1087,7 +1087,7 @@ def generate_3p_report(
     _draw_card_shell(x, y_top, card_w, card_h, "Advertising")
     bullets_adv = [
         f"Total Ad Spend: ${adv_spend_total:,.2f}",
-        f"Total ROAS: ${adv_roas_total:,.2f}",
+        f"Total RoAS: ${adv_roas_total:,.2f}",
         f"Avg Conversion Rate: {adv_conv_avg:.2f}%",
     ]
     y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_adv)
