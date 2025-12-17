@@ -910,10 +910,19 @@ def generate_3p_report(
     top_skus_text: str = "",                  # manual (Item Sales box)
     inventory_callouts_text: str = "",        # manual (Inventory box)
     search_highlights_text: str = "",         # manual (Search box)
+    advertising_src=None,                     # NEW: Advertising report (CSV/XLSX)
+    advertising_notes_text: str = "",         # NEW: manual notes for Advertising
     logo_path: str | None = None
 ) -> bytes:
     """
-    3P template PDF populated from three reports after Catalog/Managed filtering.
+    3P template PDF populated from three reports after Catalog/Managed filtering,
+    plus an independent Advertising report.
+
+    Item Sales/Auth/Conversion are computed from Item Sales (managed-aware).
+    Inventory metrics from Inventory (managed-aware).
+    Search metrics from Search Insights (managed-aware).
+    Advertising metrics (sum Ad Spend, sum ROAS, avg Conversion Rate) are independent
+    of Catalog/Managed and use only the uploaded Advertising file.
     Manual text areas are rendered as plain text (no dashed boxes). Returns PDF bytes.
     """
     # ── Load data
@@ -934,7 +943,7 @@ def generate_3p_report(
         Excel-like mean for conversion:
         - Blanks ignored (NaN); zeros included.
         - Detect scale: if most non-null values ≤ 1 → treat as fractions (×100).
-        - Return mean as percent points (0..100) with decimals preserved.
+        - Return mean as percent points (0..100).
         """
         if series is None or len(series) == 0:
             return 0.0
@@ -948,8 +957,7 @@ def generate_3p_report(
         nonnull = s.dropna()
         if nonnull.empty:
             return 0.0
-        # Scale detection: consider as fractions if most values are ≤ 1
-        if (nonnull <= 1.0).mean() >= 0.8:
+        if (nonnull <= 1.0).mean() >= 0.8:  # likely 0..1
             nonnull = nonnull * 100.0
         return float(nonnull.mean())
 
@@ -984,12 +992,77 @@ def generate_3p_report(
         block_h = max(min_height, used_h or 16)
         return y - block_h
 
+    # --- Advertising loader (internal, tolerant) ---
+    def _load_advertising_df(src) -> pd.DataFrame:
+        """
+        Reads CSV/XLSX and returns a df with three canonical columns:
+          - Ad Spend (currency)
+          - Conversion Rate – 14 Day (percent)
+          - RoAS – 14 Day (currency)
+        Only these three columns are used; others are ignored.
+        """
+        if src is None:
+            return pd.DataFrame(columns=["Ad Spend", "Conversion Rate – 14 Day", "RoAS – 14 Day"])
+        df_raw = load_dataframe(src)
+
+        # Build a case/spacing/alias-insensitive map
+        def _norm(s): return str(s).strip().lower().replace("_", "").replace(" ", "")
+        colmap = {_norm(c): c for c in df_raw.columns}
+
+        def _find(*aliases):
+            for a in aliases:
+                k = _norm(a)
+                if k in colmap:
+                    return colmap[k]
+            return None
+
+        col_spend = _find("Ad Spend", "Spend", "Ad_Spend", "adspend")
+        col_conv  = _find("Conversion Rate – 14 Day", "Conversion Rate - 14 Day", "Conversion Rate 14 Day", "Conversion Rate", "conv rate", "conversionrate")
+        col_roas  = _find("RoAS – 14 Day", "RoAS - 14 Day", "RoAS 14 Day", "ROAS", "roas")
+
+        # Create a working frame with only the needed columns (tolerant missing -> empty)
+        df = pd.DataFrame()
+        if col_spend is not None:
+            df["Ad Spend"] = df_raw[col_spend]
+        else:
+            df["Ad Spend"] = pd.Series(dtype=float)
+
+        if col_conv is not None:
+            df["Conversion Rate – 14 Day"] = df_raw[col_conv]
+        else:
+            df["Conversion Rate – 14 Day"] = pd.Series(dtype=float)
+
+        if col_roas is not None:
+            df["RoAS – 14 Day"] = df_raw[col_roas]
+        else:
+            df["RoAS – 14 Day"] = pd.Series(dtype=float)
+
+        # Coercions
+        def _to_currency(s: pd.Series) -> pd.Series:
+            return pd.to_numeric(
+                s.astype(str).str.replace("$", "", regex=False).str.replace(",", "", regex=False).str.strip(),
+                errors="coerce"
+            ).fillna(0.0)
+
+        def _to_percent_vals(s: pd.Series) -> pd.Series:
+            # keep as 0..100 numbers; blanks ignored in mean calc later
+            s = s.astype(str).str.replace("%", "", regex=False).str.replace(",", "", regex=False).str.strip()
+            s = pd.to_numeric(s, errors="coerce")  # NaN for blanks
+            # If mostly ≤1, treat as fraction → ×100
+            nonnull = s.dropna()
+            if not nonnull.empty and (nonnull <= 1.0).mean() >= 0.8:
+                s = s * 100.0
+            return s
+
+        df["Ad Spend"] = _to_currency(df["Ad Spend"])
+        df["RoAS – 14 Day"] = _to_currency(df["RoAS – 14 Day"])
+        df["Conversion Rate – 14 Day"] = _to_percent_vals(df["Conversion Rate – 14 Day"])
+        return df
+
     # ── Compute metrics (Excel-consistent)
     units_total = int(pd.to_numeric(df_sales.get("Units Sold"), errors="coerce").fillna(0).sum()) if not df_sales.empty else 0
-
     # keep cents for Auth Sales; display with 2 decimals
     sales_total = float(pd.to_numeric(df_sales.get("Auth Sales"), errors="coerce").sum()) if not df_sales.empty else 0.0
-
     # Avg conversion: ignore blanks, include zeros; 2 decimals for display
     avg_conv_pct = _mean_conversion_pp_excel(df_sales.get("Item conversion", pd.Series(dtype=float))) if not df_sales.empty else 0.0
 
@@ -1010,6 +1083,18 @@ def generate_3p_report(
     avg_impr_rank = _avg_impressions_rank_whole(df_search.get("Impressions Rank", pd.Series(dtype=float))) if not df_search.empty else 0
     top10_impr = _count_top_n(df_search.get("Impressions Rank", pd.Series(dtype=float)), 10) if not df_search.empty else 0
     top10_sales = _count_top_n(df_search.get("Sales Rank", pd.Series(dtype=float)), 10) if not df_search.empty else 0
+
+    # Advertising (independent)
+    df_adv = _load_advertising_df(advertising_src)
+    if df_adv.empty:
+        adv_spend_total = 0.0
+        adv_roas_total = 0.0
+        adv_conv_avg = 0.0
+    else:
+        adv_spend_total = float(df_adv["Ad Spend"].sum())
+        adv_roas_total  = float(df_adv["RoAS – 14 Day"].sum())
+        nonnull_conv = df_adv["Conversion Rate – 14 Day"].dropna()
+        adv_conv_avg = float(nonnull_conv.mean()) if len(nonnull_conv) else 0.0
 
     # ── PDF drawing
     buf = BytesIO()
@@ -1094,11 +1179,16 @@ def generate_3p_report(
     y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_search)
     _ = _writein_text(x + 16, y_cursor - 6, card_w - 32, "Highlights:", search_highlights_text, min_height=100)
 
-    # Box 4 — Advertising (placeholders)
+    # Box 4 — Advertising (now calculated + notes)
     x, y_top = x_right, row2_top
     _draw_card_shell(x, y_top, card_w, card_h, "Advertising")
-    bullets_general = ["Metric A: __", "Metric B: __", "Metric C: __"]
-    _ = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_general)
+    bullets_adv = [
+        f"Total Ad Spend: ${adv_spend_total:,.2f}",
+        f"Total ROAS: ${adv_roas_total:,.2f}",
+        f"Avg Conversion Rate: {adv_conv_avg:.2f}%",
+    ]
+    y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_adv)
+    _ = _writein_text(x + 16, y_cursor - 6, card_w - 32, "Notes:", advertising_notes_text, min_height=100)
 
     # Footer
     c.setFont("Raleway", 8); c.setFillColor(colors.HexColor("#200453"))
@@ -1108,6 +1198,7 @@ def generate_3p_report(
     c.save()
     buf.seek(0)
     return buf.getvalue()
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CLI Entrypoint

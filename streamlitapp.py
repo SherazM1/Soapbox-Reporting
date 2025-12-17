@@ -159,23 +159,27 @@ if mode_3p == "Managed":
     )
 
 st.markdown("**Upload excel(s) or csv — these will each be labeled**")
-c1, c2, c3 = st.columns(3)
+c1, c2, c3, c4 = st.columns(4)
 with c1:
     file_x = st.file_uploader("Upload Item Sales Report", type=["xlsx", "csv"], key="uploader_3p_x")
 with c2:
     file_y = st.file_uploader("Upload Inventory Report", type=["xlsx", "csv"], key="uploader_3p_y")
 with c3:
     file_z = st.file_uploader("Upload Search Insights", type=["xlsx", "csv"], key="uploader_3p_z")
+with c4:
+    file_adv = st.file_uploader("Upload Advertising Report", type=["xlsx", "csv"], key="uploader_3p_adv")
 
 # Manual textareas (always visible; non-persistent)
-st.markdown("### Manual Content (renders in dashed areas on the PDF)")
-c_txt1, c_txt2, c_txt3 = st.columns(3)
+st.markdown("### Manual Content (renders in the PDF)")
+c_txt1, c_txt2, c_txt3, c_txt4 = st.columns(4)
 with c_txt1:
     manual_top_skus = st.text_area("Top SKUs (Item Sales) — manual", height=150, key="manual_top_skus")
 with c_txt2:
     manual_inventory_callouts = st.text_area("Key Callouts (Inventory) — manual", height=150, key="manual_inventory_callouts")
 with c_txt3:
     manual_search_highlights = st.text_area("Highlights (Search Insights) — manual", height=150, key="manual_search_highlights")
+with c_txt4:
+    manual_adv_notes = st.text_area("Notes (Advertising) — manual", height=150, key="manual_adv_notes")
 
 # Managed context (IDs/Names sets)
 managed_ids, managed_names = set(), set()
@@ -189,7 +193,7 @@ elif mode_3p == "Managed":
     st.info("Mode: **Managed** — Please upload the Managed SKUs (IDs/Names list).")
 
 # Previews (3P) — Managed-aware filtering
-preview_cols = st.columns(3)
+preview_cols = st.columns(4)
 
 # Helper A: normalize Item conversion to 0..100 (blanks→0) — retained for other uses
 def _coerce_conversion_pp(series: pd.Series) -> pd.Series:
@@ -202,9 +206,8 @@ def _coerce_conversion_pp(series: pd.Series) -> pd.Series:
             s = s * 100.0
     return s.clip(0.0, 100.0).astype(float)
 
-# Helper B: Excel-style mean for conversion (🟨 used for preview Avg Conversion)
+# Helper B: Excel-style mean for conversion (used for preview Avg Conversion)
 def _excel_mean_conversion_pp(series: pd.Series) -> float:
-    # strip symbols -> numeric; blanks stay NaN and are excluded from mean
     s = (
         series.astype(str)
         .str.replace("%", "", regex=False)
@@ -215,8 +218,7 @@ def _excel_mean_conversion_pp(series: pd.Series) -> float:
     nonnull = s.dropna()
     if nonnull.empty:
         return 0.0
-    # scale detection: if most values ≤ 1, treat as fractions
-    if (nonnull <= 1.0).mean() >= 0.8:
+    if (nonnull <= 1.0).mean() >= 0.8:  # treat as fractions
         nonnull = nonnull * 100.0
     return float(nonnull.mean())
 
@@ -236,15 +238,15 @@ with preview_cols[0]:
                     st.warning(f"No matches. Sample unmatched IDs: {', '.join(stats_x['unmatched_sample'])}")
             st.dataframe(df_view.head(15), height=260, use_container_width=True)
 
-            # Calculated preview: Units, Auth Sales (with cents), Avg Conversion (Excel-style mean, 2 decimals)
+            # Calculated preview (with cents + Excel-style mean for conversion)
             units_total = int(pd.to_numeric(df_view.get("Units Sold"), errors="coerce").fillna(0).sum()) if not df_view.empty else 0
             sales_total = float(pd.to_numeric(df_view.get("Auth Sales"), errors="coerce").sum()) if not df_view.empty else 0.0
             avg_conv_pct = _excel_mean_conversion_pp(df_view.get("Item conversion", pd.Series(dtype=float))) if not df_view.empty else 0.0
 
             st.markdown("**Calculated (Item Sales):**")
             st.write(f"- Units Sold: {units_total:,}")
-            st.write(f"- Auth Sales: ${sales_total:,.2f}")          # <-- show cents
-            st.write(f"- Avg Conversion: {avg_conv_pct:.2f}%")      # <-- Excel-style mean, 2 decimals
+            st.write(f"- Auth Sales: ${sales_total:,.2f}")
+            st.write(f"- Avg Conversion: {avg_conv_pct:.2f}%")
         except Exception as e:
             st.error(
                 "Item Sales file doesn’t match required columns. "
@@ -333,11 +335,75 @@ with preview_cols[2]:
     else:
         st.info("Upload Search Insights to preview.")
 
+# ---------- ADV — Advertising (independent of Managed/Catalog) ----------
+with preview_cols[3]:
+    st.caption("Data Preview (Advertising)")
+    if file_adv:
+        try:
+            # Lightweight, tolerant loader (frontend-only)
+            df_adv_raw = load_dataframe(file_adv)
+
+            def _norm(s): return str(s).strip().lower().replace("_", "").replace(" ", "")
+            cmap = {_norm(c): c for c in df_adv_raw.columns}
+
+            def _find(*aliases):
+                for a in aliases:
+                    k = _norm(a)
+                    if k in cmap:
+                        return cmap[k]
+                return None
+
+            col_spend = _find("Ad Spend", "Spend", "Ad_Spend", "adspend")
+            col_conv  = _find("Conversion Rate – 14 Day", "Conversion Rate - 14 Day", "Conversion Rate 14 Day", "Conversion Rate", "conversionrate")
+            col_roas  = _find("RoAS – 14 Day", "RoAS - 14 Day", "RoAS 14 Day", "ROAS", "roas")
+
+            def _to_currency(s: pd.Series) -> pd.Series:
+                return pd.to_numeric(
+                    s.astype(str).str.replace("$", "", regex=False).str.replace(",", "", regex=False).str.strip(),
+                    errors="coerce"
+                ).fillna(0.0)
+
+            def _to_percent_vals(s: pd.Series) -> pd.Series:
+                s = s.astype(str).str.replace("%", "", regex=False).str.replace(",", "", regex=False).str.strip()
+                s = pd.to_numeric(s, errors="coerce")  # NaN for blanks
+                nonnull = s.dropna()
+                if not nonnull.empty and (nonnull <= 1.0).mean() >= 0.8:
+                    s = s * 100.0
+                return s
+
+            spend = _to_currency(df_adv_raw[col_spend]) if col_spend else pd.Series([], dtype=float)
+            roas  = _to_currency(df_adv_raw[col_roas])  if col_roas  else pd.Series([], dtype=float)
+            conv  = _to_percent_vals(df_adv_raw[col_conv]) if col_conv else pd.Series([], dtype=float)
+
+            adv_spend_total = float(spend.sum()) if len(spend) else 0.0
+            adv_roas_total  = float(roas.sum()) if len(roas) else 0.0
+            conv_nonnull = conv.dropna()
+            adv_conv_avg = float(conv_nonnull.mean()) if len(conv_nonnull) else 0.0
+
+            # Show a compact sample + the calculated metrics
+            keep_cols = [c for c in [col_spend, col_conv, col_roas] if c]
+            if keep_cols:
+                st.dataframe(df_adv_raw[keep_cols].head(15), height=260, use_container_width=True)
+            else:
+                st.info("Could not find expected Advertising columns; still showing calculated zeros.")
+
+            st.markdown("**Calculated (Advertising):**")
+            st.write(f"- Total Ad Spend: ${adv_spend_total:,.2f}")
+            st.write(f"- Total ROAS: ${adv_roas_total:,.2f}")
+            st.write(f"- Avg Conversion Rate: {adv_conv_avg:.2f}%")
+        except Exception as e:
+            st.error(f"Advertising file error: {e}")
+    else:
+        st.info("Upload Advertising Report to preview.")
+
 # Export 3P PDF
 st.markdown("### Export 3P PDF")
-export_disabled = any(v is None for v in [file_x, file_y, file_z]) or (mode_3p == "Managed" and managed_file is None)
+export_disabled = (
+    any(v is None for v in [file_x, file_y, file_z, file_adv]) or
+    (mode_3p == "Managed" and managed_file is None)
+)
 if export_disabled:
-    st.info("Upload Item Sales, Inventory, and Search Insights (and Managed list if Managed mode) to enable export.")
+    st.info("Upload Item Sales, Inventory, Search Insights, and Advertising (and Managed list if Managed mode) to enable export.")
 
 if st.button("📄 Generate 3P Dashboard PDF", key="export_pdf_3p", disabled=export_disabled):
     try:
@@ -352,6 +418,8 @@ if st.button("📄 Generate 3P Dashboard PDF", key="export_pdf_3p", disabled=exp
             top_skus_text=manual_top_skus or "",
             inventory_callouts_text=manual_inventory_callouts or "",
             search_highlights_text=manual_search_highlights or "",
+            advertising_src=file_adv,                # NEW
+            advertising_notes_text=manual_adv_notes, # NEW
             logo_path=None,
         )
     except TypeError:
@@ -369,6 +437,7 @@ if st.button("📄 Generate 3P Dashboard PDF", key="export_pdf_3p", disabled=exp
         st.download_button("⬇️ Download 3P PDF", data=pdf3, file_name="dashboard_3p.pdf", mime="application/pdf")
 
 st.divider()
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────
