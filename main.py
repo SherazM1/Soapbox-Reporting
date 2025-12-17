@@ -813,7 +813,6 @@ def generate_3p_report(
     advertising_notes_text: str = "",
     logo_path: str | None = None
 ) -> bytes:
-
     # Load 3P data
     df_sales  = load_item_sales(item_sales_src)
     df_inv    = load_inventory(inventory_src)
@@ -826,7 +825,7 @@ def generate_3p_report(
         df_inv,    _ = filter_by_managed(df_inv,    ids_set, names_set)
         df_search, _ = filter_by_managed(df_search, ids_set, names_set)
 
-    # Helpers
+    # Helpers (metrics)
     def _mean_conversion_pp_excel(series: pd.Series) -> float:
         if series is None or len(series) == 0:
             return 0.0
@@ -866,19 +865,21 @@ def generate_3p_report(
         block_h = max(min_height, used_h or 16)
         return y - block_h
 
-    # Advertising loader (uses resolver!) + header detection
+    # ---------- Advertising loader with header auto-detect + shared parsing ----------
     def _load_advertising_df(src) -> pd.DataFrame:
         if src is None:
             return pd.DataFrame(columns=["Ad Spend", "Conversion Rate – 14 Day", "RoAS – 14 Day"])
 
-        # --- Detect & use the real header row for Advertising (identical logic to UI) ---
         import io
+        import unicodedata, re
+
         def _norm_hdr_detect(s: str) -> str:
             s = unicodedata.normalize("NFKC", str(s or "")).lower()
             return re.sub(r"[^0-9a-z]+", "", s)
 
         expected_hdrs = {"adspend", "conversionrate14day", "roas14day"}
 
+        # Try to find the real header row in the first ~20 rows
         df_raw = None
         try:
             if hasattr(src, "read") and hasattr(src, "name"):
@@ -920,15 +921,12 @@ def generate_3p_report(
             df_raw = None
 
         if df_raw is None:
-            # Fallback to normal loader if detection failed
             df_raw = load_dataframe(src)
-        # --- end header detection ---
 
+        # Resolve columns using the shared resolver
         mapping = _resolve_advertising_columns(df_raw.columns)
 
-        df = pd.DataFrame()
-
-        # ---- coercers ----
+        # Coercers (shared rules)
         def _to_currency(s: pd.Series) -> pd.Series:
             return pd.to_numeric(
                 s.astype(str)
@@ -944,7 +942,7 @@ def generate_3p_report(
                 s.astype(str)
                  .str.replace("$", "", regex=False)
                  .str.replace(",", "", regex=False)
-                 .str.replace("x", "", case=False, regex=False)  # align w/ UI
+                 .str.replace("x", "", case=False, regex=False)  # strip 'x' suffix/prefix
                  .str.strip()
             )
             return pd.to_numeric(cleaned, errors="coerce").fillna(0.0)
@@ -962,26 +960,14 @@ def generate_3p_report(
                 vals = vals * 100.0
             return vals
 
-        # ---- map columns (gracefully handle missing) ----
-        if mapping["Ad Spend"] is not None:
-            df["Ad Spend"] = _to_currency(df_raw[mapping["Ad Spend"]])
-        else:
-            df["Ad Spend"] = pd.Series([], dtype=float)
+        out = pd.DataFrame()
+        out["Ad Spend"] = _to_currency(df_raw[mapping["Ad Spend"]]) if mapping["Ad Spend"] else pd.Series([], dtype=float)
+        out["RoAS – 14 Day"] = _to_roas(df_raw[mapping["ROAS"]]) if mapping["ROAS"] else pd.Series([], dtype=float)
+        out["Conversion Rate – 14 Day"] = _to_percent_vals(df_raw[mapping["Conversion Rate"]]) if mapping["Conversion Rate"] else pd.Series([], dtype=float)
+        return out
+    # -------------------------------------------------------------------------
 
-        if mapping["ROAS"] is not None:
-            df["RoAS – 14 Day"] = _to_roas(df_raw[mapping["ROAS"]])
-        else:
-            df["RoAS – 14 Day"] = pd.Series([], dtype=float)
-
-        if mapping["Conversion Rate"] is not None:
-            df["Conversion Rate – 14 Day"] = _to_percent_vals(df_raw[mapping["Conversion Rate"]])
-        else:
-            df["Conversion Rate – 14 Day"] = pd.Series([], dtype=float)
-
-        return df
-
-
-    # Item Sales metrics (Excel-consistent rounding)
+    # Item Sales metrics
     units_total = int(pd.to_numeric(df_sales.get("Units Sold"), errors="coerce").fillna(0).sum()) if not df_sales.empty else 0
     sales_total = float(pd.to_numeric(df_sales.get("Auth Sales"), errors="coerce").sum()) if not df_sales.empty else 0.0
     avg_conv_pct = _mean_conversion_pp_excel(df_sales.get("Item conversion", pd.Series(dtype=float))) if not df_sales.empty else 0.0
@@ -1011,10 +997,10 @@ def generate_3p_report(
     else:
         adv_spend_total = float(df_adv["Ad Spend"].sum())
         adv_roas_total  = float(df_adv["RoAS – 14 Day"].sum())
-        nonnull_conv    = df_adv["Conversion Rate – 14 Day"].dropna()
-        adv_conv_avg    = float(nonnull_conv.mean()) if len(nonnull_conv) else 0.0
+        conv_nonnull    = df_adv["Conversion Rate – 14 Day"].dropna()
+        adv_conv_avg    = float(conv_nonnull.mean()) if len(conv_nonnull) else 0.0
 
-    # PDF drawing
+    # ---------- PDF drawing ----------
     buf = BytesIO()
     c   = canvas.Canvas(buf, pagesize=letter)
     w, h = letter
@@ -1096,12 +1082,12 @@ def generate_3p_report(
     y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_search)
     _ = _writein_text(x + 16, y_cursor - 6, card_w - 32, "Highlights:", search_highlights_text, min_height=100)
 
-    # Box 4 — Advertising
+    # Box 4 — Advertising (now populated)
     x, y_top = x_right, row2_top
     _draw_card_shell(x, y_top, card_w, card_h, "Advertising")
     bullets_adv = [
         f"Total Ad Spend: ${adv_spend_total:,.2f}",
-        f"Total ROAS: ${adv_roas_total:,.2f}",          # PDF shows ROAS as currency per your request
+        f"Total ROAS: ${adv_roas_total:,.2f}",
         f"Avg Conversion Rate: {adv_conv_avg:.2f}%",
     ]
     y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_adv)
