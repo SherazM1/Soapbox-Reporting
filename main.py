@@ -519,6 +519,42 @@ def compute_metrics(df: pd.DataFrame) -> dict:
         "threshold": int(round(THRESHOLD*100)),
     }
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Tables for 1P (used by streamlit_app.py)
+# ─────────────────────────────────────────────────────────────────────────────
+TOP_N = 5  # keep consistent with your UI
+
+def get_top_skus(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Returns the top N rows by Content Quality Score with the columns:
+      Product Name | Item ID | Content Quality Score (as '%')
+    """
+    table = (
+        df
+        .sort_values("Content Quality Score", ascending=False)
+        .head(TOP_N)[["Product Name", "Item ID", "Content Quality Score"]]
+        .copy()
+    )
+    # Convert Content Quality Score to percent and round to whole %
+    table["Content Quality Score"] = (table["Content Quality Score"] * 100).round().astype(int).astype(str) + "%"
+    return table
+
+def get_skus_below(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Returns rows below the THRESHOLD with the columns:
+      Product Name | Item ID | Content Quality Score (as '%')
+    Uses the same rounding rule as the metrics (round to 2 decimals before compare).
+    """
+    rounded = df["Content Quality Score"].round(2)
+    table = (
+        df[rounded < THRESHOLD]
+        [["Product Name", "Item ID", "Content Quality Score"]]
+        .copy()
+    )
+    table["Content Quality Score"] = (table["Content Quality Score"] * 100).round().astype(int).astype(str) + "%"
+    return table
+
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Pie chart helper
