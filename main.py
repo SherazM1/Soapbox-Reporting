@@ -2,43 +2,46 @@
 
 import os
 import sys
-import json
-import pandas as pd
 import io
+import json
+import re
+import unicodedata
+import pathlib
+from typing import Optional, Set, Tuple
 from io import BytesIO
 from datetime import datetime
+
+import pandas as pd
 import matplotlib.pyplot as plt
+
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.lib import colors
+from reportlab.lib.utils import ImageReader
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import Paragraph
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import Table, TableStyle
-from reportlab.lib.styles import ParagraphStyle
-import pathlib
-from reportlab.lib.units import inch
-from reportlab.lib.utils import ImageReader
-from typing import Optional, Set, Tuple
-
+from reportlab.platypus import Paragraph, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
+
 def resource_path(rel_path: str) -> str:
     """Get absolute path to resource, works for dev and for PyInstaller."""
     if getattr(sys, "frozen", False):
-        base = sys._MEIPASS
+        base = sys._MEIPASS  # type: ignore[attr-defined]
     else:
-        base = os.path.dirname(os.path.abspath(__file__))  # <-- Use script's directory
+        base = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(base, rel_path)
 
+
 # ─────────────────────────────────────────────────────────────────────────────
-# Register Raleway font
+# Fonts
 # ─────────────────────────────────────────────────────────────────────────────
+
 def _safe_register_font(name: str, rel_path: str) -> None:
     """Register a TTF font if present; never raise at import-time."""
     try:
@@ -46,18 +49,18 @@ def _safe_register_font(name: str, rel_path: str) -> None:
         if os.path.isfile(full_path):
             pdfmetrics.registerFont(TTFont(name, full_path))
         else:
-            # Optional: log to console; do not fail import
             print(f"[fonts] Skipping {name}: not found at {full_path}")
     except Exception as e:
         print(f"[fonts] Skipping {name}: {e}")
 
-# Register Raleway variants only if available
 _safe_register_font("Raleway", "Raleway-Regular.ttf")
 _safe_register_font("Raleway-Bold", "Raleway-Bold.ttf")
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Constants & Persistence
 # ─────────────────────────────────────────────────────────────────────────────
+
 THRESHOLD    = 0.95
 TOP_N        = 5
 BATCHES_PATH = "dashboards/batches.json"
@@ -74,82 +77,68 @@ def save_batches(batches: list, path: str = BATCHES_PATH) -> None:
     with open(path, "w", encoding="utf-8") as f:
         json.dump(batches, f, indent=2, default=str)
 
+
 # ─────────────────────────────────────────────────────────────────────────────
-# Data Loading
+# Data loading (generic)
 # ─────────────────────────────────────────────────────────────────────────────
+
 def load_dataframe(src) -> pd.DataFrame:
-    # Streamlit upload
+    """
+    Read a CSV/XLS/XLSX from either a Streamlit UploadedFile-like object or a file path.
+    """
+    # Streamlit UploadedFile
     if hasattr(src, "read") and hasattr(src, "name"):
         data = src.getvalue()
         ext  = os.path.splitext(src.name)[1].lower()
         if ext == ".csv":
-            return pd.read_csv(io.BytesIO(data), encoding="utf-8",
-                               engine="python", on_bad_lines="skip")
+            return pd.read_csv(io.BytesIO(data), encoding="utf-8", engine="python", on_bad_lines="skip")
         elif ext in (".xls", ".xlsx"):
             return pd.read_excel(io.BytesIO(data))
         else:
             raise ValueError(f"Unsupported file type: {ext}")
-    # File path
-    ext = os.path.splitext(src)[1].lower()
+
+    # Regular file path
+    ext = os.path.splitext(str(src))[1].lower()
     if ext == ".csv":
-        return pd.read_csv(src)
+        return pd.read_csv(src, encoding="utf-8", engine="python", on_bad_lines="skip")
     elif ext in (".xls", ".xlsx"):
         return pd.read_excel(src)
     else:
         raise ValueError(f"Unsupported file type: {ext}")
-    
 
-# Search Insights schema 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Search Insights
+# ─────────────────────────────────────────────────────────────────────────────
+
 SEARCH_INSIGHTS_REQUIRED = [
-    "Item ID",
-    "Item Name",
-    "Impressions Rank",
-    "Clicks Rank",
-    "Added to Cart Rank",
-    "Sales Rank",
+    "Item ID", "Item Name", "Impressions Rank", "Clicks Rank", "Added to Cart Rank", "Sales Rank",
 ]
 
 def load_search_insights(src) -> pd.DataFrame:
-    """
-    """
     df = load_dataframe(src)
 
-    # Validate required headers
     missing = [c for c in SEARCH_INSIGHTS_REQUIRED if c not in df.columns]
     if missing:
-        raise ValueError(
-            "Search Insights file is missing required columns: "
-            + ", ".join(missing)
-        )
+        raise ValueError("Search Insights file is missing required columns: " + ", ".join(missing))
 
-    # Preserve leading zeros / ensure strings
     df["Item ID"] = df["Item ID"].astype(str).str.strip()
     df["Item Name"] = df["Item Name"].astype(str).str.strip()
 
-    # Coerce ranks to integers (nullable)
-    rank_cols = [
-        "Impressions Rank",
-        "Clicks Rank",
-        "Added to Cart Rank",
-        "Sales Rank",
-    ]
-    for col in rank_cols:
-        # tolerant parse; blanks become <NA>
+    for col in ["Impressions Rank", "Clicks Rank", "Added to Cart Rank", "Sales Rank"]:
         df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
 
-    # Return only the required columns in the canonical order
     return df[SEARCH_INSIGHTS_REQUIRED].copy()
 
-# Inventory schema 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Inventory
+# ─────────────────────────────────────────────────────────────────────────────
+
 INVENTORY_REQUIRED = [
-    "Item ID",
-    "Item Name",
-    "Daily sales",
-    "Daily units sold",
-    "Stock status",
+    "Item ID", "Item Name", "Daily sales", "Daily units sold", "Stock status",
 ]
 
-# Lowercase alias map for each canonical column
 _INVENTORY_ALIASES = {
     "Item ID": {"item id", "item_id", "id"},
     "Item Name": {"item name", "item_name", "product name", "name"},
@@ -159,10 +148,8 @@ _INVENTORY_ALIASES = {
 }
 
 def _resolve_inventory_columns(cols):
-    """Map actual headers to canonical names using case-insensitive aliases."""
     lc_to_actual = {str(c).strip().lower(): c for c in cols}
-    mapping = {}
-    missing = []
+    mapping, missing = {}, []
     for canon, aliases in _INVENTORY_ALIASES.items():
         found = next((lc_to_actual[a] for a in aliases if a in lc_to_actual), None)
         if found is None:
@@ -172,43 +159,22 @@ def _resolve_inventory_columns(cols):
     return mapping, missing
 
 def load_inventory(src) -> pd.DataFrame:
-    """
-    Read the Inventory report and return required columns with clean types.
-
-    Returns columns (in order):
-      Item ID (str), Item Name (str),
-      Daily sales (float), Daily units sold (float),
-      Stock status (str: In Stock | Out of Stock | At Risk | other)
-    """
     df = load_dataframe(src)
-
     mapping, missing = _resolve_inventory_columns(df.columns)
     if missing:
-        raise ValueError(
-            "Inventory file is missing required columns: " + ", ".join(missing)
-        )
+        raise ValueError("Inventory file is missing required columns: " + ", ".join(missing))
 
-    # Select and rename to canonical headers
     df = df.rename(columns={v: k for k, v in mapping.items()})[INVENTORY_REQUIRED].copy()
 
-    # Types
     df["Item ID"] = df["Item ID"].astype(str).str.strip()
     df["Item Name"] = df["Item Name"].astype(str).str.strip()
 
     for col in ("Daily sales", "Daily units sold"):
-        # currency/float tolerant parsing
-        df[col] = (
-            pd.to_numeric(
-                df[col]
-                .astype(str)
-                .str.replace(",", "", regex=False)
-                .str.replace("$", "", regex=False),
-                errors="coerce",
-            )
-            .astype(float)
-        )
+        df[col] = pd.to_numeric(
+            df[col].astype(str).str.replace(",", "", regex=False).str.replace("$", "", regex=False),
+            errors="coerce"
+        ).astype(float)
 
-    # Normalize status to title-case, but keep original values if outside expected set
     def _norm_status(s):
         s = str(s).strip().lower()
         if s in {"in stock", "instock"}:
@@ -220,26 +186,20 @@ def load_inventory(src) -> pd.DataFrame:
         return s.title() if s else ""
 
     df["Stock status"] = df["Stock status"].map(_norm_status)
-
     return df
 
-# Item Sales schema (canonical column names)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Item Sales
+# ─────────────────────────────────────────────────────────────────────────────
+
 ITEM_SALES_REQUIRED = [
-    "Item ID",
-    "Item Name",
-    "Orders",
-    "Units Sold",
-    "Auth Sales",
-    "Item pageviews",
-    "Item conversion",
-    # "SKU" is optional; included when present
+    "Item ID", "Item Name", "Orders", "Units Sold", "Auth Sales", "Item pageviews", "Item conversion",
 ]
 
-# Case/underscore-insensitive aliases for each canonical field
 _ITEM_SALES_ALIASES = {
-    # Canonical Item ID comes ONLY from Item_id. We do not use Base_Item_Id.
     "Item_id": {"item_id", "item id", "itemid"},
-    "Base_Item_Id": {"base_item_id", "base item id", "baseitemid"},  # parsed if present (used only for gated fallback)
+    "Base_Item_Id": {"base_item_id", "base item id", "baseitemid"},  # optional for gated fallback
     "Item Name": {"item_name", "item name"},
     "Orders": {"orders", "order"},
     "Units Sold": {"units_sold", "units sold"},
@@ -250,26 +210,18 @@ _ITEM_SALES_ALIASES = {
 }
 
 def _normalize_header_map(cols):
-    """Map normalized header → actual header for alias lookup."""
-    def norm(s):
-        return str(s).strip().lower().replace("_", "").replace(" ", "")
+    def norm(s): return str(s).strip().lower().replace("_", "").replace(" ", "")
     return {norm(c): c for c in cols}
 
 def load_item_sales(src) -> pd.DataFrame:
-    # Force-read as strings to avoid scientific-notation/precision loss on IDs.
+    # For IDs, read as strings
     if hasattr(src, "read") and hasattr(src, "name"):
         data = src.getvalue()
         ext = os.path.splitext(src.name)[1].lower()
         if ext in (".xls", ".xlsx"):
             df = pd.read_excel(io.BytesIO(data), dtype=str)
         elif ext == ".csv":
-            df = pd.read_csv(
-                io.BytesIO(data),
-                dtype=str,
-                encoding="utf-8",
-                engine="python",
-                on_bad_lines="skip",
-            )
+            df = pd.read_csv(io.BytesIO(data), dtype=str, encoding="utf-8", engine="python", on_bad_lines="skip")
         else:
             raise ValueError(f"Unsupported file type: {ext}")
     else:
@@ -277,19 +229,13 @@ def load_item_sales(src) -> pd.DataFrame:
         if ext in (".xls", ".xlsx"):
             df = pd.read_excel(src, dtype=str)
         elif ext == ".csv":
-            df = pd.read_csv(
-                src,
-                dtype=str,
-                encoding="utf-8",
-                engine="python",
-                on_bad_lines="skip",
-            )
+            df = pd.read_csv(src, dtype=str, encoding="utf-8", engine="python", on_bad_lines="skip")
         else:
             raise ValueError(f"Unsupported file type: {ext}")
 
     norm_map = _normalize_header_map(df.columns)
 
-    # Resolve Item_id (canonical ID source). DO NOT use Base_Item_Id for canonical ID.
+    # Resolve Item_id (canonical for Item ID)
     item_id_actual = None
     for candidate in _ITEM_SALES_ALIASES["Item_id"]:
         key = candidate.replace("_", "").replace(" ", "")
@@ -297,7 +243,6 @@ def load_item_sales(src) -> pd.DataFrame:
             item_id_actual = norm_map[key]
             break
 
-    # Resolve the rest (Base_Item_Id kept only for gated fallback / debug)
     def resolve(canon):
         for alias in _ITEM_SALES_ALIASES[canon]:
             key = alias.replace("_", "").replace(" ", "")
@@ -312,7 +257,7 @@ def load_item_sales(src) -> pd.DataFrame:
     auth_sales_actual   = resolve("Auth Sales")
     pageviews_actual    = resolve("Item pageviews")
     conversion_actual   = resolve("Item conversion")
-    sku_actual          = resolve("SKU")  # optional
+    sku_actual          = resolve("SKU")
 
     missing = []
     if item_name_actual is None:
@@ -330,52 +275,37 @@ def load_item_sales(src) -> pd.DataFrame:
             missing.append(canon)
 
     if missing:
-        raise ValueError(
-            "Item Sales file is missing required columns: " + ", ".join(missing)
-        )
+        raise ValueError("Item Sales file is missing required columns: " + ", ".join(missing))
 
-    # Rename → canonical working columns
     rename_map = {item_id_actual: "Item_id_raw"}
     if base_item_id_actual:
-        rename_map[base_item_id_actual] = "Base_Item_Id"  # visible for gated fallback
-    rename_map.update(
-        {
-            item_name_actual: "Item Name",
-            orders_actual: "Orders",
-            units_actual: "Units Sold",
-            auth_sales_actual: "Auth Sales",
-            pageviews_actual: "Item pageviews",
-            conversion_actual: "Item conversion",
-        }
-    )
+        rename_map[base_item_id_actual] = "Base_Item_Id"
+    rename_map.update({
+        item_name_actual: "Item Name",
+        orders_actual: "Orders",
+        units_actual: "Units Sold",
+        auth_sales_actual: "Auth Sales",
+        pageviews_actual: "Item pageviews",
+        conversion_actual: "Item conversion",
+    })
     if sku_actual:
         rename_map[sku_actual] = "SKU"
 
     df_work = df.rename(columns=rename_map)
 
-    # Canonical "Item ID" comes STRICTLY from Item_id_raw
     s_item = df_work.get("Item_id_raw")
     if s_item is not None:
         s_item = s_item.astype(str).str.strip()
     df_work["Item ID"] = s_item
 
-    # Restrict to canonical columns (+ optional SKU, Base_Item_Id for gated fallback)
-    cols = [
-        "Item ID",
-        "Item Name",
-        "Orders",
-        "Units Sold",
-        "Auth Sales",
-        "Item pageviews",
-        "Item conversion",
-    ]
+    cols = ["Item ID", "Item Name", "Orders", "Units Sold", "Auth Sales", "Item pageviews", "Item conversion"]
     if "SKU" in df_work.columns:
         cols.append("SKU")
     if "Base_Item_Id" in df_work.columns:
-        cols.append("Base_Item_Id")  # used only in fallback when name confirms identity
+        cols.append("Base_Item_Id")
     df_work = df_work[cols].copy()
 
-    # Types/coercions (only non-ID fields)
+    # Types/coercions
     df_work["Item ID"] = df_work["Item ID"].astype(str).str.strip()
     df_work["Item Name"] = df_work["Item Name"].astype(str).str.strip()
     if "SKU" in df_work.columns:
@@ -385,39 +315,26 @@ def load_item_sales(src) -> pd.DataFrame:
         df_work[col] = pd.to_numeric(df_work[col], errors="coerce").astype("Int64")
 
     df_work["Auth Sales"] = (
-        df_work["Auth Sales"]
-        .astype(str)
-        .str.replace(",", "", regex=False)
-        .str.replace("$", "", regex=False)
+        df_work["Auth Sales"].astype(str).str.replace(",", "", regex=False).str.replace("$", "", regex=False)
     )
-    df_work["Auth Sales"] = pd.to_numeric(
-        df_work["Auth Sales"],
-        errors="coerce",
-    ).astype(float)
+    df_work["Auth Sales"] = pd.to_numeric(df_work["Auth Sales"], errors="coerce").astype(float)
 
-    df_work["Item conversion"] = pd.to_numeric(
-        df_work["Item conversion"],
-        errors="coerce",
-    ).astype(float)
+    df_work["Item conversion"] = pd.to_numeric(df_work["Item conversion"], errors="coerce").astype(float)
 
     return df_work
 
 
-# -------- Robust Item Name normalization (for ID-or-Name & gated fallback) --------
-import re, unicodedata
+# ─────────────────────────────────────────────────────────────────────────────
+# Managed SKUs (IDs / Names) + filtering
+# ─────────────────────────────────────────────────────────────────────────────
 
 def _norm_name_strict(s: str) -> str:
     """
-    Robust canonical form for equality across files:
-      - Unicode NFKC
-      - remove trademark/encoding artifacts: ® ™ ¬Æ
-      - unify dashes: – — → -
-      - drop most punctuation/separators (non-alnum & non-hyphen) → space
-      - collapse whitespace
-      - casefold
+    Canonical, sturdy normalization for names across reports:
+      - Unicode NFKC, remove ® ™ artifacts, unify dashes
+      - keep alnum + hyphen, collapse whitespace, casefold
     """
-    if s is None:
-        return ""
+    if s is None: return ""
     s = str(s)
     s = unicodedata.normalize("NFKC", s)
     s = s.replace("®", "").replace("™", "").replace("¬Æ", "")
@@ -427,23 +344,19 @@ def _norm_name_strict(s: str) -> str:
     s = re.sub(r"\s+", " ", s)
     return s.strip().casefold()
 
-
 _MANAGED_ALIASES = {
     "Item ID": {"item id", "item_id", "itemid", "base item id", "base_item_id", "baseitemid"},
     "Item Name": {"item name", "item_name", "product name", "name"},
 }
 
 def _normalize_headers_map(cols):
-    def norm(s):
-        return str(s).strip().lower().replace("_", "").replace(" ", "")
+    def norm(s): return str(s).strip().lower().replace("_", "").replace(" ", "")
     return {norm(c): c for c in cols}
 
 def _resolve_managed_columns(cols) -> Tuple[Optional[str], Optional[str]]:
-    """Return actual header names for Item ID and Item Name if present."""
     norm_map = _normalize_headers_map(cols)
     item_id_actual = None
     item_name_actual = None
-
     for a in _MANAGED_ALIASES["Item ID"]:
         k = a.replace("_", "").replace(" ", "")
         if k in norm_map:
@@ -457,10 +370,6 @@ def _resolve_managed_columns(cols) -> Tuple[Optional[str], Optional[str]]:
     return item_id_actual, item_name_actual
 
 def load_managed_keys(src) -> Tuple[Set[str], Set[str]]:
-    """
-    Read Managed SKUs list, returning (ids_set, names_set).
-    Source of truth for filtering by Item ID OR Item Name; also used for gated Base-ID fallback.
-    """
     df = load_dataframe(src)
     item_id_actual, item_name_actual = _resolve_managed_columns(df.columns)
     if not item_id_actual and not item_name_actual:
@@ -470,57 +379,35 @@ def load_managed_keys(src) -> Tuple[Set[str], Set[str]]:
     names_set: Set[str] = set()
 
     if item_id_actual:
-        ids_set = set(
-            df[item_id_actual].astype(str).str.strip().replace("nan", pd.NA).dropna().tolist()
-        )
+        ids_set = set(df[item_id_actual].astype(str).str.strip().replace("nan", pd.NA).dropna().tolist())
     if item_name_actual:
         names_set = set(
             df[item_name_actual]
-            .astype(str)
-            .map(_norm_name_strict)
-            .replace("nan", pd.NA)
-            .dropna()
-            .tolist()
+              .astype(str)
+              .map(_norm_name_strict)
+              .replace("nan", pd.NA)
+              .dropna()
+              .tolist()
         )
     return ids_set, names_set
 
 def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) -> Tuple[pd.DataFrame, dict]:
-    """
-    Filter to managed SKUs with a controlled Base-ID fallback.
-
-    Rule:
-      1) Keep a row if (Item ID ∈ managed_ids) OR (normalized Item Name ∈ managed_names).
-      2) If still not matched, allow a gated fallback:
-         Keep the row if (Base_Item_Id ∈ managed_ids) AND (normalized Item Name ∈ managed_names).
-         (Prevents unrelated child variants from leaking in.)
-
-    Returns (filtered_df, stats).
-    """
     total = len(df)
     if total == 0:
-        return df.copy(), {
-            "total": 0,
-            "matched": 0,
-            "unmatched_count": len(ids_set),
-            "unmatched_sample": [],
-        }
+        return df.copy(), {"total": 0, "matched": 0, "unmatched_count": len(ids_set), "unmatched_sample": []}
 
-    # Normalize series
     id_series = df["Item ID"].astype(str).str.strip() if "Item ID" in df.columns else None
     name_series = df["Item Name"].astype(str) if "Item Name" in df.columns else None
     name_series_norm = name_series.map(_norm_name_strict) if name_series is not None else None
-
     base_series = df["Base_Item_Id"].astype(str).str.strip() if "Base_Item_Id" in df.columns else None
 
     ids_set_norm = {s.strip() for s in ids_set} if ids_set else set()
     names_set_norm = {s for s in names_set} if names_set else set()
 
-    # 1) Primary: Item ID or Name
     id_mask   = id_series.isin(ids_set_norm) if (id_series is not None and ids_set_norm) else False
     name_mask = name_series_norm.isin(names_set_norm) if (name_series_norm is not None and names_set_norm) else False
     primary_mask = id_mask | name_mask
 
-    # 2) Gated fallback: Base ID + Name
     base_mask = False
     if base_series is not None and ids_set_norm and name_series_norm is not None and names_set_norm:
         base_mask = base_series.isin(ids_set_norm) & name_series_norm.isin(names_set_norm)
@@ -529,7 +416,6 @@ def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) 
     filtered = df[mask].copy()
     matched = int(mask.sum())
 
-    # Unmatched sample based on managed IDs not present as Item ID in result (debug aid)
     unmatched_sample: list[str] = []
     if id_series is not None and ids_set_norm and "Item ID" in filtered.columns:
         matched_ids = set(filtered["Item ID"].astype(str).str.strip())
@@ -543,77 +429,76 @@ def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) 
         "unmatched_sample": unmatched_sample,
     }
 
-# ------- Advertising header resolver (drop-in) -------
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Advertising column resolver (NEW + USED)
+# ─────────────────────────────────────────────────────────────────────────────
+
 _AD_ALIASES = {
-    "Ad Spend": {
-        "ad spend", "ad_spend", "spend", "ad spend ($)", "adspend"
-    },
+    "Ad Spend": {"ad spend", "ad_spend", "spend", "ad spend ($)", "adspend", "total spend", "total ad spend"},
     "Conversion Rate": {
-        # base forms
         "conversion rate", "conversion_rate", "conv rate", "conv_rate", "conversionrate",
-        # your export variants (both hyphen-minus and en-dash)
-        "conversion rate - 14 day", "conversion rate – 14 day",
-        "conversionrate14day", "conversion rate 14 day"
+        "conversion rate - 14 day", "conversion rate – 14 day", "conversion rate 14 day", "conversionrate14day",
     },
     "ROAS": {
-        # base forms
         "roas", "return on ad spend", "returnonadspend",
-        # your export variants
-        "roas - 14 day", "roas – 14 day", "roas14day", "roas 14 day"
+        "roas - 14 day", "roas – 14 day", "roas 14 day", "roas14day",
     },
 }
 
 def _norm_hdr(s: str) -> str:
-    """normalize header: lowercase, strip, collapse spaces, remove underscores and dashes."""
-    import re
+    """
+    Normalize header: lowercase, strip, unify dashes, collapse spaces,
+    drop $/% to maximize matching.
+    """
     s = str(s or "").strip().lower()
-    # normalize different dashes to hyphen, then remove separators
     s = s.replace("–", "-").replace("—", "-")
     s = s.replace("_", " ")
     s = re.sub(r"\s+", " ", s)
-    # drop $ and % and parentheses in headers just in case
     s = s.replace("$", "").replace("%", "")
-    # also keep a version without hyphens for alias sets that omit them
     return s
 
 def _resolve_advertising_columns(cols):
     """
     Return dict mapping canonical -> actual header, using flexible aliases.
-    Raises if a required canonical column is missing.
+    Missing canonicals are omitted from mapping.
     """
-    lc_to_actual = { _norm_hdr(c): c for c in cols }
-
-    mapping = {}
-    missing = []
+    lc_to_actual = {_norm_hdr(c): c for c in cols}
+    mapping, missing = {}, []
     for canon, aliases in _AD_ALIASES.items():
-        found = None
-        # try exact normalized header first
-        if _norm_hdr(canon) in lc_to_actual:
-            found = lc_to_actual[_norm_hdr(canon)]
-        else:
+        found = lc_to_actual.get(_norm_hdr(canon))
+        if not found:
             for a in aliases:
                 na = _norm_hdr(a)
                 if na in lc_to_actual:
                     found = lc_to_actual[na]
                     break
-        if found is None:
+        if not found:
             missing.append(canon)
         else:
             mapping[canon] = found
-
+    # We return mapping + missing (missing is informational)
     return mapping, missing
-# ------- /resolver -------
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Metrics & Tables
+# Metrics & tables for 1P
 # ─────────────────────────────────────────────────────────────────────────────
+
 def split_by_threshold(df: pd.DataFrame):
-    # ROUNDING: ensure values like 0.945 (rounded to 0.95) are included in the "above"
     rounded = df["Content Quality Score"].round(2)
     above = df[rounded >= THRESHOLD].copy()
     below = df[rounded <  THRESHOLD].copy()
     return below, above
+
+def compute_buybox_ownership(df: pd.DataFrame) -> float:
+    if "Buy Box Winner" not in df.columns:
+        return 0.0
+    total = len(df)
+    if total == 0:
+        return 0.0
+    buybox_yes = df["Buy Box Winner"].str.strip().str.lower().eq("yes").sum()
+    return buybox_yes / total
 
 def compute_metrics(df: pd.DataFrame) -> dict:
     below, above = split_by_threshold(df)
@@ -624,126 +509,91 @@ def compute_metrics(df: pd.DataFrame) -> dict:
     pct_above   = int(round((count_above / total * 100))) if total else 0
     buybox = compute_buybox_ownership(df)
     buybox_pct = int(round(buybox * 100))
-
     return {
         "total":     total,
         "above":     count_above,
         "below":     len(below),
-        "pct_above": pct_above,                # int percent (e.g. 83)
-        "avg_cqs":   avg_cqs_pct,              # int percent (e.g. 92)
-        "buybox":    buybox_pct,               # int percent
-        "threshold": int(round(THRESHOLD*100)) # for display (95)
+        "pct_above": pct_above,
+        "avg_cqs":   avg_cqs_pct,
+        "buybox":    buybox_pct,
+        "threshold": int(round(THRESHOLD*100)),
     }
 
-def get_top_skus(df: pd.DataFrame) -> pd.DataFrame:
-    table = (
-        df
-        .sort_values("Content Quality Score", ascending=False)
-        .head(TOP_N)[["Product Name", "Item ID", "Content Quality Score"]]
-        .copy()
-    )
-    # Convert Content Quality Score to percent and round
-    table["Content Quality Score"] = (table["Content Quality Score"] * 100).round().astype(int).astype(str) + "%"
-    return table
-
-def get_skus_below(df: pd.DataFrame) -> pd.DataFrame:
-    # Apply same rounding before comparison for consistency
-    rounded = df["Content Quality Score"].round(2)
-    table = (
-        df[rounded < THRESHOLD]
-        [["Product Name", "Item ID", "Content Quality Score"]]
-        .copy()
-    )
-    table["Content Quality Score"] = (table["Content Quality Score"] * 100).round().astype(int).astype(str) + "%"
-    return table
-
-def compute_buybox_ownership(df: pd.DataFrame) -> float:
-    if "Buy Box Winner" not in df.columns:
-        return 0.0
-    total = len(df)
-    if total == 0:
-        return 0.0
-    buybox_yes = df["Buy Box Winner"].str.strip().str.lower().eq("yes").sum()
-    return buybox_yes / total  # decimal fraction
-
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Pie Chart Helper
+# Pie chart helper
 # ─────────────────────────────────────────────────────────────────────────────
-from io import BytesIO
-import matplotlib.pyplot as plt
 
 def make_pie_bytes(metrics: dict) -> BytesIO:
     threshold = int(metrics.get("threshold", .95))
     below = int(metrics.get("below", 0))
     above = int(metrics.get("above", 0))
-    
-    # If no data, show as all "below"
+
     if below == 0 and above == 0:
         below = 1
         above = 0
 
-    # Use your preferred navy/teal
-    colors = ["#002c47", "#4bc3cf"]
+    colors_pie = ["#002c47", "#4bc3cf"]
 
-    # Make pie chart
-    fig, ax = plt.subplots(figsize=(2.2, 2.2), dpi=100)  # 2.2" matches your usage, but you can tweak
+    fig, ax = plt.subplots(figsize=(2.2, 2.2), dpi=100)
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
-    # Draw pie with a crisp border between slices
     ax.pie(
         [below, above],
-        colors=colors,
+        colors=colors_pie,
         startangle=90,
         labels=None,
         autopct=None,
-        wedgeprops={'edgecolor': 'white', 'linewidth': 2}  # This is the key for a crisp white border
+        wedgeprops={'edgecolor': 'white', 'linewidth': 2}
     )
-    ax.set(aspect="equal")  # Keep it a circle
-    ax.axis("off")          # Hide all axes/ticks
-
-    # Transparent figure background
-    fig.patch.set_alpha(0.0)
-    ax.patch.set_alpha(0.0)
+    ax.set(aspect="equal")
+    ax.axis("off")
 
     buf = BytesIO()
-    fig.savefig(buf, format="png", bbox_inches="tight", transparent=True, pad_inches=0.0)  # Small pad for no cropping
+    fig.patch.set_alpha(0.0)
+    ax.patch.set_alpha(0.0)
+    fig.savefig(buf, format="png", bbox_inches="tight", transparent=True, pad_inches=0.0)
     buf.seek(0)
     plt.close(fig)
     return buf
+
+
 # ─────────────────────────────────────────────────────────────────────────────
-# PDF Generation via ReportLab
+# PDF: 1P
 # ─────────────────────────────────────────────────────────────────────────────
-# ...existing code...
 
 def generate_full_report(
-    data_src, 
-    client_name: str, 
-    report_date: str, 
+    data_src,
+    client_name: str,
+    report_date: str,
     client_notes: str,
     logo_path: str = None
 ) -> bytes:
-    # Load data & compute
     df      = load_dataframe(data_src)
     metrics = compute_metrics(df)
-    top5    = get_top_skus(df)
-    below   = get_skus_below(df)
+    top5    = (
+        df.sort_values("Content Quality Score", ascending=False)
+          .head(TOP_N)[["Product Name", "Item ID", "Content Quality Score"]]
+          .copy()
+    )
+    top5["Content Quality Score"] = (top5["Content Quality Score"] * 100).round().astype(int).astype(str) + "%"
 
-    # Prepare canvas
+    below_df = df.copy()
+    rounded = below_df["Content Quality Score"].round(2)
+    below_df = below_df[rounded < THRESHOLD][["Product Name", "Item ID", "Content Quality Score"]]
+    below_df["Content Quality Score"] = (below_df["Content Quality Score"] * 100).round().astype(int).astype(str) + "%"
+
     buf = BytesIO()
     c   = canvas.Canvas(buf, pagesize=letter)
     w, h = letter
 
-    # Colors & Spacing
     margin      = inch * 0.75
-    section_gap = 0.55 * inch
     navy        = colors.HexColor("#002c47")
     teal        = colors.HexColor("#4bc3cf")
     panel_bg    = colors.HexColor("#ffffff")
     header_bg   = navy
     row_bg      = colors.HexColor("#eaf3fa")
 
-    # Panel Sizes and Positions
     panel_w = 3.7 * inch
     panel_h = 3.6 * inch
     panel_y = h - margin - 1.0 * inch
@@ -753,60 +603,34 @@ def generate_full_report(
     pie_panel_x = side_margin
     summary_panel_x = pie_panel_x + panel_w + 0.15 * inch
 
-    # Header (now left-aligned to pie_panel_x)
     base_path = pathlib.Path(__file__).parent.resolve()
-    logo_path = base_path / "logo.png"
+    auto_logo = base_path / "logo.png"
+    chosen = (pathlib.Path(logo_path) if logo_path else auto_logo) if (logo_path or auto_logo.is_file()) else None
+    if chosen and chosen.is_file():
+        logo = ImageReader(str(chosen))
+        width = 1.3 * inch
+        height = 1.3 * inch
+        x_margin = 0.4 * inch
+        y_margin = 0.45 * inch
+        c.drawImage(logo, x=w - x_margin - width, y=h - y_margin - height,
+                    width=width, height=height, preserveAspectRatio=True, mask="auto")
 
-    print(f"Resolved logo path: {logo_path}")
-    print(f"Logo file exists? {logo_path.is_file()}")
+    c.setFillColor(teal);  c.setFont("Raleway-Bold", 19); c.drawString(pie_panel_x, h - margin - 0.00 * inch, client_name)
+    c.setFillColor(navy);  c.setFont("Raleway", 22);      c.drawString(pie_panel_x, h - margin - 0.40 * inch, "Weekly Content Reporting")
+    c.setFont("Raleway", 15); c.setFillColor(navy);       c.drawString(pie_panel_x, h - margin - 0.71 * inch, report_date)
 
-    if logo_path.is_file():
-        logo = ImageReader(str(logo_path))
-        width = 1.3 * inch       # smaller width
-        height = 1.3 * inch      # smaller height
-        x_margin = 0.4 * inch    # horizontal margin from right edge
-        y_margin = 0.45 * inch    # vertical margin from top edge
-        x = w - x_margin - width
-        y = h - y_margin - height
-        c.drawImage(
-        logo,
-        x=x,
-        y=y,
-        width=width,
-        height=height,
-        preserveAspectRatio=True,
-        mask="auto"
-    )
-    else:
-        print("Logo file not found; skipping logo drawing.")
-
-
-    c.setFillColor(teal)
-    c.setFont("Raleway-Bold", 19)
-    c.drawString(pie_panel_x, h - margin - 0.0 * inch, client_name)
-
-    c.setFillColor(navy)
-    c.setFont("Raleway", 22)
-    c.drawString(pie_panel_x, h - margin - 0.4 * inch, "Weekly Content Reporting")
-
-    c.setFont("Raleway", 15)
-    c.setFillColor(navy)
-    c.drawString(pie_panel_x, h - margin - 0.71 * inch, report_date)
-
-    # Pie Chart Panel (LEFT)
+    # Pie panel
     c.setFillColor(panel_bg)
     c.roundRect(pie_panel_x, panel_y - panel_h, panel_w, panel_h, radius=10, stroke=0, fill=1)
     c.setStrokeColor(navy)
     c.roundRect(pie_panel_x, panel_y - panel_h, panel_w, panel_h, radius=10, stroke=1, fill=0)
 
-    # Panel title - bigger and lower
     title_fontsize = 22
     title_y_offset = 38
     c.setFont("Raleway-Bold", title_fontsize)
     c.setFillColor(navy)
     c.drawCentredString(pie_panel_x + panel_w / 2, panel_y - title_y_offset, "Score Distribution")
 
-    # Pie chart centered
     pie_buf = make_pie_bytes(metrics)
     pie = ImageReader(pie_buf)
     pie_size = 2.2 * inch
@@ -822,21 +646,16 @@ def generate_full_report(
     legend_y = panel_y - panel_h + 22
     square_size = 9
     gap = 7
-
     below_box_x = pie_panel_x + 40
-    c.setFillColor(navy)
-    c.rect(below_box_x, legend_y, square_size, square_size, fill=1, stroke=0)
-    c.setFillColor(colors.black)
-    c.setFont("Raleway", 10)
+    c.setFillColor(navy); c.rect(below_box_x, legend_y, square_size, square_size, fill=1, stroke=0)
+    c.setFillColor(colors.black); c.setFont("Raleway", 10)
     c.drawString(below_box_x + square_size + gap, legend_y + 1, f"Below {int(metrics['threshold'])}%")
-
     above_box_x = below_box_x + 120
-    c.setFillColor(teal)
-    c.rect(above_box_x, legend_y, square_size, square_size, fill=1, stroke=0)
+    c.setFillColor(teal); c.rect(above_box_x, legend_y, square_size, square_size, fill=1, stroke=0)
     c.setFillColor(colors.black)
     c.drawString(above_box_x + square_size + gap, legend_y + 1, f"Above {int(metrics['threshold'])}%")
 
-    # Summary Panel (Bullets Box, RIGHT, teal background)
+    # Summary panel
     box_w = panel_w
     box_h = panel_h
     box_x = summary_panel_x
@@ -861,39 +680,26 @@ def generate_full_report(
 
     y = bullets_start_y
     c.setFont("Raleway", 16)
-    for label, key in [
-        ("Average CQS",        "avg_cqs"),
-        ("SKUs Above 95%",     "above"),
-        ("SKUs Below 95%",     "below"),
-        ("Buybox Ownership",   "buybox"),
-    ]:
+    for label, key in [("Average CQS", "avg_cqs"), ("SKUs Above 95%", "above"), ("SKUs Below 95%", "below"), ("Buybox Ownership", "buybox")]:
         val = metrics.get(key, "")
         if key in ("above", "below") and val != "":
             val = int(val)
         if key in ("avg_cqs", "buybox") and val != "":
             val = f"{val}%"
-        c.setFillColor(navy)
-        c.setStrokeColor(navy)
-        c.circle(box_x + bullet_offset_x, y + 4, 4, fill=1)
-        c.setFillColor(navy)
-        c.setFont("Raleway", 16)
-        c.drawString(box_x + text_offset_x, y, f"{label}: {val}")
+        c.setFillColor(navy); c.setStrokeColor(navy); c.circle(box_x + bullet_offset_x, y + 4, 4, fill=1)
+        c.setFillColor(navy); c.setFont("Raleway", 16); c.drawString(box_x + text_offset_x, y, f"{label}: {val}")
         y -= line_height
 
     c.setFillColor(colors.black)
 
-    # Top 5 Table Section (now tighter spacing)
+    # Top 5 table
     table_title_y = panel_y - panel_h - 32
     c.setFont("Raleway-Bold", 18)
     c.setFillColor(navy)
     c.drawString(pie_panel_x, table_title_y, "Top 5 SKUs by Content Quality Score")
 
-    # Table data and style
     styles = getSampleStyleSheet()
-    styleN = styles["Normal"]
-    styleN.fontName = "Raleway"
-    styleN.fontSize = 10
-
+    styleN = styles["Normal"]; styleN.fontName = "Raleway"; styleN.fontSize = 10
     data = [top5.columns.tolist()]
     for row in top5.astype(str).values.tolist():
         row[0] = Paragraph(row[0], styleN)
@@ -903,41 +709,32 @@ def generate_full_report(
     col_widths = [table_w * 0.5, table_w * 0.20, table_w * 0.28]
     table = Table(data, colWidths=col_widths, repeatRows=1)
     table.setStyle(TableStyle([
-        ("FONTNAME",    (0, 0), (-1, -1), "Raleway"),
-        ("FONTSIZE",    (0, 0), (-1, -1), 10),
-        ("BACKGROUND", (0, 0), (-1, 0), header_bg),
-        ("TEXTCOLOR",  (0, 0), (-1, 0), colors.white),
-        ("BACKGROUND", (0, 1), (-1, -1), row_bg),
-        ("GRID",        (0, 0), (-1, -1), 0.5, colors.HexColor("#002c47")),
-        ("LEFTPADDING",  (0, 0), (-1, -1), 10),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 10),
-        ("TOPPADDING",   (0, 0), (-1, -1), 6),
-        ("BOTTOMPADDING",(0, 0), (-1, -1), 6),
+        ("FONTNAME", (0,0), (-1,-1), "Raleway"),
+        ("FONTSIZE", (0,0), (-1,-1), 10),
+        ("BACKGROUND", (0,0), (-1,0), header_bg),
+        ("TEXTCOLOR", (0,0), (-1,0), colors.white),
+        ("BACKGROUND", (0,1), (-1,-1), row_bg),
+        ("GRID", (0,0), (-1,-1), 0.5, colors.HexColor("#002c47")),
+        ("LEFTPADDING", (0,0), (-1,-1), 10),
+        ("RIGHTPADDING", (0,0), (-1,-1), 10),
+        ("TOPPADDING", (0,0), (-1,-1), 6),
+        ("BOTTOMPADDING",(0,0), (-1,-1), 6),
         ("ALIGN", (2,1), (2,-1), "CENTER"),
     ]))
     tw, th = table.wrap(table_w, h)
     table.drawOn(c, pie_panel_x, table_title_y - 14 - th)
 
-    # --- Content Notes Section (BOTTOM) ---
+    # Content Notes
     table_bottom_y = table_title_y - 14 - th
     spacing = 48
     box_y = table_bottom_y - spacing
 
-    convention_text = client_notes.replace("\n", "<br/>")
-    c.setFont("Raleway-Bold", 18)
-    c.setFillColor(navy)
+    convention_text = (client_notes or "").replace("\n", "<br/>")
+    c.setFont("Raleway-Bold", 18); c.setFillColor(navy)
     title_y = box_y + 20
     c.drawString(pie_panel_x, title_y, "Content Updates")
 
-    para_style = ParagraphStyle(
-        name='ConventionBox',
-        fontName="Raleway",
-        fontSize=15,
-        leading=20,
-        textColor=navy,
-        spaceAfter=0,
-    )
-
+    para_style = ParagraphStyle(name='ConventionBox', fontName="Raleway", fontSize=15, leading=20, textColor=navy, spaceAfter=0)
     box_x = pie_panel_x
     box_w = table_w
     box_padding = 20
@@ -952,14 +749,18 @@ def generate_full_report(
     note_y = title_y - gap
     para.drawOn(c, pie_panel_x, note_y - para_height)
 
-    c.setFont("Raleway", 8)
-    c.setFillColor(colors.HexColor("#200453"))
+    c.setFont("Raleway", 8); c.setFillColor(colors.HexColor("#200453"))
     c.drawCentredString(w / 2, 0.45 * inch, f"Generated by Soapbox Retail • {datetime.now().strftime('%B %d, %Y')}")
     c.setFillColor(colors.black)
 
     c.save()
     buf.seek(0)
     return buf.getvalue()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PDF: 3P (with Advertising integrated)
+# ─────────────────────────────────────────────────────────────────────────────
 
 def generate_3p_report(
     item_sales_src,
@@ -969,57 +770,41 @@ def generate_3p_report(
     mode: str,                                # "catalog" | "managed"
     client_name: str,
     report_date: str,
-    top_skus_text: str = "",                  # manual (Item Sales box)
-    inventory_callouts_text: str = "",        # manual (Inventory box)
-    search_highlights_text: str = "",         # manual (Search box)
-    advertising_src=None,                     # NEW: Advertising report (CSV/XLSX)
-    advertising_notes_text: str = "",         # NEW: manual notes for Advertising
+    top_skus_text: str = "",
+    inventory_callouts_text: str = "",
+    search_highlights_text: str = "",
+    advertising_src=None,
+    advertising_notes_text: str = "",
     logo_path: str | None = None
 ) -> bytes:
-    """
-    3P template PDF populated from three reports after Catalog/Managed filtering,
-    plus an independent Advertising report.
 
-    Item Sales/Auth/Conversion are computed from Item Sales (managed-aware).
-    Inventory metrics from Inventory (managed-aware).
-    Search metrics from Search Insights (managed-aware).
-    Advertising metrics (sum Ad Spend, sum ROAS, avg Conversion Rate) are independent
-    of Catalog/Managed and use only the uploaded Advertising file.
-    Manual text areas are rendered as plain text (no dashed boxes). Returns PDF bytes.
-    """
-    # ── Load data
+    # Load 3P data
     df_sales  = load_item_sales(item_sales_src)
     df_inv    = load_inventory(inventory_src)
     df_search = load_search_insights(search_insights_src)
 
-    # ── Managed filter (ID OR Name + gated Base+Name as implemented elsewhere)
+    # Managed filter (ID or Name; gated Base-ID fallback handled inside filter)
     if str(mode).strip().lower() == "managed":
         ids_set, names_set = load_managed_keys(managed_src)
         df_sales,  _ = filter_by_managed(df_sales,  ids_set, names_set)
         df_inv,    _ = filter_by_managed(df_inv,    ids_set, names_set)
         df_search, _ = filter_by_managed(df_search, ids_set, names_set)
 
-    # ── Helpers
+    # Helpers
     def _mean_conversion_pp_excel(series: pd.Series) -> float:
-        """
-        Excel-like mean for conversion:
-        - Blanks ignored (NaN); zeros included.
-        - Detect scale: if most non-null values ≤ 1 → treat as fractions (×100).
-        - Return mean as percent points (0..100).
-        """
         if series is None or len(series) == 0:
             return 0.0
         s = (
             series.astype(str)
-            .str.replace("%", "", regex=False)
-            .str.replace(",", "", regex=False)
-            .str.strip()
+                  .str.replace("%", "", regex=False)
+                  .str.replace(",", "", regex=False)
+                  .str.strip()
         )
-        s = pd.to_numeric(s, errors="coerce")  # blanks -> NaN
+        s = pd.to_numeric(s, errors="coerce")
         nonnull = s.dropna()
         if nonnull.empty:
             return 0.0
-        if (nonnull <= 1.0).mean() >= 0.8:  # likely 0..1
+        if (nonnull <= 1.0).mean() >= 0.8:
             nonnull = nonnull * 100.0
         return float(nonnull.mean())
 
@@ -1032,71 +817,47 @@ def generate_3p_report(
         return int((s <= n).sum())
 
     def _writein_text(x: float, y: float, w_: float, title: str, body_text: str, min_height: float = 80.0) -> float:
-        """Title + optional body text. No box. Returns bottom Y for spacing."""
-        c.setFont("Raleway-Bold", 14)
-        c.setFillColor(navy)
-        c.drawString(x, y, title)
+        c.setFont("Raleway-Bold", 14); c.setFillColor(navy); c.drawString(x, y, title)
         content = (body_text or "").strip()
         used_h = 0.0
         if content:
-            para_style = ParagraphStyle(
-                name="ManualText",
-                fontName="Raleway",
-                fontSize=12,
-                leading=16,
-                textColor=navy,
-            )
+            para_style = ParagraphStyle(name="ManualText", fontName="Raleway", fontSize=12, leading=16, textColor=navy)
             para = Paragraph(content.replace("\n", "<br/>"), para_style)
             usable_w = w_
             _, ph = para.wrap(usable_w, min_height)
             para.drawOn(c, x, y - 16 - ph)
-            used_h = 16 + ph  # title gap + paragraph
+            used_h = 16 + ph
         block_h = max(min_height, used_h or 16)
         return y - block_h
 
-    # --- Advertising loader (internal, tolerant) ---
+    # Advertising loader (uses resolver!)
     def _load_advertising_df(src) -> pd.DataFrame:
         if src is None:
             return pd.DataFrame(columns=["Ad Spend", "Conversion Rate – 14 Day", "RoAS – 14 Day"])
-
         df_raw = load_dataframe(src)
-
-    # ✅ USE the resolver here so it’s no longer “unused”
         mapping, _missing = _resolve_advertising_columns(df_raw.columns)
 
-    # Build a working frame with canonical column names only
         df = pd.DataFrame()
 
-    # Ad Spend (currency-like)
-        if "Ad Spend" in mapping and mapping["Ad Spend"] in df_raw.columns:
+        # Ad Spend → currency-like
+        if mapping.get("Ad Spend") in df_raw.columns:
             s_spend = df_raw[mapping["Ad Spend"]]
             df["Ad Spend"] = pd.to_numeric(
                 s_spend.astype(str)
-                    .str.replace("$", "", regex=False)
-                    .str.replace(",", "", regex=False)
-                    .str.replace(" ", "", regex=False)
-                    .str.strip(),
+                      .str.replace("$", "", regex=False)
+                      .str.replace(",", "", regex=False)
+                      .str.replace(" ", "", regex=False)
+                      .str.strip(),
                 errors="coerce"
             ).fillna(0.0)
         else:
             df["Ad Spend"] = pd.Series([], dtype=float)
 
-    # Conversion Rate – 14 Day (percent-like; blanks ignored in mean; auto-scale fractions ×100)
-        if "Conversion Rate" in mapping and mapping["Conversion Rate"] in df_raw.columns:
-            s_conv = df_raw[mapping["Conversion Rate"]]
-        elif "Conversion Rate – 14 Day" in mapping and mapping["Conversion Rate – 14 Day"] in df_raw.columns:
-            s_conv = df_raw[mapping["Conversion Rate – 14 Day"]]
-        else:
-            s_conv = None
-
+        # Conversion Rate → percent points (auto-scale 0..1 → ×100; blanks ignored in mean)
+        s_conv = df_raw[mapping["Conversion Rate"]] if mapping.get("Conversion Rate") in df_raw.columns else None
         if s_conv is not None:
-            vals = (
-                s_conv.astype(str)
-                    .str.replace("%", "", regex=False)
-                    .str.replace(",", "", regex=False)
-                    .str.strip()
-                )
-            vals = pd.to_numeric(vals, errors="coerce")  # NaN for blanks
+            vals = (s_conv.astype(str).str.replace("%", "", regex=False).str.replace(",", "", regex=False).str.strip())
+            vals = pd.to_numeric(vals, errors="coerce")
             nonnull = vals.dropna()
             if not nonnull.empty and (nonnull <= 1.0).mean() >= 0.8:
                 vals = vals * 100.0
@@ -1104,42 +865,31 @@ def generate_3p_report(
         else:
             df["Conversion Rate – 14 Day"] = pd.Series([], dtype=float)
 
-    # RoAS – 14 Day (numeric; accept “1.2x”, “1.2”, “$1.2”)
-        if "ROAS" in mapping and mapping["ROAS"] in df_raw.columns:
-            s_roas = df_raw[mapping["ROAS"]]
-        elif "RoAS – 14 Day" in mapping and mapping["RoAS – 14 Day"] in df_raw.columns:
-            s_roas = df_raw[mapping["RoAS – 14 Day"]]
-        else:
-            s_roas = None
-
+        # ROAS → numeric (accepts "1.2x", "$1.2", "1.2")
+        s_roas = df_raw[mapping["ROAS"]] if mapping.get("ROAS") in df_raw.columns else None
         if s_roas is not None:
             cleaned = (
                 s_roas.astype(str)
-                    .str.replace("$", "", regex=False)
-                    .str.replace(",", "", regex=False)
-                    .str.strip()
-                    .str.replace(r"[xX]$", "", regex=True)
-                    .str.strip()
-                )
+                      .str.replace("$", "", regex=False)
+                      .str.replace(",", "", regex=False)
+                      .str.strip()
+                      .str.replace(r"[xX]$", "", regex=True)
+                      .str.strip()
+            )
             df["RoAS – 14 Day"] = pd.to_numeric(cleaned, errors="coerce").fillna(0.0)
         else:
             df["RoAS – 14 Day"] = pd.Series([], dtype=float)
 
         return df
 
-
-    # ── Compute metrics (Excel-consistent)
+    # Item Sales metrics (Excel-consistent rounding)
     units_total = int(pd.to_numeric(df_sales.get("Units Sold"), errors="coerce").fillna(0).sum()) if not df_sales.empty else 0
-    # keep cents for Auth Sales; display with 2 decimals
     sales_total = float(pd.to_numeric(df_sales.get("Auth Sales"), errors="coerce").sum()) if not df_sales.empty else 0.0
-    # Avg conversion: ignore blanks, include zeros; 2 decimals for display
     avg_conv_pct = _mean_conversion_pp_excel(df_sales.get("Item conversion", pd.Series(dtype=float))) if not df_sales.empty else 0.0
 
-    # Inventory (support "Status" or "Stock status")
+    # Inventory metrics
     status_col = "Status" if "Status" in df_inv.columns else ("Stock status" if "Stock status" in df_inv.columns else None)
-    in_stock_rate_pct = 0
-    oos_count = 0
-    at_risk_count = 0
+    in_stock_rate_pct = 0; oos_count = 0; at_risk_count = 0
     if status_col and not df_inv.empty:
         status_norm = df_inv[status_col].astype(str).str.strip().str.lower()
         total_inv = len(status_norm)
@@ -1148,24 +898,24 @@ def generate_3p_report(
         oos_count = int((status_norm == "out of stock").sum())
         at_risk_count = int((status_norm == "at risk").sum())
 
-    # Search Insights
+    # Search Insights metrics
     avg_impr_rank = _avg_impressions_rank_whole(df_search.get("Impressions Rank", pd.Series(dtype=float))) if not df_search.empty else 0
     top10_impr = _count_top_n(df_search.get("Impressions Rank", pd.Series(dtype=float)), 10) if not df_search.empty else 0
     top10_sales = _count_top_n(df_search.get("Sales Rank", pd.Series(dtype=float)), 10) if not df_search.empty else 0
 
-    # Advertising (independent)
+    # Advertising (independent of managed/catalog)
     df_adv = _load_advertising_df(advertising_src)
     if df_adv.empty:
         adv_spend_total = 0.0
-        adv_roas_total = 0.0
-        adv_conv_avg = 0.0
+        adv_roas_total  = 0.0
+        adv_conv_avg    = 0.0
     else:
         adv_spend_total = float(df_adv["Ad Spend"].sum())
         adv_roas_total  = float(df_adv["RoAS – 14 Day"].sum())
-        nonnull_conv = df_adv["Conversion Rate – 14 Day"].dropna()
-        adv_conv_avg = float(nonnull_conv.mean()) if len(nonnull_conv) else 0.0
+        nonnull_conv    = df_adv["Conversion Rate – 14 Day"].dropna()
+        adv_conv_avg    = float(nonnull_conv.mean()) if len(nonnull_conv) else 0.0
 
-    # ── PDF drawing
+    # PDF drawing
     buf = BytesIO()
     c   = canvas.Canvas(buf, pagesize=letter)
     w, h = letter
@@ -1175,7 +925,6 @@ def generate_3p_report(
     teal     = colors.HexColor("#4bc3cf")
     panel_bg = colors.white
 
-    # Header
     base_path = pathlib.Path(__file__).parent.resolve()
     auto_logo = base_path / "logo.png"
     chosen_logo = (pathlib.Path(logo_path) if logo_path else auto_logo) if (logo_path or auto_logo.is_file()) else None
@@ -1220,8 +969,8 @@ def generate_3p_report(
     _draw_card_shell(x, y_top, card_w, card_h, "Item Sales")
     bullets_sales = [
         f"Units Sold: {units_total:,}",
-        f"Auth Sales: ${sales_total:,.2f}",        # cents preserved
-        f"Avg Conversion: {avg_conv_pct:.2f}%",    # two decimals
+        f"Auth Sales: ${sales_total:,.2f}",
+        f"Avg Conversion: {avg_conv_pct:.2f}%",
     ]
     y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_sales)
     _ = _writein_text(x + 16, y_cursor - 6, card_w - 32, "Top SKUs:", top_skus_text, min_height=80)
@@ -1248,12 +997,12 @@ def generate_3p_report(
     y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_search)
     _ = _writein_text(x + 16, y_cursor - 6, card_w - 32, "Highlights:", search_highlights_text, min_height=100)
 
-    # Box 4 — Advertising (now calculated + notes)
+    # Box 4 — Advertising
     x, y_top = x_right, row2_top
     _draw_card_shell(x, y_top, card_w, card_h, "Advertising")
     bullets_adv = [
         f"Total Ad Spend: ${adv_spend_total:,.2f}",
-        f"Total ROAS: ${adv_roas_total:,.2f}",
+        f"Total ROAS: ${adv_roas_total:,.2f}",          # PDF shows ROAS as currency per your request
         f"Avg Conversion Rate: {adv_conv_avg:.2f}%",
     ]
     y_cursor = _draw_bullets(x + 16, y_top, card_w - 32, start_offset=38 + 26, bullets=bullets_adv)
@@ -1269,10 +1018,10 @@ def generate_3p_report(
     return buf.getvalue()
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# CLI
+# ─────────────────────────────────────────────────────────────────────────────
 
-# ─────────────────────────────────────────────────────────────────────────────
-# CLI Entrypoint
-# ─────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Generate dashboard PDF")
@@ -1282,7 +1031,7 @@ if __name__ == "__main__":
     parser.add_argument("--out",    default="dashboard.pdf", help="Output PDF")
     args = parser.parse_args()
 
-    pdf = generate_full_report(args.input_file, args.client, args.date)
+    pdf = generate_full_report(args.input_file, args.client, args.date, client_notes="")
     with open(args.out, "wb") as f:
         f.write(pdf)
     print(f"Wrote {args.out}")
