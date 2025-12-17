@@ -543,6 +543,68 @@ def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) 
         "unmatched_sample": unmatched_sample,
     }
 
+# ------- Advertising header resolver (drop-in) -------
+_AD_ALIASES = {
+    "Ad Spend": {
+        "ad spend", "ad_spend", "spend", "ad spend ($)", "adspend"
+    },
+    "Conversion Rate": {
+        # base forms
+        "conversion rate", "conversion_rate", "conv rate", "conv_rate", "conversionrate",
+        # your export variants (both hyphen-minus and en-dash)
+        "conversion rate - 14 day", "conversion rate – 14 day",
+        "conversionrate14day", "conversion rate 14 day"
+    },
+    "ROAS": {
+        # base forms
+        "roas", "return on ad spend", "returnonadspend",
+        # your export variants
+        "roas - 14 day", "roas – 14 day", "roas14day", "roas 14 day"
+    },
+}
+
+def _norm_hdr(s: str) -> str:
+    """normalize header: lowercase, strip, collapse spaces, remove underscores and dashes."""
+    import re
+    s = str(s or "").strip().lower()
+    # normalize different dashes to hyphen, then remove separators
+    s = s.replace("–", "-").replace("—", "-")
+    s = s.replace("_", " ")
+    s = re.sub(r"\s+", " ", s)
+    # drop $ and % and parentheses in headers just in case
+    s = s.replace("$", "").replace("%", "")
+    # also keep a version without hyphens for alias sets that omit them
+    return s
+
+def _resolve_advertising_columns(cols):
+    """
+    Return dict mapping canonical -> actual header, using flexible aliases.
+    Raises if a required canonical column is missing.
+    """
+    lc_to_actual = { _norm_hdr(c): c for c in cols }
+
+    mapping = {}
+    missing = []
+    for canon, aliases in _AD_ALIASES.items():
+        found = None
+        # try exact normalized header first
+        if _norm_hdr(canon) in lc_to_actual:
+            found = lc_to_actual[_norm_hdr(canon)]
+        else:
+            for a in aliases:
+                na = _norm_hdr(a)
+                if na in lc_to_actual:
+                    found = lc_to_actual[na]
+                    break
+        if found is None:
+            missing.append(canon)
+        else:
+            mapping[canon] = found
+
+    return mapping, missing
+# ------- /resolver -------
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Metrics & Tables
 # ─────────────────────────────────────────────────────────────────────────────

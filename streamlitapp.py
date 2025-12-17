@@ -353,9 +353,10 @@ with preview_cols[3]:
                         return cmap[k]
                 return None
 
-            col_spend = _find("Ad Spend", "Spend", "Ad_Spend", "adspend")
-            col_conv  = _find("Conversion Rate – 14 Day", "Conversion Rate - 14 Day", "Conversion Rate 14 Day", "Conversion Rate", "conversionrate")
-            col_roas  = _find("RoAS – 14 Day", "RoAS - 14 Day", "RoAS 14 Day", "ROAS", "roas")
+            col_spend = _find("ad spend", "spend", "adspend", "adspend$", "adspend($)")
+            col_conv  = _find("conversionrate–14day", "conversionrate-14day", "conversionrate14day",
+                              "conversionrate", "conversionrate%", "conversionrate %")
+            col_roas  = _find("roas–14day", "roas-14day", "roas14day", "roas", "returnonadspend")
 
             def _to_currency(s: pd.Series) -> pd.Series:
                 return pd.to_numeric(
@@ -437,6 +438,7 @@ if st.button("📄 Generate 3P Dashboard PDF", key="export_pdf_3p", disabled=exp
         st.download_button("⬇️ Download 3P PDF", data=pdf3, file_name="dashboard_3p.pdf", mime="application/pdf")
 
 st.divider()
+
 
 
 
