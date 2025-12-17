@@ -222,6 +222,45 @@ def _excel_mean_conversion_pp(series: pd.Series) -> float:
         nonnull = nonnull * 100.0
     return float(nonnull.mean())
 
+import re
+
+def _norm_hdr_front(s: str) -> str:
+    s = str(s or "").strip().lower()
+    s = s.replace("–", "-").replace("—", "-")
+    s = s.replace("_", " ")
+    s = re.sub(r"\s+", " ", s)
+    s = s.replace("$", "").replace("%", "")
+    return s
+
+AD_ALIASES_FRONT = {
+    "Ad Spend": {
+        "ad spend", "ad_spend", "spend", "ad spend ($)", "adspend", "total spend", "total ad spend"
+    },
+    "Conversion Rate": {
+        "conversion rate", "conversion_rate", "conv rate", "conv_rate", "conversionrate",
+        "conversion rate - 14 day", "conversion rate – 14 day", "conversion rate 14 day", "conversionrate14day"
+    },
+    "ROAS": {
+        "roas", "return on ad spend", "returnonadspend",
+        "roas - 14 day", "roas – 14 day", "roas 14 day", "roas14day"
+    },
+}
+
+def resolve_ad_columns_front(cols):
+    lc_to_actual = {_norm_hdr_front(c): c for c in cols}
+    mapping = {}
+    for canon, aliases in AD_ALIASES_FRONT.items():
+        found = lc_to_actual.get(_norm_hdr_front(canon))
+        if not found:
+            for a in aliases:
+                cand = lc_to_actual.get(_norm_hdr_front(a))
+                if cand:
+                    found = cand
+                    break
+        mapping[canon] = found  # may be None
+    return mapping
+
+
 # ---------- X — Item Sales ----------
 with preview_cols[0]:
     st.caption("Data Preview (Item Sales)")
@@ -340,69 +379,65 @@ with preview_cols[3]:
     st.caption("Data Preview (Advertising)")
     if file_adv:
         try:
-            # Lightweight, tolerant loader (frontend-only)
             df_adv_raw = load_dataframe(file_adv)
 
-            import re
-            def _norm(s):
-                # lower, strip, remove all non-alphanumerics (handles spaces/underscores/dashes/en-dashes/etc.)
-                return re.sub(r"[^0-9a-z]+", "", str(s).strip().lower())
+            # ✅ Use the same-style resolver on the frontend
+            cols_map = resolve_ad_columns_front(df_adv_raw.columns)
 
-            cmap = {_norm(c): c for c in df_adv_raw.columns}
-
-            def _find(*aliases):
-                for a in aliases:
-                    k = _norm(a)
-                    if k in cmap:
-                        return cmap[k]
-                return None
-
-            col_spend = _find(
-                "Ad Spend", "Spend", "Ad_Spend", "adspend", "Total Spend", "Total Ad Spend"
-            )
-            col_conv  = _find(
-                "Conversion Rate - 14 Day", "Conversion Rate – 14 Day",  # hyphen & en-dash
-                "Conversion Rate 14 Day", "Conversion Rate",
-                "Conv Rate - 14 Day", "CR - 14 Day", "CR 14 Day"
-            )
-            col_roas  = _find(
-                "RoAS - 14 Day", "RoAS – 14 Day",   # hyphen & en-dash
-                "RoAS 14 Day", "ROAS", "Return on Ad Spend"
-            )
-
-            def _to_currency(s: pd.Series) -> pd.Series:
+            # Build parsed series safely
+            def to_currency(s: pd.Series) -> pd.Series:
                 return pd.to_numeric(
-                    s.astype(str).str.replace("$", "", regex=False).str.replace(",", "", regex=False).str.strip(),
+                    s.astype(str)
+                     .str.replace("$", "", regex=False)
+                     .str.replace(",", "", regex=False)
+                     .str.replace(" ", "", regex=False)
+                     .str.strip(),
                     errors="coerce"
                 ).fillna(0.0)
 
-            def _to_percent_vals(s: pd.Series) -> pd.Series:
-                s = s.astype(str).str.replace("%", "", regex=False).str.replace(",", "", regex=False).str.strip()
-                s = pd.to_numeric(s, errors="coerce")  # NaN for blanks
-                nonnull = s.dropna()
-                if not nonnull.empty and (nonnull <= 1.0).mean() >= 0.8:
-                    s = s * 100.0
-                return s
+            def to_roas(s: pd.Series) -> pd.Series:
+                cleaned = (
+                    s.astype(str)
+                     .str.replace("$", "", regex=False)
+                     .str.replace(",", "", regex=False)
+                     .str.strip()
+                     .str.replace(r"[xX]$", "", regex=True)
+                     .str.strip()
+                )
+                return pd.to_numeric(cleaned, errors="coerce").fillna(0.0)
 
-            spend = _to_currency(df_adv_raw[col_spend]) if col_spend else pd.Series([], dtype=float)
-            roas  = _to_currency(df_adv_raw[col_roas])  if col_roas  else pd.Series([], dtype=float)
-            conv  = _to_percent_vals(df_adv_raw[col_conv]) if col_conv else pd.Series([], dtype=float)
+            def to_percent_vals(s: pd.Series) -> pd.Series:
+                vals = (
+                    s.astype(str)
+                     .str.replace("%", "", regex=False)
+                     .str.replace(",", "", regex=False)
+                     .str.strip()
+                )
+                vals = pd.to_numeric(vals, errors="coerce")
+                nonnull = vals.dropna()
+                if not nonnull.empty and (nonnull <= 1.0).mean() >= 0.8:
+                    vals = vals * 100.0
+                return vals
+
+            spend = to_currency(df_adv_raw[cols_map["Ad Spend"]]) if cols_map["Ad Spend"] else pd.Series([], dtype=float)
+            roas  = to_roas(df_adv_raw[cols_map["ROAS"]])         if cols_map["ROAS"]     else pd.Series([], dtype=float)
+            conv  = to_percent_vals(df_adv_raw[cols_map["Conversion Rate"]]) if cols_map["Conversion Rate"] else pd.Series([], dtype=float)
 
             adv_spend_total = float(spend.sum()) if len(spend) else 0.0
-            adv_roas_total  = float(roas.sum()) if len(roas) else 0.0
-            conv_nonnull = conv.dropna()
-            adv_conv_avg = float(conv_nonnull.mean()) if len(conv_nonnull) else 0.0
+            adv_roas_total  = float(roas.sum())  if len(roas)  else 0.0
+            conv_nonnull    = conv.dropna()
+            adv_conv_avg    = float(conv_nonnull.mean()) if len(conv_nonnull) else 0.0
 
             # Show a compact sample + the calculated metrics
-            keep_cols = [c for c in [col_spend, col_conv, col_roas] if c]
+            keep_cols = [c for c in [cols_map["Ad Spend"], cols_map["Conversion Rate"], cols_map["ROAS"]] if c]
             if keep_cols:
                 st.dataframe(df_adv_raw[keep_cols].head(15), height=260, use_container_width=True)
             else:
-                st.info("Could not find expected Advertising columns; still showing calculated zeros.")
+                st.info("Could not find expected Advertising columns; showing calculated zeros.")
 
             st.markdown("**Calculated (Advertising):**")
             st.write(f"- Total Ad Spend: ${adv_spend_total:,.2f}")
-            st.write(f"- Total ROAS: ${adv_roas_total:,.2f}")
+            st.write(f"- Total ROAS: ${adv_roas_total:,.2f}")  # shown as currency per your spec
             st.write(f"- Avg Conversion Rate: {adv_conv_avg:.2f}%")
         except Exception as e:
             st.error(f"Advertising file error: {e}")

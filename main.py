@@ -1056,81 +1056,77 @@ def generate_3p_report(
 
     # --- Advertising loader (internal, tolerant) ---
     def _load_advertising_df(src) -> pd.DataFrame:
-        """
-        Reads CSV/XLSX and returns a df with three canonical columns:
-          - Ad Spend (currency)
-          - Conversion Rate – 14 Day (percent)
-          - RoAS – 14 Day (currency)
-        Only these three columns are used; others are ignored.
-        """
         if src is None:
             return pd.DataFrame(columns=["Ad Spend", "Conversion Rate – 14 Day", "RoAS – 14 Day"])
+
         df_raw = load_dataframe(src)
 
-        # Normalize headers (unify dashes/spaces; lower-case)
-        def _norm_hdr(s: str) -> str:
-            s = str(s or "")
-            s = s.replace("\u2013", "-").replace("\u2014", "-").replace("\u00A0", " ")
-            s = " ".join(s.split())
-            return s.strip().lower()
+    # ✅ USE the resolver here so it’s no longer “unused”
+        mapping, _missing = _resolve_advertising_columns(df_raw.columns)
 
-        # Canonical → set of aliases (all compared after _norm_hdr)
-        AD_ALIASES = {
-            "Ad Spend": {
-                "ad spend", "spend", "ad_spend", "adspend"
-            },
-            "Conversion Rate - 14 Day": {
-                "conversion rate - 14 day", "conversion rate – 14 day",
-                "conversion rate 14 day", "conversion rate", "conv rate", "cr"
-            },
-            "RoAS - 14 Day": {
-                "roas - 14 day", "roas – 14 day", "roas 14 day", "roas"
-            },
-        }
-
-        lc_map = { _norm_hdr(c): c for c in df_raw.columns }
-
-        def _resolve(canon: str, aliases: set[str]) -> str | None:
-            # exact canonical (normalized) first
-            if _norm_hdr(canon) in lc_map:
-                return lc_map[_norm_hdr(canon)]
-            # otherwise try aliases
-            for a in aliases:
-                na = _norm_hdr(a)
-                if na in lc_map:
-                    return lc_map[na]
-            return None
-
-        col_spend = _resolve("Ad Spend", AD_ALIASES["Ad Spend"])
-        col_conv  = _resolve("Conversion Rate - 14 Day", AD_ALIASES["Conversion Rate - 14 Day"])
-        col_roas  = _resolve("RoAS - 14 Day", AD_ALIASES["RoAS - 14 Day"])
-
-        # Build working frame with just the three columns (tolerant of missing)
+    # Build a working frame with canonical column names only
         df = pd.DataFrame()
-        df["Ad Spend"] = df_raw[col_spend] if col_spend else pd.Series(dtype=float)
-        df["Conversion Rate – 14 Day"] = df_raw[col_conv] if col_conv else pd.Series(dtype=float)
-        df["RoAS – 14 Day"] = df_raw[col_roas] if col_roas else pd.Series(dtype=float)
 
-        # Coercions
-        def _to_currency(s: pd.Series) -> pd.Series:
-            return pd.to_numeric(
-                s.astype(str).str.replace("$", "", regex=False).str.replace(",", "", regex=False).str.strip(),
+    # Ad Spend (currency-like)
+        if "Ad Spend" in mapping and mapping["Ad Spend"] in df_raw.columns:
+            s_spend = df_raw[mapping["Ad Spend"]]
+            df["Ad Spend"] = pd.to_numeric(
+                s_spend.astype(str)
+                    .str.replace("$", "", regex=False)
+                    .str.replace(",", "", regex=False)
+                    .str.replace(" ", "", regex=False)
+                    .str.strip(),
                 errors="coerce"
             ).fillna(0.0)
+        else:
+            df["Ad Spend"] = pd.Series([], dtype=float)
 
-        def _to_percent_vals(s: pd.Series) -> pd.Series:
-            # keep as 0..100 numbers; blanks ignored in mean calc later
-            s = s.astype(str).str.replace("%", "", regex=False).str.replace(",", "", regex=False).str.strip()
-            s = pd.to_numeric(s, errors="coerce")  # NaN for blanks
-            nonnull = s.dropna()
+    # Conversion Rate – 14 Day (percent-like; blanks ignored in mean; auto-scale fractions ×100)
+        if "Conversion Rate" in mapping and mapping["Conversion Rate"] in df_raw.columns:
+            s_conv = df_raw[mapping["Conversion Rate"]]
+        elif "Conversion Rate – 14 Day" in mapping and mapping["Conversion Rate – 14 Day"] in df_raw.columns:
+            s_conv = df_raw[mapping["Conversion Rate – 14 Day"]]
+        else:
+            s_conv = None
+
+        if s_conv is not None:
+            vals = (
+                s_conv.astype(str)
+                    .str.replace("%", "", regex=False)
+                    .str.replace(",", "", regex=False)
+                    .str.strip()
+                )
+            vals = pd.to_numeric(vals, errors="coerce")  # NaN for blanks
+            nonnull = vals.dropna()
             if not nonnull.empty and (nonnull <= 1.0).mean() >= 0.8:
-                s = s * 100.0
-            return s
+                vals = vals * 100.0
+            df["Conversion Rate – 14 Day"] = vals
+        else:
+            df["Conversion Rate – 14 Day"] = pd.Series([], dtype=float)
 
-        df["Ad Spend"] = _to_currency(df["Ad Spend"])
-        df["RoAS – 14 Day"] = _to_currency(df["RoAS – 14 Day"])
-        df["Conversion Rate – 14 Day"] = _to_percent_vals(df["Conversion Rate – 14 Day"])
+    # RoAS – 14 Day (numeric; accept “1.2x”, “1.2”, “$1.2”)
+        if "ROAS" in mapping and mapping["ROAS"] in df_raw.columns:
+            s_roas = df_raw[mapping["ROAS"]]
+        elif "RoAS – 14 Day" in mapping and mapping["RoAS – 14 Day"] in df_raw.columns:
+            s_roas = df_raw[mapping["RoAS – 14 Day"]]
+        else:
+            s_roas = None
+
+        if s_roas is not None:
+            cleaned = (
+                s_roas.astype(str)
+                    .str.replace("$", "", regex=False)
+                    .str.replace(",", "", regex=False)
+                    .str.strip()
+                    .str.replace(r"[xX]$", "", regex=True)
+                    .str.strip()
+                )
+            df["RoAS – 14 Day"] = pd.to_numeric(cleaned, errors="coerce").fillna(0.0)
+        else:
+            df["RoAS – 14 Day"] = pd.Series([], dtype=float)
+
         return df
+
 
     # ── Compute metrics (Excel-consistent)
     units_total = int(pd.to_numeric(df_sales.get("Units Sold"), errors="coerce").fillna(0).sum()) if not df_sales.empty else 0
