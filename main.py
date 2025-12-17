@@ -434,51 +434,48 @@ def filter_by_managed(df: pd.DataFrame, ids_set: Set[str], names_set: Set[str]) 
 # Advertising column resolver (NEW + USED)
 # ─────────────────────────────────────────────────────────────────────────────
 
+# ------- Advertising header resolver (robust; used by backend & mirrored in UI) -------
 _AD_ALIASES = {
-    "Ad Spend": {"ad spend", "ad_spend", "spend", "ad spend ($)", "adspend", "total spend", "total ad spend"},
+    "Ad Spend": {
+        "ad spend", "ad_spend", "spend", "ad spend ($)", "adspend",
+        "total spend", "total ad spend"
+    },
     "Conversion Rate": {
         "conversion rate", "conversion_rate", "conv rate", "conv_rate", "conversionrate",
-        "conversion rate - 14 day", "conversion rate – 14 day", "conversion rate 14 day", "conversionrate14day",
+        "conversion rate - 14 day", "conversion rate – 14 day", "conversion rate 14 day", "conversionrate14day"
     },
     "ROAS": {
         "roas", "return on ad spend", "returnonadspend",
-        "roas - 14 day", "roas – 14 day", "roas 14 day", "roas14day",
+        "roas - 14 day", "roas – 14 day", "roas 14 day", "roas14day"
     },
 }
 
 def _norm_hdr(s: str) -> str:
-    """
-    Normalize header: lowercase, strip, unify dashes, collapse spaces,
-    drop $/% to maximize matching.
-    """
-    s = str(s or "").strip().lower()
-    s = s.replace("–", "-").replace("—", "-")
-    s = s.replace("_", " ")
-    s = re.sub(r"\s+", " ", s)
-    s = s.replace("$", "").replace("%", "")
-    return s
+    """Lowercase and remove *all* non-alphanumerics so any dash/space/NBSP/commas vanish."""
+    import re, unicodedata
+    s = unicodedata.normalize("NFKC", str(s or "")).lower()
+    return re.sub(r"[^0-9a-z]+", "", s)
 
 def _resolve_advertising_columns(cols):
     """
-    Return dict mapping canonical -> actual header, using flexible aliases.
-    Missing canonicals are omitted from mapping.
+    Return dict mapping canonical -> actual header using flexible aliases.
+    Missing canonicals map to None (we handle that gracefully).
     """
-    lc_to_actual = {_norm_hdr(c): c for c in cols}
-    mapping, missing = {}, []
+    lc_to_actual = { _norm_hdr(c): c for c in cols }
+    mapping = { "Ad Spend": None, "Conversion Rate": None, "ROAS": None }
     for canon, aliases in _AD_ALIASES.items():
-        found = lc_to_actual.get(_norm_hdr(canon))
-        if not found:
-            for a in aliases:
-                na = _norm_hdr(a)
-                if na in lc_to_actual:
-                    found = lc_to_actual[na]
-                    break
-        if not found:
-            missing.append(canon)
-        else:
-            mapping[canon] = found
-    # We return mapping + missing (missing is informational)
-    return mapping, missing
+        # exact canonical first
+        if _norm_hdr(canon) in lc_to_actual:
+            mapping[canon] = lc_to_actual[_norm_hdr(canon)]
+            continue
+        # then aliases
+        for a in aliases:
+            na = _norm_hdr(a)
+            if na in lc_to_actual:
+                mapping[canon] = lc_to_actual[na]
+                break
+    return mapping
+# ------- /resolver -------
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -870,53 +867,64 @@ def generate_3p_report(
     def _load_advertising_df(src) -> pd.DataFrame:
         if src is None:
             return pd.DataFrame(columns=["Ad Spend", "Conversion Rate – 14 Day", "RoAS – 14 Day"])
+
         df_raw = load_dataframe(src)
-        mapping, _missing = _resolve_advertising_columns(df_raw.columns)
+        mapping = _resolve_advertising_columns(df_raw.columns)
 
         df = pd.DataFrame()
 
-        # Ad Spend → currency-like
-        if mapping.get("Ad Spend") in df_raw.columns:
-            s_spend = df_raw[mapping["Ad Spend"]]
-            df["Ad Spend"] = pd.to_numeric(
-                s_spend.astype(str)
-                      .str.replace("$", "", regex=False)
-                      .str.replace(",", "", regex=False)
-                      .str.replace(" ", "", regex=False)
-                      .str.strip(),
+        # ---- coercers ----
+        def _to_currency(s: pd.Series) -> pd.Series:
+            return pd.to_numeric(
+                s.astype(str)
+                 .str.replace("$", "", regex=False)
+                 .str.replace(",", "", regex=False)
+                 .str.replace(" ", "", regex=False)
+                 .str.strip(),
                 errors="coerce"
             ).fillna(0.0)
-        else:
-            df["Ad Spend"] = pd.Series([], dtype=float)
 
-        # Conversion Rate → percent points (auto-scale 0..1 → ×100; blanks ignored in mean)
-        s_conv = df_raw[mapping["Conversion Rate"]] if mapping.get("Conversion Rate") in df_raw.columns else None
-        if s_conv is not None:
-            vals = (s_conv.astype(str).str.replace("%", "", regex=False).str.replace(",", "", regex=False).str.strip())
+        def _to_roas(s: pd.Series) -> pd.Series:
+            cleaned = (
+                s.astype(str)
+                 .str.replace("$", "", regex=False)
+                 .str.replace(",", "", regex=False)
+                 .str.replace("x", "", case=False, regex=False)
+                 .str.strip()
+            )
+            return pd.to_numeric(cleaned, errors="coerce").fillna(0.0)
+
+        def _to_percent_vals(s: pd.Series) -> pd.Series:
+            vals = (
+                s.astype(str)
+                 .str.replace("%", "", regex=False)
+                 .str.replace(",", "", regex=False)
+                 .str.strip()
+            )
             vals = pd.to_numeric(vals, errors="coerce")
             nonnull = vals.dropna()
             if not nonnull.empty and (nonnull <= 1.0).mean() >= 0.8:
                 vals = vals * 100.0
-            df["Conversion Rate – 14 Day"] = vals
-        else:
-            df["Conversion Rate – 14 Day"] = pd.Series([], dtype=float)
+            return vals
 
-        # ROAS → numeric (accepts "1.2x", "$1.2", "1.2")
-        s_roas = df_raw[mapping["ROAS"]] if mapping.get("ROAS") in df_raw.columns else None
-        if s_roas is not None:
-            cleaned = (
-                s_roas.astype(str)
-                      .str.replace("$", "", regex=False)
-                      .str.replace(",", "", regex=False)
-                      .str.strip()
-                      .str.replace(r"[xX]$", "", regex=True)
-                      .str.strip()
-            )
-            df["RoAS – 14 Day"] = pd.to_numeric(cleaned, errors="coerce").fillna(0.0)
+        # ---- map columns (gracefully handle missing) ----
+        if mapping["Ad Spend"] is not None:
+            df["Ad Spend"] = _to_currency(df_raw[mapping["Ad Spend"]])
+        else:
+            df["Ad Spend"] = pd.Series([], dtype=float)
+
+        if mapping["ROAS"] is not None:
+            df["RoAS – 14 Day"] = _to_roas(df_raw[mapping["ROAS"]])
         else:
             df["RoAS – 14 Day"] = pd.Series([], dtype=float)
 
+        if mapping["Conversion Rate"] is not None:
+            df["Conversion Rate – 14 Day"] = _to_percent_vals(df_raw[mapping["Conversion Rate"]])
+        else:
+            df["Conversion Rate – 14 Day"] = pd.Series([], dtype=float)
+
         return df
+
 
     # Item Sales metrics (Excel-consistent rounding)
     units_total = int(pd.to_numeric(df_sales.get("Units Sold"), errors="coerce").fillna(0).sum()) if not df_sales.empty else 0

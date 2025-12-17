@@ -222,19 +222,16 @@ def _excel_mean_conversion_pp(series: pd.Series) -> float:
         nonnull = nonnull * 100.0
     return float(nonnull.mean())
 
-import re
+import re, unicodedata
 
 def _norm_hdr_front(s: str) -> str:
-    s = str(s or "").strip().lower()
-    s = s.replace("–", "-").replace("—", "-")
-    s = s.replace("_", " ")
-    s = re.sub(r"\s+", " ", s)
-    s = s.replace("$", "").replace("%", "")
-    return s
+    s = unicodedata.normalize("NFKC", str(s or "")).lower()
+    return re.sub(r"[^0-9a-z]+", "", s)
 
 AD_ALIASES_FRONT = {
     "Ad Spend": {
-        "ad spend", "ad_spend", "spend", "ad spend ($)", "adspend", "total spend", "total ad spend"
+        "ad spend", "ad_spend", "spend", "ad spend ($)", "adspend",
+        "total spend", "total ad spend"
     },
     "Conversion Rate": {
         "conversion rate", "conversion_rate", "conv rate", "conv_rate", "conversionrate",
@@ -248,17 +245,19 @@ AD_ALIASES_FRONT = {
 
 def resolve_ad_columns_front(cols):
     lc_to_actual = {_norm_hdr_front(c): c for c in cols}
-    mapping = {}
+    mapping = {"Ad Spend": None, "Conversion Rate": None, "ROAS": None}
     for canon, aliases in AD_ALIASES_FRONT.items():
-        found = lc_to_actual.get(_norm_hdr_front(canon))
-        if not found:
-            for a in aliases:
-                cand = lc_to_actual.get(_norm_hdr_front(a))
-                if cand:
-                    found = cand
-                    break
-        mapping[canon] = found  # may be None
+        key = _norm_hdr_front(canon)
+        if key in lc_to_actual:
+            mapping[canon] = lc_to_actual[key]
+            continue
+        for a in aliases:
+            k = _norm_hdr_front(a)
+            if k in lc_to_actual:
+                mapping[canon] = lc_to_actual[k]
+                break
     return mapping
+
 
 
 # ---------- X — Item Sales ----------
