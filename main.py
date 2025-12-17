@@ -1067,41 +1067,49 @@ def generate_3p_report(
             return pd.DataFrame(columns=["Ad Spend", "Conversion Rate – 14 Day", "RoAS – 14 Day"])
         df_raw = load_dataframe(src)
 
-        # Build a case/spacing/alias-insensitive map
-        import re
-        def _norm(s):
-            return re.sub(r"[^0-9a-z]+", "", str(s).strip().lower())
+        # Normalize headers (unify dashes/spaces; lower-case)
+        def _norm_hdr(s: str) -> str:
+            s = str(s or "")
+            s = s.replace("\u2013", "-").replace("\u2014", "-").replace("\u00A0", " ")
+            s = " ".join(s.split())
+            return s.strip().lower()
 
-        cmap = {_norm(c): c for c in df_adv.columns}
+        # Canonical → set of aliases (all compared after _norm_hdr)
+        AD_ALIASES = {
+            "Ad Spend": {
+                "ad spend", "spend", "ad_spend", "adspend"
+            },
+            "Conversion Rate - 14 Day": {
+                "conversion rate - 14 day", "conversion rate – 14 day",
+                "conversion rate 14 day", "conversion rate", "conv rate", "cr"
+            },
+            "RoAS - 14 Day": {
+                "roas - 14 day", "roas – 14 day", "roas 14 day", "roas"
+            },
+        }
 
+        lc_map = { _norm_hdr(c): c for c in df_raw.columns }
 
-        def _find(*aliases):
+        def _resolve(canon: str, aliases: set[str]) -> str | None:
+            # exact canonical (normalized) first
+            if _norm_hdr(canon) in lc_map:
+                return lc_map[_norm_hdr(canon)]
+            # otherwise try aliases
             for a in aliases:
-                k = _norm(a)
-                if k in cmap:
-                    return cmap[k]
+                na = _norm_hdr(a)
+                if na in lc_map:
+                    return lc_map[na]
             return None
 
-        col_spend = _find("Ad Spend", "Spend", "Ad_Spend", "adspend")
-        col_conv  = _find("Conversion Rate – 14 Day", "Conversion Rate - 14 Day", "Conversion Rate 14 Day", "Conversion Rate", "conv rate", "conversionrate")
-        col_roas  = _find("RoAS – 14 Day", "RoAS - 14 Day", "RoAS 14 Day", "ROAS", "roas")
+        col_spend = _resolve("Ad Spend", AD_ALIASES["Ad Spend"])
+        col_conv  = _resolve("Conversion Rate - 14 Day", AD_ALIASES["Conversion Rate - 14 Day"])
+        col_roas  = _resolve("RoAS - 14 Day", AD_ALIASES["RoAS - 14 Day"])
 
-        # Create a working frame with only the needed columns (tolerant missing -> empty)
+        # Build working frame with just the three columns (tolerant of missing)
         df = pd.DataFrame()
-        if col_spend is not None:
-            df["Ad Spend"] = df_raw[col_spend]
-        else:
-            df["Ad Spend"] = pd.Series(dtype=float)
-
-        if col_conv is not None:
-            df["Conversion Rate – 14 Day"] = df_raw[col_conv]
-        else:
-            df["Conversion Rate – 14 Day"] = pd.Series(dtype=float)
-
-        if col_roas is not None:
-            df["RoAS – 14 Day"] = df_raw[col_roas]
-        else:
-            df["RoAS – 14 Day"] = pd.Series(dtype=float)
+        df["Ad Spend"] = df_raw[col_spend] if col_spend else pd.Series(dtype=float)
+        df["Conversion Rate – 14 Day"] = df_raw[col_conv] if col_conv else pd.Series(dtype=float)
+        df["RoAS – 14 Day"] = df_raw[col_roas] if col_roas else pd.Series(dtype=float)
 
         # Coercions
         def _to_currency(s: pd.Series) -> pd.Series:
@@ -1114,7 +1122,6 @@ def generate_3p_report(
             # keep as 0..100 numbers; blanks ignored in mean calc later
             s = s.astype(str).str.replace("%", "", regex=False).str.replace(",", "", regex=False).str.strip()
             s = pd.to_numeric(s, errors="coerce")  # NaN for blanks
-            # If mostly ≤1, treat as fraction → ×100
             nonnull = s.dropna()
             if not nonnull.empty and (nonnull <= 1.0).mean() >= 0.8:
                 s = s * 100.0
@@ -1264,6 +1271,7 @@ def generate_3p_report(
     c.save()
     buf.seek(0)
     return buf.getvalue()
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────

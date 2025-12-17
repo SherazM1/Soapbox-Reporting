@@ -345,11 +345,10 @@ with preview_cols[3]:
 
             import re
             def _norm(s):
-    # lower, remove every non-alphanumeric char (kills spaces, underscores, hyphens, en-dashes, commas, etc.)
+                # lower, strip, remove all non-alphanumerics (handles spaces/underscores/dashes/en-dashes/etc.)
                 return re.sub(r"[^0-9a-z]+", "", str(s).strip().lower())
 
             cmap = {_norm(c): c for c in df_adv_raw.columns}
-
 
             def _find(*aliases):
                 for a in aliases:
@@ -359,18 +358,17 @@ with preview_cols[3]:
                 return None
 
             col_spend = _find(
-    "Ad Spend", "Spend", "Ad_Spend", "adspend", "Total Spend", "Total Ad Spend"
-)
+                "Ad Spend", "Spend", "Ad_Spend", "adspend", "Total Spend", "Total Ad Spend"
+            )
             col_conv  = _find(
-    "Conversion Rate - 14 Day", "Conversion Rate – 14 Day",  # hyphen & en-dash
-    "Conversion Rate 14 Day", "Conversion Rate",
-    "Conv Rate - 14 Day", "CR - 14 Day", "CR 14 Day"
-)
+                "Conversion Rate - 14 Day", "Conversion Rate – 14 Day",  # hyphen & en-dash
+                "Conversion Rate 14 Day", "Conversion Rate",
+                "Conv Rate - 14 Day", "CR - 14 Day", "CR 14 Day"
+            )
             col_roas  = _find(
-    "RoAS - 14 Day", "RoAS – 14 Day",   # hyphen & en-dash
-    "RoAS 14 Day", "ROAS", "Return on Ad Spend"
-)
-
+                "RoAS - 14 Day", "RoAS – 14 Day",   # hyphen & en-dash
+                "RoAS 14 Day", "ROAS", "Return on Ad Spend"
+            )
 
             def _to_currency(s: pd.Series) -> pd.Series:
                 return pd.to_numeric(
