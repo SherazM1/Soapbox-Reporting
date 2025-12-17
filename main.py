@@ -1,3 +1,6 @@
+# =========================================
+# File: main.py
+# =========================================
 # main.py
 
 import os
@@ -357,12 +360,12 @@ def _resolve_managed_columns(cols) -> Tuple[Optional[str], Optional[str]]:
     norm_map = _normalize_headers_map(cols)
     item_id_actual = None
     item_name_actual = None
-    for a in _MANAGED_ALIASES["Item ID"]:
+    for a in _MANAGED_ALIASES["Item ID"] if "Item ID" in _MANAGED_ALIASES else []:
         k = a.replace("_", "").replace(" ", "")
         if k in norm_map:
             item_id_actual = norm_map[k]
             break
-    for a in _MANAGED_ALIASES["Item Name"]:
+    for a in _MANAGED_ALIASES["Item Name"] if "Item Name" in _MANAGED_ALIASES else []:
         k = a.replace("_", "").replace(" ", "")
         if k in norm_map:
             item_name_actual = norm_map[k]
@@ -863,12 +866,64 @@ def generate_3p_report(
         block_h = max(min_height, used_h or 16)
         return y - block_h
 
-    # Advertising loader (uses resolver!)
+    # Advertising loader (uses resolver!) + header detection
     def _load_advertising_df(src) -> pd.DataFrame:
         if src is None:
             return pd.DataFrame(columns=["Ad Spend", "Conversion Rate – 14 Day", "RoAS – 14 Day"])
 
-        df_raw = load_dataframe(src)
+        # --- Detect & use the real header row for Advertising (identical logic to UI) ---
+        import io
+        def _norm_hdr_detect(s: str) -> str:
+            s = unicodedata.normalize("NFKC", str(s or "")).lower()
+            return re.sub(r"[^0-9a-z]+", "", s)
+
+        expected_hdrs = {"adspend", "conversionrate14day", "roas14day"}
+
+        df_raw = None
+        try:
+            if hasattr(src, "read") and hasattr(src, "name"):
+                data = src.getvalue()
+                ext  = os.path.splitext(src.name)[1].lower()
+                if ext in (".xls", ".xlsx"):
+                    tmp = pd.read_excel(io.BytesIO(data), header=None, nrows=25)
+                else:
+                    tmp = pd.read_csv(io.BytesIO(data), header=None, nrows=25, engine="python", encoding="utf-8", on_bad_lines="skip")
+                hdr_idx = None
+                for i in range(min(20, len(tmp))):
+                    row_norm = {_norm_hdr_detect(x) for x in tmp.iloc[i].tolist()}
+                    if expected_hdrs.issubset(row_norm):
+                        hdr_idx = i
+                        break
+                if hdr_idx is not None:
+                    if ext in (".xls", ".xlsx"):
+                        df_raw = pd.read_excel(io.BytesIO(data), header=hdr_idx)
+                    else:
+                        df_raw = pd.read_csv(io.BytesIO(data), header=hdr_idx, engine="python", encoding="utf-8", on_bad_lines="skip")
+            else:
+                ext = os.path.splitext(str(src))[1].lower()
+                if ext in (".xls", ".xlsx"):
+                    tmp = pd.read_excel(src, header=None, nrows=25)
+                else:
+                    tmp = pd.read_csv(src, header=None, nrows=25, engine="python", encoding="utf-8", on_bad_lines="skip")
+                hdr_idx = None
+                for i in range(min(20, len(tmp))):
+                    row_norm = {_norm_hdr_detect(x) for x in tmp.iloc[i].tolist()}
+                    if expected_hdrs.issubset(row_norm):
+                        hdr_idx = i
+                        break
+                if hdr_idx is not None:
+                    if ext in (".xls", ".xlsx"):
+                        df_raw = pd.read_excel(src, header=hdr_idx)
+                    else:
+                        df_raw = pd.read_csv(src, header=hdr_idx, engine="python", encoding="utf-8", on_bad_lines="skip")
+        except Exception:
+            df_raw = None
+
+        if df_raw is None:
+            # Fallback to normal loader if detection failed
+            df_raw = load_dataframe(src)
+        # --- end header detection ---
+
         mapping = _resolve_advertising_columns(df_raw.columns)
 
         df = pd.DataFrame()
@@ -889,7 +944,7 @@ def generate_3p_report(
                 s.astype(str)
                  .str.replace("$", "", regex=False)
                  .str.replace(",", "", regex=False)
-                 .str.replace("x", "", case=False, regex=False)
+                 .str.replace("x", "", case=False, regex=False)  # align w/ UI
                  .str.strip()
             )
             return pd.to_numeric(cleaned, errors="coerce").fillna(0.0)

@@ -1,3 +1,6 @@
+# =========================================
+# File: streamlitapp.py
+# =========================================
 # streamlit_app.py  — UI reorg per your spec, minimal logic changes
 
 import os
@@ -378,7 +381,40 @@ with preview_cols[3]:
     st.caption("Data Preview (Advertising)")
     if file_adv:
         try:
-            df_adv_raw = load_dataframe(file_adv)
+            # --- Detect & use the real header row for Advertising (shared rule) ---
+            import io
+            import re, unicodedata
+
+            def _norm_hdr_detect(s: str) -> str:
+                s = unicodedata.normalize("NFKC", str(s or "")).lower()
+                return re.sub(r"[^0-9a-z]+", "", s)
+
+            expected_hdrs = {"adspend", "conversionrate14day", "roas14day"}
+
+            _data = file_adv.getvalue()
+            _ext  = os.path.splitext(file_adv.name)[1].lower()
+            hdr_idx = None
+            try:
+                if _ext in (".xls", ".xlsx"):
+                    tmp = pd.read_excel(io.BytesIO(_data), header=None, nrows=25)
+                else:
+                    tmp = pd.read_csv(io.BytesIO(_data), header=None, nrows=25, engine="python", encoding="utf-8", on_bad_lines="skip")
+                for i in range(min(20, len(tmp))):
+                    row_norm = {_norm_hdr_detect(x) for x in tmp.iloc[i].tolist()}
+                    if expected_hdrs.issubset(row_norm):
+                        hdr_idx = i
+                        break
+            except Exception:
+                hdr_idx = None
+
+            if hdr_idx is not None:
+                if _ext in (".xls", ".xlsx"):
+                    df_adv_raw = pd.read_excel(io.BytesIO(_data), header=hdr_idx)
+                else:
+                    df_adv_raw = pd.read_csv(io.BytesIO(_data), header=hdr_idx, engine="python", encoding="utf-8", on_bad_lines="skip")
+            else:
+                df_adv_raw = load_dataframe(file_adv)
+            # --- end header detection ---
 
             # ✅ Use the same-style resolver on the frontend
             cols_map = resolve_ad_columns_front(df_adv_raw.columns)
@@ -399,8 +435,7 @@ with preview_cols[3]:
                     s.astype(str)
                      .str.replace("$", "", regex=False)
                      .str.replace(",", "", regex=False)
-                     .str.strip()
-                     .str.replace(r"[xX]$", "", regex=True)
+                     .str.replace("x", "", case=False, regex=False)  # align w/ backend
                      .str.strip()
                 )
                 return pd.to_numeric(cleaned, errors="coerce").fillna(0.0)
