@@ -1,18 +1,10 @@
-# --- Core app runtime (PINNED for stability on Streamlit Cloud) ---
-streamlit==1.37.0
-altair==4.2.2
+# Cloud-safe, Python 3.13-friendly pins
+streamlit==1.53.0
+altair==6.0.0
 
-# --- Data / files ---
-pandas==2.2.2
-numpy==1.26.4
+pandas==2.3.3
+numpy==2.4.1
 openpyxl==3.1.5
+matplotlib==3.10.8
 chardet==5.2.0
-
-# --- Charts ---
-matplotlib==3.8.4
-
-# --- PDF generation ---
-reportlab==4.2.5
-
-# --- Local-only / DO NOT use on Streamlit Cloud (often breaks Linux builds) ---
-# PyQt5
+reportlab==4.4.9
