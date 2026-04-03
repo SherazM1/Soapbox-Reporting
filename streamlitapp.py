@@ -68,16 +68,63 @@ def render_home() -> None:
     st.markdown(
         """
         <style>
-        .hub-subtitle { color: #4b5563; margin-top: -0.35rem; margin-bottom: 1.2rem; }
-        .hub-card {
-            border: 1px solid #d9dde3;
-            border-radius: 14px;
-            padding: 1.1rem 1rem 1rem 1rem;
-            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-            min-height: 180px;
+        .hub-subtitle {
+            color: #5b6472;
+            margin-top: -0.45rem;
+            margin-bottom: 1.05rem;
+            font-size: 0.98rem;
         }
-        .hub-card h3 { margin: 0 0 0.4rem 0; color: #111827; }
-        .hub-card p { margin: 0 0 0.9rem 0; color: #4b5563; }
+        .hub-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+            margin-top: 0.25rem;
+        }
+        .hub-link-card {
+            display: block;
+            text-decoration: none;
+            border: 1px solid #d8dde6;
+            border-radius: 14px;
+            padding: 1rem 1rem 0.95rem 1rem;
+            background: #ffffff;
+            min-height: 150px;
+            transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+            position: relative;
+        }
+        .hub-link-card:hover {
+            border-color: #bfc9d8;
+            box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+            transform: translateY(-1px);
+        }
+        .hub-link-card:focus,
+        .hub-link-card:focus-visible {
+            outline: none;
+            border-color: #8aa2c2;
+            box-shadow: 0 0 0 3px rgba(138, 162, 194, 0.25);
+        }
+        .hub-card-arrow {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.85rem;
+            color: #7b8697;
+            font-size: 0.95rem;
+            line-height: 1;
+        }
+        .hub-link-card h3 {
+            margin: 0.1rem 0 0.42rem 0;
+            color: #111827;
+            font-size: 1.08rem;
+            font-weight: 600;
+        }
+        .hub-link-card p {
+            margin: 0;
+            color: #5b6472;
+            font-size: 0.93rem;
+            line-height: 1.4;
+        }
+        @media (max-width: 900px) {
+            .hub-grid { grid-template-columns: 1fr; }
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -85,31 +132,23 @@ def render_home() -> None:
 
     st.title("Soapbox eCommerce and Content Hub")
     st.markdown('<div class="hub-subtitle">Choose a workflow to continue.</div>', unsafe_allow_html=True)
-
-    left, right = st.columns(2, gap="large")
-    with left:
-        st.markdown(
-            """
-            <div class="hub-card">
-              <h3>Content Reporting</h3>
-              <p>Run the existing 1P and 3P weekly reporting workflow, including previews, exports, saved previews, and client management.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        st.button("Open Content Reporting", use_container_width=True, key="open_reporting", on_click=go_reporting)
-
-    with right:
-        st.markdown(
-            """
-            <div class="hub-card">
-              <h3>Content Auditing</h3>
-              <p>Open the future audit workspace shell for intake, findings, recommendations, and review preparation.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        st.button("Open Content Auditing", use_container_width=True, key="open_auditing", on_click=go_auditing)
+    st.markdown(
+        """
+        <div class="hub-grid">
+          <a class="hub-link-card" href="?hub=reporting">
+            <span class="hub-card-arrow">↗</span>
+            <h3>Content Reporting</h3>
+            <p>Run weekly 1P and 3P reporting, exports, and saved work.</p>
+          </a>
+          <a class="hub-link-card" href="?hub=auditing">
+            <span class="hub-card-arrow">↗</span>
+            <h3>Content Auditing</h3>
+            <p>Open the audit workspace for intake, findings, and recommendations.</p>
+          </a>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def render_content_auditing() -> None:
@@ -713,6 +752,12 @@ def main() -> None:
     st.set_page_config(page_title="Soapbox eCommerce and Content Hub", layout="wide")
     init_db()
     render_branding()
+
+    hub_from_query = st.query_params.get("hub")
+    if hub_from_query in {"reporting", "auditing"}:
+        st.session_state["hub_view"] = hub_from_query
+        st.query_params.clear()
+        st.experimental_rerun()
 
     if "hub_view" not in st.session_state:
         st.session_state["hub_view"] = "home"
