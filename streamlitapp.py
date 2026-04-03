@@ -189,54 +189,259 @@ def render_home() -> None:
     )
 
 
+def _init_audit_state() -> None:
+    if "audit_generated" not in st.session_state:
+        st.session_state["audit_generated"] = False
+
+
+def _build_mock_audit_payload(inputs: dict) -> dict:
+    base_title = inputs["current_title"].strip() or inputs["product_title"].strip() or "Brand Product Name, Key Benefit, Size"
+    recommended_title = f"{base_title} | Clear Use Case and Key Benefit"
+
+    return {
+        "image_recommendations": (
+            "- Add finished product hero image\n"
+            "- Add step-by-step use/build visual\n"
+            "- Add lifestyle image showing product in use\n"
+            "- Add \"what's included\" visual\n"
+            "- Add feature/benefit infographic"
+        ),
+        "recommended_title": recommended_title,
+        "description_recommendations": (
+            "- Lead paragraph does not state core use case early enough; add intent-focused opener.\n"
+            "- Value proposition is generic; include concrete outcome language and audience fit.\n"
+            "- Structure is dense and hard to scan; separate into short blocks with clear hierarchy.\n"
+            "- Missing proof elements (dimensions, material, compatibility, constraints) needed for confidence."
+        ),
+        "key_features_recommendations": (
+            "- Feature bullets are repetitive; assign one unique benefit per bullet.\n"
+            "- First two bullets are not search-aligned; include high-intent category terms.\n"
+            "- Bullets lack specificity (size, performance, fit); add measurable qualifiers.\n"
+            "- Ordering does not prioritize shopper objections; move trust and compatibility details higher."
+        ),
+        "top_priority_fixes": (
+            "- Upgrade image stack with lifestyle and how-to visuals.\n"
+            "- Rewrite title for stronger SEO and conversion.\n"
+            "- Add clearer use cases and audience language.\n"
+            "- Improve bullet hierarchy and reduce repetition."
+        ),
+    }
+
+
+def _seed_audit_output_state(payload: dict) -> None:
+    st.session_state["audit_image_recommendations"] = payload["image_recommendations"]
+    st.session_state["audit_recommended_title"] = payload["recommended_title"]
+    st.session_state["audit_description_recommendations"] = payload["description_recommendations"]
+    st.session_state["audit_key_features_recommendations"] = payload["key_features_recommendations"]
+    st.session_state["audit_top_priority_fixes"] = payload["top_priority_fixes"]
+    if "audit_competitor_graphics_notes" not in st.session_state:
+        st.session_state["audit_competitor_graphics_notes"] = ""
+    if "audit_retail_media_optimizations" not in st.session_state:
+        st.session_state["audit_retail_media_optimizations"] = ""
+    if "audit_competitor_ad_graphics_notes" not in st.session_state:
+        st.session_state["audit_competitor_ad_graphics_notes"] = ""
+
+
+def _render_audit_results(inputs: dict) -> None:
+    st.divider()
+    st.subheader("Product Summary")
+    with st.container(border=True):
+        s1, s2, s3, s4 = st.columns(4)
+        with s1:
+            st.caption("Product Title")
+            st.write(inputs["product_title"] or "-")
+        with s2:
+            st.caption("Item ID")
+            st.write(inputs["item_id"] or "-")
+        with s3:
+            st.caption("Retailer")
+            st.write(inputs["retailer"] or "-")
+        with s4:
+            st.caption("Audit Date")
+            st.write(fmt_mdy(inputs["audit_date"]))
+
+        if inputs["pdp_hero_image"] is not None:
+            st.caption("PDP Hero Image Preview")
+            st.image(inputs["pdp_hero_image"], width=220)
+        else:
+            st.caption("PDP Hero Image Preview: Not uploaded")
+
+    st.subheader("Image Recommendations")
+    st.text_area(
+        "Image recommendation bullets",
+        key="audit_image_recommendations",
+        height=140,
+        label_visibility="collapsed",
+    )
+
+    st.subheader("Content Optimizations")
+    st.text_input("Recommended Title", key="audit_recommended_title")
+    st.text_area(
+        "Description Recommendations",
+        key="audit_description_recommendations",
+        height=140,
+    )
+    st.text_area(
+        "Key Features Recommendations",
+        key="audit_key_features_recommendations",
+        height=140,
+    )
+
+    st.subheader("Top Priority Fixes")
+    st.text_area(
+        "Top Priority Fixes",
+        key="audit_top_priority_fixes",
+        height=120,
+    )
+
+    st.divider()
+    st.subheader("Competitor Graphics Notes")
+    st.caption("Future/manual section for later competitor visual benchmarking.")
+    st.text_area("Competitor Graphics Notes", key="audit_competitor_graphics_notes", height=110)
+
+    st.subheader("Retail Media Optimizations")
+    st.caption("Future/manual section for retail media and sponsored content opportunities.")
+    st.text_area("Retail Media Optimizations", key="audit_retail_media_optimizations", height=110)
+
+    st.subheader("Competitor Ad Graphics Notes")
+    st.caption("Future/manual section for competitor ad creative observations.")
+    st.text_area("Competitor Ad Graphics Notes", key="audit_competitor_ad_graphics_notes", height=110)
+
+
 def render_content_auditing() -> None:
+    _init_audit_state()
+
     top_l, top_r = st.columns([1, 6])
     with top_l:
         st.button("Back to Hub", key="audit_back_home", on_click=go_home)
     with top_r:
-        st.subheader("Content Auditing")
-        st.caption("Placeholder workflow shell for future auditing capabilities.")
+        st.title("Content Auditing")
+        st.caption("Workspace for building first-pass PDP audits and recommendations.")
 
-    st.info("This page is a non-functional placeholder. Backend audit logic is not implemented yet.")
+    with st.container(border=True):
+        st.markdown("### Audit Intake")
+        i1, i2, i3 = st.columns(3)
+        with i1:
+            client_name = st.text_input("Client Name", key="audit_client_name")
+        with i2:
+            retailer = st.selectbox(
+                "Retailer",
+                ["Walmart", "Amazon", "Target", "Instacart", "Other"],
+                key="audit_retailer",
+            )
+        with i3:
+            audit_date = st.date_input("Audit Date", value=date.today(), key="audit_date")
 
-    a1, a2 = st.columns(2, gap="large")
-    with a1:
-        with st.container(border=True):
-            st.markdown("### Audit Intake")
-            st.text_input("Client / Brand", placeholder="Example: Country Fresh", disabled=True)
-            st.selectbox("Audit Type", ["Initial", "Quarterly", "Post-Update"], disabled=True)
-            st.date_input("Target Audit Date", value=date.today(), disabled=True)
-            st.caption("Future area: intake metadata, scope, and owner assignment.")
+        i4, i5, i6 = st.columns(3)
+        with i4:
+            product_title = st.text_input("Product Title", key="audit_product_title")
+        with i5:
+            item_id = st.text_input("Item ID", key="audit_item_id")
+        with i6:
+            brand = st.text_input("Brand", key="audit_brand")
 
-        with st.container(border=True):
-            st.markdown("### Product / PDP Entry")
-            st.text_area("Product IDs or URLs", placeholder="Paste PDP URLs or product IDs", height=110, disabled=True)
-            st.selectbox("Marketplace", ["Walmart", "Amazon", "Target", "Other"], disabled=True)
-            st.caption("Future area: batch product import and PDP normalization.")
+        i7, i8 = st.columns([2, 1])
+        with i7:
+            pdp_url = st.text_input("PDP URL", key="audit_pdp_url")
+        with i8:
+            pdp_hero_image = st.file_uploader(
+                "PDP Hero Image",
+                type=["png", "jpg", "jpeg", "webp"],
+                key="audit_pdp_hero_image",
+            )
 
-        with st.container(border=True):
-            st.markdown("### Category / Style Guide Match")
-            st.selectbox("Category", ["Dairy", "Beverage", "Snack", "Household"], disabled=True)
-            st.text_area("Style Guide Notes", placeholder="Category-specific quality requirements", height=100, disabled=True)
-            st.caption("Future area: map PDP content against category and style requirements.")
+    st.divider()
 
-    with a2:
-        with st.container(border=True):
-            st.markdown("### Audit Findings")
-            st.text_area("Findings Summary", placeholder="Key content issues by product", height=130, disabled=True)
-            st.caption("Future area: scoring and defect classification by severity.")
+    with st.container(border=True):
+        st.markdown("### Content Audit Inputs")
+        c1, c2 = st.columns(2)
+        with c1:
+            category = st.text_input("Category", key="audit_category")
+            current_title = st.text_area("Current Title", key="audit_current_title", height=90)
+            current_key_features = st.text_area("Current Key Features", key="audit_current_key_features", height=130)
+            selected_style_guide = st.selectbox(
+                "Selected Style Guide",
+                ["Soapbox Standard", "Retailer Standard", "Brand Voice v1", "Custom"],
+                key="audit_selected_style_guide",
+            )
+        with c2:
+            subcategory = st.text_input("Subcategory", key="audit_subcategory")
+            current_description = st.text_area("Current Description", key="audit_current_description", height=140)
+            current_specs = st.text_area("Current Specs / Attributes", key="audit_current_specs", height=80)
+            tone = st.selectbox("Tone", ["Standard", "Aggressive"], key="audit_tone")
+            audit_goal = st.selectbox(
+                "Audit Goal",
+                ["SEO", "Conversion", "Compliance", "Image Improvement"],
+                key="audit_goal",
+            )
 
-        with st.container(border=True):
-            st.markdown("### Recommendations")
-            st.text_area("Recommended Actions", placeholder="Prioritized remediation plan", height=120, disabled=True)
-            st.caption("Future area: suggested copy, imagery, and attribute corrections.")
+    st.divider()
 
-        with st.container(border=True):
-            st.markdown("### Export / Review")
-            st.text_input("Reviewer", placeholder="Reviewer name", disabled=True)
-            st.selectbox("Export Format", ["PDF", "CSV", "Slides"], disabled=True)
-            st.button("Generate Audit Package", disabled=True, use_container_width=True)
-            st.caption("Future area: route through review/approval and export final audit packets.")
+    with st.container(border=True):
+        st.markdown("### Image Audit Inputs")
+        im1, im2 = st.columns([1, 1.5])
+        with im1:
+            current_image_count = st.number_input("Current Image Count", min_value=0, step=1, key="audit_current_image_count")
+            hero_image_present = st.checkbox("Hero Image Present", key="audit_hero_image_present")
+            lifestyle_image_present = st.checkbox("Lifestyle Image Present", key="audit_lifestyle_image_present")
+            infographic_present = st.checkbox("Infographic Present", key="audit_infographic_present")
+            how_to_image_present = st.checkbox("How-To / Steps Image Present", key="audit_how_to_image_present")
+            whats_included_image_present = st.checkbox("What's Included Image Present", key="audit_whats_included_image_present")
+        with im2:
+            current_pdp_images = st.file_uploader(
+                "Current PDP Images",
+                type=["png", "jpg", "jpeg", "webp"],
+                accept_multiple_files=True,
+                key="audit_current_pdp_images",
+            )
+            competitor_image_notes = st.text_area(
+                "Competitor Image Notes",
+                key="audit_competitor_image_notes",
+                height=140,
+            )
+
+    st.divider()
+
+    with st.container(border=True):
+        st.markdown("### Generate Audit")
+        st.caption("Creates a first-pass mock audit draft for editing. No backend generation is run yet.")
+        generate = st.button("Generate Audit", key="audit_generate", type="primary")
+
+    inputs = {
+        "client_name": client_name,
+        "retailer": retailer,
+        "audit_date": audit_date,
+        "product_title": product_title,
+        "item_id": item_id,
+        "pdp_url": pdp_url,
+        "brand": brand,
+        "pdp_hero_image": pdp_hero_image,
+        "category": category,
+        "subcategory": subcategory,
+        "current_title": current_title,
+        "current_description": current_description,
+        "current_key_features": current_key_features,
+        "current_specs": current_specs,
+        "selected_style_guide": selected_style_guide,
+        "tone": tone,
+        "audit_goal": audit_goal,
+        "current_image_count": current_image_count,
+        "current_pdp_images": current_pdp_images,
+        "hero_image_present": hero_image_present,
+        "lifestyle_image_present": lifestyle_image_present,
+        "infographic_present": infographic_present,
+        "how_to_image_present": how_to_image_present,
+        "whats_included_image_present": whats_included_image_present,
+        "competitor_image_notes": competitor_image_notes,
+    }
+
+    if generate:
+        payload = _build_mock_audit_payload(inputs)
+        _seed_audit_output_state(payload)
+        st.session_state["audit_generated"] = True
+
+    if st.session_state.get("audit_generated"):
+        _render_audit_results(inputs)
 
 
 def _coerce_conversion_pp(series: pd.Series) -> pd.Series:
