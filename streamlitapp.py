@@ -46,17 +46,17 @@ def fmt_mdy(d: date) -> str:
 
 def go_home() -> None:
     st.session_state["hub_view"] = "home"
-    st.experimental_rerun()
+    st.rerun()
 
 
 def go_reporting() -> None:
     st.session_state["hub_view"] = "reporting"
-    st.experimental_rerun()
+    st.rerun()
 
 
 def go_auditing() -> None:
     st.session_state["hub_view"] = "auditing"
-    st.experimental_rerun()
+    st.rerun()
 
 
 def render_branding() -> None:
@@ -758,7 +758,7 @@ def render_content_reporting() -> None:
             if st.button("Delete This Preview", key="delete_preview_btn"):
                 delete_preview(selected_preview["preview_id"])
                 st.success("Preview deleted.")
-                st.experimental_rerun()
+                st.rerun()
 
     st.divider()
 
@@ -773,7 +773,7 @@ def render_content_reporting() -> None:
     if st.button("Add Client", key="add_client_bottom"):
         if new_client_bottom and new_client_bottom not in [c["client_name"] for c in clients_bottom]:
             add_client(new_client_bottom)
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.warning("Enter a unique client name.")
 
@@ -783,7 +783,7 @@ def render_content_reporting() -> None:
         to_delete_bottom = st.selectbox("Client to delete", client_names_bottom, key="del_client_bottom")
         if st.button("Delete Client", key="delete_client_bottom"):
             delete_client(name_to_id_bottom[to_delete_bottom])
-            st.experimental_rerun()
+            st.rerun()
 
 
 def main() -> None:
@@ -795,7 +795,7 @@ def main() -> None:
     if hub_from_query in {"reporting", "auditing"}:
         st.session_state["hub_view"] = hub_from_query
         st.query_params.clear()
-        st.experimental_rerun()
+        st.rerun()
 
     if "hub_view" not in st.session_state:
         st.session_state["hub_view"] = "home"
