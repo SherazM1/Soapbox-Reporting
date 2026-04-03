@@ -91,6 +91,14 @@ def render_home() -> None:
             transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease, background 140ms ease;
             position: relative;
         }
+        .hub-link-card:link,
+        .hub-link-card:visited,
+        .hub-link-card:hover,
+        .hub-link-card:active,
+        .hub-link-card:focus,
+        .hub-link-card:focus-visible {
+            text-decoration: none !important;
+        }
         .hub-link-card:hover {
             border-color: #8ea7c7;
             box-shadow: 0 8px 22px rgba(18, 32, 58, 0.09);
@@ -146,6 +154,7 @@ def render_home() -> None:
             border-color: #1b406f;
             color: #122d50;
         }
+        .hub-link-card,
         .hub-link-card * {
             text-decoration: none !important;
         }
