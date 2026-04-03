@@ -69,58 +69,85 @@ def render_home() -> None:
         """
         <style>
         .hub-subtitle {
-            color: #5b6472;
-            margin-top: -0.45rem;
-            margin-bottom: 1.05rem;
-            font-size: 0.98rem;
+            color: #5f6b7b;
+            margin-top: -0.42rem;
+            margin-bottom: 0.95rem;
+            font-size: 0.96rem;
         }
         .hub-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 1rem;
-            margin-top: 0.25rem;
+            gap: 0.85rem;
+            margin-top: 0.2rem;
         }
         .hub-link-card {
             display: block;
             text-decoration: none;
-            border: 1px solid #d8dde6;
-            border-radius: 14px;
-            padding: 1rem 1rem 0.95rem 1rem;
-            background: #ffffff;
-            min-height: 150px;
-            transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+            border: 1px solid #c7d3e4;
+            border-radius: 12px;
+            padding: 0.85rem 0.9rem 0.8rem 0.9rem;
+            background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+            min-height: 128px;
+            transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease, background 140ms ease;
             position: relative;
         }
         .hub-link-card:hover {
-            border-color: #bfc9d8;
-            box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+            border-color: #8ea7c7;
+            box-shadow: 0 8px 22px rgba(18, 32, 58, 0.09);
             transform: translateY(-1px);
+            background: linear-gradient(180deg, #ffffff 0%, #f4f8ff 100%);
         }
         .hub-link-card:focus,
         .hub-link-card:focus-visible {
             outline: none;
-            border-color: #8aa2c2;
-            box-shadow: 0 0 0 3px rgba(138, 162, 194, 0.25);
+            border-color: #6f8db5;
+            box-shadow: 0 0 0 3px rgba(66, 98, 142, 0.2);
         }
         .hub-card-arrow {
             position: absolute;
-            top: 0.75rem;
-            right: 0.85rem;
-            color: #7b8697;
-            font-size: 0.95rem;
+            top: 0.62rem;
+            right: 0.74rem;
+            color: #2e4f7d;
+            font-size: 0.84rem;
             line-height: 1;
         }
         .hub-link-card h3 {
-            margin: 0.1rem 0 0.42rem 0;
-            color: #111827;
-            font-size: 1.08rem;
-            font-weight: 600;
+            margin: 0.05rem 0 0.34rem 0;
+            color: #17345d;
+            font-size: 1.16rem;
+            font-weight: 650;
+            letter-spacing: 0.01em;
+            text-decoration: none;
         }
         .hub-link-card p {
             margin: 0;
-            color: #5b6472;
-            font-size: 0.93rem;
-            line-height: 1.4;
+            color: #667489;
+            font-size: 0.89rem;
+            line-height: 1.36;
+            text-decoration: none;
+        }
+        .hub-card-footer {
+            margin-top: 0.7rem;
+        }
+        .hub-open-btn {
+            display: inline-block;
+            padding: 0.24rem 0.62rem;
+            border-radius: 999px;
+            border: 1px solid #224a7e;
+            color: #17345d;
+            background: #edf3fc;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            text-decoration: none;
+        }
+        .hub-link-card:hover .hub-open-btn {
+            background: #e4eefb;
+            border-color: #1b406f;
+            color: #122d50;
+        }
+        .hub-link-card * {
+            text-decoration: none !important;
         }
         @media (max-width: 900px) {
             .hub-grid { grid-template-columns: 1fr; }
@@ -139,11 +166,13 @@ def render_home() -> None:
             <span class="hub-card-arrow">↗</span>
             <h3>Content Reporting</h3>
             <p>Run weekly 1P and 3P reporting, exports, and saved work.</p>
+            <div class="hub-card-footer"><span class="hub-open-btn">Open</span></div>
           </a>
           <a class="hub-link-card" href="?hub=auditing">
             <span class="hub-card-arrow">↗</span>
             <h3>Content Auditing</h3>
             <p>Open the audit workspace for intake, findings, and recommendations.</p>
+            <div class="hub-card-footer"><span class="hub-open-btn">Open</span></div>
           </a>
         </div>
         """,
