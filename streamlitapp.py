@@ -8,6 +8,19 @@ import io
 import pandas as pd
 import streamlit as st
 
+from audit_analyze import analyze_primary_record
+from audit_export import build_audit_export_plan
+from audit_generate import generate_mvp_outputs_for_primary_entry, is_output_shell_empty
+from audit_models import create_audit_result_record
+from audit_helpers import (
+    build_competitor_assignments,
+    initialize_auditing_session_state,
+    process_competitor_pdp_urls_real,
+    process_primary_pdp_urls_real,
+    update_record_tier1_derived_fields,
+    urls_from_uploaded_dataframe,
+)
+
 from db import (
     init_db,
     add_client,
@@ -44,19 +57,38 @@ def fmt_mdy(d: date) -> str:
     return d.strftime("%#m/%#d/%Y") if sys.platform.startswith("win") else d.strftime("%-m/%-d/%Y")
 
 
-def go_home() -> None:
-    st.session_state["hub_view"] = "home"
+VIEW_HOME = "home"
+VIEW_CONTENT_REPORTING = "content_reporting"
+VIEW_CONTENT_AUDITING = "content_auditing"
+
+HUB_QUERY_TO_VIEW = {
+    "reporting": VIEW_CONTENT_REPORTING,
+    "auditing": VIEW_CONTENT_AUDITING,
+    VIEW_CONTENT_REPORTING: VIEW_CONTENT_REPORTING,
+    VIEW_CONTENT_AUDITING: VIEW_CONTENT_AUDITING,
+}
+
+VIEW_TO_HUB_QUERY = {
+    VIEW_CONTENT_REPORTING: VIEW_CONTENT_REPORTING,
+    VIEW_CONTENT_AUDITING: VIEW_CONTENT_AUDITING,
+}
+
+
+def set_hub_view(view_name: str) -> None:
+    st.session_state["hub_view"] = view_name
     st.rerun()
+
+
+def go_home() -> None:
+    set_hub_view(VIEW_HOME)
 
 
 def go_reporting() -> None:
-    st.session_state["hub_view"] = "reporting"
-    st.rerun()
+    set_hub_view(VIEW_CONTENT_REPORTING)
 
 
 def go_auditing() -> None:
-    st.session_state["hub_view"] = "auditing"
-    st.rerun()
+    set_hub_view(VIEW_CONTENT_AUDITING)
 
 
 def render_branding() -> None:
@@ -171,13 +203,13 @@ def render_home() -> None:
     st.markdown(
         """
         <div class="hub-grid">
-          <a class="hub-link-card" href="?hub=reporting">
+          <a class="hub-link-card" href="?hub=content_reporting">
             <span class="hub-card-arrow">↗</span>
             <h3>Content Reporting</h3>
             <p>Run weekly 1P and 3P reporting, exports, and saved work.</p>
             <div class="hub-card-footer"><span class="hub-open-btn">Open</span></div>
           </a>
-          <a class="hub-link-card" href="?hub=auditing">
+          <a class="hub-link-card" href="?hub=content_auditing">
             <span class="hub-card-arrow">↗</span>
             <h3>Content Auditing</h3>
             <p>Open the audit workspace for intake, findings, and recommendations.</p>
@@ -190,15 +222,12 @@ def render_home() -> None:
 
 
 def _init_audit_state() -> None:
-    defaults = {
-        "audit_generated": False,
-        "audit_extracted_loaded": False,
-        "audit_source_method": "Single PDP URL",
-        "audit_batch_preview": pd.DataFrame(),
-    }
-    for k, v in defaults.items():
-        if k not in st.session_state:
-            st.session_state[k] = v
+    initialize_auditing_session_state(st.session_state)
+    # Legacy keys retained for compatibility with earlier scaffold helpers.
+    if "audit_extracted_loaded" not in st.session_state:
+        st.session_state["audit_extracted_loaded"] = False
+    if "audit_source_method" not in st.session_state:
+        st.session_state["audit_source_method"] = "Single PDP URL"
 
 
 def _set_extracted_fields(data: dict) -> None:
@@ -514,8 +543,7 @@ def render_audit_results() -> None:
     st.caption("Manual/future section for competitor ad creative observations.")
     st.text_area("Competitor Ad Graphics Notes", key="audit_competitor_ad_graphics_notes", height=110)
 
-
-def render_content_auditing() -> None:
+def render_content_auditing_legacy_prompt1() -> None:
     _init_audit_state()
 
     top_l, top_r = st.columns([1, 6])
@@ -552,6 +580,631 @@ def render_content_auditing() -> None:
 
     if st.session_state.get("audit_generated"):
         render_audit_results()
+
+
+def _reset_generated_audit_state_v2() -> None:
+    st.session_state["audit_generated"] = False
+    st.session_state["audit_results_seeded_for"] = []
+    st.session_state["audit_export_plan"] = {}
+
+
+def _extract_urls_from_df_v2(df_uploaded: pd.DataFrame, selected_col: str) -> list[str]:
+    return urls_from_uploaded_dataframe(df_uploaded, selected_col)
+
+
+def render_primary_pdp_upload_v2() -> None:
+    with st.container(border=True):
+        st.markdown("### Primary PDP Upload")
+        st.caption("One primary PDP becomes one product audit entry.")
+        method = st.radio(
+            "Input Method",
+            ["Single PDP URL", "Excel / CSV Upload"],
+            horizontal=True,
+            key="audit_primary_source_method",
+        )
+
+        if method == "Single PDP URL":
+            pdp_url = st.text_input("PDP URL", key="audit_primary_single_pdp_url")
+            if st.button("Load PDP Data", key="audit_v2_load_primary_single"):
+                if not pdp_url.strip():
+                    st.warning("Enter a PDP URL to continue.")
+                else:
+                    entries, records_map, extract_errors = process_primary_pdp_urls_real(
+                        urls=[pdp_url.strip()],
+                        cached_records_by_id=st.session_state.get("audit_cached_pdp_records", {}),
+                        client_name=st.session_state.get("audit_client_name", ""),
+                        retailer=st.session_state.get("audit_retailer", ""),
+                        max_count=5,
+                    )
+                    st.session_state["audit_primary_entries"] = entries
+                    st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
+                    _reset_generated_audit_state_v2()
+                    if not entries:
+                        st.error("No usable primary PDP entries were extracted from the provided URL.")
+                    else:
+                        st.success(f"Primary PDP extraction complete for {len(entries)} URL.")
+                    if extract_errors:
+                        st.warning("\n".join(extract_errors[:6]))
+        else:
+            uploaded = st.file_uploader("Upload Excel / CSV", type=["xlsx", "csv"], key="audit_v2_primary_batch_upload")
+            df_uploaded = pd.DataFrame()
+            if uploaded is not None:
+                try:
+                    df_uploaded = _read_uploaded_table(uploaded)
+                except Exception as e:
+                    st.error(f"Could not read upload: {e}")
+
+            if not df_uploaded.empty:
+                url_columns = [c for c in df_uploaded.columns if "url" in str(c).lower()]
+                default_col = url_columns[0] if url_columns else df_uploaded.columns[0]
+                st.selectbox(
+                    "PDP URL Column",
+                    list(df_uploaded.columns),
+                    index=list(df_uploaded.columns).index(default_col),
+                    key="audit_v2_primary_url_col",
+                )
+            else:
+                st.selectbox("PDP URL Column", ["PDP URL"], key="audit_v2_primary_url_col")
+
+            if st.button("Process URLs", key="audit_v2_process_primary_batch"):
+                urls = []
+                if not df_uploaded.empty:
+                    col = st.session_state.get("audit_v2_primary_url_col", "")
+                    urls = _extract_urls_from_df_v2(df_uploaded, col)
+                if not urls:
+                    st.error("No PDP URLs found in the selected column.")
+                else:
+                    urls = urls[:5]
+                    entries, records_map, extract_errors = process_primary_pdp_urls_real(
+                        urls=urls,
+                        cached_records_by_id=st.session_state.get("audit_cached_pdp_records", {}),
+                        client_name=st.session_state.get("audit_client_name", ""),
+                        retailer=st.session_state.get("audit_retailer", ""),
+                        max_count=5,
+                    )
+                    st.session_state["audit_primary_entries"] = entries
+                    st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
+                    _reset_generated_audit_state_v2()
+                    if entries:
+                        st.success(f"Primary PDP extraction complete for {len(entries)} URL(s).")
+                    else:
+                        st.error("No usable primary PDP entries were extracted from the provided URLs.")
+                    if extract_errors:
+                        st.warning("\n".join(extract_errors[:8]))
+
+        entries = st.session_state.get("audit_primary_entries", [])
+        if entries:
+            preview_df = pd.DataFrame(
+                [
+                    {
+                        "Product Title": e.get("product_title", ""),
+                        "Item ID": e.get("item_id", ""),
+                        "PDP URL": e.get("cached_record", {}).get("source_url", ""),
+                        "Image Count": e.get("cached_record", {}).get("image_count", 0),
+                        "Extraction Status": e.get("cached_record", {}).get("extraction_status", ""),
+                    }
+                    for e in entries
+                ]
+            )
+            st.caption("Primary product entries queued for audit review")
+            st.dataframe(preview_df, hide_index=True, use_container_width=True)
+
+
+def _sync_primary_entry_edits_v2(entry: dict) -> None:
+    entry_id = entry["entry_id"]
+    record = entry.get("cached_record", {})
+    title_key = f"audit_v2_primary_current_title_{entry_id}"
+    desc_key = f"audit_v2_primary_current_description_{entry_id}"
+    feat_key = f"audit_v2_primary_current_features_{entry_id}"
+    selected_key = f"audit_v2_primary_selected_image_{entry_id}"
+
+    if title_key not in st.session_state:
+        st.session_state[title_key] = record.get("current_title", "")
+    if desc_key not in st.session_state:
+        st.session_state[desc_key] = record.get("current_description_body", "")
+    if feat_key not in st.session_state:
+        features = record.get("current_key_features", [])
+        st.session_state[feat_key] = "\n".join(
+            [f"- {f.get('text', '').strip()}" for f in features if f.get("text", "").strip()]
+        )
+
+    images = record.get("images", [])
+    image_labels = [f"Image {i + 1}" for i in range(len(images))]
+    raw_selected_index = entry.get("selected_primary_image", {}).get("image_index", None)
+    default_index = int(raw_selected_index) if isinstance(raw_selected_index, int) else 0
+    if default_index < 0 or default_index >= len(image_labels):
+        default_index = 0
+    default_label = image_labels[default_index] if image_labels else ""
+    if selected_key not in st.session_state and default_label:
+        st.session_state[selected_key] = default_label
+
+    record["current_title"] = st.session_state.get(title_key, "")
+    record["current_description_body"] = st.session_state.get(desc_key, "")
+    feature_lines = [ln.strip().lstrip("-").strip() for ln in st.session_state.get(feat_key, "").splitlines() if ln.strip()]
+    record["current_key_features"] = [{"index": i + 1, "text": text} for i, text in enumerate(feature_lines)]
+    record["current_description_bullets"] = []
+    update_record_tier1_derived_fields(record)
+    entry["rule_findings"] = analyze_primary_record(record)
+
+    selected_label = st.session_state.get(selected_key, default_label)
+    if selected_label in image_labels:
+        selected_index = image_labels.index(selected_label)
+        selected_url = images[selected_index]["url"] if selected_index < len(images) else ""
+        entry["selected_primary_image"] = {
+            "record_id": record.get("record_id", ""),
+            "image_index": selected_index,
+            "url": selected_url,
+        }
+
+
+def render_extracted_primary_product_entries_v2() -> None:
+    st.markdown("### Extracted Primary Product Data")
+    st.caption(
+        "Each primary product entry supports exactly one primary image selection for later slide mapping."
+    )
+    entries = st.session_state.get("audit_primary_entries", [])
+    if not entries:
+        st.info("Load primary PDP data first to create product audit entries.")
+        return
+
+    for idx, entry in enumerate(entries, start=1):
+        _sync_primary_entry_edits_v2(entry)
+        record = entry.get("cached_record", {})
+        with st.container(border=True):
+            st.markdown(f"#### Primary Product Entry {idx}")
+            t1, t2, t3 = st.columns([2, 1, 1])
+            with t1:
+                st.write(f"**Product Title:** {entry.get('product_title', '-')}")
+                st.caption(record.get("source_url", "-"))
+            with t2:
+                st.write(f"**Item ID:** {entry.get('item_id', '-')}")
+            with t3:
+                st.write(f"**Image Count:** {record.get('image_count', 0)}")
+                reviews = record.get("reviews_summary", {})
+                avg = reviews.get("average_rating")
+                cnt = reviews.get("ratings_count")
+                summary = f"{avg} avg rating from {cnt} ratings" if avg is not None and cnt is not None else "No review summary"
+                st.caption(summary)
+                st.caption(f"Extraction: {record.get('extraction_status', 'unknown')}")
+
+            extraction_errors = record.get("extraction_errors", [])
+            if extraction_errors:
+                st.caption("Extraction notes: " + "; ".join(extraction_errors[:3]))
+
+            images = record.get("images", [])
+            image_urls = [img.get("url", "") for img in images if img.get("url")]
+            if image_urls:
+                img_cols = st.columns(min(4, len(image_urls)))
+                for i, image_url in enumerate(image_urls):
+                    with img_cols[i % len(img_cols)]:
+                        st.image(image_url, use_container_width=True)
+                        st.caption(f"Image {i + 1}")
+
+                labels = [f"Image {i + 1}" for i in range(len(image_urls))]
+                selected_label = st.selectbox(
+                    "Selected Primary Image",
+                    labels,
+                    key=f"audit_v2_primary_selected_image_{entry['entry_id']}",
+                )
+                selected_index = labels.index(selected_label)
+                entry["selected_primary_image"] = {
+                    "record_id": record.get("record_id", ""),
+                    "image_index": selected_index,
+                    "url": image_urls[selected_index],
+                }
+                st.caption("Selected primary image preview")
+                st.image(image_urls[selected_index], width=220)
+
+            st.text_area("Current Title", key=f"audit_v2_primary_current_title_{entry['entry_id']}", height=85)
+            st.text_area("Current Description", key=f"audit_v2_primary_current_description_{entry['entry_id']}", height=120)
+            st.text_area("Current Key Features", key=f"audit_v2_primary_current_features_{entry['entry_id']}", height=110)
+
+            findings = entry.get("rule_findings", [])
+            with st.expander(f"Findings Preview ({len(findings)})", expanded=False):
+                if not findings:
+                    st.caption("No deterministic findings currently flagged.")
+                else:
+                    findings_df = pd.DataFrame(
+                        [
+                            {
+                                "Section": f.get("section"),
+                                "Severity": f.get("severity"),
+                                "Issue": f.get("issue_type"),
+                                "Message": f.get("message"),
+                            }
+                            for f in findings
+                        ]
+                    )
+                    st.dataframe(findings_df, use_container_width=True, hide_index=True)
+                    st.caption("Developer view: structured findings with evidence attached on entry `rule_findings`.")
+
+
+def render_competitor_pdp_upload_v2() -> None:
+    with st.container(border=True):
+        st.markdown("### Competitor PDP Upload (Optional)")
+        st.caption("Competitor inputs feed shared competitor graphics content later.")
+        method = st.radio(
+            "Input Method",
+            ["Single PDP URL", "Excel / CSV Upload"],
+            horizontal=True,
+            key="audit_competitor_source_method",
+        )
+
+        if method == "Single PDP URL":
+            pdp_url = st.text_input("Competitor PDP URL", key="audit_v2_competitor_single_pdp_url")
+            if st.button("Load Competitor PDP", key="audit_v2_load_competitor_single"):
+                if not pdp_url.strip():
+                    st.warning("Enter a competitor PDP URL to continue.")
+                else:
+                    records, records_map, extract_errors = process_competitor_pdp_urls_real(
+                        urls=[pdp_url.strip()],
+                        cached_records_by_id=st.session_state.get("audit_cached_pdp_records", {}),
+                        client_name=st.session_state.get("audit_client_name", ""),
+                        retailer=st.session_state.get("audit_retailer", ""),
+                        max_count=5,
+                    )
+                    st.session_state["audit_competitor_entries"] = records
+                    st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
+                    st.session_state["audit_competitor_image_orders"] = {}
+                    _reset_generated_audit_state_v2()
+                    if records:
+                        st.success(f"Competitor PDP extraction complete for {len(records)} URL.")
+                    else:
+                        st.error("No usable competitor PDP entries were extracted from the provided URL.")
+                    if extract_errors:
+                        st.warning("\n".join(extract_errors[:6]))
+        else:
+            uploaded = st.file_uploader("Upload Excel / CSV", type=["xlsx", "csv"], key="audit_v2_competitor_batch_upload")
+            df_uploaded = pd.DataFrame()
+            if uploaded is not None:
+                try:
+                    df_uploaded = _read_uploaded_table(uploaded)
+                except Exception as e:
+                    st.error(f"Could not read upload: {e}")
+
+            if not df_uploaded.empty:
+                url_columns = [c for c in df_uploaded.columns if "url" in str(c).lower()]
+                default_col = url_columns[0] if url_columns else df_uploaded.columns[0]
+                st.selectbox(
+                    "PDP URL Column",
+                    list(df_uploaded.columns),
+                    index=list(df_uploaded.columns).index(default_col),
+                    key="audit_v2_competitor_url_col",
+                )
+            else:
+                st.selectbox("PDP URL Column", ["PDP URL"], key="audit_v2_competitor_url_col")
+
+            if st.button("Process Competitor URLs", key="audit_v2_process_competitor_batch"):
+                urls = []
+                if not df_uploaded.empty:
+                    col = st.session_state.get("audit_v2_competitor_url_col", "")
+                    urls = _extract_urls_from_df_v2(df_uploaded, col)
+                if not urls:
+                    st.error("No competitor PDP URLs found in the selected column.")
+                else:
+                    urls = urls[:5]
+                    records, records_map, extract_errors = process_competitor_pdp_urls_real(
+                        urls=urls,
+                        cached_records_by_id=st.session_state.get("audit_cached_pdp_records", {}),
+                        client_name=st.session_state.get("audit_client_name", ""),
+                        retailer=st.session_state.get("audit_retailer", ""),
+                        max_count=5,
+                    )
+                    st.session_state["audit_competitor_entries"] = records
+                    st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
+                    st.session_state["audit_competitor_image_orders"] = {}
+                    _reset_generated_audit_state_v2()
+                    if records:
+                        st.success(f"Competitor PDP extraction complete for {len(records)} URL(s).")
+                    else:
+                        st.error("No usable competitor PDP entries were extracted from the provided URLs.")
+                    if extract_errors:
+                        st.warning("\n".join(extract_errors[:8]))
+
+
+def render_extracted_competitor_entries_v2() -> None:
+    st.markdown("### Extracted Competitor Data")
+    st.caption("Competitor image order is shared at the audit level, not product-slide-level.")
+    entries = st.session_state.get("audit_competitor_entries", [])
+    if not entries:
+        st.info("Competitor upload is optional. Add competitor PDPs when needed.")
+        return
+
+    image_orders = st.session_state.get("audit_competitor_image_orders", {})
+    selected_rows = []
+    for idx, entry in enumerate(entries, start=1):
+        record = entry
+        with st.container(border=True):
+            st.markdown(f"#### Competitor Entry {idx}")
+            c1, c2, c3 = st.columns([2, 1, 1])
+            with c1:
+                st.write(f"**Title:** {record.get('product_title', '-')}")
+                st.caption(record.get("source_url", "-"))
+            with c2:
+                st.write(f"**Brand:** {record.get('brand', '-')}")
+                item_id = record.get("item_id", "")
+                st.caption(f"Item ID: {item_id if item_id else '-'}")
+            with c3:
+                st.write(f"**Image Count:** {record.get('image_count', 0)}")
+                st.caption(f"Extraction: {record.get('extraction_status', 'unknown')}")
+
+            desc_present = bool(
+                (record.get("current_description_body") or "").strip()
+                or record.get("current_description_bullets", [])
+            )
+            key_feature_count = len(record.get("current_key_features", []))
+            reviews = record.get("reviews_summary", {})
+            avg = reviews.get("average_rating")
+            ratings = reviews.get("ratings_count")
+            review_summary = f"{avg} avg / {ratings} ratings" if avg is not None and ratings is not None else "No review summary"
+            st.caption(
+                f"Description: {'Yes' if desc_present else 'No'} | "
+                f"Key Features: {key_feature_count} | "
+                f"Reviews: {review_summary}"
+            )
+
+            images = record.get("images", [])
+            image_urls = [img.get("url", "") for img in images if img.get("url")]
+            img_cols = st.columns(min(3, max(1, len(image_urls))))
+            for i, image_url in enumerate(image_urls):
+                image_index = images[i].get("index", i)
+                image_id = f"{record.get('record_id', '')}|{image_index}"
+                with img_cols[i % len(img_cols)]:
+                    st.image(image_url, use_container_width=True)
+                    order_key = f"audit_v2_comp_order_{image_id}"
+                    current_order = int(image_orders.get(image_id, 0))
+                    order_value = st.number_input(
+                        f"Display Order (Image {i + 1})",
+                        min_value=0,
+                        max_value=50,
+                        step=1,
+                        value=current_order,
+                        key=order_key,
+                    )
+                    image_orders[image_id] = int(order_value)
+                    if int(order_value) > 0:
+                        selected_rows.append(
+                            {
+                                "Display Order": int(order_value),
+                                "Entry": f"Competitor {idx}",
+                                "Title": record.get("product_title", "-"),
+                                "Image": f"Image {i + 1}",
+                                "Image URL": image_url,
+                            }
+                        )
+
+    st.session_state["audit_competitor_image_orders"] = image_orders
+    st.session_state["audit_competitor_assignments"] = build_competitor_assignments(entries, image_orders)
+    if selected_rows:
+        ordered_df = pd.DataFrame(selected_rows).sort_values(by=["Display Order", "Entry", "Image"]).reset_index(drop=True)
+        st.caption("Ordered competitor images for the shared competitor graphics section")
+        st.dataframe(ordered_df, use_container_width=True, hide_index=True)
+        if ordered_df["Display Order"].duplicated(keep=False).any():
+            st.warning("Some competitor images share the same display order. Adjust if strict ordering is needed.")
+
+
+def _seed_mock_results_for_products_v2(entries: list[dict]) -> None:
+    seeded_ids = []
+    for entry in entries:
+        entry_id = entry["entry_id"]
+        seeded_ids.append(entry_id)
+        generated_payload = generate_mvp_outputs_for_primary_entry(entry)
+        entry["generated_outputs"] = generated_payload
+        if is_output_shell_empty(entry.get("edited_outputs")):
+            entry["edited_outputs"] = {
+                "image_recommendations": list(generated_payload.get("image_recommendations", [])),
+                "recommended_title": generated_payload.get("recommended_title", ""),
+                "description_recommendations": list(generated_payload.get("description_recommendations", [])),
+                "key_features_recommendations": list(generated_payload.get("key_features_recommendations", [])),
+                "top_priority_fixes": list(generated_payload.get("top_priority_fixes", [])),
+            }
+        entry["status"] = "generated_mvp"
+
+    if "audit_competitor_graphics_notes" not in st.session_state:
+        st.session_state["audit_competitor_graphics_notes"] = ""
+    if "audit_retail_media_optimizations" not in st.session_state:
+        st.session_state["audit_retail_media_optimizations"] = ""
+    if "audit_competitor_ad_graphics_notes" not in st.session_state:
+        st.session_state["audit_competitor_ad_graphics_notes"] = ""
+
+    st.session_state["audit_results_seeded_for"] = seeded_ids
+
+
+def _refresh_audit_export_plan_v2() -> None:
+    entries = st.session_state.get("audit_primary_entries", []) or []
+    competitor_assignments = st.session_state.get("audit_competitor_assignments", []) or []
+    competitor_records = st.session_state.get("audit_competitor_entries", []) or []
+    audit_record = st.session_state.get("audit_result_record", {}) or {}
+
+    if audit_record:
+        audit_record["product_audit_entries"] = entries
+        audit_record["competitor_graphics_assignments"] = competitor_assignments
+        audit_record["competitor_graphics_notes"] = st.session_state.get("audit_competitor_graphics_notes", "")
+        audit_record["retail_media_optimizations"] = st.session_state.get("audit_retail_media_optimizations", "")
+        audit_record["competitor_ad_graphics_notes"] = st.session_state.get("audit_competitor_ad_graphics_notes", "")
+
+    st.session_state["audit_export_plan"] = build_audit_export_plan(
+        audit_record=audit_record,
+        primary_entries=entries,
+        competitor_assignments=competitor_assignments,
+        competitor_records=competitor_records,
+    )
+
+
+def render_generate_audit_v2() -> None:
+    entries = st.session_state.get("audit_primary_entries", [])
+    with st.container(border=True):
+        st.markdown("### Generate Audit")
+        st.caption("Generate deterministic MVP audit outputs for each primary product entry.")
+        generate = st.button(
+            "Generate Audit",
+            key="audit_v2_generate",
+            type="primary",
+            disabled=not entries,
+        )
+        if not entries:
+            st.info("Add at least one primary product entry before generating the audit.")
+        if generate:
+            _seed_mock_results_for_products_v2(entries)
+            st.session_state["audit_result_record"] = create_audit_result_record(
+                client_name=st.session_state.get("audit_client_name", ""),
+                retailer=st.session_state.get("audit_retailer", ""),
+                audit_date=str(st.session_state.get("audit_date", date.today())),
+                status="generated_mvp",
+                tone=st.session_state.get("audit_tone", "Standard"),
+                audit_goal=st.session_state.get("audit_goal", "SEO"),
+                product_audit_entries=entries,
+                competitor_graphics_assignments=st.session_state.get("audit_competitor_assignments", []),
+                competitor_graphics_notes=st.session_state.get("audit_competitor_graphics_notes", ""),
+                retail_media_optimizations=st.session_state.get("audit_retail_media_optimizations", ""),
+                competitor_ad_graphics_notes=st.session_state.get("audit_competitor_ad_graphics_notes", ""),
+            )
+            _refresh_audit_export_plan_v2()
+            st.session_state["audit_generated"] = True
+
+
+def render_mocked_audit_results_v2() -> None:
+    if not st.session_state.get("audit_generated"):
+        return
+
+    entries = st.session_state.get("audit_primary_entries", [])
+    if not entries:
+        return
+
+    st.markdown("### Audit Results")
+    for idx, entry in enumerate(entries, start=1):
+        entry_id = entry["entry_id"]
+        record = entry.get("cached_record", {})
+        image_urls = [img.get("url", "") for img in record.get("images", []) if img.get("url")]
+        raw_selected_index = entry.get("selected_primary_image", {}).get("image_index", None)
+        selected_index = int(raw_selected_index) if isinstance(raw_selected_index, int) else 0
+        selected_index = min(selected_index, max(0, len(image_urls) - 1))
+        selected_url = image_urls[selected_index] if image_urls else None
+
+        with st.container(border=True):
+            st.markdown(f"#### Product Audit Entry {idx}")
+            st.markdown("##### Product Summary")
+            s1, s2, s3 = st.columns([2, 1, 1])
+            with s1:
+                st.write(f"**Product Title:** {entry.get('product_title', '-')}")
+            with s2:
+                st.write(f"**Item ID:** {entry.get('item_id', '-')}")
+            with s3:
+                st.write(f"**Selected Primary Image:** Image {selected_index + 1 if image_urls else 0}")
+            if selected_url:
+                st.image(selected_url, width=220)
+
+            generated = entry.get("generated_outputs", {}) or {}
+            edited = entry.get("edited_outputs", {}) or {}
+            active = edited if not is_output_shell_empty(edited) else generated
+
+            key_image = f"audit_v2_result_image_recommendations_{entry_id}"
+            key_title = f"audit_v2_result_recommended_title_{entry_id}"
+            key_desc = f"audit_v2_result_description_recommendations_{entry_id}"
+            key_feat = f"audit_v2_result_key_features_recommendations_{entry_id}"
+            key_fix = f"audit_v2_result_top_priority_fixes_{entry_id}"
+
+            if key_image not in st.session_state:
+                st.session_state[key_image] = "\n".join(active.get("image_recommendations", []))
+            if key_title not in st.session_state:
+                st.session_state[key_title] = active.get("recommended_title", "")
+            if key_desc not in st.session_state:
+                st.session_state[key_desc] = "\n".join(active.get("description_recommendations", []))
+            if key_feat not in st.session_state:
+                st.session_state[key_feat] = "\n".join(active.get("key_features_recommendations", []))
+            if key_fix not in st.session_state:
+                st.session_state[key_fix] = "\n".join(active.get("top_priority_fixes", []))
+
+            st.markdown("##### Image Recommendations")
+            st.text_area("Image Recommendations", key=key_image, height=120)
+
+            st.markdown("##### Content Optimizations")
+            st.text_input("Recommended Title", key=key_title)
+            st.text_area("Description Recommendations", key=key_desc, height=120)
+            st.text_area("Key Features Recommendations", key=key_feat, height=120)
+
+            st.markdown("##### Top Priority Fixes")
+            st.text_area("Top Priority Fixes", key=key_fix, height=100)
+
+            entry["edited_outputs"] = {
+                "image_recommendations": [ln.strip() for ln in st.session_state[key_image].splitlines() if ln.strip()],
+                "recommended_title": st.session_state[key_title].strip(),
+                "description_recommendations": [ln.strip() for ln in st.session_state[key_desc].splitlines() if ln.strip()],
+                "key_features_recommendations": [ln.strip() for ln in st.session_state[key_feat].splitlines() if ln.strip()],
+                "top_priority_fixes": [ln.strip() for ln in st.session_state[key_fix].splitlines() if ln.strip()],
+            }
+
+    st.divider()
+    st.subheader("Competitor Graphics Notes")
+    st.caption("Manual/future section. Ordered competitor images will later populate shared competitor graphics.")
+    st.text_area("Competitor Graphics Notes", key="audit_competitor_graphics_notes", height=110)
+
+    st.subheader("Retail Media Optimizations")
+    st.caption("Manual/future section for retail media optimization notes.")
+    st.text_area("Retail Media Optimizations", key="audit_retail_media_optimizations", height=110)
+
+    st.subheader("Competitor Ad Graphics Notes")
+    st.caption("Manual/future section for competitor ad creative observations.")
+    st.text_area("Competitor Ad Graphics Notes", key="audit_competitor_ad_graphics_notes", height=110)
+
+    _refresh_audit_export_plan_v2()
+    plan = st.session_state.get("audit_export_plan", {}) or {}
+    with st.expander("Export Mapping Preview", expanded=False):
+        if not plan:
+            st.caption("No export mapping plan available yet.")
+        else:
+            summary = plan.get("summary", {})
+            st.write(
+                f"Included primary entries: {summary.get('included_primary_entry_count', 0)} | "
+                f"Slide pairs: {summary.get('product_slide_pair_count', 0)} | "
+                f"Mapped slides: {summary.get('total_mapped_slides', 0)} | "
+                f"Competitor graphics assignments: {summary.get('competitor_graphics_assignment_count', 0)}"
+            )
+            st.caption(
+                "Each included primary product audit entry maps to one repeated slide pair "
+                "(PDP/Image/Info + Content Optimization). Competitor graphics remain shared/audit-level."
+            )
+            compact = {
+                "audit_metadata": plan.get("audit_metadata", {}),
+                "summary": summary,
+                "product_pair_overview": [
+                    {
+                        "pair_order": p.get("pair_order"),
+                        "product_entry_id": p.get("product_entry_id"),
+                        "record_id": p.get("record_id"),
+                        "selected_primary_image": p.get("pdp_slide", {}).get("selected_primary_image", {}),
+                    }
+                    for p in plan.get("product_slide_pairs", [])
+                ],
+                "competitor_graphics_payload": plan.get("competitor_graphics_payload", {}),
+            }
+            st.json(compact)
+
+
+def render_content_auditing() -> None:
+    _init_audit_state()
+
+    top_l, top_r = st.columns([1, 6])
+    with top_l:
+        st.button("Back to Hub", key="audit_back_home", on_click=go_home)
+    with top_r:
+        st.title("Content Auditing")
+        st.caption("Workspace for building first-pass PDP audits and recommendations.")
+
+    render_audit_setup()
+    st.divider()
+    render_primary_pdp_upload_v2()
+    st.divider()
+    render_extracted_primary_product_entries_v2()
+    st.divider()
+    render_competitor_pdp_upload_v2()
+    st.divider()
+    render_extracted_competitor_entries_v2()
+    st.divider()
+    render_audit_preferences()
+    st.divider()
+    render_generate_audit_v2()
+    render_mocked_audit_results_v2()
 
 
 def _coerce_conversion_pp(series: pd.Series) -> pd.Series:
@@ -1107,20 +1760,27 @@ def main() -> None:
     render_branding()
 
     hub_from_query = st.query_params.get("hub")
-    if hub_from_query in {"reporting", "auditing"}:
-        st.session_state["hub_view"] = hub_from_query
+    normalized_from_query = HUB_QUERY_TO_VIEW.get(hub_from_query)
+    if normalized_from_query is not None:
+        st.session_state["hub_view"] = normalized_from_query
         st.query_params.clear()
         st.rerun()
 
     if "hub_view" not in st.session_state:
-        st.session_state["hub_view"] = "home"
+        st.session_state["hub_view"] = VIEW_HOME
+    else:
+        st.session_state["hub_view"] = HUB_QUERY_TO_VIEW.get(
+            st.session_state["hub_view"],
+            st.session_state["hub_view"],
+        )
 
     current = st.session_state["hub_view"]
-    if current == "reporting":
+    if current == VIEW_CONTENT_REPORTING:
         render_content_reporting()
-    elif current == "auditing":
+    elif current == VIEW_CONTENT_AUDITING:
         render_content_auditing()
     else:
+        st.session_state["hub_view"] = VIEW_HOME
         render_home()
 
 
