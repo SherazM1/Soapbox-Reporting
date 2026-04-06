@@ -821,7 +821,7 @@ def render_extracted_primary_product_entries_v2() -> None:
 
 def render_competitor_pdp_upload_v2() -> None:
     with st.container(border=True):
-        st.markdown("### Competitor PDP Upload (Optional)")
+        st.markdown("### Competitor PDP Upload")
         st.caption("Competitor inputs feed shared competitor graphics content later.")
         method = st.radio(
             "Input Method",
