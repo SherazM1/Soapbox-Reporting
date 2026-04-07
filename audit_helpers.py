@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import base64
+import io
 import re
+from urllib.parse import unquote
 from datetime import date, datetime
 from typing import Any
 
@@ -191,6 +194,141 @@ def urls_from_uploaded_dataframe(df_uploaded: pd.DataFrame, selected_col: str) -
     if df_uploaded.empty or selected_col not in df_uploaded.columns:
         return []
     return [str(v).strip() for v in df_uploaded[selected_col].dropna().tolist() if str(v).strip()]
+
+
+def _read_csv_bytes(raw: bytes) -> pd.DataFrame:
+    last_error: Exception | None = None
+    for encoding in ("utf-8-sig", "utf-8", "cp1252", "latin-1"):
+        try:
+            return pd.read_csv(io.BytesIO(raw), encoding=encoding)
+        except Exception as exc:
+            last_error = exc
+    if last_error is not None:
+        raise last_error
+    raise ValueError("Could not decode CSV content.")
+
+
+def _looks_like_csv(text: str) -> bool:
+    sample = (text or "").strip().splitlines()[:3]
+    if not sample:
+        return False
+    return any("," in line for line in sample)
+
+
+def _unescape_js_string_literal(value: str) -> str:
+    text = value or ""
+    try:
+        return bytes(text, "utf-8").decode("unicode_escape")
+    except Exception:
+        return (
+            text.replace("\\n", "\n")
+            .replace("\\r", "\r")
+            .replace("\\t", "\t")
+            .replace('\\"', '"')
+            .replace("\\'", "'")
+            .replace("\\\\", "\\")
+        )
+
+
+def _decode_embedded_csv_candidates_from_html(html_text: str) -> list[str]:
+    candidates: list[str] = []
+    if not html_text:
+        return candidates
+
+    assignment_pattern = re.compile(
+        r"(?is)\b([a-zA-Z0-9_]*csv[a-zA-Z0-9_]*)\b\s*[:=]\s*([\"'])(.*?)\2"
+    )
+    for name, _, raw_literal in assignment_pattern.findall(html_text):
+        literal = _unescape_js_string_literal(raw_literal).strip()
+        if not literal:
+            continue
+        candidates.append(literal)
+        if "%" in literal:
+            decoded = unquote(literal)
+            if decoded != literal:
+                candidates.append(decoded)
+        if re.fullmatch(r"[A-Za-z0-9+/=\s]+", literal) and len(literal) >= 40:
+            try:
+                decoded_b64 = base64.b64decode(literal, validate=True).decode("utf-8", errors="ignore")
+                if decoded_b64:
+                    candidates.append(decoded_b64)
+            except Exception:
+                pass
+
+    data_uri_pattern = re.compile(r"(?is)data:text/csv;base64,([A-Za-z0-9+/=\s]+)")
+    for raw_b64 in data_uri_pattern.findall(html_text):
+        try:
+            decoded_b64 = base64.b64decode(raw_b64, validate=True).decode("utf-8", errors="ignore")
+            if decoded_b64:
+                candidates.append(decoded_b64)
+        except Exception:
+            continue
+
+    return candidates
+
+
+def _parse_html_audit_extract(raw: bytes) -> tuple[pd.DataFrame, list[str]]:
+    messages: list[str] = []
+    html_text = raw.decode("utf-8", errors="ignore")
+    if not html_text.strip():
+        return pd.DataFrame(), ["Uploaded HTML file appears empty."]
+
+    for candidate in _decode_embedded_csv_candidates_from_html(html_text):
+        if not _looks_like_csv(candidate):
+            continue
+        try:
+            df = _read_csv_bytes(candidate.encode("utf-8", errors="ignore"))
+            if not df.empty:
+                messages.append("Parsed embedded CSV payload from HTML report.")
+            return df, messages
+        except Exception:
+            continue
+
+    try:
+        tables = pd.read_html(io.StringIO(html_text))
+        for table in tables:
+            if isinstance(table, pd.DataFrame) and not table.empty:
+                messages.append("Embedded CSV payload not found; parsed visible HTML table instead.")
+                return table, messages
+        return pd.DataFrame(), ["No usable table data found in HTML report."]
+    except Exception as exc:
+        return pd.DataFrame(), [f"Could not parse HTML report table data: {exc}"]
+
+
+def parse_audit_extract_upload_to_dataframe(uploaded: Any) -> tuple[pd.DataFrame, list[str]]:
+    """Parse uploaded audit extract files (CSV/XLSX/XLS/HTML) into a DataFrame."""
+    if uploaded is None:
+        return pd.DataFrame(), ["No file was uploaded."]
+
+    filename = str(getattr(uploaded, "name", "") or "").lower()
+    ext = filename.rsplit(".", 1)[-1] if "." in filename else ""
+
+    try:
+        raw = uploaded.getvalue() if hasattr(uploaded, "getvalue") else uploaded.read()
+    except Exception as exc:
+        return pd.DataFrame(), [f"Could not read uploaded file bytes: {exc}"]
+
+    if not raw:
+        return pd.DataFrame(), ["Uploaded file is empty."]
+
+    try:
+        if ext == "csv":
+            return _read_csv_bytes(raw), []
+        if ext in {"xlsx", "xls"}:
+            return pd.read_excel(io.BytesIO(raw)), []
+        if ext in {"html", "htm"}:
+            return _parse_html_audit_extract(raw)
+
+        # Fallback sniffing for unknown extension.
+        text_head = raw[:512].decode("utf-8", errors="ignore").lower()
+        if "<html" in text_head or "<table" in text_head:
+            return _parse_html_audit_extract(raw)
+        try:
+            return _read_csv_bytes(raw), []
+        except Exception:
+            return pd.read_excel(io.BytesIO(raw)), []
+    except Exception as exc:
+        return pd.DataFrame(), [f"Could not parse uploaded audit extract file: {exc}"]
 
 
 def _coerce_columns(columns_or_row: pd.DataFrame | pd.Series | list[str] | tuple[str, ...]) -> list[str]:

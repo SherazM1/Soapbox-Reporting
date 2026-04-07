@@ -15,6 +15,7 @@ from audit_models import create_audit_result_record
 from audit_helpers import (
     build_competitor_assignments,
     initialize_auditing_session_state,
+    parse_audit_extract_upload_to_dataframe,
     process_competitor_audit_extract_sheet,
     process_competitor_pdp_urls_real,
     process_primary_audit_extract_sheet,
@@ -622,7 +623,7 @@ def render_primary_pdp_upload_v2() -> None:
         if method == "Audit Extract Sheet (Recommended)":
             uploaded = st.file_uploader(
                 "Upload Primary Audit Extract Sheet",
-                type=["xlsx", "xls", "csv"],
+                type=["html", "htm", "xlsx", "xls", "csv"],
                 key="audit_v2_primary_sheet_upload",
                 help="Supported columns include Product URL, Product ID, Product Title, Image N, Description Bullet N, and optional notes/scores.",
             )
@@ -630,11 +631,9 @@ def render_primary_pdp_upload_v2() -> None:
                 if uploaded is None:
                     st.warning("Upload a primary Audit Extract Sheet to continue.")
                 else:
-                    try:
-                        df_uploaded = _read_uploaded_table(uploaded)
-                    except Exception as e:
-                        st.error(f"Could not read upload: {e}")
-                        df_uploaded = pd.DataFrame()
+                    df_uploaded, parse_messages = parse_audit_extract_upload_to_dataframe(uploaded)
+                    if parse_messages:
+                        st.info("\n".join(parse_messages))
                     if df_uploaded.empty:
                         st.error("The uploaded sheet is empty or could not be parsed.")
                     else:
@@ -908,18 +907,16 @@ def render_competitor_pdp_upload_v2() -> None:
         if method == "Audit Extract Sheet (Recommended)":
             uploaded = st.file_uploader(
                 "Upload Competitor Audit Extract Sheet",
-                type=["xlsx", "xls", "csv"],
+                type=["html", "htm", "xlsx", "xls", "csv"],
                 key="audit_v2_competitor_sheet_upload",
             )
             if st.button("Process Competitor Audit Sheet", key="audit_v2_process_competitor_sheet"):
                 if uploaded is None:
                     st.warning("Upload a competitor Audit Extract Sheet to continue.")
                 else:
-                    try:
-                        df_uploaded = _read_uploaded_table(uploaded)
-                    except Exception as e:
-                        st.error(f"Could not read upload: {e}")
-                        df_uploaded = pd.DataFrame()
+                    df_uploaded, parse_messages = parse_audit_extract_upload_to_dataframe(uploaded)
+                    if parse_messages:
+                        st.info("\n".join(parse_messages))
                     if df_uploaded.empty:
                         st.error("The uploaded sheet is empty or could not be parsed.")
                     else:
