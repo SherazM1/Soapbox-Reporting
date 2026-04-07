@@ -75,6 +75,7 @@ def create_cached_pdp_record(
     fetched_at: str | None = None,
     last_used_at: str | None = None,
     user_overrides: dict[str, Any] | None = None,
+    ingest_metadata: dict[str, Any] | None = None,
     record_id: str | None = None,
 ) -> dict[str, Any]:
     current_description_bullets = list(current_description_bullets or [])
@@ -110,6 +111,7 @@ def create_cached_pdp_record(
         "fetched_at": fetched_at or _utc_now_iso(),
         "last_used_at": last_used_at or _utc_now_iso(),
         "user_overrides": dict(user_overrides or {}),
+        "ingest_metadata": dict(ingest_metadata or {}),
     }
 
 

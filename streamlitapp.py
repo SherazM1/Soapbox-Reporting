@@ -15,7 +15,9 @@ from audit_models import create_audit_result_record
 from audit_helpers import (
     build_competitor_assignments,
     initialize_auditing_session_state,
+    process_competitor_audit_extract_sheet,
     process_competitor_pdp_urls_real,
+    process_primary_audit_extract_sheet,
     process_primary_pdp_urls_real,
     update_record_tier1_derived_fields,
     urls_from_uploaded_dataframe,
@@ -228,6 +230,20 @@ def _init_audit_state() -> None:
         st.session_state["audit_extracted_loaded"] = False
     if "audit_source_method" not in st.session_state:
         st.session_state["audit_source_method"] = "Single PDP URL"
+    if st.session_state.get("audit_primary_source_method") not in {
+        "Audit Extract Sheet (Recommended)",
+        "Fallback URL Mode",
+    }:
+        st.session_state["audit_primary_source_method"] = "Audit Extract Sheet (Recommended)"
+    if st.session_state.get("audit_competitor_source_method") not in {
+        "Audit Extract Sheet (Recommended)",
+        "Fallback URL Mode",
+    }:
+        st.session_state["audit_competitor_source_method"] = "Audit Extract Sheet (Recommended)"
+    if "audit_v2_primary_fallback_method" not in st.session_state:
+        st.session_state["audit_v2_primary_fallback_method"] = "Single PDP URL"
+    if "audit_v2_competitor_fallback_method" not in st.session_state:
+        st.session_state["audit_v2_competitor_fallback_method"] = "Single PDP URL"
 
 
 def _set_extracted_fields(data: dict) -> None:
@@ -594,83 +610,128 @@ def _extract_urls_from_df_v2(df_uploaded: pd.DataFrame, selected_col: str) -> li
 
 def render_primary_pdp_upload_v2() -> None:
     with st.container(border=True):
-        st.markdown("### Primary PDP Upload")
-        st.caption("One primary PDP becomes one product audit entry.")
+        st.markdown("### Primary Audit Extract Upload")
+        st.caption("One row in the primary Audit Extract Sheet becomes one product audit entry.")
         method = st.radio(
             "Input Method",
-            ["Single PDP URL", "Excel / CSV Upload"],
+            ["Audit Extract Sheet (Recommended)", "Fallback URL Mode"],
             horizontal=True,
             key="audit_primary_source_method",
         )
 
-        if method == "Single PDP URL":
-            pdp_url = st.text_input("PDP URL", key="audit_primary_single_pdp_url")
-            if st.button("Load PDP Data", key="audit_v2_load_primary_single"):
-                if not pdp_url.strip():
-                    st.warning("Enter a PDP URL to continue.")
+        if method == "Audit Extract Sheet (Recommended)":
+            uploaded = st.file_uploader(
+                "Upload Primary Audit Extract Sheet",
+                type=["xlsx", "xls", "csv"],
+                key="audit_v2_primary_sheet_upload",
+                help="Supported columns include Product URL, Product ID, Product Title, Image N, Description Bullet N, and optional notes/scores.",
+            )
+            if st.button("Process Primary Audit Sheet", key="audit_v2_process_primary_sheet"):
+                if uploaded is None:
+                    st.warning("Upload a primary Audit Extract Sheet to continue.")
                 else:
-                    entries, records_map, extract_errors = process_primary_pdp_urls_real(
-                        urls=[pdp_url.strip()],
-                        cached_records_by_id=st.session_state.get("audit_cached_pdp_records", {}),
-                        client_name=st.session_state.get("audit_client_name", ""),
-                        retailer=st.session_state.get("audit_retailer", ""),
-                        max_count=5,
-                    )
-                    st.session_state["audit_primary_entries"] = entries
-                    st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
-                    _reset_generated_audit_state_v2()
-                    if not entries:
-                        st.error("No usable primary PDP entries were extracted from the provided URL.")
+                    try:
+                        df_uploaded = _read_uploaded_table(uploaded)
+                    except Exception as e:
+                        st.error(f"Could not read upload: {e}")
+                        df_uploaded = pd.DataFrame()
+                    if df_uploaded.empty:
+                        st.error("The uploaded sheet is empty or could not be parsed.")
                     else:
-                        st.success(f"Primary PDP extraction complete for {len(entries)} URL.")
-                    if extract_errors:
-                        st.warning("\n".join(extract_errors[:6]))
+                        entries, records_map, extract_errors = process_primary_audit_extract_sheet(
+                            df_uploaded=df_uploaded,
+                            client_name=st.session_state.get("audit_client_name", ""),
+                            retailer=st.session_state.get("audit_retailer", ""),
+                        )
+                        st.session_state["audit_primary_entries"] = entries
+                        st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
+                        _reset_generated_audit_state_v2()
+                        if entries:
+                            st.success(f"Primary sheet ingestion complete for {len(entries)} row(s).")
+                        else:
+                            st.error("No usable primary product rows were ingested from the uploaded sheet.")
+                        if extract_errors:
+                            st.warning("\n".join(extract_errors[:12]))
         else:
-            uploaded = st.file_uploader("Upload Excel / CSV", type=["xlsx", "csv"], key="audit_v2_primary_batch_upload")
-            df_uploaded = pd.DataFrame()
-            if uploaded is not None:
-                try:
-                    df_uploaded = _read_uploaded_table(uploaded)
-                except Exception as e:
-                    st.error(f"Could not read upload: {e}")
-
-            if not df_uploaded.empty:
-                url_columns = [c for c in df_uploaded.columns if "url" in str(c).lower()]
-                default_col = url_columns[0] if url_columns else df_uploaded.columns[0]
-                st.selectbox(
-                    "PDP URL Column",
-                    list(df_uploaded.columns),
-                    index=list(df_uploaded.columns).index(default_col),
-                    key="audit_v2_primary_url_col",
-                )
-            else:
-                st.selectbox("PDP URL Column", ["PDP URL"], key="audit_v2_primary_url_col")
-
-            if st.button("Process URLs", key="audit_v2_process_primary_batch"):
-                urls = []
-                if not df_uploaded.empty:
-                    col = st.session_state.get("audit_v2_primary_url_col", "")
-                    urls = _extract_urls_from_df_v2(df_uploaded, col)
-                if not urls:
-                    st.error("No PDP URLs found in the selected column.")
-                else:
-                    urls = urls[:5]
-                    entries, records_map, extract_errors = process_primary_pdp_urls_real(
-                        urls=urls,
-                        cached_records_by_id=st.session_state.get("audit_cached_pdp_records", {}),
-                        client_name=st.session_state.get("audit_client_name", ""),
-                        retailer=st.session_state.get("audit_retailer", ""),
-                        max_count=5,
-                    )
-                    st.session_state["audit_primary_entries"] = entries
-                    st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
-                    _reset_generated_audit_state_v2()
-                    if entries:
-                        st.success(f"Primary PDP extraction complete for {len(entries)} URL(s).")
+            st.caption("Fallback mode for live PDP URL extraction.")
+            fallback_method = st.radio(
+                "Fallback Input",
+                ["Single PDP URL", "Excel / CSV of PDP URLs"],
+                horizontal=True,
+                key="audit_v2_primary_fallback_method",
+            )
+            if fallback_method == "Single PDP URL":
+                pdp_url = st.text_input("PDP URL", key="audit_primary_single_pdp_url")
+                if st.button("Load PDP Data (Fallback)", key="audit_v2_load_primary_single"):
+                    if not pdp_url.strip():
+                        st.warning("Enter a PDP URL to continue.")
                     else:
-                        st.error("No usable primary PDP entries were extracted from the provided URLs.")
-                    if extract_errors:
-                        st.warning("\n".join(extract_errors[:8]))
+                        entries, records_map, extract_errors = process_primary_pdp_urls_real(
+                            urls=[pdp_url.strip()],
+                            cached_records_by_id=st.session_state.get("audit_cached_pdp_records", {}),
+                            client_name=st.session_state.get("audit_client_name", ""),
+                            retailer=st.session_state.get("audit_retailer", ""),
+                            max_count=5,
+                        )
+                        st.session_state["audit_primary_entries"] = entries
+                        st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
+                        _reset_generated_audit_state_v2()
+                        if not entries:
+                            st.error("No usable primary PDP entries were extracted from the provided URL.")
+                        else:
+                            st.success(f"Primary PDP extraction complete for {len(entries)} URL.")
+                        if extract_errors:
+                            st.warning("\n".join(extract_errors[:6]))
+            else:
+                uploaded = st.file_uploader(
+                    "Upload Excel / CSV of PDP URLs",
+                    type=["xlsx", "xls", "csv"],
+                    key="audit_v2_primary_batch_upload",
+                )
+                df_uploaded = pd.DataFrame()
+                if uploaded is not None:
+                    try:
+                        df_uploaded = _read_uploaded_table(uploaded)
+                    except Exception as e:
+                        st.error(f"Could not read upload: {e}")
+
+                if not df_uploaded.empty:
+                    url_columns = [c for c in df_uploaded.columns if "url" in str(c).lower()]
+                    default_col = url_columns[0] if url_columns else df_uploaded.columns[0]
+                    st.selectbox(
+                        "PDP URL Column",
+                        list(df_uploaded.columns),
+                        index=list(df_uploaded.columns).index(default_col),
+                        key="audit_v2_primary_url_col",
+                    )
+                else:
+                    st.selectbox("PDP URL Column", ["PDP URL"], key="audit_v2_primary_url_col")
+
+                if st.button("Process URLs (Fallback)", key="audit_v2_process_primary_batch"):
+                    urls = []
+                    if not df_uploaded.empty:
+                        col = st.session_state.get("audit_v2_primary_url_col", "")
+                        urls = _extract_urls_from_df_v2(df_uploaded, col)
+                    if not urls:
+                        st.error("No PDP URLs found in the selected column.")
+                    else:
+                        urls = urls[:5]
+                        entries, records_map, extract_errors = process_primary_pdp_urls_real(
+                            urls=urls,
+                            cached_records_by_id=st.session_state.get("audit_cached_pdp_records", {}),
+                            client_name=st.session_state.get("audit_client_name", ""),
+                            retailer=st.session_state.get("audit_retailer", ""),
+                            max_count=5,
+                        )
+                        st.session_state["audit_primary_entries"] = entries
+                        st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
+                        _reset_generated_audit_state_v2()
+                        if entries:
+                            st.success(f"Primary PDP extraction complete for {len(entries)} URL(s).")
+                        else:
+                            st.error("No usable primary PDP entries were extracted from the provided URLs.")
+                        if extract_errors:
+                            st.warning("\n".join(extract_errors[:8]))
 
         entries = st.session_state.get("audit_primary_entries", [])
         if entries:
@@ -691,7 +752,8 @@ def render_primary_pdp_upload_v2() -> None:
 
 
 def _sync_primary_entry_edits_v2(entry: dict) -> None:
-    entry_id = entry["entry_id"]
+    entry_id = entry.get("entry_id") or f"entry-{entry.get('record_id', 'unknown')}"
+    entry["entry_id"] = entry_id
     record = entry.get("cached_record", {})
     title_key = f"audit_v2_primary_current_title_{entry_id}"
     desc_key = f"audit_v2_primary_current_description_{entry_id}"
@@ -758,6 +820,7 @@ def render_extracted_primary_product_entries_v2() -> None:
                 st.caption(record.get("source_url", "-"))
             with t2:
                 st.write(f"**Item ID:** {entry.get('item_id', '-')}")
+                st.caption(f"Brand: {record.get('brand', '-')}")
             with t3:
                 st.write(f"**Image Count:** {record.get('image_count', 0)}")
                 reviews = record.get("reviews_summary", {})
@@ -766,6 +829,14 @@ def render_extracted_primary_product_entries_v2() -> None:
                 summary = f"{avg} avg rating from {cnt} ratings" if avg is not None and cnt is not None else "No review summary"
                 st.caption(summary)
                 st.caption(f"Extraction: {record.get('extraction_status', 'unknown')}")
+            st.caption(
+                f"Category: {record.get('category', '-') or '-'} | "
+                f"Product Type/Subcategory: {record.get('subcategory', '-') or '-'}"
+            )
+            reviews = record.get("reviews_summary", {})
+            review_count = reviews.get("review_count")
+            if review_count is not None:
+                st.caption(f"Review Count: {review_count}")
 
             extraction_errors = record.get("extraction_errors", [])
             if extraction_errors:
@@ -798,6 +869,10 @@ def render_extracted_primary_product_entries_v2() -> None:
             st.text_area("Current Title", key=f"audit_v2_primary_current_title_{entry['entry_id']}", height=85)
             st.text_area("Current Description", key=f"audit_v2_primary_current_description_{entry['entry_id']}", height=120)
             st.text_area("Current Key Features", key=f"audit_v2_primary_current_features_{entry['entry_id']}", height=110)
+            ingest_metadata = record.get("ingest_metadata", {}) or {}
+            if ingest_metadata:
+                with st.expander("Sheet Metadata", expanded=False):
+                    st.json(ingest_metadata)
 
             findings = entry.get("rule_findings", [])
             with st.expander(f"Findings Preview ({len(findings)})", expanded=False):
@@ -821,85 +896,130 @@ def render_extracted_primary_product_entries_v2() -> None:
 
 def render_competitor_pdp_upload_v2() -> None:
     with st.container(border=True):
-        st.markdown("### Competitor PDP Upload")
-        st.caption("Competitor inputs feed shared competitor graphics content later.")
+        st.markdown("### Competitor Audit Extract Upload")
+        st.caption("Competitor extract rows feed shared competitor graphics content.")
         method = st.radio(
             "Input Method",
-            ["Single PDP URL", "Excel / CSV Upload"],
+            ["Audit Extract Sheet (Recommended)", "Fallback URL Mode"],
             horizontal=True,
             key="audit_competitor_source_method",
         )
 
-        if method == "Single PDP URL":
-            pdp_url = st.text_input("Competitor PDP URL", key="audit_v2_competitor_single_pdp_url")
-            if st.button("Load Competitor PDP", key="audit_v2_load_competitor_single"):
-                if not pdp_url.strip():
-                    st.warning("Enter a competitor PDP URL to continue.")
+        if method == "Audit Extract Sheet (Recommended)":
+            uploaded = st.file_uploader(
+                "Upload Competitor Audit Extract Sheet",
+                type=["xlsx", "xls", "csv"],
+                key="audit_v2_competitor_sheet_upload",
+            )
+            if st.button("Process Competitor Audit Sheet", key="audit_v2_process_competitor_sheet"):
+                if uploaded is None:
+                    st.warning("Upload a competitor Audit Extract Sheet to continue.")
                 else:
-                    records, records_map, extract_errors = process_competitor_pdp_urls_real(
-                        urls=[pdp_url.strip()],
-                        cached_records_by_id=st.session_state.get("audit_cached_pdp_records", {}),
-                        client_name=st.session_state.get("audit_client_name", ""),
-                        retailer=st.session_state.get("audit_retailer", ""),
-                        max_count=5,
-                    )
-                    st.session_state["audit_competitor_entries"] = records
-                    st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
-                    st.session_state["audit_competitor_image_orders"] = {}
-                    _reset_generated_audit_state_v2()
-                    if records:
-                        st.success(f"Competitor PDP extraction complete for {len(records)} URL.")
+                    try:
+                        df_uploaded = _read_uploaded_table(uploaded)
+                    except Exception as e:
+                        st.error(f"Could not read upload: {e}")
+                        df_uploaded = pd.DataFrame()
+                    if df_uploaded.empty:
+                        st.error("The uploaded sheet is empty or could not be parsed.")
                     else:
-                        st.error("No usable competitor PDP entries were extracted from the provided URL.")
-                    if extract_errors:
-                        st.warning("\n".join(extract_errors[:6]))
+                        records, records_map, extract_errors = process_competitor_audit_extract_sheet(
+                            df_uploaded=df_uploaded,
+                            client_name=st.session_state.get("audit_client_name", ""),
+                            retailer=st.session_state.get("audit_retailer", ""),
+                        )
+                        st.session_state["audit_competitor_entries"] = records
+                        st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
+                        st.session_state["audit_competitor_image_orders"] = {}
+                        _reset_generated_audit_state_v2()
+                        if records:
+                            st.success(f"Competitor sheet ingestion complete for {len(records)} row(s).")
+                        else:
+                            st.error("No usable competitor rows were ingested from the uploaded sheet.")
+                        if extract_errors:
+                            st.warning("\n".join(extract_errors[:12]))
         else:
-            uploaded = st.file_uploader("Upload Excel / CSV", type=["xlsx", "csv"], key="audit_v2_competitor_batch_upload")
-            df_uploaded = pd.DataFrame()
-            if uploaded is not None:
-                try:
-                    df_uploaded = _read_uploaded_table(uploaded)
-                except Exception as e:
-                    st.error(f"Could not read upload: {e}")
-
-            if not df_uploaded.empty:
-                url_columns = [c for c in df_uploaded.columns if "url" in str(c).lower()]
-                default_col = url_columns[0] if url_columns else df_uploaded.columns[0]
-                st.selectbox(
-                    "PDP URL Column",
-                    list(df_uploaded.columns),
-                    index=list(df_uploaded.columns).index(default_col),
-                    key="audit_v2_competitor_url_col",
-                )
-            else:
-                st.selectbox("PDP URL Column", ["PDP URL"], key="audit_v2_competitor_url_col")
-
-            if st.button("Process Competitor URLs", key="audit_v2_process_competitor_batch"):
-                urls = []
-                if not df_uploaded.empty:
-                    col = st.session_state.get("audit_v2_competitor_url_col", "")
-                    urls = _extract_urls_from_df_v2(df_uploaded, col)
-                if not urls:
-                    st.error("No competitor PDP URLs found in the selected column.")
-                else:
-                    urls = urls[:5]
-                    records, records_map, extract_errors = process_competitor_pdp_urls_real(
-                        urls=urls,
-                        cached_records_by_id=st.session_state.get("audit_cached_pdp_records", {}),
-                        client_name=st.session_state.get("audit_client_name", ""),
-                        retailer=st.session_state.get("audit_retailer", ""),
-                        max_count=5,
-                    )
-                    st.session_state["audit_competitor_entries"] = records
-                    st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
-                    st.session_state["audit_competitor_image_orders"] = {}
-                    _reset_generated_audit_state_v2()
-                    if records:
-                        st.success(f"Competitor PDP extraction complete for {len(records)} URL(s).")
+            st.caption("Fallback mode for live competitor PDP URL extraction.")
+            fallback_method = st.radio(
+                "Fallback Input",
+                ["Single PDP URL", "Excel / CSV of PDP URLs"],
+                horizontal=True,
+                key="audit_v2_competitor_fallback_method",
+            )
+            if fallback_method == "Single PDP URL":
+                pdp_url = st.text_input("Competitor PDP URL", key="audit_v2_competitor_single_pdp_url")
+                if st.button("Load Competitor PDP (Fallback)", key="audit_v2_load_competitor_single"):
+                    if not pdp_url.strip():
+                        st.warning("Enter a competitor PDP URL to continue.")
                     else:
-                        st.error("No usable competitor PDP entries were extracted from the provided URLs.")
-                    if extract_errors:
-                        st.warning("\n".join(extract_errors[:8]))
+                        records, records_map, extract_errors = process_competitor_pdp_urls_real(
+                            urls=[pdp_url.strip()],
+                            cached_records_by_id=st.session_state.get("audit_cached_pdp_records", {}),
+                            client_name=st.session_state.get("audit_client_name", ""),
+                            retailer=st.session_state.get("audit_retailer", ""),
+                            max_count=5,
+                        )
+                        st.session_state["audit_competitor_entries"] = records
+                        st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
+                        st.session_state["audit_competitor_image_orders"] = {}
+                        _reset_generated_audit_state_v2()
+                        if records:
+                            st.success(f"Competitor PDP extraction complete for {len(records)} URL.")
+                        else:
+                            st.error("No usable competitor PDP entries were extracted from the provided URL.")
+                        if extract_errors:
+                            st.warning("\n".join(extract_errors[:6]))
+            else:
+                uploaded = st.file_uploader(
+                    "Upload Excel / CSV of Competitor PDP URLs",
+                    type=["xlsx", "xls", "csv"],
+                    key="audit_v2_competitor_batch_upload",
+                )
+                df_uploaded = pd.DataFrame()
+                if uploaded is not None:
+                    try:
+                        df_uploaded = _read_uploaded_table(uploaded)
+                    except Exception as e:
+                        st.error(f"Could not read upload: {e}")
+
+                if not df_uploaded.empty:
+                    url_columns = [c for c in df_uploaded.columns if "url" in str(c).lower()]
+                    default_col = url_columns[0] if url_columns else df_uploaded.columns[0]
+                    st.selectbox(
+                        "PDP URL Column",
+                        list(df_uploaded.columns),
+                        index=list(df_uploaded.columns).index(default_col),
+                        key="audit_v2_competitor_url_col",
+                    )
+                else:
+                    st.selectbox("PDP URL Column", ["PDP URL"], key="audit_v2_competitor_url_col")
+
+                if st.button("Process Competitor URLs (Fallback)", key="audit_v2_process_competitor_batch"):
+                    urls = []
+                    if not df_uploaded.empty:
+                        col = st.session_state.get("audit_v2_competitor_url_col", "")
+                        urls = _extract_urls_from_df_v2(df_uploaded, col)
+                    if not urls:
+                        st.error("No competitor PDP URLs found in the selected column.")
+                    else:
+                        urls = urls[:5]
+                        records, records_map, extract_errors = process_competitor_pdp_urls_real(
+                            urls=urls,
+                            cached_records_by_id=st.session_state.get("audit_cached_pdp_records", {}),
+                            client_name=st.session_state.get("audit_client_name", ""),
+                            retailer=st.session_state.get("audit_retailer", ""),
+                            max_count=5,
+                        )
+                        st.session_state["audit_competitor_entries"] = records
+                        st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
+                        st.session_state["audit_competitor_image_orders"] = {}
+                        _reset_generated_audit_state_v2()
+                        if records:
+                            st.success(f"Competitor PDP extraction complete for {len(records)} URL(s).")
+                        else:
+                            st.error("No usable competitor PDP entries were extracted from the provided URLs.")
+                        if extract_errors:
+                            st.warning("\n".join(extract_errors[:8]))
 
 
 def render_extracted_competitor_entries_v2() -> None:

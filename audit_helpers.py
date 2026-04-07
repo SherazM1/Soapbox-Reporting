@@ -193,6 +193,241 @@ def urls_from_uploaded_dataframe(df_uploaded: pd.DataFrame, selected_col: str) -
     return [str(v).strip() for v in df_uploaded[selected_col].dropna().tolist() if str(v).strip()]
 
 
+def _coerce_columns(columns_or_row: pd.DataFrame | pd.Series | list[str] | tuple[str, ...]) -> list[str]:
+    if isinstance(columns_or_row, pd.DataFrame):
+        return [str(c) for c in columns_or_row.columns]
+    if isinstance(columns_or_row, pd.Series):
+        return [str(c) for c in columns_or_row.index.tolist()]
+    return [str(c) for c in columns_or_row]
+
+
+def _sorted_numbered_columns(
+    columns_or_row: pd.DataFrame | pd.Series | list[str] | tuple[str, ...],
+    prefix: str,
+) -> list[str]:
+    columns = _coerce_columns(columns_or_row)
+    pattern = re.compile(rf"^{re.escape(prefix)}\s*(\d+)$", re.IGNORECASE)
+    indexed: list[tuple[int, str]] = []
+    for col in columns:
+        match = pattern.match(col.strip())
+        if match:
+            indexed.append((int(match.group(1)), col))
+    indexed.sort(key=lambda x: x[0])
+    return [col for _, col in indexed]
+
+
+def detect_image_columns(
+    columns_or_row: pd.DataFrame | pd.Series | list[str] | tuple[str, ...],
+) -> list[str]:
+    """Return all Image N columns in numeric order."""
+    return _sorted_numbered_columns(columns_or_row, "Image")
+
+
+def detect_description_bullet_columns(
+    columns_or_row: pd.DataFrame | pd.Series | list[str] | tuple[str, ...],
+) -> list[str]:
+    """Return all Description Bullet N columns in numeric order."""
+    return _sorted_numbered_columns(columns_or_row, "Description Bullet")
+
+
+def _cell_as_text(row: pd.Series, col: str) -> str:
+    if col not in row.index:
+        return ""
+    value = row[col]
+    if pd.isna(value):
+        return ""
+    return str(value).strip()
+
+
+def _cell_as_float(row: pd.Series, col: str) -> float | None:
+    text = _cell_as_text(row, col)
+    if not text:
+        return None
+    try:
+        return float(text.replace(",", ""))
+    except ValueError:
+        return None
+
+
+def _cell_as_int(row: pd.Series, col: str) -> int | None:
+    text = _cell_as_text(row, col)
+    if not text:
+        return None
+    try:
+        return int(float(text.replace(",", "")))
+    except ValueError:
+        return None
+
+
+def extract_image_urls_from_sheet_row(row: pd.Series) -> list[str]:
+    urls: list[str] = []
+    for col in detect_image_columns(row):
+        value = _cell_as_text(row, col)
+        if value:
+            urls.append(value)
+    return urls
+
+
+def extract_description_bullets_from_sheet_row(row: pd.Series) -> list[str]:
+    bullets: list[str] = []
+    for col in detect_description_bullet_columns(row):
+        value = _cell_as_text(row, col)
+        if value:
+            bullets.append(value)
+    return bullets
+
+
+def validate_audit_extract_sheet_columns(df_uploaded: pd.DataFrame) -> tuple[list[str], list[str]]:
+    """Lightweight schema check for extension Audit Extract Sheets."""
+    errors: list[str] = []
+    warnings: list[str] = []
+    required_cols = ["Product URL", "Product ID", "Product Title"]
+    missing = [c for c in required_cols if c not in df_uploaded.columns]
+    if missing:
+        errors.append(f"Missing required column(s): {', '.join(missing)}")
+
+    if not detect_image_columns(df_uploaded):
+        warnings.append("No Image N columns were found. Records will be ingested without images.")
+    if not detect_description_bullet_columns(df_uploaded):
+        warnings.append("No Description Bullet N columns were found. Bullet-based fields will be empty.")
+
+    return errors, warnings
+
+
+def _validate_required_sheet_row_fields(row: pd.Series, row_number: int) -> list[str]:
+    row_errors: list[str] = []
+    for col in ["Product URL", "Product ID", "Product Title"]:
+        if not _cell_as_text(row, col):
+            row_errors.append(f"Row {row_number}: missing required value for '{col}'.")
+    return row_errors
+
+
+def map_sheet_row_to_cached_record(
+    *,
+    row: pd.Series,
+    source_type: str,
+    client_name: str = "",
+    retailer: str = "",
+) -> dict[str, Any]:
+    """Map a single Audit Extract Sheet row into a normalized cached PDP record."""
+    image_urls = extract_image_urls_from_sheet_row(row)
+    images = [make_image(i, url, is_hero=(i == 0)) for i, url in enumerate(image_urls)]
+
+    bullets = extract_description_bullets_from_sheet_row(row)
+    key_features = [make_key_feature(i + 1, text) for i, text in enumerate(bullets)]
+
+    reviews = make_reviews_summary(
+        average_rating=_cell_as_float(row, "Average Rating"),
+        ratings_count=_cell_as_int(row, "Ratings Count"),
+        review_count=_cell_as_int(row, "Review Count"),
+    )
+
+    ingest_metadata = {
+        "title_count": _cell_as_text(row, "Title Count"),
+        "title_notes": _cell_as_text(row, "Title Notes"),
+        "description_count": _cell_as_text(row, "Description Count"),
+        "description_notes": _cell_as_text(row, "Description Notes"),
+        "description_bullet_count": _cell_as_text(row, "Description Bullet Count"),
+        "description_bullet_notes": _cell_as_text(row, "Description Bullet Notes"),
+        "content_score": _cell_as_text(row, "Content Score"),
+    }
+
+    record = create_cached_pdp_record(
+        client_name=client_name,
+        retailer=retailer,
+        source_url=_cell_as_text(row, "Product URL"),
+        source_type=source_type,
+        item_id=_cell_as_text(row, "Product ID"),
+        brand=_cell_as_text(row, "Brand"),
+        product_title=_cell_as_text(row, "Product Title"),
+        category=_cell_as_text(row, "Category"),
+        subcategory=_cell_as_text(row, "Product Type"),
+        current_title=_cell_as_text(row, "Product Title"),
+        current_description_body=_cell_as_text(row, "Description Body"),
+        current_description_bullets=bullets,
+        current_key_features=key_features,
+        images=images,
+        reviews_summary=reviews,
+        extraction_status="sheet_ingested",
+        extraction_errors=[],
+        ingest_metadata=ingest_metadata,
+    )
+    update_record_tier1_derived_fields(record)
+    return record
+
+
+def process_primary_audit_extract_sheet(
+    *,
+    df_uploaded: pd.DataFrame,
+    client_name: str = "",
+    retailer: str = "",
+) -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]], list[str]]:
+    errors, warnings = validate_audit_extract_sheet_columns(df_uploaded)
+    all_messages = list(errors) + [f"Warning: {w}" for w in warnings]
+    if errors or df_uploaded.empty:
+        return [], {}, all_messages
+
+    entries: list[dict[str, Any]] = []
+    records_by_id: dict[str, dict[str, Any]] = {}
+    for idx, (_, row) in enumerate(df_uploaded.iterrows()):
+        row_number = idx + 2
+        row_errors = _validate_required_sheet_row_fields(row, row_number)
+        if row_errors:
+            all_messages.extend(row_errors)
+            continue
+        try:
+            record = map_sheet_row_to_cached_record(
+                row=row,
+                source_type="primary",
+                client_name=client_name,
+                retailer=retailer,
+            )
+        except Exception as exc:
+            all_messages.append(f"Row {row_number}: failed to ingest sheet row ({exc}).")
+            continue
+        entry = create_product_audit_entry_from_record(record)
+        entry["entry_id"] = f"primary-sheet-{idx + 1}-{entry.get('record_id', 'unknown')}"
+        entries.append(entry)
+        records_by_id[record["record_id"]] = record
+
+    return entries, records_by_id, all_messages
+
+
+def process_competitor_audit_extract_sheet(
+    *,
+    df_uploaded: pd.DataFrame,
+    client_name: str = "",
+    retailer: str = "",
+) -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]], list[str]]:
+    errors, warnings = validate_audit_extract_sheet_columns(df_uploaded)
+    all_messages = list(errors) + [f"Warning: {w}" for w in warnings]
+    if errors or df_uploaded.empty:
+        return [], {}, all_messages
+
+    records: list[dict[str, Any]] = []
+    records_by_id: dict[str, dict[str, Any]] = {}
+    for idx, (_, row) in enumerate(df_uploaded.iterrows()):
+        row_number = idx + 2
+        row_errors = _validate_required_sheet_row_fields(row, row_number)
+        if row_errors:
+            all_messages.extend(row_errors)
+            continue
+        try:
+            record = map_sheet_row_to_cached_record(
+                row=row,
+                source_type="competitor",
+                client_name=client_name,
+                retailer=retailer,
+            )
+        except Exception as exc:
+            all_messages.append(f"Row {row_number}: failed to ingest sheet row ({exc}).")
+            continue
+        records.append(record)
+        records_by_id[record["record_id"]] = record
+
+    return records, records_by_id, all_messages
+
+
 def build_demo_primary_entries_from_urls(
     urls: list[str],
     *,

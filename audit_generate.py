@@ -7,6 +7,7 @@ from typing import Any
 SEVERITY_WEIGHT = {"high": 3, "medium": 2, "low": 1}
 
 PROMO_TERMS = ("best selling", "free shipping")
+RETAILER_TERMS = ("walmart", "amazon", "target", "instacart", "costco", "kroger")
 
 
 def _norm(text: str) -> str:
@@ -35,29 +36,32 @@ def _findings_by_section(findings: list[dict[str, Any]], section: str) -> list[d
 def _issue_templates(section: str) -> dict[str, str]:
     templates = {
         "image_recommendations": {
-            "missing_images": "Add finished product hero image",
-            "low_image_count": "Add lifestyle image showing product in use",
-            "missing_clear_hero": "Clarify hero image selection with strongest front-of-pack visual",
+            "missing_images": "Add a clear front-of-pack hero image on a clean background",
+            "low_image_count": "Expand the image stack with lifestyle and in-use visuals",
+            "missing_clear_hero": "Promote the strongest product shot as the hero image",
         },
         "description_recommendations": {
-            "too_short": "Description is below minimum content depth and should be expanded",
-            "below_recommended_length": "Description is below recommended depth and can be strengthened",
-            "missing_product_name": "Product name should be repeated naturally in the body for SEO",
-            "retailer_mention": "Remove retailer mentions and keep description channel-neutral",
-            "missing_use_case": "Add concrete use-case language for when and how the product is used",
-            "missing_outcome_focus": "Add outcome-focused language that explains customer benefit",
-            "generic_content": "Replace generic copy with specific product details and value",
+            "too_short": "Description depth is light and should be expanded with concrete product details",
+            "below_recommended_length": "Description can be strengthened with additional shopper-relevant context",
+            "too_long": "Description is dense and should be tightened for faster scanability",
+            "missing_product_name": "Reintroduce the product name naturally in the body for SEO continuity",
+            "retailer_mention": "Remove retailer references and keep copy channel-neutral",
+            "missing_use_case": "Add clear use-case language for when and how the product is used",
+            "missing_outcome_focus": "Add stronger benefit/outcome language tied to shopper value",
+            "generic_content": "Replace generic statements with specific differentiators and proof points",
+            "html_structure_missing": "Improve structure with short sections/bullets for better readability",
+            "content_score_low": "Content quality signals are low; prioritize clarity, specificity, and benefits",
         },
         "key_features_recommendations": {
-            "insufficient_bullets": "Fewer than 3 key feature bullets are present",
-            "recommended_bullets_missing": "Expand key features toward a 5-bullet structure",
+            "insufficient_bullets": "Add more key feature bullets to meet the minimum coverage baseline",
+            "recommended_bullets_missing": "Build toward a 5-bullet structure to improve scanability",
             "ending_punctuation": "Remove ending punctuation so bullets read as clean fragments",
-            "full_sentences": "Convert full-sentence bullets into concise feature fragments",
-            "inconsistent_formatting": "Align bullet capitalization and formatting consistently",
-            "retailer_mention": "Remove retailer mentions from key features",
-            "forbidden_special_characters": "Remove forbidden special characters in bullet text",
-            "overlap_with_other_section": "Reduce overlap with description and emphasize distinct feature points",
-            "missing_use_case": "Add clearer benefit and use-case cues in key features",
+            "full_sentences": "Convert sentence-style bullets into concise feature fragments",
+            "inconsistent_formatting": "Standardize capitalization and structure across all bullets",
+            "retailer_mention": "Remove retailer references from key features",
+            "forbidden_special_characters": "Remove non-compliant special characters from bullet text",
+            "overlap_with_other_section": "Reduce description overlap and keep bullets focused on distinct points",
+            "missing_use_case": "Strengthen benefit and use-case framing across bullets",
         },
     }
     return templates.get(section, {})
@@ -67,6 +71,8 @@ def _clean_title_candidate(title: str) -> str:
     candidate = _norm(title)
     lowered = candidate.lower()
     for term in PROMO_TERMS:
+        lowered = lowered.replace(term, "")
+    for term in RETAILER_TERMS:
         lowered = lowered.replace(term, "")
     candidate = _norm(lowered)
 
@@ -91,6 +97,11 @@ def _clean_title_candidate(title: str) -> str:
     return candidate
 
 
+def _title_case_phrase(text: str) -> str:
+    words = [w for w in _norm(text).split(" ") if w]
+    return " ".join(w.capitalize() if w.isalpha() else w for w in words)
+
+
 def generate_recommended_title(record: dict[str, Any], findings: list[dict[str, Any]]) -> str:
     base = _norm(record.get("current_title") or record.get("product_title") or "")
     if not base:
@@ -103,6 +114,18 @@ def generate_recommended_title(record: dict[str, Any], findings: list[dict[str, 
     candidate = _clean_title_candidate(base)
     if not candidate:
         candidate = base
+
+    if "too_short" in issue_types and len(candidate) < 20:
+        brand = _norm(str(record.get("brand", "")))
+        product_type = _norm(str(record.get("subcategory") or record.get("category") or ""))
+        tail_tokens = [t for t in re.findall(r"[A-Za-z0-9]+", base) if len(t) > 2]
+        tail = " ".join(tail_tokens[:4]).strip()
+        parts = [p for p in [brand, product_type, tail] if p]
+        if parts:
+            candidate = _norm(" - ".join(parts[:2]) + (f", {parts[2]}" if len(parts) > 2 else ""))
+
+    if "all_caps" in issue_types:
+        candidate = _title_case_phrase(candidate)
     if "title_too_long" in issue_types and len(candidate) > 90:
         candidate = candidate[:90].rstrip(" ,;-")
     return candidate
@@ -133,17 +156,25 @@ def generate_image_recommendations(record: dict[str, Any], findings: list[dict[s
         section="images",
         output_field="image_recommendations",
     )
+    if any(f.get("issue_type") == "low_image_count" for f in _findings_by_section(findings, "images")):
+        recs.extend(
+            [
+                "Add a product-in-context lifestyle image",
+                "Add an infographic image highlighting key benefits",
+                "Add a what's-included or size-comparison visual",
+            ]
+        )
     if not recs:
         image_count = int(record.get("image_count") or 0)
         if image_count <= 2:
             recs = [
-                "Add lifestyle image showing product in use",
-                "Add feature/benefit infographic image",
-                "Add what-is-included or key-attributes visual",
+                "Add a product-in-context lifestyle image",
+                "Add a feature/benefit infographic visual",
+                "Add a what's-included or step-by-step usage visual",
             ]
         else:
-            recs = ["Maintain clear hero image and diversify secondary supporting visuals"]
-    return recs[:5]
+            recs = ["Maintain a strong hero image and diversify supporting visual types"]
+    return _dedupe_keep_order(recs)[:5]
 
 
 def generate_description_recommendations(findings: list[dict[str, Any]]) -> list[str]:
@@ -166,10 +197,10 @@ def generate_key_features_recommendations(findings: list[dict[str, Any]]) -> lis
 
 def generate_top_priority_fixes(findings: list[dict[str, Any]]) -> list[str]:
     theme_map = {
-        "title": "Rewrite title for stronger SEO clarity and cleaner structure",
+        "title": "Tighten the title to a clear, structured format with key differentiators",
         "description": "Strengthen description depth with clearer use-case and benefit language",
-        "key_features": "Improve key feature structure and formatting for scanability",
-        "images": "Upgrade image stack with stronger hero, lifestyle, and supporting visuals",
+        "key_features": "Rebuild key features into clean, non-overlapping shopper-focused bullets",
+        "images": "Upgrade the visual stack with stronger hero and support imagery",
     }
     ranked = sorted(
         findings,
@@ -186,8 +217,21 @@ def generate_top_priority_fixes(findings: list[dict[str, Any]]) -> list[str]:
             seen_sections.add(sec)
         if len(fixes) >= 5:
             break
+
     if not fixes:
         fixes = ["Maintain current content strengths and address minor consistency issues"]
+
+    fallback_themes = [
+        theme_map["title"],
+        theme_map["description"],
+        theme_map["key_features"],
+        theme_map["images"],
+    ]
+    for item in fallback_themes:
+        if len(fixes) >= 3:
+            break
+        if item not in fixes:
+            fixes.append(item)
     return fixes[:5]
 
 
