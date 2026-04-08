@@ -126,8 +126,10 @@ def build_competitor_graphics_payload(
     competitor_records = competitor_records or []
     record_meta = {
         r.get("record_id", ""): {
+            "product_title": r.get("product_title", ""),
             "title": r.get("product_title", ""),
             "brand": r.get("brand", ""),
+            "item_id": r.get("item_id", ""),
             "source_url": r.get("source_url", ""),
         }
         for r in competitor_records
@@ -137,7 +139,7 @@ def build_competitor_graphics_payload(
     cleaned = []
     for a in assignments or []:
         display_order = int(a.get("display_order", 0) or 0)
-        if display_order <= 0:
+        if display_order <= 0 or display_order > 10:
             continue
         record_id = a.get("record_id", "")
         row = {
@@ -145,8 +147,16 @@ def build_competitor_graphics_payload(
             "image_index": int(a.get("image_index", 0) or 0),
             "url": a.get("url", ""),
             "display_order": display_order,
+            "product_title": a.get("product_title", ""),
+            "title": a.get("title", a.get("product_title", "")),
+            "brand": a.get("brand", ""),
+            "item_id": a.get("item_id", ""),
+            "source_url": a.get("source_url", ""),
         }
-        row.update(record_meta.get(record_id, {}))
+        fallback = record_meta.get(record_id, {})
+        for key, value in fallback.items():
+            if not _text_has_value(row.get(key)):
+                row[key] = value
         cleaned.append(row)
 
     cleaned.sort(key=lambda x: (x["display_order"], x["record_id"], x["image_index"]))

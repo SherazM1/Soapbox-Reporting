@@ -812,14 +812,17 @@ def build_competitor_assignments(
         for image in record.get("images", []):
             key = f"{record['record_id']}|{image['index']}"
             order = int(display_orders.get(key, 0))
-            if order > 0:
-                assignments.append(
-                    create_competitor_graphics_assignment(
-                        record_id=record["record_id"],
-                        image_index=int(image["index"]),
-                        url=image["url"],
-                        display_order=order,
-                    )
+            if 1 <= order <= 10:
+                assignment = create_competitor_graphics_assignment(
+                    record_id=record["record_id"],
+                    image_index=int(image["index"]),
+                    url=image["url"],
+                    display_order=order,
                 )
+                assignment["product_title"] = record.get("product_title", "")
+                assignment["brand"] = record.get("brand", "")
+                assignment["item_id"] = record.get("item_id", "")
+                assignment["source_url"] = record.get("source_url", "")
+                assignments.append(assignment)
     assignments.sort(key=lambda x: (x["display_order"], x["record_id"], x["image_index"]))
     return assignments

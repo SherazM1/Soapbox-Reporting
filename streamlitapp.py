@@ -4,6 +4,7 @@ import sys
 import unicodedata
 from datetime import date
 import io
+from typing import Any
 
 import pandas as pd
 import streamlit as st
@@ -12,6 +13,7 @@ from audit_analyze import analyze_primary_record
 from audit_export import build_audit_export_plan
 from audit_generate import generate_mvp_outputs_for_primary_entry, is_output_shell_empty
 from audit_models import create_audit_result_record
+from audit_powerpoint import generate_audit_powerpoint_from_template, resolve_audit_template_path
 from audit_helpers import (
     build_competitor_assignments,
     initialize_auditing_session_state,
@@ -808,8 +810,20 @@ def render_extracted_primary_product_entries_v2() -> None:
         st.info("Load primary PDP data first to create product audit entries.")
         return
 
+    if "audit_select_all_primary_for_export" not in st.session_state:
+        st.session_state["audit_select_all_primary_for_export"] = True
+    select_all = st.checkbox(
+        "Select All for Export",
+        key="audit_select_all_primary_for_export",
+        help="When enabled, all primary entries are included in the PowerPoint export.",
+    )
+
     for idx, entry in enumerate(entries, start=1):
         _sync_primary_entry_edits_v2(entry)
+        if "include_in_export" not in entry:
+            entry["include_in_export"] = True
+        if select_all:
+            entry["include_in_export"] = True
         record = entry.get("cached_record", {})
         with st.container(border=True):
             st.markdown(f"#### Primary Product Entry {idx}")
@@ -868,6 +882,17 @@ def render_extracted_primary_product_entries_v2() -> None:
             st.text_area("Current Title", key=f"audit_v2_primary_current_title_{entry['entry_id']}", height=85)
             st.text_area("Current Description", key=f"audit_v2_primary_current_description_{entry['entry_id']}", height=120)
             st.text_area("Current Key Features", key=f"audit_v2_primary_current_features_{entry['entry_id']}", height=110)
+            include_key = f"audit_v2_primary_include_export_{entry['entry_id']}"
+            if include_key not in st.session_state:
+                st.session_state[include_key] = bool(entry.get("include_in_export", True))
+            if select_all:
+                st.session_state[include_key] = True
+            include_value = st.checkbox(
+                "Include in Export",
+                key=include_key,
+                disabled=select_all,
+            )
+            entry["include_in_export"] = bool(include_value)
             ingest_metadata = record.get("ingest_metadata", {}) or {}
             if ingest_metadata:
                 with st.expander("Sheet Metadata", expanded=False):
@@ -1021,14 +1046,18 @@ def render_competitor_pdp_upload_v2() -> None:
 
 def render_extracted_competitor_entries_v2() -> None:
     st.markdown("### Extracted Competitor Data")
-    st.caption("Competitor image order is shared at the audit level, not product-slide-level.")
+    st.caption(
+        "Competitor images are selected from a shared audit-level pool. "
+        "Choose up to 10 total images and assign each to a unique display slot (1-10)."
+    )
     entries = st.session_state.get("audit_competitor_entries", [])
     if not entries:
         st.info("Competitor upload is optional. Add competitor PDPs when needed.")
         return
 
+    max_slots = 10
     image_orders = st.session_state.get("audit_competitor_image_orders", {})
-    selected_rows = []
+    selected_rows: list[dict[str, Any]] = []
     for idx, entry in enumerate(entries, start=1):
         record = entry
         with st.container(border=True):
@@ -1068,36 +1097,83 @@ def render_extracted_competitor_entries_v2() -> None:
                 image_id = f"{record.get('record_id', '')}|{image_index}"
                 with img_cols[i % len(img_cols)]:
                     st.image(image_url, use_container_width=True)
-                    order_key = f"audit_v2_comp_order_{image_id}"
-                    current_order = int(image_orders.get(image_id, 0))
-                    order_value = st.number_input(
-                        f"Display Order (Image {i + 1})",
-                        min_value=0,
-                        max_value=50,
-                        step=1,
-                        value=current_order,
-                        key=order_key,
+                    st.caption(f"Image {i + 1}")
+                    st.caption(f"Source URL: {image_url}")
+                    include_key = f"audit_v2_comp_include_{image_id}"
+                    slot_key = f"audit_v2_comp_order_{image_id}"
+                    current_order = int(image_orders.get(image_id, 0) or 0)
+                    current_order = current_order if 1 <= current_order <= max_slots else 0
+                    if include_key not in st.session_state:
+                        st.session_state[include_key] = current_order > 0
+                    if slot_key not in st.session_state:
+                        st.session_state[slot_key] = current_order if current_order > 0 else 1
+
+                    include = st.checkbox(
+                        "Include in shared competitor graphics",
+                        key=include_key,
                     )
-                    image_orders[image_id] = int(order_value)
-                    if int(order_value) > 0:
+                    slot_value = st.selectbox(
+                        "Display Slot",
+                        list(range(1, max_slots + 1)),
+                        index=max(0, int(st.session_state.get(slot_key, 1)) - 1),
+                        key=slot_key,
+                        disabled=not include,
+                    )
+                    order_value = int(slot_value) if include else 0
+                    image_orders[image_id] = order_value
+                    if order_value > 0:
                         selected_rows.append(
                             {
-                                "Display Order": int(order_value),
-                                "Entry": f"Competitor {idx}",
-                                "Title": record.get("product_title", "-"),
-                                "Image": f"Image {i + 1}",
+                                "Display Order": order_value,
+                                "Competitor Title": record.get("product_title", "-"),
+                                "Brand": record.get("brand", "-"),
+                                "Item ID": record.get("item_id", "-") or "-",
+                                "Image Label": f"Image {i + 1}",
                                 "Image URL": image_url,
+                                "Source URL": record.get("source_url", ""),
+                                "_image_id": image_id,
                             }
                         )
 
+    selected_count = len(selected_rows)
+    duplicate_orders = (
+        pd.DataFrame(selected_rows)["Display Order"].value_counts().loc[lambda s: s > 1].index.tolist()
+        if selected_rows
+        else []
+    )
+    if selected_count > max_slots:
+        st.error(
+            f"You selected {selected_count} competitor images. "
+            f"Select at most {max_slots} images for the shared competitor graphics section."
+        )
+    if duplicate_orders:
+        dup_text = ", ".join(str(v) for v in sorted(duplicate_orders))
+        st.error(f"Duplicate display slot assignments detected: {dup_text}. Each selected image must have a unique slot.")
+
+    is_valid_selection = selected_count <= max_slots and not duplicate_orders
     st.session_state["audit_competitor_image_orders"] = image_orders
-    st.session_state["audit_competitor_assignments"] = build_competitor_assignments(entries, image_orders)
+    st.session_state["audit_competitor_assignments"] = (
+        build_competitor_assignments(entries, image_orders) if is_valid_selection else []
+    )
+
+    if selected_count:
+        st.caption(f"Selected competitor images: {selected_count}/{max_slots}")
     if selected_rows:
-        ordered_df = pd.DataFrame(selected_rows).sort_values(by=["Display Order", "Entry", "Image"]).reset_index(drop=True)
-        st.caption("Ordered competitor images for the shared competitor graphics section")
-        st.dataframe(ordered_df, use_container_width=True, hide_index=True)
-        if ordered_df["Display Order"].duplicated(keep=False).any():
-            st.warning("Some competitor images share the same display order. Adjust if strict ordering is needed.")
+        ordered_df = (
+            pd.DataFrame(selected_rows)
+            .sort_values(by=["Display Order", "Competitor Title", "Image Label"])
+            .reset_index(drop=True)
+        )
+        preview_df = ordered_df[
+            ["Display Order", "Competitor Title", "Brand", "Item ID", "Image Label", "Image URL"]
+        ]
+        st.caption("Ordered competitor image preview for shared template slots")
+        st.dataframe(preview_df, use_container_width=True, hide_index=True)
+    else:
+        st.info("No competitor images selected yet. Select images and assign slots 1-10.")
+
+    if selected_rows and not is_valid_selection:
+        st.warning("Fix selection errors above to populate competitor graphics assignments.")
 
 
 def _seed_mock_results_for_products_v2(entries: list[dict]) -> None:
@@ -1296,6 +1372,42 @@ def render_mocked_audit_results_v2() -> None:
                 "competitor_graphics_payload": plan.get("competitor_graphics_payload", {}),
             }
             st.json(compact)
+
+    st.subheader("PowerPoint Export")
+    included_count = int((plan.get("summary", {}) or {}).get("included_primary_entry_count", 0))
+    if included_count <= 0:
+        st.info("Include at least one primary product entry to generate the audit PowerPoint.")
+        return
+    try:
+        template_path = resolve_audit_template_path()
+    except Exception as exc:
+        st.error(f"Audit template not found: {exc}")
+        return
+
+    if st.button("Generate Audit PowerPoint", key="audit_v2_generate_ppt", type="primary"):
+        try:
+            ppt_bytes = generate_audit_powerpoint_from_template(
+                export_plan=plan,
+                template_path=template_path,
+            )
+            st.session_state["audit_ppt_bytes"] = ppt_bytes
+            st.session_state["audit_ppt_filename"] = (
+                f"audit_{st.session_state.get('audit_client_name', 'client').strip() or 'client'}"
+                f"_{st.session_state.get('audit_date', date.today())}.pptx"
+            ).replace(" ", "_")
+            st.success("Audit PowerPoint generated.")
+        except Exception as exc:
+            st.error(f"Failed to generate audit PowerPoint: {exc}")
+
+    ppt_bytes = st.session_state.get("audit_ppt_bytes")
+    if ppt_bytes:
+        st.download_button(
+            "Download Audit PowerPoint",
+            data=ppt_bytes,
+            file_name=st.session_state.get("audit_ppt_filename", "audit_export.pptx"),
+            mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            key="audit_v2_download_ppt",
+        )
 
 
 def render_content_auditing() -> None:
