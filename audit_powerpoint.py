@@ -139,6 +139,52 @@ def _duplicate_slide(prs: Presentation, source_slide: Any) -> Any:
     return new_slide
 
 
+def _slide_index(prs: Presentation, slide: Any) -> int:
+    for idx, s in enumerate(prs.slides):
+        if s.slide_id == slide.slide_id:
+            return idx
+    return -1
+
+
+def _slide_id_element(prs: Presentation, slide: Any) -> Any | None:
+    sld_id_lst = prs.slides._sldIdLst  # pylint: disable=protected-access
+    for el in sld_id_lst:
+        try:
+            if int(el.id) == int(slide.slide_id):
+                return el
+        except Exception:
+            continue
+    return None
+
+
+def _move_slide_before(prs: Presentation, slide_to_move: Any, anchor_slide: Any) -> None:
+    move_el = _slide_id_element(prs, slide_to_move)
+    anchor_el = _slide_id_element(prs, anchor_slide)
+    if move_el is None or anchor_el is None:
+        return
+    sld_id_lst = prs.slides._sldIdLst  # pylint: disable=protected-access
+    try:
+        sld_id_lst.remove(move_el)
+        anchor_pos = list(sld_id_lst).index(anchor_el)
+        sld_id_lst.insert(anchor_pos, move_el)
+    except Exception:
+        return
+
+
+def _find_first_shared_anchor_slide(prs: Presentation) -> Any | None:
+    anchors = []
+    for token in ("Competitor Graphics", "Retail Media Optimizations", "Competitor Ad Graphics", "Let’s connect", "Let's connect"):
+        slide = _find_slide_by_text(prs, token)
+        if slide is not None:
+            idx = _slide_index(prs, slide)
+            if idx >= 0:
+                anchors.append((idx, slide))
+    if not anchors:
+        return None
+    anchors.sort(key=lambda x: x[0])
+    return anchors[0][1]
+
+
 def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
     pdp = pair_payload.get("pdp_slide", {}) or {}
     content = pair_payload.get("content_optimization_slide", {}) or {}
@@ -277,6 +323,10 @@ def generate_audit_powerpoint_from_template(*, export_plan: dict[str, Any], temp
         content_slide = _duplicate_slide(prs, content_template)
         _populate_pdp_slide(pdp_slide, pair)
         _populate_content_slide(content_slide, pair)
+        shared_anchor = _find_first_shared_anchor_slide(prs)
+        if shared_anchor is not None:
+            _move_slide_before(prs, pdp_slide, shared_anchor)
+            _move_slide_before(prs, content_slide, shared_anchor)
 
     competitor_payload = export_plan.get("competitor_graphics_payload", {}) or {}
     shared_sections = export_plan.get("shared_sections_payload", {}) or {}
