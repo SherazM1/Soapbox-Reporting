@@ -1056,8 +1056,20 @@ def render_extracted_competitor_entries_v2() -> None:
         return
 
     max_slots = 10
-    image_orders = st.session_state.get("audit_competitor_image_orders", {})
+    image_orders = dict(st.session_state.get("audit_competitor_image_orders", {}))
+    if "audit_v2_comp_select_all" not in st.session_state:
+        st.session_state["audit_v2_comp_select_all"] = True
+    select_all_mode = st.checkbox(
+        "Select All Competitor Images",
+        key="audit_v2_comp_select_all",
+        help="Default fast path: automatically uses the first 10 competitor images in shared order.",
+    )
+    if select_all_mode:
+        st.caption("Auto mode is on: using the first 10 competitor images in shared order.")
+    else:
+        st.caption("Manual mode is on: check images to include and assign unique slots 1-10.")
     selected_rows: list[dict[str, Any]] = []
+    shared_auto_rank = 0
 
     def _normalize_image_models(raw_images: Any) -> list[dict[str, Any]]:
         normalized: list[dict[str, Any]] = []
@@ -1113,15 +1125,14 @@ def render_extracted_competitor_entries_v2() -> None:
                 f"Reviews: {review_summary}"
             )
 
-            img_cols = st.columns(min(3, max(1, len(image_models))))
+            img_cols = st.columns(min(4, max(1, len(image_models))))
             for i, image in enumerate(image_models):
                 image_url = image.get("url", "")
                 image_index = image.get("index", i)
                 image_id = f"{record.get('record_id', '')}|{image_index}"
                 with img_cols[i % len(img_cols)]:
-                    st.image(image_url, use_container_width=True)
+                    st.image(image_url, width=170)
                     st.caption(f"Image {i + 1}")
-                    st.caption(f"Source URL: {image_url}")
                     include_key = f"audit_v2_comp_include_{image_id}"
                     slot_key = f"audit_v2_comp_order_{image_id}"
                     current_order = int(image_orders.get(image_id, 0) or 0)
@@ -1131,18 +1142,29 @@ def render_extracted_competitor_entries_v2() -> None:
                     if slot_key not in st.session_state:
                         st.session_state[slot_key] = current_order if current_order > 0 else 1
 
-                    include = st.checkbox(
-                        "Include in shared competitor graphics",
-                        key=include_key,
-                    )
-                    slot_value = st.selectbox(
-                        "Display Slot",
-                        list(range(1, max_slots + 1)),
-                        index=max(0, int(st.session_state.get(slot_key, 1)) - 1),
-                        key=slot_key,
-                        disabled=not include,
-                    )
-                    order_value = int(slot_value) if include else 0
+                    if select_all_mode:
+                        include = shared_auto_rank < max_slots
+                        order_value = shared_auto_rank + 1 if include else 0
+                        st.session_state[include_key] = include
+                        st.session_state[slot_key] = order_value if order_value > 0 else 1
+                        if include:
+                            shared_auto_rank += 1
+                            st.caption(f"Auto-selected: Slot {order_value}")
+                        else:
+                            st.caption("Not selected (outside top 10)")
+                    else:
+                        include = st.checkbox(
+                            "Use in Competitor Graphics",
+                            key=include_key,
+                        )
+                        slot_value = st.selectbox(
+                            "Display Slot",
+                            list(range(1, max_slots + 1)),
+                            index=max(0, int(st.session_state.get(slot_key, 1)) - 1),
+                            key=slot_key,
+                            disabled=not include,
+                        )
+                        order_value = int(slot_value) if include else 0
                     image_orders[image_id] = order_value
                     if order_value > 0:
                         selected_rows.append(
@@ -1157,6 +1179,7 @@ def render_extracted_competitor_entries_v2() -> None:
                                 "_image_id": image_id,
                             }
                         )
+                    st.caption(f"Source URL: {image_url}")
 
     selected_count = len(selected_rows)
     duplicate_orders = (
@@ -1164,7 +1187,7 @@ def render_extracted_competitor_entries_v2() -> None:
         if selected_rows
         else []
     )
-    if selected_count > max_slots:
+    if selected_count > max_slots and not select_all_mode:
         st.error(
             f"You selected {selected_count} competitor images. "
             f"Select at most {max_slots} images for the shared competitor graphics section."
