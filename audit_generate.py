@@ -9,6 +9,32 @@ SEVERITY_WEIGHT = {"high": 3, "medium": 2, "low": 1}
 PROMO_TERMS = ("best selling", "free shipping")
 RETAILER_TERMS = ("walmart", "amazon", "target", "instacart", "costco", "kroger")
 
+APPROVED_DESCRIPTION_LINES = [
+    ("universal_desc_not_html_format", "Not in HTML format (<p>...</p>)"),
+    ("universal_desc_below_60_word_minimum", "Below 60-word minimum"),
+    ("universal_desc_product_name_not_repeated_for_seo", "Product name not repeated for SEO"),
+    ("universal_desc_missing_clear_use_cases", "Missing clear use cases"),
+    (
+        "universal_desc_too_feature_focused_not_benefit_use_case_driven",
+        "Too feature-focused, not benefit/use-case driven",
+    ),
+    ("universal_desc_likely_duplicated_content", "Likely duplicated content"),
+]
+
+APPROVED_KEY_FEATURE_LINES = [
+    (
+        "universal_kf_bullets_full_sentences_should_be_fragments_no_punctuation",
+        "Bullets are full sentences (should be fragments, no punctuation)",
+    ),
+    ("universal_kf_duplicate_repetitive_content", "Duplicate/repetitive content"),
+    (
+        "universal_kf_inconsistent_formatting_capitalization_structure",
+        "Inconsistent formatting (capitalization/structure)",
+    ),
+    ("universal_kf_too_much_manufacturing_detail", "Too much manufacturing detail"),
+    ("universal_kf_repeats_description_content", "Repeats description content"),
+]
+
 
 def _norm(text: str) -> str:
     return re.sub(r"\s+", " ", (text or "").strip())
@@ -31,6 +57,17 @@ def _dedupe_keep_order(items: list[str]) -> list[str]:
 
 def _findings_by_section(findings: list[dict[str, Any]], section: str) -> list[dict[str, Any]]:
     return [f for f in findings if f.get("section") == section]
+
+
+def _approved_lines_for_section(
+    findings: list[dict[str, Any]],
+    *,
+    section: str,
+    ordered_rules: list[tuple[str, str]],
+) -> list[str]:
+    section_findings = _findings_by_section(findings, section)
+    issue_types = {str(f.get("issue_type", "")) for f in section_findings}
+    return [line for issue_type, line in ordered_rules if issue_type in issue_types]
 
 
 def _issue_templates(section: str) -> dict[str, str]:
@@ -178,21 +215,31 @@ def generate_image_recommendations(record: dict[str, Any], findings: list[dict[s
 
 
 def generate_description_recommendations(findings: list[dict[str, Any]]) -> list[str]:
+    approved = _approved_lines_for_section(
+        findings,
+        section="description",
+        ordered_rules=APPROVED_DESCRIPTION_LINES,
+    )
     recs = _build_section_recommendations(
         findings=findings,
         section="description",
         output_field="description_recommendations",
     )
-    return recs[:6]
+    return _dedupe_keep_order([*approved, *recs])[:8]
 
 
 def generate_key_features_recommendations(findings: list[dict[str, Any]]) -> list[str]:
+    approved = _approved_lines_for_section(
+        findings,
+        section="key_features",
+        ordered_rules=APPROVED_KEY_FEATURE_LINES,
+    )
     recs = _build_section_recommendations(
         findings=findings,
         section="key_features",
         output_field="key_features_recommendations",
     )
-    return recs[:6]
+    return _dedupe_keep_order([*approved, *recs])[:8]
 
 
 def generate_top_priority_fixes(findings: list[dict[str, Any]]) -> list[str]:

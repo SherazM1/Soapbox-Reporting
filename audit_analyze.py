@@ -29,6 +29,140 @@ OUTCOME_TERMS = (
     "comfort",
 )
 FORBIDDEN_SPECIAL_CHARS = ("$", "#", "*", "!")
+UNIVERSAL_USE_CASE_TERMS = (
+    "use",
+    "great for",
+    "ideal for",
+    "perfect for",
+    "designed for",
+    "helps",
+    "supports",
+    "enjoy",
+    "serve",
+    "apply",
+    "clean",
+    "protect",
+    "organize",
+    "store",
+    "wear",
+    "build",
+    "play",
+    "pair with",
+    "top with",
+    "spread on",
+)
+
+WALMART_TOP_CATEGORY_ALIASES: dict[str, tuple[str, ...]] = {
+    "Animals": ("animals", "pet", "pets", "pet supplies"),
+    "Arts & Crafts": ("arts & crafts", "arts and crafts", "craft", "crafts"),
+    "Baby": ("baby", "infant", "toddler"),
+    "Beauty": ("beauty", "cosmetic", "cosmetics", "skin care", "hair care"),
+    "Business & Industrial": ("business & industrial", "business and industrial", "industrial"),
+    "Electronics & Photography": ("electronics & photography", "electronics and photography", "electronics", "photography"),
+    "Everything Else": ("everything else",),
+    "Fashion": ("fashion", "apparel", "clothing", "accessories"),
+    "Food & Beverage": ("food & beverage", "food and beverage", "food", "beverage", "grocery"),
+    "Furniture": ("furniture",),
+    "Garden & Patio": ("garden & patio", "garden and patio", "garden", "patio", "outdoor living"),
+    "Health & Personal Care": ("health & personal care", "health and personal care", "health", "personal care"),
+    "Home": ("home", "kitchen", "housewares"),
+    "Home Improvement": ("home improvement", "tools", "hardware"),
+    "Household, Industrial Cleaning & Storage": (
+        "household, industrial cleaning & storage",
+        "household industrial cleaning storage",
+        "household cleaning",
+        "cleaning",
+        "storage",
+    ),
+    "Media": ("media", "books", "movies", "music"),
+    "Musical Instruments": ("musical instruments", "instrument", "instruments"),
+    "Office & Stationery": ("office & stationery", "office and stationery", "office", "stationery"),
+    "Safety & Emergency": ("safety & emergency", "safety and emergency", "safety", "emergency"),
+    "Seasonal & Occasion": ("seasonal & occasion", "seasonal and occasion", "seasonal", "occasion"),
+    "Sports, Recreation & Outdoor": (
+        "sports, recreation & outdoor",
+        "sports recreation outdoor",
+        "sports",
+        "recreation",
+        "outdoor",
+    ),
+    "Toys": ("toys", "toy"),
+    "Vehicle": ("vehicle", "automotive", "auto", "car", "truck"),
+}
+
+PRIORITY_CATEGORY_USE_CASE_TERMS: dict[str, tuple[str, ...]] = {
+    "Food & Beverage": (
+        "serve", "spread on", "pair with", "top with", "enjoy", "snack", "breakfast",
+        "dessert", "meal", "recipe", "glaze", "toast", "waffles",
+    ),
+    "Electronics & Photography": (
+        "charge", "connect", "stream", "listen", "work", "gaming", "travel", "protect", "power", "compatible with",
+    ),
+    "Beauty": (
+        "apply", "routine", "daily use", "for skin", "for hair", "massage", "cleanse", "moisturize", "hydrate", "refresh",
+    ),
+    "Furniture": (
+        "sit", "store", "organize", "display", "workspace", "bedroom", "living room", "patio", "comfort", "space-saving",
+    ),
+    "Home": (
+        "organize", "store", "cook", "prep", "serve", "display", "kitchen", "pantry", "countertop", "space-saving",
+    ),
+    "Toys": (
+        "build", "create", "play", "gift", "screen-free", "activity", "learn", "collect", "imagination", "pretend play",
+    ),
+    "Vehicle": (
+        "install", "protect", "repair", "replace", "maintain", "drive", "towing", "storage", "travel", "performance",
+    ),
+}
+
+LIGHT_CATEGORY_USE_CASE_HINTS: dict[str, tuple[str, ...]] = {
+    "Animals": ("feed", "walk", "train"),
+    "Arts & Crafts": ("create", "paint", "craft"),
+    "Baby": ("daily use", "feeding", "comfort"),
+    "Business & Industrial": ("worksite", "operate", "maintain"),
+    "Everything Else": ("everyday use", "practical", "convenient"),
+    "Fashion": ("wear", "style", "daily wear"),
+    "Garden & Patio": ("outdoor use", "plant", "maintain"),
+    "Health & Personal Care": ("daily use", "apply", "wellness"),
+    "Home Improvement": ("install", "repair", "upgrade"),
+    "Household, Industrial Cleaning & Storage": ("clean", "organize", "store"),
+    "Media": ("read", "watch", "listen"),
+    "Musical Instruments": ("practice", "play", "perform"),
+    "Office & Stationery": ("write", "organize", "workspace"),
+    "Safety & Emergency": ("protect", "prepare", "emergency use"),
+    "Seasonal & Occasion": ("celebrate", "decorate", "gift"),
+    "Sports, Recreation & Outdoor": ("train", "outdoor use", "play"),
+}
+FEATURE_HEAVY_TERMS = (
+    "ingredients",
+    "formula",
+    "pack",
+    "jar",
+    "ounce",
+    "oz",
+    "spec",
+    "specification",
+    "manufactured",
+    "process",
+    "compliant",
+    "certified",
+    "dimensions",
+    "size",
+)
+MANUFACTURING_DETAIL_TERMS = (
+    "manufactured",
+    "manufacturing",
+    "facility",
+    "batch",
+    "compliance",
+    "specification",
+    "pack of",
+    "ounces",
+    "oz",
+    "jar",
+    "bottle",
+    "count",
+)
 
 
 def _norm(text: str) -> str:
@@ -100,6 +234,82 @@ def _meta_float(meta: dict[str, Any], keys: tuple[str, ...]) -> float | None:
 
 def _has_issue(findings: list[dict[str, Any]], issue_type: str) -> bool:
     return any(str(f.get("issue_type", "")) == issue_type for f in findings)
+
+
+def _add_universal_finding(
+    findings: list[dict[str, Any]],
+    *,
+    section: str,
+    issue_type: str,
+    message: str,
+    severity: str,
+    evidence: dict[str, Any],
+    recommendation_theme: str,
+) -> None:
+    if _has_issue(findings, issue_type):
+        return
+    findings.append(
+        _section_find(
+            section=section,
+            issue_type=issue_type,
+            severity=severity,
+            message=message,
+            evidence=evidence,
+            recommendation_theme=recommendation_theme,
+            source="universal_rule",
+        )
+    )
+
+
+def _resolve_walmart_top_level_category(record: dict[str, Any]) -> str | None:
+    category = _lower(str(record.get("category", "")))
+    subcategory = _lower(str(record.get("subcategory", "")))
+    product_type = _lower(str(record.get("product_type", "")))
+    title = _lower(str(record.get("current_title") or record.get("product_title") or ""))
+
+    weighted_sources = (
+        (category, 3),
+        (subcategory, 2),
+        (product_type, 2),
+        (title, 1),
+    )
+
+    best_category: str | None = None
+    best_score = 0
+    for top_category, aliases in WALMART_TOP_CATEGORY_ALIASES.items():
+        score = 0
+        for source_text, weight in weighted_sources:
+            if not source_text:
+                continue
+            for alias in aliases:
+                alias_norm = _lower(alias)
+                if alias_norm and alias_norm in source_text:
+                    score += weight
+                    break
+        if score > best_score:
+            best_score = score
+            best_category = top_category
+
+    return best_category if best_score > 0 else None
+
+
+def _combined_use_case_term_bank(record: dict[str, Any]) -> tuple[str, ...]:
+    top_category = _resolve_walmart_top_level_category(record)
+    terms = list(UNIVERSAL_USE_CASE_TERMS)
+    if top_category in PRIORITY_CATEGORY_USE_CASE_TERMS:
+        terms.extend(PRIORITY_CATEGORY_USE_CASE_TERMS[top_category])
+    elif top_category in LIGHT_CATEGORY_USE_CASE_HINTS:
+        terms.extend(LIGHT_CATEGORY_USE_CASE_HINTS[top_category])
+
+    seen: set[str] = set()
+    deduped: list[str] = []
+    for term in terms:
+        t = _lower(term)
+        if not t or t in seen:
+            continue
+        seen.add(t)
+        deduped.append(t)
+    return tuple(deduped)
 
 
 def _section_find(
@@ -316,6 +526,8 @@ def analyze_description(record: dict[str, Any]) -> list[dict[str, Any]]:
     combined = _norm(record.get("current_description_combined", "") or " ".join([body, *bullets]))
     combined_lower = combined.lower()
     wc = _word_count(combined)
+    resolved_top_category = _resolve_walmart_top_level_category(record)
+    use_case_term_bank = _combined_use_case_term_bank(record)
     meta = _get_record_metadata(record)
     description_count = _meta_int(meta, ("description_count", "Description Count", "descriptionCount"))
     description_notes = _meta_text(meta, ("description_notes", "Description Notes", "descriptionNotes")).lower()
@@ -413,14 +625,15 @@ def analyze_description(record: dict[str, Any]) -> list[dict[str, Any]]:
             )
         )
 
-    if combined and not _has_any_term(combined, USE_CASE_TERMS):
+    has_use_case_language = _has_any_term(combined, use_case_term_bank)
+    if combined and not has_use_case_language:
         findings.append(
             _section_find(
                 section="description",
                 issue_type="missing_use_case",
                 severity="medium",
                 message="Description lacks clear use-case language.",
-                evidence={"word_count": wc},
+                evidence={"word_count": wc, "resolved_top_category": resolved_top_category or ""},
                 recommendation_theme="use_case",
                 source="heuristic",
             )
@@ -559,6 +772,86 @@ def analyze_description(record: dict[str, Any]) -> list[dict[str, Any]]:
                 recommendation_theme="differentiation",
                 source="heuristic",
             )
+        )
+
+    # Additive approved universal statements layer for description recommendations.
+    body_lower = body.lower()
+    has_html_structure = bool(re.search(r"(?is)<\s*(p|ul|ol|li)\b", body))
+    if body and not has_html_structure:
+        _add_universal_finding(
+            findings,
+            section="description",
+            issue_type="universal_desc_not_html_format",
+            message="Not in HTML format (<p>...</p>)",
+            severity="low",
+            evidence={"html_structure_detected": has_html_structure},
+            recommendation_theme="formatting",
+        )
+
+    effective_wc = description_count if description_count is not None else wc
+    if effective_wc < 60:
+        _add_universal_finding(
+            findings,
+            section="description",
+            issue_type="universal_desc_below_60_word_minimum",
+            message="Below 60-word minimum",
+            severity="high",
+            evidence={"word_count": effective_wc},
+            recommendation_theme="seo",
+        )
+
+    if title_anchor and title_anchor not in body_lower and title_anchor not in combined_lower:
+        _add_universal_finding(
+            findings,
+            section="description",
+            issue_type="universal_desc_product_name_not_repeated_for_seo",
+            message="Product name not repeated for SEO",
+            severity="medium",
+            evidence={"product_name_anchor": title_anchor},
+            recommendation_theme="seo",
+        )
+
+    has_use_case = has_use_case_language
+    has_outcome = _has_any_term(combined, OUTCOME_TERMS)
+    if combined and not has_use_case:
+        _add_universal_finding(
+            findings,
+            section="description",
+            issue_type="universal_desc_missing_clear_use_cases",
+            message="Missing clear use cases",
+            severity="medium",
+            evidence={"word_count": wc, "resolved_top_category": resolved_top_category or ""},
+            recommendation_theme="use_case",
+        )
+
+    feature_term_hits = sum(1 for term in FEATURE_HEAVY_TERMS if term in combined_lower)
+    if wc >= 35 and feature_term_hits >= 2 and not has_use_case and not has_outcome:
+        _add_universal_finding(
+            findings,
+            section="description",
+            issue_type="universal_desc_too_feature_focused_not_benefit_use_case_driven",
+            message="Too feature-focused, not benefit/use-case driven",
+            severity="medium",
+            evidence={"feature_term_hits": feature_term_hits, "word_count": wc},
+            recommendation_theme="conversion",
+        )
+
+    token_counts = Counter([t for t in _tokens(combined) if len(t) >= 4])
+    repeated_pattern = token_counts.most_common(1)[0][1] >= 4 if token_counts else False
+    thin_generic = wc > 0 and wc < 90 and unique_ratio < 0.6
+    if combined and (thin_generic or repeated_pattern):
+        _add_universal_finding(
+            findings,
+            section="description",
+            issue_type="universal_desc_likely_duplicated_content",
+            message="Likely duplicated content",
+            severity="low",
+            evidence={
+                "word_count": wc,
+                "unique_word_ratio": round(unique_ratio, 2),
+                "repeated_pattern": repeated_pattern,
+            },
+            recommendation_theme="differentiation",
         )
 
     return findings
@@ -786,6 +1079,79 @@ def analyze_key_features(record: dict[str, Any]) -> list[dict[str, Any]]:
                     content_source="audit_extract_sheet",
                 )
             )
+
+    # Additive approved universal statements layer for key features recommendations.
+    sentence_like_trigger = bool(sentence_like) or bool(punctuated)
+    if sentence_like_trigger:
+        _add_universal_finding(
+            findings,
+            section="key_features",
+            issue_type="universal_kf_bullets_full_sentences_should_be_fragments_no_punctuation",
+            message="Bullets are full sentences (should be fragments, no punctuation)",
+            severity="medium",
+            evidence={"sentence_like_count": len(sentence_like), "punctuated_count": len(punctuated)},
+            recommendation_theme="formatting",
+        )
+
+    repeated_start_count = 0
+    if bullets:
+        starts = [" ".join(_tokens(b)[:3]) for b in bullets if _tokens(b)]
+        start_counts = Counter([s for s in starts if s])
+        repeated_start_count = max(start_counts.values()) if start_counts else 0
+    duplicate_ratio = (len(set([b.lower() for b in bullets])) / max(1, len(bullets))) if bullets else 1.0
+    if bullet_count >= 3 and (repeated_start_count >= 2 or duplicate_ratio < 0.75):
+        _add_universal_finding(
+            findings,
+            section="key_features",
+            issue_type="universal_kf_duplicate_repetitive_content",
+            message="Duplicate/repetitive content",
+            severity="medium",
+            evidence={
+                "bullet_count": bullet_count,
+                "repeated_start_count": repeated_start_count,
+                "unique_ratio": round(duplicate_ratio, 2),
+            },
+            recommendation_theme="differentiation",
+        )
+
+    sentence_style_flags = [bool(re.search(r"[.!?]\s*$", b)) for b in bullets]
+    if bullets and ((starts_upper and not all(starts_upper)) or (sentence_style_flags and any(sentence_style_flags) and not all(sentence_style_flags))):
+        _add_universal_finding(
+            findings,
+            section="key_features",
+            issue_type="universal_kf_inconsistent_formatting_capitalization_structure",
+            message="Inconsistent formatting (capitalization/structure)",
+            severity="low",
+            evidence={
+                "starts_upper_mixed": bool(starts_upper and not all(starts_upper)),
+                "sentence_style_mixed": bool(sentence_style_flags and any(sentence_style_flags) and not all(sentence_style_flags)),
+            },
+            recommendation_theme="formatting",
+        )
+
+    manufacturing_hits = sum(1 for term in MANUFACTURING_DETAIL_TERMS if term in joined)
+    benefit_hits = sum(1 for term in OUTCOME_TERMS + UNIVERSAL_USE_CASE_TERMS if term in joined)
+    if bullet_count >= 2 and manufacturing_hits >= 2 and benefit_hits <= 1:
+        _add_universal_finding(
+            findings,
+            section="key_features",
+            issue_type="universal_kf_too_much_manufacturing_detail",
+            message="Too much manufacturing detail",
+            severity="low",
+            evidence={"manufacturing_hits": manufacturing_hits, "benefit_hits": benefit_hits},
+            recommendation_theme="conversion",
+        )
+
+    if bullet_count > 0 and overlap_count / bullet_count >= 0.4:
+        _add_universal_finding(
+            findings,
+            section="key_features",
+            issue_type="universal_kf_repeats_description_content",
+            message="Repeats description content",
+            severity="medium",
+            evidence={"overlapping_bullets": overlap_count, "bullet_count": bullet_count},
+            recommendation_theme="differentiation",
+        )
 
     return findings
 
