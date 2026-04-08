@@ -3,11 +3,14 @@ from __future__ import annotations
 import copy
 import io
 import os
+from datetime import date as dt_date, datetime
 from urllib.request import Request, urlopen
 from typing import Any
 
 from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE_TYPE
+from pptx.oxml.ns import qn
+from pptx.oxml.xmlchemy import OxmlElement
 from pptx.util import Inches, Pt
 
 
@@ -68,12 +71,167 @@ def _set_shape_text(shape: Any, text: str, font_size: int | None = None) -> None
             run.font.size = Pt(font_size)
 
 
+def _replace_shape_text_preserve_style(shape: Any, text: str) -> None:
+    """Replace text while preserving existing shape/run styling as much as possible."""
+    if not shape or not getattr(shape, "has_text_frame", False):
+        return
+    tf = shape.text_frame
+    if not tf.paragraphs:
+        shape.text = _safe_text(text)
+        return
+    first_para = tf.paragraphs[0]
+    if first_para.runs:
+        first_para.runs[0].text = _safe_text(text)
+        for run in first_para.runs[1:]:
+            run.text = ""
+        for para in tf.paragraphs[1:]:
+            for run in para.runs:
+                run.text = ""
+        return
+    shape.text = _safe_text(text)
+
+
 def _set_bullet_block(shape: Any, heading: str, bullets: list[str]) -> None:
     if not shape or not getattr(shape, "has_text_frame", False):
         return
     lines = [heading]
     lines.extend([f"- {_safe_text(b)}" for b in bullets if _safe_text(b)])
     _set_shape_text(shape, "\n".join(lines))
+
+
+def _replace_paragraph_text_preserve_style(paragraph: Any, text: str) -> None:
+    if paragraph.runs:
+        paragraph.runs[0].text = _safe_text(text)
+        for run in paragraph.runs[1:]:
+            run.text = ""
+    else:
+        paragraph.text = _safe_text(text)
+
+
+def _force_paragraph_bullet(paragraph: Any) -> None:
+    p = paragraph._p  # pylint: disable=protected-access
+    pPr = p.get_or_add_pPr()
+    # Remove numbered bullet settings if present.
+    for child in list(pPr):
+        if child.tag in {qn("a:buNone"), qn("a:buAutoNum")}:
+            pPr.remove(child)
+    if pPr.find(qn("a:buChar")) is None:
+        bu_char = OxmlElement("a:buChar")
+        bu_char.set("char", "\u2022")
+        pPr.insert(0, bu_char)
+
+
+def _set_pdp_title_and_item_id(shape: Any, title: str, item_id: str) -> None:
+    if not shape or not getattr(shape, "has_text_frame", False):
+        return
+    tf = shape.text_frame
+    if not tf.paragraphs:
+        shape.text = _safe_text(title)
+        return
+
+    # Keep template title styling on first paragraph.
+    _replace_paragraph_text_preserve_style(tf.paragraphs[0], title)
+
+    item_text = f"Item ID: {item_id}" if _safe_text(item_id) else ""
+    if len(tf.paragraphs) >= 2:
+        _replace_paragraph_text_preserve_style(tf.paragraphs[1], item_text)
+        for para in tf.paragraphs[2:]:
+            _replace_paragraph_text_preserve_style(para, "")
+    else:
+        p = tf.add_paragraph()
+        _replace_paragraph_text_preserve_style(p, item_text)
+        p.level = 0
+
+
+def _set_pdp_image_recommendations(shape: Any, heading: str, bullets: list[str]) -> None:
+    if not shape or not getattr(shape, "has_text_frame", False):
+        return
+    tf = shape.text_frame
+    tf.clear()
+    p0 = tf.paragraphs[0]
+    _replace_paragraph_text_preserve_style(p0, heading)
+    p0.level = 0
+
+    seen: set[str] = set()
+    clean_bullets: list[str] = []
+    for bullet in bullets or []:
+        t = " ".join(_safe_text(bullet).split()).lstrip("-").strip()
+        if not t:
+            continue
+        key = t.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        clean_bullets.append(t)
+        if len(clean_bullets) >= 8:
+            break
+
+    for bullet in clean_bullets:
+        p = tf.add_paragraph()
+        _replace_paragraph_text_preserve_style(p, bullet)
+        p.level = 0
+        _force_paragraph_bullet(p)
+
+
+def _title_case_text(text: str) -> str:
+    clean = _safe_text(text)
+    if not clean:
+        return ""
+
+    def cap_token(tok: str) -> str:
+        if not tok:
+            return tok
+        parts = tok.split("-")
+        out_parts: list[str] = []
+        for part in parts:
+            if not part:
+                out_parts.append(part)
+                continue
+            if "'" in part:
+                sub = part.split("'")
+                sub = [s[:1].upper() + s[1:].lower() if s else s for s in sub]
+                out_parts.append("'".join(sub))
+            else:
+                out_parts.append(part[:1].upper() + part[1:].lower())
+        return "-".join(out_parts)
+
+    return " ".join(cap_token(t) for t in clean.split())
+
+
+def _clean_bullets_for_slide(items: list[str], max_items: int = 8) -> list[str]:
+    seen: set[str] = set()
+    out: list[str] = []
+    for item in items or []:
+        txt = _safe_text(item).strip().lstrip("-").strip()
+        txt = " ".join(txt.split())
+        if not txt:
+            continue
+        key = txt.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(txt)
+        if len(out) >= max_items:
+            break
+    return out
+
+
+def _set_heading_and_real_bullets(shape: Any, heading: str, bullets: list[str]) -> None:
+    """Populate existing placeholder with heading + real PPT bullet paragraphs."""
+    if not shape or not getattr(shape, "has_text_frame", False):
+        return
+    tf = shape.text_frame
+    tf.clear()
+
+    # Heading paragraph (template styling retained from existing shape defaults).
+    p0 = tf.paragraphs[0]
+    p0.text = heading
+    p0.level = 0
+
+    for bullet in _clean_bullets_for_slide(bullets, max_items=8):
+        p = tf.add_paragraph()
+        p.text = bullet
+        p.level = 0
 
 
 def _download_image_bytes(url: str) -> bytes | None:
@@ -196,11 +354,11 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
 
     title_shape = _find_shape_contains(slide, "(Product Title)")
     if title_shape:
-        _set_shape_text(title_shape, f"{title}\n{item_id}" if item_id else title)
+        _set_pdp_title_and_item_id(title_shape, title, item_id)
 
     rec_shape = _find_shape_contains(slide, "Image Recommendations")
     if rec_shape:
-        _set_bullet_block(rec_shape, "Image Recommendations", image_recs)
+        _set_pdp_image_recommendations(rec_shape, "Image Recommendations:", image_recs)
 
     image_box = _largest_autoshape(slide)
     if image_box and _safe_text(selected_img):
@@ -215,17 +373,17 @@ def _populate_content_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
     title_shape = _find_shape_contains(slide, "Title Recommendations")
     if title_shape:
         rec_title = _safe_text(content.get("recommended_title"))
-        heading = "Title Recommendations:"
-        value = rec_title or title
+        value = _title_case_text(rec_title or title)
+        title_block = f"Title Recommendations:\n{value}"
         if item_id:
-            value = f"{value}\nItem ID: {item_id}"
-        _set_shape_text(title_shape, f"{heading}\n{value}")
+            title_block = f"{title_block}\nItem ID: {item_id}"
+        _replace_shape_text_preserve_style(title_shape, title_block)
 
     desc_shape = _find_shape_contains(slide, "Description Recommendations")
     if desc_shape:
-        _set_bullet_block(
+        _set_heading_and_real_bullets(
             desc_shape,
-            "Description Recommendations",
+            "Description Recommendations:",
             list(content.get("description_recommendations", []) or []),
         )
 
@@ -233,7 +391,11 @@ def _populate_content_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
     if feat_shape:
         bullets = list(content.get("key_features_recommendations", []) or [])
         bullets.extend(list(content.get("top_priority_fixes", []) or []))
-        _set_bullet_block(feat_shape, "Key Features Recommendations", bullets[:8])
+        _set_heading_and_real_bullets(
+            feat_shape,
+            "Key Features Recommendations:",
+            bullets,
+        )
 
 
 def _sorted_competitor_slots(slide: Any) -> list[Any]:
@@ -288,14 +450,52 @@ def _populate_retailer_tokens(prs: Presentation, retailer: str) -> None:
                 _set_shape_text(shape, text.replace("(Retailer)", value))
 
 
+def _format_cover_date(audit_date: str) -> str:
+    raw = _safe_text(audit_date)
+    if not raw:
+        return ""
+    parsed: dt_date | None = None
+    try:
+        parsed = dt_date.fromisoformat(raw)
+    except Exception:
+        for fmt in ("%m/%d/%Y", "%Y/%m/%d", "%B %d, %Y", "%b %d, %Y"):
+            try:
+                parsed = datetime.strptime(raw, fmt).date()
+                break
+            except Exception:
+                continue
+    if parsed is None:
+        return raw
+    return f"{parsed.strftime('%B')} {parsed.day}, {parsed.year}"
+
+
+def _populate_cover_title(prs: Presentation, client_name: str) -> None:
+    client = _safe_text(client_name)
+    if not client or len(prs.slides) < 1:
+        return
+    cover = prs.slides[0]
+    target_text = f"{client} Audit"
+    for shape in cover.shapes:
+        text = _shape_text(shape)
+        if not text:
+            continue
+        text_l = text.lower()
+        if "hyper audit" in text_l or text_l.endswith(" audit") or text_l == "audit":
+            _replace_shape_text_preserve_style(shape, target_text)
+            break
+
+
 def _populate_cover_date(prs: Presentation, audit_date: str) -> None:
-    if not _safe_text(audit_date) or len(prs.slides) < 1:
+    if len(prs.slides) < 1:
+        return
+    formatted = _format_cover_date(audit_date)
+    if not formatted:
         return
     cover = prs.slides[0]
     for shape in cover.shapes:
         text = _shape_text(shape)
-        if text and any(ch.isdigit() for ch in text) and len(text) <= 30:
-            _set_shape_text(shape, audit_date)
+        if text and any(ch.isdigit() for ch in text) and len(text) <= 40:
+            _replace_shape_text_preserve_style(shape, formatted)
             break
 
 
@@ -352,6 +552,7 @@ def generate_audit_powerpoint_from_template(*, export_plan: dict[str, Any], temp
         )
 
     metadata = export_plan.get("audit_metadata", {}) or {}
+    _populate_cover_title(prs, _safe_text(metadata.get("client_name", "")))
     _populate_retailer_tokens(prs, _safe_text(metadata.get("retailer", "")))
     _populate_cover_date(prs, _safe_text(metadata.get("audit_date", "")))
 
