@@ -1058,8 +1058,32 @@ def render_extracted_competitor_entries_v2() -> None:
     max_slots = 10
     image_orders = st.session_state.get("audit_competitor_image_orders", {})
     selected_rows: list[dict[str, Any]] = []
+
+    def _normalize_image_models(raw_images: Any) -> list[dict[str, Any]]:
+        normalized: list[dict[str, Any]] = []
+        for idx, img in enumerate(raw_images or []):
+            if isinstance(img, dict):
+                url = str(img.get("url", "") or "").strip()
+                if not url:
+                    continue
+                normalized.append(
+                    {
+                        "index": int(img.get("index", idx) or idx),
+                        "url": url,
+                    }
+                )
+            else:
+                url = str(img or "").strip()
+                if not url:
+                    continue
+                normalized.append({"index": idx, "url": url})
+        return normalized
+
     for idx, entry in enumerate(entries, start=1):
         record = entry
+        image_models = _normalize_image_models(record.get("images", []))
+        if int(record.get("image_count", 0) or 0) != len(image_models):
+            record["image_count"] = len(image_models)
         with st.container(border=True):
             st.markdown(f"#### Competitor Entry {idx}")
             c1, c2, c3 = st.columns([2, 1, 1])
@@ -1089,8 +1113,6 @@ def render_extracted_competitor_entries_v2() -> None:
                 f"Reviews: {review_summary}"
             )
 
-            images = record.get("images", [])
-            image_models = [img for img in images if img.get("url")]
             img_cols = st.columns(min(3, max(1, len(image_models))))
             for i, image in enumerate(image_models):
                 image_url = image.get("url", "")

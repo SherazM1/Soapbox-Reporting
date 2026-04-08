@@ -407,8 +407,16 @@ def _sorted_numbered_columns(
 def detect_image_columns(
     columns_or_row: pd.DataFrame | pd.Series | list[str] | tuple[str, ...],
 ) -> list[str]:
-    """Return all Image N columns in numeric order."""
-    return _sorted_numbered_columns(columns_or_row, "Image")
+    """Return all Image N (and Image URL N) columns in numeric order."""
+    columns = _coerce_columns(columns_or_row)
+    pattern = re.compile(r"^image(?:\s*url)?\s*(\d+)$", re.IGNORECASE)
+    indexed: list[tuple[int, str]] = []
+    for col in columns:
+        match = pattern.match(col.strip())
+        if match:
+            indexed.append((int(match.group(1)), col))
+    indexed.sort(key=lambda x: x[0])
+    return [col for _, col in indexed]
 
 
 def detect_description_bullet_columns(
