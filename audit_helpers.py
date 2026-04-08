@@ -231,36 +231,102 @@ def _unescape_js_string_literal(value: str) -> str:
         )
 
 
+def _extract_js_string_literal_at(text: str, start_idx: int) -> tuple[str, int] | None:
+    if start_idx < 0 or start_idx >= len(text):
+        return None
+    quote = text[start_idx]
+    if quote not in {"'", '"', "`"}:
+        return None
+    i = start_idx + 1
+    out: list[str] = []
+    while i < len(text):
+        ch = text[i]
+        if ch == "\\":
+            if i + 1 < len(text):
+                out.append(text[i : i + 2])
+                i += 2
+                continue
+            out.append(ch)
+            i += 1
+            continue
+        if ch == quote:
+            # Avoid prematurely closing on apostrophes/quotes inside payload text.
+            # Treat as closing quote only when followed by a likely terminator.
+            j = i + 1
+            while j < len(text) and text[j].isspace():
+                j += 1
+            if j >= len(text) or text[j] in {")", ";", "\n", "\r"}:
+                return "".join(out), i + 1
+            out.append(ch)
+            i += 1
+            continue
+        out.append(ch)
+        i += 1
+    return None
+
+
+def _extract_csvencoded_string_literals(html_text: str) -> list[str]:
+    literals: list[str] = []
+    # Prefer explicit csvEncoded assignments from extension output.
+    pattern = re.compile(r"(?is)\b(?:const|let|var)?\s*csvEncoded\s*=\s*")
+    for match in pattern.finditer(html_text):
+        i = match.end()
+        while i < len(html_text) and html_text[i].isspace():
+            i += 1
+        if i >= len(html_text):
+            continue
+
+        # Handle: csvEncoded = decodeURIComponent('...')
+        if html_text[i : i + len("decodeURIComponent")].lower() == "decodeuricomponent":
+            open_idx = html_text.find("(", i)
+            if open_idx == -1:
+                continue
+            j = open_idx + 1
+            while j < len(html_text) and html_text[j].isspace():
+                j += 1
+            extracted = _extract_js_string_literal_at(html_text, j)
+            if extracted is not None:
+                raw_literal, _ = extracted
+                literals.append(raw_literal)
+            continue
+
+        extracted = _extract_js_string_literal_at(html_text, i)
+        if extracted is not None:
+            raw_literal, _ = extracted
+            literals.append(raw_literal)
+    return literals
+
+
+def _decode_embedded_literal_candidates(literal: str) -> list[str]:
+    candidates: list[str] = []
+    clean = _unescape_js_string_literal(literal).strip()
+    if not clean:
+        return candidates
+    candidates.append(clean)
+    decoded = unquote(clean)
+    if decoded != clean:
+        candidates.append(decoded)
+    if re.fullmatch(r"[A-Za-z0-9+/=\s]+", clean) and len(clean) >= 40:
+        try:
+            decoded_b64 = base64.b64decode(clean, validate=True).decode("utf-8", errors="ignore")
+            if decoded_b64:
+                candidates.append(decoded_b64)
+        except Exception:
+            pass
+    return candidates
+
+
 def _decode_embedded_csv_candidates_from_html(html_text: str) -> list[str]:
     candidates: list[str] = []
     if not html_text:
         return candidates
 
-    specific_csv_encoded = re.compile(
-        r"""(?is)\bcsvEncoded\b\s*[:=]\s*(?:decodeURIComponent\()?\s*([\"'`])(.*?)\1\s*\)?"""
-    )
-    for _, raw_literal in specific_csv_encoded.findall(html_text):
-        literal = _unescape_js_string_literal(raw_literal).strip()
-        if not literal:
-            continue
-        candidates.append(literal)
-        decoded = unquote(literal)
-        if decoded != literal:
-            candidates.append(decoded)
-        if re.fullmatch(r"[A-Za-z0-9+/=\s]+", literal) and len(literal) >= 40:
-            try:
-                decoded_b64 = base64.b64decode(literal, validate=True).decode("utf-8", errors="ignore")
-                if decoded_b64:
-                    candidates.append(decoded_b64)
-            except Exception:
-                pass
+    for raw_literal in _extract_csvencoded_string_literals(html_text):
+        candidates.extend(_decode_embedded_literal_candidates(raw_literal))
 
     decode_uri_calls = re.compile(r"""(?is)decodeURIComponent\(\s*([\"'`])(.*?)\1\s*\)""")
     for _, raw_literal in decode_uri_calls.findall(html_text):
-        literal = _unescape_js_string_literal(raw_literal).strip()
-        if not literal:
-            continue
-        candidates.append(unquote(literal))
+        candidates.extend(_decode_embedded_literal_candidates(raw_literal))
 
     atob_calls = re.compile(r"""(?is)atob\(\s*([\"'`])([A-Za-z0-9+/=\s]+)\1\s*\)""")
     for _, raw_b64 in atob_calls.findall(html_text):
@@ -275,21 +341,7 @@ def _decode_embedded_csv_candidates_from_html(html_text: str) -> list[str]:
         r"""(?is)\b([a-zA-Z0-9_]*csv[a-zA-Z0-9_]*)\b\s*[:=]\s*([\"'`])(.*?)\2"""
     )
     for _, _, raw_literal in assignment_pattern.findall(html_text):
-        literal = _unescape_js_string_literal(raw_literal).strip()
-        if not literal:
-            continue
-        candidates.append(literal)
-        if "%" in literal:
-            decoded = unquote(literal)
-            if decoded != literal:
-                candidates.append(decoded)
-        if re.fullmatch(r"[A-Za-z0-9+/=\s]+", literal) and len(literal) >= 40:
-            try:
-                decoded_b64 = base64.b64decode(literal, validate=True).decode("utf-8", errors="ignore")
-                if decoded_b64:
-                    candidates.append(decoded_b64)
-            except Exception:
-                pass
+        candidates.extend(_decode_embedded_literal_candidates(raw_literal))
 
     data_uri_pattern = re.compile(r"(?is)data:text/csv;base64,([A-Za-z0-9+/=\s]+)")
     for raw_b64 in data_uri_pattern.findall(html_text):
@@ -311,10 +363,24 @@ def _looks_like_audit_extract_df(df: pd.DataFrame) -> bool:
     if requiredish.issubset(cols):
         return True
     return bool(
-        any(re.match(r"^image\s*\d+$", c, flags=re.IGNORECASE) for c in df.columns)
+        any(re.match(r"^image(?:\s*url)?\s*\d+$", c, flags=re.IGNORECASE) for c in df.columns)
         or any(re.match(r"^description bullet\s*\d+$", c, flags=re.IGNORECASE) for c in df.columns)
-        or any(re.match(r"^key feature\s*\d+$", c, flags=re.IGNORECASE) for c in df.columns)
+        or any(re.match(r"^key feature(?:s)?\s*\d+$", c, flags=re.IGNORECASE) for c in df.columns)
     )
+
+
+def _replace_img_tags_with_src(html_text: str) -> str:
+    def repl(match: re.Match[str]) -> str:
+        tag = match.group(0)
+        src_match = re.search(r"""(?is)\bsrc\s*=\s*(['"])(.*?)\1""", tag)
+        if not src_match:
+            src_match = re.search(r"""(?is)\bsrc\s*=\s*([^\s>]+)""", tag)
+        if src_match:
+            src_value = html_lib.unescape(src_match.group(2) if src_match.lastindex and src_match.lastindex >= 2 else src_match.group(1))
+            return src_value.strip()
+        return ""
+
+    return re.sub(r"(?is)<img\b[^>]*>", repl, html_text)
 
 
 def _parse_html_audit_extract(raw: bytes) -> tuple[pd.DataFrame, list[str]]:
@@ -335,7 +401,8 @@ def _parse_html_audit_extract(raw: bytes) -> tuple[pd.DataFrame, list[str]]:
             continue
 
     try:
-        tables = pd.read_html(io.StringIO(html_text))
+        html_for_tables = _replace_img_tags_with_src(html_text)
+        tables = pd.read_html(io.StringIO(html_for_tables))
         for table in tables:
             if isinstance(table, pd.DataFrame) and not table.empty and _looks_like_audit_extract_df(table):
                 messages.append("Embedded CSV payload not found; parsed visible HTML table instead.")
