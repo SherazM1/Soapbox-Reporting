@@ -1090,10 +1090,11 @@ def render_extracted_competitor_entries_v2() -> None:
             )
 
             images = record.get("images", [])
-            image_urls = [img.get("url", "") for img in images if img.get("url")]
-            img_cols = st.columns(min(3, max(1, len(image_urls))))
-            for i, image_url in enumerate(image_urls):
-                image_index = images[i].get("index", i)
+            image_models = [img for img in images if img.get("url")]
+            img_cols = st.columns(min(3, max(1, len(image_models))))
+            for i, image in enumerate(image_models):
+                image_url = image.get("url", "")
+                image_index = image.get("index", i)
                 image_id = f"{record.get('record_id', '')}|{image_index}"
                 with img_cols[i % len(img_cols)]:
                     st.image(image_url, use_container_width=True)

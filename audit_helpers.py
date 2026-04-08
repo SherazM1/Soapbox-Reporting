@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import html as html_lib
 import io
 import re
 from urllib.parse import unquote
@@ -216,7 +217,7 @@ def _looks_like_csv(text: str) -> bool:
 
 
 def _unescape_js_string_literal(value: str) -> str:
-    text = value or ""
+    text = html_lib.unescape(value or "")
     try:
         return bytes(text, "utf-8").decode("unicode_escape")
     except Exception:
@@ -235,10 +236,45 @@ def _decode_embedded_csv_candidates_from_html(html_text: str) -> list[str]:
     if not html_text:
         return candidates
 
-    assignment_pattern = re.compile(
-        r"(?is)\b([a-zA-Z0-9_]*csv[a-zA-Z0-9_]*)\b\s*[:=]\s*([\"'])(.*?)\2"
+    specific_csv_encoded = re.compile(
+        r"""(?is)\bcsvEncoded\b\s*[:=]\s*(?:decodeURIComponent\()?\s*([\"'`])(.*?)\1\s*\)?"""
     )
-    for name, _, raw_literal in assignment_pattern.findall(html_text):
+    for _, raw_literal in specific_csv_encoded.findall(html_text):
+        literal = _unescape_js_string_literal(raw_literal).strip()
+        if not literal:
+            continue
+        candidates.append(literal)
+        decoded = unquote(literal)
+        if decoded != literal:
+            candidates.append(decoded)
+        if re.fullmatch(r"[A-Za-z0-9+/=\s]+", literal) and len(literal) >= 40:
+            try:
+                decoded_b64 = base64.b64decode(literal, validate=True).decode("utf-8", errors="ignore")
+                if decoded_b64:
+                    candidates.append(decoded_b64)
+            except Exception:
+                pass
+
+    decode_uri_calls = re.compile(r"""(?is)decodeURIComponent\(\s*([\"'`])(.*?)\1\s*\)""")
+    for _, raw_literal in decode_uri_calls.findall(html_text):
+        literal = _unescape_js_string_literal(raw_literal).strip()
+        if not literal:
+            continue
+        candidates.append(unquote(literal))
+
+    atob_calls = re.compile(r"""(?is)atob\(\s*([\"'`])([A-Za-z0-9+/=\s]+)\1\s*\)""")
+    for _, raw_b64 in atob_calls.findall(html_text):
+        try:
+            decoded = base64.b64decode(raw_b64, validate=True).decode("utf-8", errors="ignore")
+            if decoded:
+                candidates.append(decoded)
+        except Exception:
+            continue
+
+    assignment_pattern = re.compile(
+        r"""(?is)\b([a-zA-Z0-9_]*csv[a-zA-Z0-9_]*)\b\s*[:=]\s*([\"'`])(.*?)\2"""
+    )
+    for _, _, raw_literal in assignment_pattern.findall(html_text):
         literal = _unescape_js_string_literal(raw_literal).strip()
         if not literal:
             continue
@@ -267,6 +303,20 @@ def _decode_embedded_csv_candidates_from_html(html_text: str) -> list[str]:
     return candidates
 
 
+def _looks_like_audit_extract_df(df: pd.DataFrame) -> bool:
+    if df.empty:
+        return False
+    cols = {str(c).strip().lower() for c in df.columns}
+    requiredish = {"product url", "product id", "product title"}
+    if requiredish.issubset(cols):
+        return True
+    return bool(
+        any(re.match(r"^image\s*\d+$", c, flags=re.IGNORECASE) for c in df.columns)
+        or any(re.match(r"^description bullet\s*\d+$", c, flags=re.IGNORECASE) for c in df.columns)
+        or any(re.match(r"^key feature\s*\d+$", c, flags=re.IGNORECASE) for c in df.columns)
+    )
+
+
 def _parse_html_audit_extract(raw: bytes) -> tuple[pd.DataFrame, list[str]]:
     messages: list[str] = []
     html_text = raw.decode("utf-8", errors="ignore")
@@ -278,16 +328,16 @@ def _parse_html_audit_extract(raw: bytes) -> tuple[pd.DataFrame, list[str]]:
             continue
         try:
             df = _read_csv_bytes(candidate.encode("utf-8", errors="ignore"))
-            if not df.empty:
+            if not df.empty and _looks_like_audit_extract_df(df):
                 messages.append("Parsed embedded CSV payload from HTML report.")
-            return df, messages
+                return df, messages
         except Exception:
             continue
 
     try:
         tables = pd.read_html(io.StringIO(html_text))
         for table in tables:
-            if isinstance(table, pd.DataFrame) and not table.empty:
+            if isinstance(table, pd.DataFrame) and not table.empty and _looks_like_audit_extract_df(table):
                 messages.append("Embedded CSV payload not found; parsed visible HTML table instead.")
                 return table, messages
         return pd.DataFrame(), ["No usable table data found in HTML report."]
@@ -368,6 +418,30 @@ def detect_description_bullet_columns(
     return _sorted_numbered_columns(columns_or_row, "Description Bullet")
 
 
+def detect_key_feature_columns(
+    columns_or_row: pd.DataFrame | pd.Series | list[str] | tuple[str, ...],
+) -> list[str]:
+    """Return all Key Feature(s) N columns in numeric order."""
+    single = _sorted_numbered_columns(columns_or_row, "Key Feature")
+    plural = _sorted_numbered_columns(columns_or_row, "Key Features")
+    seen: set[str] = set()
+    merged: list[str] = []
+    for col in [*single, *plural]:
+        key = col.strip().lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        merged.append(col)
+    merged.sort(
+        key=lambda c: int(
+            re.search(r"(\d+)$", c.strip()).group(1)  # type: ignore[union-attr]
+        )
+        if re.search(r"(\d+)$", c.strip())
+        else 0
+    )
+    return merged
+
+
 def _cell_as_text(row: pd.Series, col: str) -> str:
     if col not in row.index:
         return ""
@@ -415,6 +489,22 @@ def extract_description_bullets_from_sheet_row(row: pd.Series) -> list[str]:
     return bullets
 
 
+def extract_key_features_from_sheet_row(row: pd.Series) -> list[str]:
+    bullets: list[str] = []
+    for col in detect_key_feature_columns(row):
+        value = _cell_as_text(row, col)
+        if value:
+            bullets.append(value)
+    return bullets
+
+
+def extract_feature_bullets_from_sheet_row(row: pd.Series) -> list[str]:
+    description_bullets = extract_description_bullets_from_sheet_row(row)
+    if description_bullets:
+        return description_bullets
+    return extract_key_features_from_sheet_row(row)
+
+
 def validate_audit_extract_sheet_columns(df_uploaded: pd.DataFrame) -> tuple[list[str], list[str]]:
     """Lightweight schema check for extension Audit Extract Sheets."""
     errors: list[str] = []
@@ -426,8 +516,10 @@ def validate_audit_extract_sheet_columns(df_uploaded: pd.DataFrame) -> tuple[lis
 
     if not detect_image_columns(df_uploaded):
         warnings.append("No Image N columns were found. Records will be ingested without images.")
-    if not detect_description_bullet_columns(df_uploaded):
-        warnings.append("No Description Bullet N columns were found. Bullet-based fields will be empty.")
+    if not detect_description_bullet_columns(df_uploaded) and not detect_key_feature_columns(df_uploaded):
+        warnings.append(
+            "No Description Bullet N or Key Feature N columns were found. Bullet/key-feature fields will be empty."
+        )
 
     return errors, warnings
 
@@ -451,7 +543,7 @@ def map_sheet_row_to_cached_record(
     image_urls = extract_image_urls_from_sheet_row(row)
     images = [make_image(i, url, is_hero=(i == 0)) for i, url in enumerate(image_urls)]
 
-    bullets = extract_description_bullets_from_sheet_row(row)
+    bullets = extract_feature_bullets_from_sheet_row(row)
     key_features = [make_key_feature(i + 1, text) for i, text in enumerate(bullets)]
 
     reviews = make_reviews_summary(
