@@ -61,6 +61,21 @@ def _find_shape_contains(slide: Any, token: str) -> Any:
     return None
 
 
+def _find_pdp_title_shape(slide: Any) -> Any:
+    # First-pass template token.
+    token_shape = _find_shape_contains(slide, "(Product Title)")
+    if token_shape is not None:
+        return token_shape
+
+    # Duplicated PDP slides may no longer contain template tokens after first population.
+    # In that case, resolve the same title block via the stable "Item ID:" marker.
+    item_id_shape = _find_shape_contains(slide, "Item ID:")
+    if item_id_shape is not None:
+        return item_id_shape
+
+    return None
+
+
 def _set_shape_text(shape: Any, text: str, font_size: int | None = None) -> None:
     if not shape or not getattr(shape, "has_text_frame", False):
         return
@@ -276,13 +291,46 @@ def _set_heading_and_real_bullets(shape: Any, heading: str, bullets: list[str]) 
         _replace_paragraph_text_preserve_style(p, bullet)
         p.level = 0
         _force_paragraph_bullet(p)
+    _normalize_bullet_paragraphs(tf.paragraphs[1:required_paragraphs])
 
     for p in tf.paragraphs[required_paragraphs:]:
         _replace_paragraph_text_preserve_style(p, "")
         _force_paragraph_no_list(p)
 
 
-def _set_title_recommendation_block(shape: Any, heading: str, recommended_title: str, item_id: str) -> None:
+def _normalize_bullet_paragraphs(paragraphs: list[Any]) -> None:
+    if not paragraphs:
+        return
+    ref_para = paragraphs[1] if len(paragraphs) > 1 else paragraphs[0]
+    ref_size = None
+    ref_name = None
+    ref_bold = None
+    for run in ref_para.runs:
+        if ref_size is None and run.font.size is not None:
+            ref_size = run.font.size
+        if ref_name is None and run.font.name:
+            ref_name = run.font.name
+        if ref_bold is None and run.font.bold is not None:
+            ref_bold = run.font.bold
+    for para in paragraphs:
+        for run in para.runs:
+            if ref_size is not None:
+                run.font.size = ref_size
+            if ref_name:
+                run.font.name = ref_name
+            if ref_bold is not None:
+                run.font.bold = ref_bold
+
+
+def _emphasize_heading_paragraph(paragraph: Any, min_size_pt: int = 18) -> None:
+    paragraph.level = 0
+    for run in paragraph.runs:
+        run.font.bold = True
+        if run.font.size is not None:
+            run.font.size = Pt(max(min_size_pt, int(run.font.size.pt)))
+
+
+def _set_title_recommendation_block(shape: Any, heading: str, recommended_title: str) -> None:
     if not shape or not getattr(shape, "has_text_frame", False):
         return
     tf = shape.text_frame
@@ -292,28 +340,20 @@ def _set_title_recommendation_block(shape: Any, heading: str, recommended_title:
         shape.text = _safe_text(heading)
 
     _replace_paragraph_text_preserve_style(tf.paragraphs[0], heading)
-    tf.paragraphs[0].level = 0
     _force_paragraph_no_list(tf.paragraphs[0])
+    _emphasize_heading_paragraph(tf.paragraphs[0], min_size_pt=18)
 
     bullet_text = _safe_text(recommended_title)
-    required_paragraphs = 2 + (1 if _safe_text(item_id) else 0)
+    required_paragraphs = 2
     while len(tf.paragraphs) < required_paragraphs:
         tf.add_paragraph()
 
     bullet_para = tf.paragraphs[1]
     _replace_paragraph_text_preserve_style(bullet_para, bullet_text)
     bullet_para.level = 0
-    _force_paragraph_bullet(bullet_para)
+    _force_paragraph_no_list(bullet_para)
 
-    offset = 2
-    if _safe_text(item_id):
-        item_para = tf.paragraphs[2]
-        _replace_paragraph_text_preserve_style(item_para, f"Item ID: {item_id}")
-        item_para.level = 0
-        _force_paragraph_no_list(item_para)
-        offset = 3
-
-    for p in tf.paragraphs[offset:]:
+    for p in tf.paragraphs[2:]:
         _replace_paragraph_text_preserve_style(p, "")
         _force_paragraph_no_list(p)
 
@@ -379,6 +419,22 @@ def _insert_image_fit_within_shape(slide: Any, target_shape: Any, image_url: str
         return True
     except Exception:
         return False
+
+
+def _remove_shape_box_treatment(shape: Any) -> None:
+    if shape is None:
+        return
+    try:
+        if getattr(shape, "has_line_format", False):
+            shape.line.fill.background()
+            shape.line.width = 0
+    except Exception:
+        pass
+    try:
+        if getattr(shape, "fill", None) is not None:
+            shape.fill.background()
+    except Exception:
+        pass
 
 
 def _largest_autoshape(slide: Any) -> Any:
@@ -462,7 +518,7 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
     image_recs = list(content.get("image_recommendations", []) or [])
     selected_img = (pdp.get("selected_primary_image", {}) or {}).get("url", "")
 
-    title_shape = _find_shape_contains(slide, "(Product Title)")
+    title_shape = _find_pdp_title_shape(slide)
     if title_shape:
         _set_pdp_title_and_item_id(title_shape, title, item_id)
 
@@ -472,13 +528,13 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
 
     image_box = _largest_autoshape(slide)
     if image_box and _safe_text(selected_img):
+        _remove_shape_box_treatment(image_box)
         _insert_image_fit_within_shape(slide, image_box, selected_img)
 
 
 def _populate_content_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
     content = pair_payload.get("content_optimization_slide", {}) or {}
     title = _safe_text(content.get("product_title"))
-    item_id = _safe_text(content.get("item_id"))
 
     title_shape = _find_shape_contains(slide, "Title Recommendations")
     if title_shape:
@@ -488,7 +544,6 @@ def _populate_content_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
             title_shape,
             "Title Recommendations:",
             value,
-            item_id,
         )
 
     desc_shape = _find_shape_contains(slide, "Description Recommendations")
