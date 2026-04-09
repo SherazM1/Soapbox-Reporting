@@ -403,7 +403,9 @@ def _insert_image_over_shape(slide: Any, target_shape: Any, image_url: str) -> b
         return False
 
 
-def _insert_image_fit_within_shape(slide: Any, target_shape: Any, image_url: str) -> bool:
+def _insert_image_fit_within_shape(
+    slide: Any, target_shape: Any, image_url: str, inset_ratio: float = 0.0
+) -> bool:
     image_bytes = _download_image_bytes(image_url)
     if not image_bytes:
         return False
@@ -412,6 +414,13 @@ def _insert_image_fit_within_shape(slide: Any, target_shape: Any, image_url: str
         top = int(target_shape.top)
         width = int(target_shape.width)
         height = int(target_shape.height)
+        inset = max(0.0, min(0.25, float(inset_ratio)))
+        inset_x = int(width * inset)
+        inset_y = int(height * inset)
+        left += inset_x
+        top += inset_y
+        width = max(1, width - 2 * inset_x)
+        height = max(1, height - 2 * inset_y)
 
         pic = slide.shapes.add_picture(io.BytesIO(image_bytes), 0, 0)
         src_w = max(1, int(pic.width))
@@ -445,6 +454,11 @@ def _remove_shape_box_treatment(shape: Any) -> None:
             ln = sp_pr.find(qn("a:ln"))
             if ln is not None:
                 sp_pr.remove(ln)
+            # Remove visual effects that can look like a frame/shadow around the shape.
+            for tag in ("a:effectLst", "a:effectDag", "a:scene3d", "a:sp3d"):
+                node = sp_pr.find(qn(tag))
+                if node is not None:
+                    sp_pr.remove(node)
     except Exception:
         pass
     try:
@@ -557,7 +571,7 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
     image_box = _largest_autoshape(slide)
     if image_box and _safe_text(selected_img):
         _remove_shape_box_treatment(image_box)
-        _insert_image_over_shape(slide, image_box, selected_img)
+        _insert_image_fit_within_shape(slide, image_box, selected_img, inset_ratio=0.03)
     _suppress_pdp_image_placeholders(slide)
 
 
