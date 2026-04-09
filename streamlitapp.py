@@ -858,10 +858,11 @@ def render_extracted_primary_product_entries_v2() -> None:
             images = record.get("images", [])
             image_urls = [img.get("url", "") for img in images if img.get("url")]
             if image_urls:
-                img_cols = st.columns(min(4, len(image_urls)))
+                thumbnails_per_row = min(6, len(image_urls))
+                img_cols = st.columns(thumbnails_per_row)
                 for i, image_url in enumerate(image_urls):
-                    with img_cols[i % len(img_cols)]:
-                        st.image(image_url, use_container_width=True)
+                    with img_cols[i % thumbnails_per_row]:
+                        st.image(image_url, width=120)
                         st.caption(f"Image {i + 1}")
 
                 labels = [f"Image {i + 1}" for i in range(len(image_urls))]
@@ -877,7 +878,7 @@ def render_extracted_primary_product_entries_v2() -> None:
                     "url": image_urls[selected_index],
                 }
                 st.caption("Selected primary image preview")
-                st.image(image_urls[selected_index], width=220)
+                st.image(image_urls[selected_index], width=180)
 
             st.text_area("Current Title", key=f"audit_v2_primary_current_title_{entry['entry_id']}", height=85)
             st.text_area("Current Description", key=f"audit_v2_primary_current_description_{entry['entry_id']}", height=120)
@@ -1047,8 +1048,8 @@ def render_competitor_pdp_upload_v2() -> None:
 def render_extracted_competitor_entries_v2() -> None:
     st.markdown("### Extracted Competitor Data")
     st.caption(
-        "Competitor images are selected from a shared audit-level pool. "
-        "Choose up to 10 total images and assign each to a unique display slot (1-10)."
+        "Competitor images are grouped by PDP. Select up to 10 total images "
+        "for the shared competitor graphics section."
     )
     entries = st.session_state.get("audit_competitor_entries", [])
     if not entries:
@@ -1056,20 +1057,6 @@ def render_extracted_competitor_entries_v2() -> None:
         return
 
     max_slots = 10
-    image_orders = dict(st.session_state.get("audit_competitor_image_orders", {}))
-    if "audit_v2_comp_select_all" not in st.session_state:
-        st.session_state["audit_v2_comp_select_all"] = True
-    select_all_mode = st.checkbox(
-        "Select All Competitor Images",
-        key="audit_v2_comp_select_all",
-        help="Default fast path: automatically uses the first 10 competitor images in shared order.",
-    )
-    if select_all_mode:
-        st.caption("Auto mode is on: using the first 10 competitor images in shared order.")
-    else:
-        st.caption("Manual mode is on: check images to include and assign unique slots 1-10.")
-    selected_rows: list[dict[str, Any]] = []
-    shared_auto_rank = 0
 
     def _normalize_image_models(raw_images: Any) -> list[dict[str, Any]]:
         normalized: list[dict[str, Any]] = []
@@ -1091,11 +1078,91 @@ def render_extracted_competitor_entries_v2() -> None:
                 normalized.append({"index": idx, "url": url})
         return normalized
 
-    for idx, entry in enumerate(entries, start=1):
-        record = entry
+    grouped_entries: list[dict[str, Any]] = []
+    all_image_ids: list[str] = []
+    image_meta: dict[str, dict[str, Any]] = {}
+
+    for idx, record in enumerate(entries, start=1):
         image_models = _normalize_image_models(record.get("images", []))
+        record_id = str(record.get("record_id", "") or f"record-{idx}")
+        for image_pos, image in enumerate(image_models):
+            image_index = int(image.get("index", image_pos))
+            image_id = f"{record_id}|{image_index}"
+            all_image_ids.append(image_id)
+            image_meta[image_id] = {
+                "record": record,
+                "entry_idx": idx,
+                "image_pos": image_pos,
+                "image_label": f"Image {image_pos + 1}",
+                "url": image.get("url", ""),
+            }
+        grouped_entries.append(
+            {
+                "entry_idx": idx,
+                "record": record,
+                "record_id": record_id,
+                "images": image_models,
+            }
+        )
         if int(record.get("image_count", 0) or 0) != len(image_models):
             record["image_count"] = len(image_models)
+
+    def _default_selected_image_ids() -> list[str]:
+        if len(grouped_entries) <= 1:
+            return all_image_ids[:max_slots]
+
+        selected: list[str] = []
+        pass_index = 0
+        while len(selected) < max_slots:
+            added_in_pass = False
+            for group in grouped_entries:
+                group_images = group.get("images", [])
+                if pass_index >= len(group_images):
+                    continue
+                image = group_images[pass_index]
+                image_index = int(image.get("index", pass_index))
+                image_id = f"{group['record_id']}|{image_index}"
+                selected.append(image_id)
+                added_in_pass = True
+                if len(selected) >= max_slots:
+                    break
+            if not added_in_pass:
+                break
+            pass_index += 1
+        return selected
+
+    selection_signature = tuple(all_image_ids)
+    signature_key = "audit_v2_comp_selection_signature"
+    if st.session_state.get(signature_key) != selection_signature:
+        default_ids = set(_default_selected_image_ids())
+        for image_id in all_image_ids:
+            st.session_state[f"audit_v2_comp_include_{image_id}"] = image_id in default_ids
+        st.session_state[signature_key] = selection_signature
+
+    control_col_1, control_col_2, control_col_3 = st.columns([1, 1, 2])
+    with control_col_1:
+        if st.button("Select Default 10", key="audit_v2_comp_select_default_10"):
+            default_ids = set(_default_selected_image_ids())
+            for image_id in all_image_ids:
+                st.session_state[f"audit_v2_comp_include_{image_id}"] = image_id in default_ids
+    with control_col_2:
+        if st.button("Clear All", key="audit_v2_comp_clear_all"):
+            for image_id in all_image_ids:
+                st.session_state[f"audit_v2_comp_include_{image_id}"] = False
+    with control_col_3:
+        current_selected = sum(
+            1 for image_id in all_image_ids if bool(st.session_state.get(f"audit_v2_comp_include_{image_id}", False))
+        )
+        st.caption(f"Selected: {current_selected} / {max_slots}")
+
+    selected_image_ids: list[str] = []
+    selected_rows: list[dict[str, Any]] = []
+    limit_blocked = False
+
+    for group in grouped_entries:
+        idx = int(group.get("entry_idx", 0))
+        record = group.get("record", {})
+        image_models = group.get("images", [])
         with st.container(border=True):
             st.markdown(f"#### Competitor Entry {idx}")
             c1, c2, c3 = st.columns([2, 1, 1])
@@ -1125,85 +1192,52 @@ def render_extracted_competitor_entries_v2() -> None:
                 f"Reviews: {review_summary}"
             )
 
-            img_cols = st.columns(min(4, max(1, len(image_models))))
+            img_cols = st.columns(min(5, max(1, len(image_models))))
             for i, image in enumerate(image_models):
                 image_url = image.get("url", "")
                 image_index = image.get("index", i)
-                image_id = f"{record.get('record_id', '')}|{image_index}"
+                image_id = f"{group.get('record_id', '')}|{image_index}"
+                include_key = f"audit_v2_comp_include_{image_id}"
+                if include_key not in st.session_state:
+                    st.session_state[include_key] = False
                 with img_cols[i % len(img_cols)]:
-                    st.image(image_url, width=170)
+                    st.image(image_url, width=130)
                     st.caption(f"Image {i + 1}")
-                    include_key = f"audit_v2_comp_include_{image_id}"
-                    slot_key = f"audit_v2_comp_order_{image_id}"
-                    current_order = int(image_orders.get(image_id, 0) or 0)
-                    current_order = current_order if 1 <= current_order <= max_slots else 0
-                    if include_key not in st.session_state:
-                        st.session_state[include_key] = current_order > 0
-                    if slot_key not in st.session_state:
-                        st.session_state[slot_key] = current_order if current_order > 0 else 1
-
-                    if select_all_mode:
-                        include = shared_auto_rank < max_slots
-                        order_value = shared_auto_rank + 1 if include else 0
-                        st.session_state[include_key] = include
-                        st.session_state[slot_key] = order_value if order_value > 0 else 1
-                        if include:
-                            shared_auto_rank += 1
-                            st.caption(f"Auto-selected: Slot {order_value}")
+                    include = st.checkbox("Selected", key=include_key)
+                    if include:
+                        if len(selected_image_ids) < max_slots:
+                            selected_image_ids.append(image_id)
                         else:
-                            st.caption("Not selected (outside top 10)")
-                    else:
-                        include = st.checkbox(
-                            "Use in Competitor Graphics",
-                            key=include_key,
-                        )
-                        slot_value = st.selectbox(
-                            "Display Slot",
-                            list(range(1, max_slots + 1)),
-                            index=max(0, int(st.session_state.get(slot_key, 1)) - 1),
-                            key=slot_key,
-                            disabled=not include,
-                        )
-                        order_value = int(slot_value) if include else 0
-                    image_orders[image_id] = order_value
-                    if order_value > 0:
-                        selected_rows.append(
-                            {
-                                "Display Order": order_value,
-                                "Competitor Title": record.get("product_title", "-"),
-                                "Brand": record.get("brand", "-"),
-                                "Item ID": record.get("item_id", "-") or "-",
-                                "Image Label": f"Image {i + 1}",
-                                "Image URL": image_url,
-                                "Source URL": record.get("source_url", ""),
-                                "_image_id": image_id,
-                            }
-                        )
+                            st.session_state[include_key] = False
+                            limit_blocked = True
                     st.caption(f"Source URL: {image_url}")
 
-    selected_count = len(selected_rows)
-    duplicate_orders = (
-        pd.DataFrame(selected_rows)["Display Order"].value_counts().loc[lambda s: s > 1].index.tolist()
-        if selected_rows
-        else []
-    )
-    if selected_count > max_slots and not select_all_mode:
-        st.error(
-            f"You selected {selected_count} competitor images. "
-            f"Select at most {max_slots} images for the shared competitor graphics section."
+    image_orders: dict[str, int] = {image_id: 0 for image_id in all_image_ids}
+    for display_order, image_id in enumerate(selected_image_ids, start=1):
+        image_orders[image_id] = display_order
+        meta = image_meta.get(image_id, {})
+        record = meta.get("record", {})
+        selected_rows.append(
+            {
+                "Display Order": display_order,
+                "Competitor Title": record.get("product_title", "-"),
+                "Brand": record.get("brand", "-"),
+                "Item ID": record.get("item_id", "-") or "-",
+                "Image Label": meta.get("image_label", "-"),
+                "Image URL": meta.get("url", ""),
+                "Source URL": record.get("source_url", ""),
+                "_image_id": image_id,
+            }
         )
-    if duplicate_orders:
-        dup_text = ", ".join(str(v) for v in sorted(duplicate_orders))
-        st.error(f"Duplicate display slot assignments detected: {dup_text}. Each selected image must have a unique slot.")
 
-    is_valid_selection = selected_count <= max_slots and not duplicate_orders
+    if limit_blocked:
+        st.warning("You can select up to 10 competitor images.")
+
+    selected_count = len(selected_image_ids)
     st.session_state["audit_competitor_image_orders"] = image_orders
-    st.session_state["audit_competitor_assignments"] = (
-        build_competitor_assignments(entries, image_orders) if is_valid_selection else []
-    )
+    st.session_state["audit_competitor_assignments"] = build_competitor_assignments(entries, image_orders)
 
-    if selected_count:
-        st.caption(f"Selected competitor images: {selected_count}/{max_slots}")
+    st.caption(f"Selected: {selected_count} / {max_slots}")
     if selected_rows:
         ordered_df = (
             pd.DataFrame(selected_rows)
@@ -1216,11 +1250,7 @@ def render_extracted_competitor_entries_v2() -> None:
         st.caption("Ordered competitor image preview for shared template slots")
         st.dataframe(preview_df, use_container_width=True, hide_index=True)
     else:
-        st.info("No competitor images selected yet. Select images and assign slots 1-10.")
-
-    if selected_rows and not is_valid_selection:
-        st.warning("Fix selection errors above to populate competitor graphics assignments.")
-
+        st.info("No competitor images selected yet.")
 
 def _seed_mock_results_for_products_v2(entries: list[dict]) -> None:
     seeded_ids = []

@@ -9,6 +9,7 @@ from typing import Any
 
 from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE_TYPE
+from pptx.enum.text import MSO_AUTO_SIZE
 from pptx.oxml.ns import qn
 from pptx.oxml.xmlchemy import OxmlElement
 from pptx.util import Inches, Pt
@@ -121,6 +122,28 @@ def _force_paragraph_bullet(paragraph: Any) -> None:
         pPr.insert(0, bu_char)
 
 
+def _force_paragraph_no_list(paragraph: Any) -> None:
+    p = paragraph._p  # pylint: disable=protected-access
+    pPr = p.get_or_add_pPr()
+    for child in list(pPr):
+        if child.tag in {qn("a:buChar"), qn("a:buAutoNum"), qn("a:buNone")}:
+            pPr.remove(child)
+    bu_none = OxmlElement("a:buNone")
+    pPr.insert(0, bu_none)
+
+
+def _force_paragraph_numbered(paragraph: Any, *, start_at: int = 1) -> None:
+    p = paragraph._p  # pylint: disable=protected-access
+    pPr = p.get_or_add_pPr()
+    for child in list(pPr):
+        if child.tag in {qn("a:buChar"), qn("a:buAutoNum"), qn("a:buNone")}:
+            pPr.remove(child)
+    bu_auto = OxmlElement("a:buAutoNum")
+    bu_auto.set("type", "arabicPeriod")
+    bu_auto.set("startAt", str(max(1, int(start_at))))
+    pPr.insert(0, bu_auto)
+
+
 def _set_pdp_title_and_item_id(shape: Any, title: str, item_id: str) -> None:
     if not shape or not getattr(shape, "has_text_frame", False):
         return
@@ -147,10 +170,6 @@ def _set_pdp_image_recommendations(shape: Any, heading: str, bullets: list[str])
     if not shape or not getattr(shape, "has_text_frame", False):
         return
     tf = shape.text_frame
-    tf.clear()
-    p0 = tf.paragraphs[0]
-    _replace_paragraph_text_preserve_style(p0, heading)
-    p0.level = 0
 
     seen: set[str] = set()
     clean_bullets: list[str] = []
@@ -166,11 +185,27 @@ def _set_pdp_image_recommendations(shape: Any, heading: str, bullets: list[str])
         if len(clean_bullets) >= 8:
             break
 
-    for bullet in clean_bullets:
-        p = tf.add_paragraph()
+    if not tf.paragraphs:
+        shape.text = _safe_text(heading)
+
+    paragraphs = tf.paragraphs
+    _replace_paragraph_text_preserve_style(paragraphs[0], heading)
+    paragraphs[0].level = 0
+    _force_paragraph_no_list(paragraphs[0])
+
+    required_paragraphs = 1 + len(clean_bullets)
+    while len(tf.paragraphs) < required_paragraphs:
+        tf.add_paragraph()
+
+    for idx, bullet in enumerate(clean_bullets, start=1):
+        p = tf.paragraphs[idx]
         _replace_paragraph_text_preserve_style(p, bullet)
         p.level = 0
-        _force_paragraph_bullet(p)
+        _force_paragraph_numbered(p, start_at=idx)
+
+    for p in tf.paragraphs[required_paragraphs:]:
+        _replace_paragraph_text_preserve_style(p, "")
+        _force_paragraph_no_list(p)
 
 
 def _title_case_text(text: str) -> str:
@@ -221,17 +256,66 @@ def _set_heading_and_real_bullets(shape: Any, heading: str, bullets: list[str]) 
     if not shape or not getattr(shape, "has_text_frame", False):
         return
     tf = shape.text_frame
-    tf.clear()
+    tf.word_wrap = True
+    tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
 
-    # Heading paragraph (template styling retained from existing shape defaults).
-    p0 = tf.paragraphs[0]
-    p0.text = heading
-    p0.level = 0
+    clean_bullets = _clean_bullets_for_slide(bullets, max_items=8)
+    if not tf.paragraphs:
+        shape.text = _safe_text(heading)
 
-    for bullet in _clean_bullets_for_slide(bullets, max_items=8):
-        p = tf.add_paragraph()
-        p.text = bullet
+    _replace_paragraph_text_preserve_style(tf.paragraphs[0], heading)
+    tf.paragraphs[0].level = 0
+    _force_paragraph_no_list(tf.paragraphs[0])
+
+    required_paragraphs = 1 + len(clean_bullets)
+    while len(tf.paragraphs) < required_paragraphs:
+        tf.add_paragraph()
+
+    for idx, bullet in enumerate(clean_bullets, start=1):
+        p = tf.paragraphs[idx]
+        _replace_paragraph_text_preserve_style(p, bullet)
         p.level = 0
+        _force_paragraph_bullet(p)
+
+    for p in tf.paragraphs[required_paragraphs:]:
+        _replace_paragraph_text_preserve_style(p, "")
+        _force_paragraph_no_list(p)
+
+
+def _set_title_recommendation_block(shape: Any, heading: str, recommended_title: str, item_id: str) -> None:
+    if not shape or not getattr(shape, "has_text_frame", False):
+        return
+    tf = shape.text_frame
+    tf.word_wrap = True
+    tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
+    if not tf.paragraphs:
+        shape.text = _safe_text(heading)
+
+    _replace_paragraph_text_preserve_style(tf.paragraphs[0], heading)
+    tf.paragraphs[0].level = 0
+    _force_paragraph_no_list(tf.paragraphs[0])
+
+    bullet_text = _safe_text(recommended_title)
+    required_paragraphs = 2 + (1 if _safe_text(item_id) else 0)
+    while len(tf.paragraphs) < required_paragraphs:
+        tf.add_paragraph()
+
+    bullet_para = tf.paragraphs[1]
+    _replace_paragraph_text_preserve_style(bullet_para, bullet_text)
+    bullet_para.level = 0
+    _force_paragraph_bullet(bullet_para)
+
+    offset = 2
+    if _safe_text(item_id):
+        item_para = tf.paragraphs[2]
+        _replace_paragraph_text_preserve_style(item_para, f"Item ID: {item_id}")
+        item_para.level = 0
+        _force_paragraph_no_list(item_para)
+        offset = 3
+
+    for p in tf.paragraphs[offset:]:
+        _replace_paragraph_text_preserve_style(p, "")
+        _force_paragraph_no_list(p)
 
 
 def _download_image_bytes(url: str) -> bytes | None:
@@ -266,6 +350,32 @@ def _insert_image_over_shape(slide: Any, target_shape: Any, image_url: str) -> b
         width = target_shape.width
         height = target_shape.height
         slide.shapes.add_picture(io.BytesIO(image_bytes), left, top, width=width, height=height)
+        return True
+    except Exception:
+        return False
+
+
+def _insert_image_fit_within_shape(slide: Any, target_shape: Any, image_url: str) -> bool:
+    image_bytes = _download_image_bytes(image_url)
+    if not image_bytes:
+        return False
+    try:
+        left = int(target_shape.left)
+        top = int(target_shape.top)
+        width = int(target_shape.width)
+        height = int(target_shape.height)
+
+        pic = slide.shapes.add_picture(io.BytesIO(image_bytes), 0, 0)
+        src_w = max(1, int(pic.width))
+        src_h = max(1, int(pic.height))
+        scale = min(width / src_w, height / src_h)
+        new_w = max(1, int(src_w * scale))
+        new_h = max(1, int(src_h * scale))
+
+        pic.width = new_w
+        pic.height = new_h
+        pic.left = left + int((width - new_w) / 2)
+        pic.top = top + int((height - new_h) / 2)
         return True
     except Exception:
         return False
@@ -362,7 +472,7 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
 
     image_box = _largest_autoshape(slide)
     if image_box and _safe_text(selected_img):
-        _insert_image_over_shape(slide, image_box, selected_img)
+        _insert_image_fit_within_shape(slide, image_box, selected_img)
 
 
 def _populate_content_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
@@ -374,10 +484,12 @@ def _populate_content_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
     if title_shape:
         rec_title = _safe_text(content.get("recommended_title"))
         value = _title_case_text(rec_title or title)
-        title_block = f"Title Recommendations:\n{value}"
-        if item_id:
-            title_block = f"{title_block}\nItem ID: {item_id}"
-        _replace_shape_text_preserve_style(title_shape, title_block)
+        _set_title_recommendation_block(
+            title_shape,
+            "Title Recommendations:",
+            value,
+            item_id,
+        )
 
     desc_shape = _find_shape_contains(slide, "Description Recommendations")
     if desc_shape:
@@ -399,23 +511,95 @@ def _populate_content_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
 
 
 def _sorted_competitor_slots(slide: Any) -> list[Any]:
-    slots = [s for s in slide.shapes if s.shape_type == MSO_SHAPE_TYPE.AUTO_SHAPE]
+    slots = []
+    for shape in slide.shapes:
+        if shape.shape_type != MSO_SHAPE_TYPE.AUTO_SHAPE:
+            continue
+        shape_text = _shape_text(shape).lower()
+        if "(image placeholder)" in shape_text:
+            continue
+        slots.append(shape)
     slots.sort(key=lambda s: (int(s.top), int(s.left)))
     return slots[:10]
 
 
+def _remove_shape(slide: Any, shape: Any) -> None:
+    try:
+        slide.shapes._spTree.remove(shape._element)  # pylint: disable=protected-access
+    except Exception:
+        return
+
+
+def _competitor_grid_for_count(count: int) -> tuple[int, int]:
+    if count <= 1:
+        return (1, 1)
+    if count == 2:
+        return (1, 2)
+    if count <= 4:
+        return (2, 2)
+    if count <= 6:
+        return (2, 3)
+    if count <= 9:
+        return (3, 3)
+    return (2, 5)
+
+
+def _layout_competitor_slots(slide: Any, slots: list[Any], active_count: int) -> list[Any]:
+    if not slots or active_count <= 0:
+        for shape in slots:
+            _remove_shape(slide, shape)
+        return []
+
+    active_count = min(active_count, len(slots))
+    rows, cols = _competitor_grid_for_count(active_count)
+    cells = rows * cols
+
+    left = min(int(s.left) for s in slots)
+    top = min(int(s.top) for s in slots)
+    right = max(int(s.left + s.width) for s in slots)
+    bottom = max(int(s.top + s.height) for s in slots)
+    total_w = max(1, right - left)
+    total_h = max(1, bottom - top)
+
+    gap_x = int(total_w * 0.02)
+    gap_y = int(total_h * 0.03)
+    if cols == 1:
+        gap_x = 0
+    if rows == 1:
+        gap_y = 0
+
+    cell_w = max(1, int((total_w - (cols - 1) * gap_x) / cols))
+    cell_h = max(1, int((total_h - (rows - 1) * gap_y) / rows))
+
+    active_slots = slots[:active_count]
+    for idx, shape in enumerate(active_slots):
+        row = int(idx / cols)
+        col = idx % cols
+        shape.left = left + col * (cell_w + gap_x)
+        shape.top = top + row * (cell_h + gap_y)
+        shape.width = cell_w
+        shape.height = cell_h
+
+    for shape in slots[active_count:]:
+        _remove_shape(slide, shape)
+    return active_slots
+
+
 def _populate_competitor_graphics(slide: Any, ordered_assignments: list[dict[str, Any]], notes: str) -> None:
     slots = _sorted_competitor_slots(slide)
-    by_order = {int(a.get("display_order", 0)): a for a in ordered_assignments if 1 <= int(a.get("display_order", 0)) <= 10}
+    valid_assignments = [
+        a
+        for a in (ordered_assignments or [])
+        if 1 <= int(a.get("display_order", 0) or 0) <= 10 and _safe_text(a.get("url"))
+    ]
+    valid_assignments.sort(key=lambda a: int(a.get("display_order", 0)))
+    active_assignments = valid_assignments[:10]
+    active_slots = _layout_competitor_slots(slide, slots, len(active_assignments))
 
-    for order in range(1, 11):
-        assignment = by_order.get(order)
-        if not assignment:
-            continue
-        slot_idx = order - 1
-        if slot_idx >= len(slots):
-            continue
-        _insert_image_over_shape(slide, slots[slot_idx], _safe_text(assignment.get("url")))
+    for idx, assignment in enumerate(active_assignments):
+        if idx >= len(active_slots):
+            break
+        _insert_image_over_shape(slide, active_slots[idx], _safe_text(assignment.get("url")))
 
     notes_shape = _find_shape_contains(slide, "(image placeholder)")
     if notes_shape:
