@@ -303,16 +303,15 @@ def _normalize_bullet_paragraphs(paragraphs: list[Any]) -> None:
         return
     ref_para = paragraphs[1] if len(paragraphs) > 1 else paragraphs[0]
     ref_ppr = copy.deepcopy(ref_para._p.get_or_add_pPr())  # pylint: disable=protected-access
-    ref_size = None
-    ref_name = None
-    ref_bold = None
-    for run in ref_para.runs:
-        if ref_size is None and run.font.size is not None:
-            ref_size = run.font.size
-        if ref_name is None and run.font.name:
-            ref_name = run.font.name
-        if ref_bold is None and run.font.bold is not None:
-            ref_bold = run.font.bold
+    ref_pf = ref_para.paragraph_format
+    ref_runs = list(ref_para.runs)
+    ref_run = ref_runs[0] if ref_runs else None
+    ref_run_rpr = None
+    if ref_run is not None:
+        try:
+            ref_run_rpr = copy.deepcopy(ref_run._r.get_or_add_rPr())  # pylint: disable=protected-access
+        except Exception:
+            ref_run_rpr = None
     for para in paragraphs:
         # Keep all bullet paragraphs aligned/list-styled the same (including bullet 1).
         p = para._p  # pylint: disable=protected-access
@@ -321,13 +320,38 @@ def _normalize_bullet_paragraphs(paragraphs: list[Any]) -> None:
             pPr.remove(child)
         for child in list(ref_ppr):
             pPr.append(copy.deepcopy(child))
+        pf = para.paragraph_format
+        for attr in (
+            "left_indent",
+            "right_indent",
+            "first_line_indent",
+            "space_before",
+            "space_after",
+            "line_spacing",
+            "line_spacing_rule",
+        ):
+            try:
+                setattr(pf, attr, getattr(ref_pf, attr))
+            except Exception:
+                continue
         for run in para.runs:
-            if ref_size is not None:
-                run.font.size = ref_size
-            if ref_name:
-                run.font.name = ref_name
-            if ref_bold is not None:
-                run.font.bold = ref_bold
+            if ref_run_rpr is not None:
+                try:
+                    r = run._r  # pylint: disable=protected-access
+                    cur_rpr = r.rPr
+                    if cur_rpr is not None:
+                        r.remove(cur_rpr)
+                    r.insert(0, copy.deepcopy(ref_run_rpr))
+                    continue
+                except Exception:
+                    pass
+            if ref_run is None:
+                continue
+            for attr in ("name", "size", "bold", "italic", "underline"):
+                try:
+                    setattr(run.font, attr, getattr(ref_run.font, attr))
+                except Exception:
+                    continue
 
 
 def _emphasize_heading_paragraph(paragraph: Any, min_size_pt: int = 18) -> None:
