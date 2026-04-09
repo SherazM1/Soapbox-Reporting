@@ -459,6 +459,12 @@ def _remove_shape_box_treatment(shape: Any) -> None:
                 node = sp_pr.find(qn(tag))
                 if node is not None:
                     sp_pr.remove(node)
+        # Some templates inherit a visible line from p:style/a:lnRef; clear it too.
+        style = shape.element.find(qn("p:style"))
+        if style is not None:
+            ln_ref = style.find(qn("a:lnRef"))
+            if ln_ref is not None:
+                style.remove(ln_ref)
     except Exception:
         pass
     try:
