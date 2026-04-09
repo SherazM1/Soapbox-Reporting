@@ -302,6 +302,7 @@ def _normalize_bullet_paragraphs(paragraphs: list[Any]) -> None:
     if not paragraphs:
         return
     ref_para = paragraphs[1] if len(paragraphs) > 1 else paragraphs[0]
+    ref_ppr = copy.deepcopy(ref_para._p.get_or_add_pPr())  # pylint: disable=protected-access
     ref_size = None
     ref_name = None
     ref_bold = None
@@ -313,6 +314,13 @@ def _normalize_bullet_paragraphs(paragraphs: list[Any]) -> None:
         if ref_bold is None and run.font.bold is not None:
             ref_bold = run.font.bold
     for para in paragraphs:
+        # Keep all bullet paragraphs aligned/list-styled the same (including bullet 1).
+        p = para._p  # pylint: disable=protected-access
+        pPr = p.get_or_add_pPr()
+        for child in list(pPr):
+            pPr.remove(child)
+        for child in list(ref_ppr):
+            pPr.append(copy.deepcopy(child))
         for run in para.runs:
             if ref_size is not None:
                 run.font.size = ref_size
@@ -529,7 +537,10 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
     image_box = _largest_autoshape(slide)
     if image_box and _safe_text(selected_img):
         _remove_shape_box_treatment(image_box)
-        _insert_image_fit_within_shape(slide, image_box, selected_img)
+        inserted = _insert_image_fit_within_shape(slide, image_box, selected_img)
+        if inserted:
+            # Remove the original placeholder/frame shape so no residual outline remains.
+            _remove_shape(slide, image_box)
 
 
 def _populate_content_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
