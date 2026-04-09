@@ -303,7 +303,6 @@ def _normalize_bullet_paragraphs(paragraphs: list[Any]) -> None:
         return
     ref_para = paragraphs[1] if len(paragraphs) > 1 else paragraphs[0]
     ref_ppr = copy.deepcopy(ref_para._p.get_or_add_pPr())  # pylint: disable=protected-access
-    ref_pf = ref_para.paragraph_format
     ref_runs = list(ref_para.runs)
     ref_run = ref_runs[0] if ref_runs else None
     ref_run_rpr = None
@@ -320,20 +319,6 @@ def _normalize_bullet_paragraphs(paragraphs: list[Any]) -> None:
             pPr.remove(child)
         for child in list(ref_ppr):
             pPr.append(copy.deepcopy(child))
-        pf = para.paragraph_format
-        for attr in (
-            "left_indent",
-            "right_indent",
-            "first_line_indent",
-            "space_before",
-            "space_after",
-            "line_spacing",
-            "line_spacing_rule",
-        ):
-            try:
-                setattr(pf, attr, getattr(ref_pf, attr))
-            except Exception:
-                continue
         for run in para.runs:
             if ref_run_rpr is not None:
                 try:
