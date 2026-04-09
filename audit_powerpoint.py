@@ -388,29 +388,10 @@ def _download_image_bytes(url: str) -> bytes | None:
         return None
 
 
-def _prepare_image_bytes_for_powerpoint(image_bytes: bytes) -> bytes:
-    """Normalize to a broadly compatible format (PNG) when possible."""
-    try:
-        from PIL import Image  # type: ignore
-    except Exception:
-        return image_bytes
-
-    try:
-        with Image.open(io.BytesIO(image_bytes)) as img:
-            out = io.BytesIO()
-            if img.mode not in ("RGB", "RGBA"):
-                img = img.convert("RGBA")
-            img.save(out, format="PNG")
-            return out.getvalue()
-    except Exception:
-        return image_bytes
-
-
 def _insert_image_over_shape(slide: Any, target_shape: Any, image_url: str) -> bool:
     image_bytes = _download_image_bytes(image_url)
     if not image_bytes:
         return False
-    image_bytes = _prepare_image_bytes_for_powerpoint(image_bytes)
     try:
         left = target_shape.left
         top = target_shape.top
@@ -426,7 +407,6 @@ def _insert_image_fit_within_shape(slide: Any, target_shape: Any, image_url: str
     image_bytes = _download_image_bytes(image_url)
     if not image_bytes:
         return False
-    image_bytes = _prepare_image_bytes_for_powerpoint(image_bytes)
     try:
         left = int(target_shape.left)
         top = int(target_shape.top)
@@ -471,8 +451,9 @@ def _suppress_pdp_image_placeholders(slide: Any) -> None:
         text = _shape_text(shape).lower()
         if not any(token in text for token in tokens):
             continue
-        # Prefer removing explicit placeholder text layers entirely.
-        _remove_shape(slide, shape)
+        # Preserve original shape stack but remove placeholder text/frame visibility.
+        _set_shape_text(shape, "")
+        _remove_shape_box_treatment(shape)
 
 
 def _largest_autoshape(slide: Any) -> Any:
@@ -567,7 +548,7 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
     image_box = _largest_autoshape(slide)
     if image_box and _safe_text(selected_img):
         _remove_shape_box_treatment(image_box)
-        _insert_image_fit_within_shape(slide, image_box, selected_img)
+        _insert_image_over_shape(slide, image_box, selected_img)
     _suppress_pdp_image_placeholders(slide)
 
 
@@ -793,22 +774,18 @@ def generate_audit_powerpoint_from_template(*, export_plan: dict[str, Any], temp
     if pdp_template is None or content_template is None:
         raise ValueError("Could not find required primary product template slides.")
 
-    # Build all pair slides from pristine templates before mutating any pair-specific content.
-    pdp_slides = [pdp_template]
-    content_slides = [content_template]
-    for _ in pair_payloads[1:]:
-        pdp_slides.append(_duplicate_slide(prs, pdp_template))
-        content_slides.append(_duplicate_slide(prs, content_template))
+    _populate_pdp_slide(pdp_template, pair_payloads[0])
+    _populate_content_slide(content_template, pair_payloads[0])
 
-    for idx, pair in enumerate(pair_payloads):
-        _populate_pdp_slide(pdp_slides[idx], pair)
-        _populate_content_slide(content_slides[idx], pair)
-
-    for idx in range(1, len(pair_payloads)):
+    for pair in pair_payloads[1:]:
+        pdp_slide = _duplicate_slide(prs, pdp_template)
+        content_slide = _duplicate_slide(prs, content_template)
+        _populate_pdp_slide(pdp_slide, pair)
+        _populate_content_slide(content_slide, pair)
         shared_anchor = _find_first_shared_anchor_slide(prs)
         if shared_anchor is not None:
-            _move_slide_before(prs, pdp_slides[idx], shared_anchor)
-            _move_slide_before(prs, content_slides[idx], shared_anchor)
+            _move_slide_before(prs, pdp_slide, shared_anchor)
+            _move_slide_before(prs, content_slide, shared_anchor)
 
     competitor_payload = export_plan.get("competitor_graphics_payload", {}) or {}
     shared_sections = export_plan.get("shared_sections_payload", {}) or {}
