@@ -438,6 +438,15 @@ def _remove_shape_box_treatment(shape: Any) -> None:
             shape.line.width = 0
     except Exception:
         pass
+    # Some template shapes keep an outline at the XML layer; remove it explicitly.
+    try:
+        sp_pr = shape.element.spPr
+        if sp_pr is not None:
+            ln = sp_pr.find(qn("a:ln"))
+            if ln is not None:
+                sp_pr.remove(ln)
+    except Exception:
+        pass
     try:
         if getattr(shape, "fill", None) is not None:
             shape.fill.background()
