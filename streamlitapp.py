@@ -960,6 +960,11 @@ def render_extracted_primary_product_entries_v2() -> None:
                         sel_key = f"audit_v2_primary_select_for_pdp_{entry['entry_id']}_{image_index}"
                         st.session_state[sel_key] = image_index in default_selected_ids
                     st.session_state[selection_signature_key] = selection_signature
+                fallback_apply_key = f"audit_v2_primary_fallback_apply_{entry['entry_id']}"
+                if st.session_state.pop(fallback_apply_key, False):
+                    first_index = int(image_models[0].get("index", 0) or 0)
+                    first_sel_key = f"audit_v2_primary_select_for_pdp_{entry['entry_id']}_{first_index}"
+                    st.session_state[first_sel_key] = True
 
                 thumbnails_per_row = min(6, len(image_models))
                 img_cols = st.columns(thumbnails_per_row)
@@ -1004,8 +1009,7 @@ def render_extracted_primary_product_entries_v2() -> None:
                 if not selected_primary_images:
                     first_image = image_models[0]
                     first_index = int(first_image.get("index", 0) or 0)
-                    fallback_sel_key = f"audit_v2_primary_select_for_pdp_{entry['entry_id']}_{first_index}"
-                    st.session_state[fallback_sel_key] = True
+                    st.session_state[fallback_apply_key] = True
                     selected_primary_images = [
                         {
                             "record_id": record.get("record_id", ""),
