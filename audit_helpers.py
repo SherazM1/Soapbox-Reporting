@@ -383,9 +383,7 @@ def _replace_img_tags_with_src(html_text: str) -> str:
             src_match = re.search(r"""(?is)\bsrc\s*=\s*([^\s>]+)""", tag)
         if src_match:
             src_value = html_lib.unescape(src_match.group(2) if src_match.lastindex and src_match.lastindex >= 2 else src_match.group(1))
-            # Keep spacing around injected src text so nearby dimension labels in the same
-            # cell remain separable during read_html extraction.
-            return f" {src_value.strip()} "
+            return src_value.strip()
         return ""
 
     return re.sub(r"(?is)<img\b[^>]*>", repl, html_text)
@@ -629,8 +627,9 @@ def extract_image_urls_from_sheet_row(row: pd.Series) -> list[str]:
     urls: list[str] = []
     for col in detect_image_columns(row):
         value = _cell_as_text(row, col)
-        if value:
-            urls.append(value)
+        image_src = _extract_image_source_from_cell(value)
+        if image_src:
+            urls.append(image_src)
     return urls
 
 
@@ -646,29 +645,39 @@ def _parse_dimensions_payload(raw_text: str) -> dict[str, Any]:
     return {"dimensions": text, "width": None, "height": None}
 
 
+def _extract_image_source_from_cell(raw_value: str) -> str:
+    value = str(raw_value or "").strip()
+    if not value:
+        return ""
+    if value.startswith("data:image"):
+        return value.split()[0].strip()
+
+    url_match = re.search(r"(?is)(https?://[^\s\"'<>]+)", value)
+    if url_match:
+        return url_match.group(1).strip()
+
+    dim_match = re.search(r"(?is)\b\d{2,5}\s*W\s*[x×]\s*\d{2,5}\s*H\b", value)
+    if dim_match:
+        candidate = value[: dim_match.start()].strip(" \t\r\n-_|,;")
+        return candidate
+
+    return value
+
+
 def _extract_url_and_inline_dimensions(raw_value: str) -> tuple[str, dict[str, Any]]:
     value = str(raw_value or "").strip()
     if not value:
         return "", {"dimensions": "", "width": None, "height": None}
-    # Parse URL token and trailing dimension text from a single image cell value.
-    # Supports either whitespace-delimited values or tightly joined content such as:
-    # "https://...jpg2200 W x 2200 H".
-    if value.startswith(("http://", "https://")):
-        match = re.match(r"(?is)^(https?://\S+?)(?=(?:\s+\d{2,5}\s*W\s*[x×]\s*\d{2,5}\s*H\b)|\s*$)", value)
-        if match:
-            image_url = match.group(1).strip()
-            remainder = value[match.end() :].strip(" \t\r\n-_|,;")
-            return image_url, _parse_dimensions_payload(remainder)
-    if value.startswith("data:image"):
-        first_token = value.split()[0].strip()
-        remainder = value[len(first_token) :].strip(" \t\r\n-_|,;")
-        return first_token, _parse_dimensions_payload(remainder)
-    url_match = re.search(r"(?is)(https?://\S+)", value)
-    if url_match:
-        image_url = url_match.group(1).strip()
-        remainder = (value[: url_match.start()] + " " + value[url_match.end() :]).strip(" \t\r\n-_|,;")
-        return image_url, _parse_dimensions_payload(remainder)
-    return value, {"dimensions": "", "width": None, "height": None}
+    image_src = _extract_image_source_from_cell(value)
+    if not image_src:
+        return "", {"dimensions": "", "width": None, "height": None}
+
+    src_pos = value.find(image_src)
+    if src_pos >= 0:
+        remainder = (value[:src_pos] + " " + value[src_pos + len(image_src) :]).strip(" \t\r\n-_|,;")
+    else:
+        remainder = value.strip(" \t\r\n-_|,;")
+    return image_src, _parse_dimensions_payload(remainder)
 
 
 def extract_images_from_sheet_row(row: pd.Series) -> list[dict[str, Any]]:
