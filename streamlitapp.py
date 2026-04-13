@@ -657,6 +657,10 @@ def render_primary_pdp_upload_v2() -> None:
                 if uploaded is None:
                     st.warning("Upload a primary Audit Extract Sheet to continue.")
                 else:
+                    uploaded_name = str(getattr(uploaded, "name", "") or "").strip()
+                    uploaded_dir = os.path.dirname(uploaded_name)
+                    if uploaded_dir and os.path.isdir(uploaded_dir):
+                        st.session_state["audit_primary_sheet_dir"] = uploaded_dir
                     df_uploaded, parse_messages = parse_audit_extract_upload_to_dataframe(uploaded)
                     if parse_messages:
                         st.info("\n".join(parse_messages))
@@ -872,6 +876,61 @@ def _format_image_dimensions_for_preview(image: dict[str, Any]) -> str:
     return "Dimensions: -"
 
 
+def _resolve_local_image_source(src: str) -> str:
+    raw = str(src or "").strip()
+    if not raw:
+        return ""
+    if re.match(r"(?is)^https?://", raw) or raw.startswith("data:image"):
+        return raw
+
+    candidate = raw
+    if raw.lower().startswith("file://"):
+        candidate = raw[7:]
+
+    candidate = os.path.expanduser(candidate)
+    if os.path.isabs(candidate) and os.path.isfile(candidate):
+        return candidate
+
+    base_dirs: list[str] = []
+    primary_dir = str(st.session_state.get("audit_primary_sheet_dir", "") or "").strip()
+    if primary_dir:
+        base_dirs.append(primary_dir)
+    competitor_dir = str(st.session_state.get("audit_competitor_sheet_dir", "") or "").strip()
+    if competitor_dir:
+        base_dirs.append(competitor_dir)
+    base_dirs.append(os.getcwd())
+
+    for base_dir in base_dirs:
+        try_path = os.path.normpath(os.path.join(base_dir, candidate))
+        if os.path.isfile(try_path):
+            return try_path
+
+    if os.path.isfile(candidate):
+        return candidate
+    return ""
+
+
+def safe_render_image(src: str, width: int = 120, unavailable_label: str = "Image unavailable") -> bool:
+    raw = str(src or "").strip()
+    if not raw:
+        return False
+
+    try:
+        if re.match(r"(?is)^https?://", raw) or raw.startswith("data:image"):
+            st.image(raw, width=width)
+            return True
+
+        resolved = _resolve_local_image_source(raw)
+        if not resolved:
+            st.caption(unavailable_label)
+            return False
+        st.image(resolved, width=width)
+        return True
+    except Exception:
+        st.caption(unavailable_label)
+        return False
+
+
 def render_extracted_primary_product_entries_v2() -> None:
     st.markdown("### Extracted Primary Product Data")
     st.caption(
@@ -980,7 +1039,7 @@ def render_extracted_primary_product_entries_v2() -> None:
                     if sel_key not in st.session_state:
                         st.session_state[sel_key] = image_index in default_selected_ids
                     with img_cols[i % thumbnails_per_row]:
-                        st.image(image_url, width=120)
+                        safe_render_image(image_url, width=120)
                         st.caption(f"Image {i + 1}")
                         st.caption(_format_image_dimensions_for_preview(image))
                         show_dims = st.checkbox("Show dimensions in PowerPoint", key=dims_key)
@@ -1032,7 +1091,7 @@ def render_extracted_primary_product_entries_v2() -> None:
 
                 st.caption(f"Selected primary images: {len(entry['selected_primary_images'])} / 4")
                 st.caption("Selected primary image preview")
-                st.image(selected_url, width=180)
+                safe_render_image(selected_url, width=180)
                 st.caption(_format_image_dimensions_for_preview(selected_preview))
 
             st.text_area("Current Title", key=f"audit_v2_primary_current_title_{entry['entry_id']}", height=85)
@@ -1095,6 +1154,10 @@ def render_competitor_pdp_upload_v2() -> None:
                 if uploaded is None:
                     st.warning("Upload a competitor Audit Extract Sheet to continue.")
                 else:
+                    uploaded_name = str(getattr(uploaded, "name", "") or "").strip()
+                    uploaded_dir = os.path.dirname(uploaded_name)
+                    if uploaded_dir and os.path.isdir(uploaded_dir):
+                        st.session_state["audit_competitor_sheet_dir"] = uploaded_dir
                     df_uploaded, parse_messages = parse_audit_extract_upload_to_dataframe(uploaded)
                     if parse_messages:
                         st.info("\n".join(parse_messages))
