@@ -813,6 +813,38 @@ def _sync_primary_entry_edits_v2(entry: dict) -> None:
     update_record_tier1_derived_fields(record)
     entry["rule_findings"] = analyze_primary_record(record)
 
+    selected_multi = entry.get("selected_primary_images", []) or []
+    if selected_multi and images:
+        selected_idx_set: set[int] = set()
+        for picked in selected_multi:
+            try:
+                selected_idx_set.add(int(picked.get("image_index", -1) or -1))
+            except Exception:
+                continue
+        ordered_multi: list[dict[str, Any]] = []
+        for image in images:
+            try:
+                picked_idx = int(image.get("index", -1) or -1)
+            except Exception:
+                continue
+            if picked_idx not in selected_idx_set:
+                continue
+            ordered_multi.append(
+                {
+                    "record_id": record.get("record_id", ""),
+                    "image_index": picked_idx,
+                    "url": image.get("url", ""),
+                }
+            )
+        ordered_multi = ordered_multi[:4]
+        if ordered_multi:
+            entry["selected_primary_images"] = ordered_multi
+            entry["selected_primary_image"] = dict(ordered_multi[0])
+            legacy_index = int(ordered_multi[0].get("image_index", 0) or 0)
+            if 0 <= legacy_index < len(image_labels):
+                st.session_state[selected_key] = image_labels[legacy_index]
+            return
+
     selected_label = st.session_state.get(selected_key, default_label)
     if selected_label in image_labels:
         selected_index = image_labels.index(selected_label)
@@ -822,6 +854,7 @@ def _sync_primary_entry_edits_v2(entry: dict) -> None:
             "image_index": selected_index,
             "url": selected_url,
         }
+        entry["selected_primary_images"] = [dict(entry["selected_primary_image"])]
 
 
 def _format_image_dimensions_for_preview(image: dict[str, Any]) -> str:
@@ -898,14 +931,49 @@ def render_extracted_primary_product_entries_v2() -> None:
             image_models = [img for img in images if isinstance(img, dict) and str(img.get("url", "") or "").strip()]
             image_urls = [img.get("url", "") for img in image_models]
             if image_models:
+                selection_signature_key = f"audit_v2_primary_selection_signature_{entry['entry_id']}"
+                selection_signature = tuple(
+                    f"{int(img.get('index', i) or i)}|{str(img.get('url', '') or '').strip()}"
+                    for i, img in enumerate(image_models)
+                )
+                selected_multi = entry.get("selected_primary_images", []) or []
+                default_selected_ids: set[int] = set()
+                if selected_multi:
+                    for sel in selected_multi:
+                        try:
+                            default_selected_ids.add(int(sel.get("image_index", -1) or -1))
+                        except Exception:
+                            continue
+                if not default_selected_ids:
+                    raw_selected_index = entry.get("selected_primary_image", {}).get("image_index", None)
+                    try:
+                        if isinstance(raw_selected_index, int):
+                            default_selected_ids.add(int(raw_selected_index))
+                    except Exception:
+                        pass
+                if not default_selected_ids:
+                    default_selected_ids.add(int(image_models[0].get("index", 0) or 0))
+
+                if st.session_state.get(selection_signature_key) != selection_signature:
+                    for i, image in enumerate(image_models):
+                        image_index = int(image.get("index", i) or i)
+                        sel_key = f"audit_v2_primary_select_for_pdp_{entry['entry_id']}_{image_index}"
+                        st.session_state[sel_key] = image_index in default_selected_ids
+                    st.session_state[selection_signature_key] = selection_signature
+
                 thumbnails_per_row = min(6, len(image_models))
                 img_cols = st.columns(thumbnails_per_row)
+                selected_primary_images: list[dict[str, Any]] = []
+                limit_blocked = False
                 for i, image in enumerate(image_models):
                     image_url = image.get("url", "")
                     image_index = int(image.get("index", i) or i)
                     dims_key = f"audit_v2_primary_show_dims_ppt_{entry['entry_id']}_{image_index}"
+                    sel_key = f"audit_v2_primary_select_for_pdp_{entry['entry_id']}_{image_index}"
                     if dims_key not in st.session_state:
                         st.session_state[dims_key] = bool(image.get("show_dimensions_in_powerpoint", False))
+                    if sel_key not in st.session_state:
+                        st.session_state[sel_key] = image_index in default_selected_ids
                     with img_cols[i % thumbnails_per_row]:
                         st.image(image_url, width=120)
                         st.caption(f"Image {i + 1}")
@@ -916,22 +984,52 @@ def render_extracted_primary_product_entries_v2() -> None:
                             if int(raw_image.get("index", -1) or -1) == image_index:
                                 raw_image["show_dimensions_in_powerpoint"] = bool(show_dims)
                                 break
+                        include_primary = st.checkbox("Selected for PDP Slide", key=sel_key)
+                        if include_primary:
+                            if len(selected_primary_images) < 4:
+                                selected_primary_images.append(
+                                    {
+                                        "record_id": record.get("record_id", ""),
+                                        "image_index": image_index,
+                                        "url": image_url,
+                                    }
+                                )
+                            else:
+                                st.session_state[sel_key] = False
+                                limit_blocked = True
 
-                labels = [f"Image {i + 1}" for i in range(len(image_urls))]
-                selected_label = st.selectbox(
-                    "Selected Primary Image",
-                    labels,
-                    key=f"audit_v2_primary_selected_image_{entry['entry_id']}",
+                if limit_blocked:
+                    st.warning("You can select up to 4 primary images.")
+
+                if not selected_primary_images:
+                    first_image = image_models[0]
+                    first_index = int(first_image.get("index", 0) or 0)
+                    fallback_sel_key = f"audit_v2_primary_select_for_pdp_{entry['entry_id']}_{first_index}"
+                    st.session_state[fallback_sel_key] = True
+                    selected_primary_images = [
+                        {
+                            "record_id": record.get("record_id", ""),
+                            "image_index": first_index,
+                            "url": first_image.get("url", ""),
+                        }
+                    ]
+
+                entry["selected_primary_images"] = selected_primary_images[:4]
+                entry["selected_primary_image"] = dict(entry["selected_primary_images"][0])
+                selected_url = entry["selected_primary_image"].get("url", "")
+                selected_preview = next(
+                    (
+                        img
+                        for img in image_models
+                        if int(img.get("index", -1) or -1) == int(entry["selected_primary_image"].get("image_index", -1) or -1)
+                    ),
+                    image_models[0],
                 )
-                selected_index = labels.index(selected_label)
-                entry["selected_primary_image"] = {
-                    "record_id": record.get("record_id", ""),
-                    "image_index": selected_index,
-                    "url": image_urls[selected_index],
-                }
+
+                st.caption(f"Selected primary images: {len(entry['selected_primary_images'])} / 4")
                 st.caption("Selected primary image preview")
-                st.image(image_urls[selected_index], width=180)
-                st.caption(_format_image_dimensions_for_preview(image_models[selected_index]))
+                st.image(selected_url, width=180)
+                st.caption(_format_image_dimensions_for_preview(selected_preview))
 
             st.text_area("Current Title", key=f"audit_v2_primary_current_title_{entry['entry_id']}", height=85)
             st.text_area("Current Description", key=f"audit_v2_primary_current_description_{entry['entry_id']}", height=120)

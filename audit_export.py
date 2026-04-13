@@ -114,10 +114,53 @@ def resolve_primary_image_payload(entry: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def resolve_primary_images_payload(entry: dict[str, Any]) -> list[dict[str, Any]]:
+    record = entry.get("cached_record", {}) or {}
+    images = list(record.get("images", []) or [])
+    selected_multi = list(entry.get("selected_primary_images", []) or [])
+
+    selected_indexes: set[int] = set()
+    for selected in selected_multi:
+        try:
+            selected_indexes.add(int(selected.get("image_index", -1) or -1))
+        except Exception:
+            continue
+
+    ordered: list[dict[str, Any]] = []
+    if selected_indexes:
+        for image in images:
+            try:
+                image_index = int(image.get("index", -1) or -1)
+            except Exception:
+                continue
+            if image_index not in selected_indexes:
+                continue
+            ordered.append(
+                {
+                    "record_id": record.get("record_id", ""),
+                    "image_index": image_index,
+                    "url": image.get("url", ""),
+                    "selection_source": "user_selected_multi",
+                    "dimensions_text": _format_dimensions_label_from_image(image),
+                    "show_dimensions_in_powerpoint": bool(image.get("show_dimensions_in_powerpoint", False)),
+                }
+            )
+            if len(ordered) >= 4:
+                break
+
+    if not ordered:
+        single = resolve_primary_image_payload(entry)
+        if _text_has_value(single.get("url", "")):
+            ordered = [single]
+
+    return ordered[:4]
+
+
 def build_product_slide_pair(entry: dict[str, Any], pair_order: int) -> dict[str, Any]:
     record = entry.get("cached_record", {}) or {}
     outputs = resolve_effective_outputs(entry)
     primary_image = resolve_primary_image_payload(entry)
+    primary_images = resolve_primary_images_payload(entry)
 
     pdp_slide = {
         "slide_type": "pdp_image_info",
@@ -127,6 +170,7 @@ def build_product_slide_pair(entry: dict[str, Any], pair_order: int) -> dict[str
         "item_id": entry.get("item_id", ""),
         "source_url": record.get("source_url", ""),
         "selected_primary_image": primary_image,
+        "selected_primary_images": primary_images,
         "image_count": int(record.get("image_count", 0) or 0),
         "extraction_status": record.get("extraction_status", ""),
         "reviews_summary": record.get("reviews_summary", {}),

@@ -686,6 +686,7 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
     pdp = pair_payload.get("pdp_slide", {}) or {}
     content = pair_payload.get("content_optimization_slide", {}) or {}
     selected_primary_payload = pdp.get("selected_primary_image", {}) or {}
+    selected_primary_images = list(pdp.get("selected_primary_images", []) or [])
 
     title = _safe_text(pdp.get("product_title"))
     item_id = _safe_text(pdp.get("item_id"))
@@ -700,35 +701,92 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
     if rec_shape:
         _set_pdp_image_recommendations(rec_shape, "Image Recommendations:", image_recs)
 
+    def _pdp_image_layout_rects(left: int, top: int, width: int, height: int, count: int) -> list[tuple[int, int, int, int]]:
+        count = max(1, min(4, int(count or 1)))
+        if count == 1:
+            return [(left, top, width, height)]
+        gap_x = int(width * 0.025)
+        gap_y = int(height * 0.03)
+        if count == 2:
+            cell_w = max(1, int((width - gap_x) / 2))
+            return [
+                (left, top, cell_w, height),
+                (left + cell_w + gap_x, top, cell_w, height),
+            ]
+        if count == 3:
+            gap_x_3 = int(width * 0.02)
+            cell_w = max(1, int((width - (2 * gap_x_3)) / 3))
+            return [
+                (left, top, cell_w, height),
+                (left + cell_w + gap_x_3, top, cell_w, height),
+                (left + 2 * (cell_w + gap_x_3), top, cell_w, height),
+            ]
+        cell_w = max(1, int((width - gap_x) / 2))
+        cell_h = max(1, int((height - gap_y) / 2))
+        return [
+            (left, top, cell_w, cell_h),
+            (left + cell_w + gap_x, top, cell_w, cell_h),
+            (left, top + cell_h + gap_y, cell_w, cell_h),
+            (left + cell_w + gap_x, top + cell_h + gap_y, cell_w, cell_h),
+        ]
+
     image_box = _largest_autoshape(slide)
     if image_box and _safe_text(selected_img):
         _remove_shape_box_treatment(image_box)
-        _insert_image_fit_within_shape(slide, image_box, selected_img, inset_ratio=0.03)
-        show_dims = bool(selected_primary_payload.get("show_dimensions_in_powerpoint", False))
-        dims_text = _formatted_dimensions_text(
-            selected_primary_payload.get("width"),
-            selected_primary_payload.get("height"),
-            selected_primary_payload.get("dimensions_text", ""),
-        )
-        if show_dims and _safe_text(dims_text):
-            dims_h = int(min(image_box.height * 0.12, Inches(0.28)))
-            dims_top = int(image_box.top + image_box.height + Inches(0.03))
-            try:
-                max_bottom = max(int(s.top + s.height) for s in slide.shapes)
-            except Exception:
-                max_bottom = dims_top + dims_h
-            if dims_top + dims_h > max_bottom:
-                dims_top = int(image_box.top + image_box.height - dims_h)
-            _add_dimension_textbox(
-                slide,
-                left=int(image_box.left),
-                top=dims_top,
-                width=int(image_box.width),
-                height=dims_h,
-                text=dims_text,
-                color=PRIMARY_DIM_TEXT_COLOR,
-                font_size_pt=11,
+        ordered_primary_images = [
+            img for img in selected_primary_images if _safe_text((img or {}).get("url", ""))
+        ][:4]
+        if not ordered_primary_images:
+            ordered_primary_images = [{"url": selected_img}]
+
+        if len(ordered_primary_images) == 1:
+            _insert_image_fit_within_shape(slide, image_box, _safe_text(ordered_primary_images[0].get("url", "")), inset_ratio=0.03)
+            show_dims = bool(selected_primary_payload.get("show_dimensions_in_powerpoint", False))
+            dims_text = _formatted_dimensions_text(
+                selected_primary_payload.get("width"),
+                selected_primary_payload.get("height"),
+                selected_primary_payload.get("dimensions_text", ""),
             )
+            if show_dims and _safe_text(dims_text):
+                dims_h = int(min(image_box.height * 0.12, Inches(0.28)))
+                dims_top = int(image_box.top + image_box.height + Inches(0.03))
+                try:
+                    max_bottom = max(int(s.top + s.height) for s in slide.shapes)
+                except Exception:
+                    max_bottom = dims_top + dims_h
+                if dims_top + dims_h > max_bottom:
+                    dims_top = int(image_box.top + image_box.height - dims_h)
+                _add_dimension_textbox(
+                    slide,
+                    left=int(image_box.left),
+                    top=dims_top,
+                    width=int(image_box.width),
+                    height=dims_h,
+                    text=dims_text,
+                    color=PRIMARY_DIM_TEXT_COLOR,
+                    font_size_pt=11,
+                )
+        else:
+            rects = _pdp_image_layout_rects(
+                int(image_box.left),
+                int(image_box.top),
+                int(image_box.width),
+                int(image_box.height),
+                len(ordered_primary_images),
+            )
+            for idx, img in enumerate(ordered_primary_images):
+                if idx >= len(rects):
+                    break
+                left, top, width, height = rects[idx]
+                _insert_image_fit_in_rect(
+                    slide,
+                    left=left,
+                    top=top,
+                    width=width,
+                    height=height,
+                    image_url=_safe_text(img.get("url", "")),
+                    inset_ratio=0.02,
+                )
     _suppress_pdp_image_placeholders(slide)
 
 
