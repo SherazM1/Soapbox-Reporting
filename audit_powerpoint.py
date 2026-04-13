@@ -690,7 +690,6 @@ def _layout_competitor_slots(slide: Any, slots: list[Any], active_count: int) ->
     active_count = min(active_count, len(slots))
     row_layout = _competitor_row_layout_for_count(active_count)
     rows = len(row_layout)
-    cols = max(row_layout) if row_layout else 1
 
     left = min(int(s.left) for s in slots)
     top = min(int(s.top) for s in slots)
@@ -699,15 +698,17 @@ def _layout_competitor_slots(slide: Any, slots: list[Any], active_count: int) ->
     total_w = max(1, right - left)
     total_h = max(1, bottom - top)
 
+    # Preserve the original 10-slot geometry (2 x 5) so boxes are never enlarged
+    # when fewer images are selected.
+    base_cols = 5
+    base_rows = 2
     gap_x = int(total_w * 0.02)
     gap_y = int(total_h * 0.03)
-    if cols == 1:
-        gap_x = 0
-    if rows == 1:
-        gap_y = 0
+    cell_w = max(1, int((total_w - (base_cols - 1) * gap_x) / base_cols))
+    cell_h = max(1, int((total_h - (base_rows - 1) * gap_y) / base_rows))
 
-    cell_w = max(1, int((total_w - (cols - 1) * gap_x) / cols))
-    cell_h = max(1, int((total_h - (rows - 1) * gap_y) / rows))
+    block_h = rows * cell_h + max(0, rows - 1) * gap_y
+    block_top = top + int((total_h - block_h) / 2)
 
     active_slots = slots[:active_count]
     idx = 0
@@ -716,7 +717,7 @@ def _layout_competitor_slots(slide: Any, slots: list[Any], active_count: int) ->
             break
         row_w = row_cols * cell_w + max(0, row_cols - 1) * gap_x
         row_left = left + int((total_w - row_w) / 2)
-        row_top = top + row_idx * (cell_h + gap_y)
+        row_top = block_top + row_idx * (cell_h + gap_y)
         for col_idx in range(row_cols):
             if idx >= len(active_slots):
                 break
