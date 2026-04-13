@@ -657,18 +657,28 @@ def _remove_shape(slide: Any, shape: Any) -> None:
         return
 
 
-def _competitor_grid_for_count(count: int) -> tuple[int, int]:
+def _competitor_row_layout_for_count(count: int) -> list[int]:
+    # Stable layout families (max 10), with odd counts derived from nearest even family
+    # while avoiding empty/dead slots.
     if count <= 1:
-        return (1, 1)
+        return [1]
     if count == 2:
-        return (1, 2)
-    if count <= 4:
-        return (2, 2)
-    if count <= 6:
-        return (2, 3)
-    if count <= 9:
-        return (3, 3)
-    return (2, 5)
+        return [2]
+    if count == 3:
+        return [1, 2]
+    if count == 4:
+        return [2, 2]
+    if count == 5:
+        return [2, 3]
+    if count == 6:
+        return [3, 3]
+    if count == 7:
+        return [3, 4]
+    if count == 8:
+        return [4, 4]
+    if count == 9:
+        return [4, 5]
+    return [5, 5]
 
 
 def _layout_competitor_slots(slide: Any, slots: list[Any], active_count: int) -> list[Any]:
@@ -678,8 +688,9 @@ def _layout_competitor_slots(slide: Any, slots: list[Any], active_count: int) ->
         return []
 
     active_count = min(active_count, len(slots))
-    rows, cols = _competitor_grid_for_count(active_count)
-    cells = rows * cols
+    row_layout = _competitor_row_layout_for_count(active_count)
+    rows = len(row_layout)
+    cols = max(row_layout) if row_layout else 1
 
     left = min(int(s.left) for s in slots)
     top = min(int(s.top) for s in slots)
@@ -699,13 +710,22 @@ def _layout_competitor_slots(slide: Any, slots: list[Any], active_count: int) ->
     cell_h = max(1, int((total_h - (rows - 1) * gap_y) / rows))
 
     active_slots = slots[:active_count]
-    for idx, shape in enumerate(active_slots):
-        row = int(idx / cols)
-        col = idx % cols
-        shape.left = left + col * (cell_w + gap_x)
-        shape.top = top + row * (cell_h + gap_y)
-        shape.width = cell_w
-        shape.height = cell_h
+    idx = 0
+    for row_idx, row_cols in enumerate(row_layout):
+        if idx >= len(active_slots):
+            break
+        row_w = row_cols * cell_w + max(0, row_cols - 1) * gap_x
+        row_left = left + int((total_w - row_w) / 2)
+        row_top = top + row_idx * (cell_h + gap_y)
+        for col_idx in range(row_cols):
+            if idx >= len(active_slots):
+                break
+            shape = active_slots[idx]
+            shape.left = row_left + col_idx * (cell_w + gap_x)
+            shape.top = row_top
+            shape.width = cell_w
+            shape.height = cell_h
+            idx += 1
 
     for shape in slots[active_count:]:
         _remove_shape(slide, shape)
