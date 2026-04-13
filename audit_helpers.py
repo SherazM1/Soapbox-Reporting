@@ -383,10 +383,27 @@ def _replace_img_tags_with_src(html_text: str) -> str:
             src_match = re.search(r"""(?is)\bsrc\s*=\s*([^\s>]+)""", tag)
         if src_match:
             src_value = html_lib.unescape(src_match.group(2) if src_match.lastindex and src_match.lastindex >= 2 else src_match.group(1))
-            return src_value.strip()
+            # Keep spacing around injected src text so nearby dimension labels in the same
+            # cell remain separable during read_html extraction.
+            return f" {src_value.strip()} "
         return ""
 
     return re.sub(r"(?is)<img\b[^>]*>", repl, html_text)
+
+
+def _count_image_cell_dimension_hits(df: pd.DataFrame) -> int:
+    if df.empty:
+        return 0
+    hits = 0
+    dim_pattern = re.compile(r"\b\d{2,5}\s*W\s*[x×]\s*\d{2,5}\s*H\b", flags=re.IGNORECASE)
+    for col in detect_image_columns(df):
+        if col not in df.columns:
+            continue
+        for value in df[col].tolist():
+            text = str(value or "").strip()
+            if text and dim_pattern.search(text):
+                hits += 1
+    return hits
 
 
 def _parse_html_audit_extract(raw: bytes) -> tuple[pd.DataFrame, list[str]]:
@@ -395,26 +412,45 @@ def _parse_html_audit_extract(raw: bytes) -> tuple[pd.DataFrame, list[str]]:
     if not html_text.strip():
         return pd.DataFrame(), ["Uploaded HTML file appears empty."]
 
+    embedded_df: pd.DataFrame | None = None
     for candidate in _decode_embedded_csv_candidates_from_html(html_text):
         if not _looks_like_csv(candidate):
             continue
         try:
             df = _read_csv_bytes(candidate.encode("utf-8", errors="ignore"))
             if not df.empty and _looks_like_audit_extract_df(df):
+                embedded_df = df
                 messages.append("Parsed embedded CSV payload from HTML report.")
-                return df, messages
+                break
         except Exception:
             continue
 
     try:
         html_for_tables = _replace_img_tags_with_src(html_text)
         tables = pd.read_html(io.StringIO(html_for_tables))
+        visible_table_df: pd.DataFrame | None = None
         for table in tables:
             if isinstance(table, pd.DataFrame) and not table.empty and _looks_like_audit_extract_df(table):
-                messages.append("Embedded CSV payload not found; parsed visible HTML table instead.")
-                return table, messages
+                visible_table_df = table
+                break
+
+        if embedded_df is not None and visible_table_df is not None:
+            embedded_hits = _count_image_cell_dimension_hits(embedded_df)
+            visible_hits = _count_image_cell_dimension_hits(visible_table_df)
+            if visible_hits > embedded_hits:
+                messages.append("Using visible HTML table because image-cell dimensions were richer there.")
+                return visible_table_df, messages
+            return embedded_df, messages
+        if embedded_df is not None:
+            return embedded_df, messages
+        if visible_table_df is not None:
+            messages.append("Embedded CSV payload not found; parsed visible HTML table instead.")
+            return visible_table_df, messages
         return pd.DataFrame(), ["No usable table data found in HTML report."]
     except Exception as exc:
+        if embedded_df is not None:
+            messages.append("Visible HTML table parse failed; using embedded CSV payload.")
+            return embedded_df, messages
         return pd.DataFrame(), [f"Could not parse HTML report table data: {exc}"]
 
 
@@ -614,11 +650,24 @@ def _extract_url_and_inline_dimensions(raw_value: str) -> tuple[str, dict[str, A
     value = str(raw_value or "").strip()
     if not value:
         return "", {"dimensions": "", "width": None, "height": None}
-    if value.startswith(("http://", "https://", "data:image")):
+    # Parse URL token and trailing dimension text from a single image cell value.
+    # Supports either whitespace-delimited values or tightly joined content such as:
+    # "https://...jpg2200 W x 2200 H".
+    if value.startswith(("http://", "https://")):
+        match = re.match(r"(?is)^(https?://\S+?)(?=(?:\s+\d{2,5}\s*W\s*[x×]\s*\d{2,5}\s*H\b)|\s*$)", value)
+        if match:
+            image_url = match.group(1).strip()
+            remainder = value[match.end() :].strip(" \t\r\n-_|,;")
+            return image_url, _parse_dimensions_payload(remainder)
+    if value.startswith("data:image"):
         first_token = value.split()[0].strip()
-        if first_token.startswith(("http://", "https://", "data:image")):
-            remainder = value[len(first_token) :].strip(" \t\r\n-_|,;")
-            return first_token, _parse_dimensions_payload(remainder)
+        remainder = value[len(first_token) :].strip(" \t\r\n-_|,;")
+        return first_token, _parse_dimensions_payload(remainder)
+    url_match = re.search(r"(?is)(https?://\S+)", value)
+    if url_match:
+        image_url = url_match.group(1).strip()
+        remainder = (value[: url_match.start()] + " " + value[url_match.end() :]).strip(" \t\r\n-_|,;")
+        return image_url, _parse_dimensions_payload(remainder)
     return value, {"dimensions": "", "width": None, "height": None}
 
 
@@ -642,7 +691,8 @@ def extract_images_from_sheet_row(row: pd.Series) -> list[dict[str, Any]]:
 
         explicit_dims_text = _cell_as_text(row, image_dim_col_map.get(image_idx, ""))
         explicit_dims = _parse_dimensions_payload(explicit_dims_text)
-        dims = explicit_dims if explicit_dims.get("dimensions") else inline_dims
+        # Source of truth is embedded image-cell text; dimension columns are fallback only.
+        dims = inline_dims if inline_dims.get("dimensions") else explicit_dims
 
         image_payload = {
             "url": url,
