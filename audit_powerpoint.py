@@ -739,33 +739,52 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
         if not ordered_primary_images:
             ordered_primary_images = [{"url": selected_img}]
 
-        if len(ordered_primary_images) == 1:
-            _insert_image_fit_within_shape(slide, image_box, _safe_text(ordered_primary_images[0].get("url", "")), inset_ratio=0.03)
-            show_dims = bool(selected_primary_payload.get("show_dimensions_in_powerpoint", False))
-            dims_text = _formatted_dimensions_text(
-                selected_primary_payload.get("width"),
-                selected_primary_payload.get("height"),
-                selected_primary_payload.get("dimensions_text", ""),
+        def _img_dims_enabled_and_text(img_payload: dict[str, Any]) -> tuple[bool, str]:
+            enabled = bool(img_payload.get("show_dimensions_in_powerpoint", False))
+            dims_text_local = _formatted_dimensions_text(
+                img_payload.get("width"),
+                img_payload.get("height"),
+                img_payload.get("dimensions_text", ""),
             )
+            return enabled, dims_text_local
+
+        if len(ordered_primary_images) == 1:
+            single = dict(ordered_primary_images[0] or {})
+            if "show_dimensions_in_powerpoint" not in single:
+                single["show_dimensions_in_powerpoint"] = bool(selected_primary_payload.get("show_dimensions_in_powerpoint", False))
+            if not _safe_text(single.get("dimensions_text", "")):
+                single["dimensions_text"] = selected_primary_payload.get("dimensions_text", "")
+            if single.get("width") is None:
+                single["width"] = selected_primary_payload.get("width")
+            if single.get("height") is None:
+                single["height"] = selected_primary_payload.get("height")
+
+            show_dims, dims_text = _img_dims_enabled_and_text(single)
             if show_dims and _safe_text(dims_text):
-                dims_h = int(min(image_box.height * 0.12, Inches(0.28)))
-                dims_top = int(image_box.top + image_box.height + Inches(0.03))
-                try:
-                    max_bottom = max(int(s.top + s.height) for s in slide.shapes)
-                except Exception:
-                    max_bottom = dims_top + dims_h
-                if dims_top + dims_h > max_bottom:
-                    dims_top = int(image_box.top + image_box.height - dims_h)
+                band_h = max(int(image_box.height * 0.11), int(Inches(0.18)))
+                band_h = min(band_h, int(image_box.height * 0.24))
+                image_h = max(1, int(image_box.height) - band_h)
+                _insert_image_fit_in_rect(
+                    slide,
+                    left=int(image_box.left),
+                    top=int(image_box.top),
+                    width=int(image_box.width),
+                    height=image_h,
+                    image_url=_safe_text(single.get("url", "")),
+                    inset_ratio=0.03,
+                )
                 _add_dimension_textbox(
                     slide,
                     left=int(image_box.left),
-                    top=dims_top,
+                    top=int(image_box.top + image_h),
                     width=int(image_box.width),
-                    height=dims_h,
+                    height=band_h,
                     text=dims_text,
                     color=PRIMARY_DIM_TEXT_COLOR,
                     font_size_pt=11,
                 )
+            else:
+                _insert_image_fit_within_shape(slide, image_box, _safe_text(single.get("url", "")), inset_ratio=0.03)
         else:
             rects = _pdp_image_layout_rects(
                 int(image_box.left),
@@ -774,19 +793,40 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
                 int(image_box.height),
                 len(ordered_primary_images),
             )
+            # Keep tile sizing consistent: when any displayed image has dimensions enabled,
+            # reserve the same bottom band in each tile and render text only for enabled tiles.
+            has_any_dims_enabled = any(_img_dims_enabled_and_text(dict(img or {}))[0] for img in ordered_primary_images)
             for idx, img in enumerate(ordered_primary_images):
                 if idx >= len(rects):
                     break
                 left, top, width, height = rects[idx]
+                show_dims, dims_text = _img_dims_enabled_and_text(dict(img or {}))
+                if has_any_dims_enabled:
+                    band_h = max(int(height * 0.12), int(Inches(0.14)))
+                    band_h = min(band_h, int(height * 0.28))
+                else:
+                    band_h = 0
+                image_h = max(1, int(height) - int(band_h))
                 _insert_image_fit_in_rect(
                     slide,
                     left=left,
                     top=top,
                     width=width,
-                    height=height,
+                    height=image_h,
                     image_url=_safe_text(img.get("url", "")),
                     inset_ratio=0.02,
                 )
+                if show_dims and _safe_text(dims_text) and band_h > 0:
+                    _add_dimension_textbox(
+                        slide,
+                        left=left,
+                        top=top + image_h,
+                        width=width,
+                        height=band_h,
+                        text=dims_text,
+                        color=PRIMARY_DIM_TEXT_COLOR,
+                        font_size_pt=10,
+                    )
     _suppress_pdp_image_placeholders(slide)
 
 
