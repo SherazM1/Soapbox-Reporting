@@ -824,6 +824,21 @@ def _sync_primary_entry_edits_v2(entry: dict) -> None:
         }
 
 
+def _format_image_dimensions_for_preview(image: dict[str, Any]) -> str:
+    width = image.get("width")
+    height = image.get("height")
+    if isinstance(width, (int, float)) and isinstance(height, (int, float)):
+        w = int(width)
+        h = int(height)
+        if w > 0 and h > 0:
+            return f"{w} W x {h} H"
+    raw_dims = str(image.get("dimensions", "") or "").strip()
+    match = re.search(r"(?P<w>\d{2,5})\s*[x×]\s*(?P<h>\d{2,5})", raw_dims, flags=re.IGNORECASE)
+    if match:
+        return f"{int(match.group('w'))} W x {int(match.group('h'))} H"
+    return "Dimensions: -"
+
+
 def render_extracted_primary_product_entries_v2() -> None:
     st.markdown("### Extracted Primary Product Data")
     st.caption(
@@ -880,14 +895,27 @@ def render_extracted_primary_product_entries_v2() -> None:
                 st.caption("Extraction notes: " + "; ".join(extraction_errors[:3]))
 
             images = record.get("images", [])
-            image_urls = [img.get("url", "") for img in images if img.get("url")]
-            if image_urls:
-                thumbnails_per_row = min(6, len(image_urls))
+            image_models = [img for img in images if isinstance(img, dict) and str(img.get("url", "") or "").strip()]
+            image_urls = [img.get("url", "") for img in image_models]
+            if image_models:
+                thumbnails_per_row = min(6, len(image_models))
                 img_cols = st.columns(thumbnails_per_row)
-                for i, image_url in enumerate(image_urls):
+                for i, image in enumerate(image_models):
+                    image_url = image.get("url", "")
+                    image_index = int(image.get("index", i) or i)
+                    dims_key = f"audit_v2_primary_show_dims_ppt_{entry['entry_id']}_{image_index}"
+                    if dims_key not in st.session_state:
+                        st.session_state[dims_key] = bool(image.get("show_dimensions_in_powerpoint", False))
                     with img_cols[i % thumbnails_per_row]:
                         st.image(image_url, width=120)
                         st.caption(f"Image {i + 1}")
+                        st.caption(_format_image_dimensions_for_preview(image))
+                        show_dims = st.checkbox("Show dimensions in PowerPoint", key=dims_key)
+                        image["show_dimensions_in_powerpoint"] = bool(show_dims)
+                        for raw_image in images:
+                            if int(raw_image.get("index", -1) or -1) == image_index:
+                                raw_image["show_dimensions_in_powerpoint"] = bool(show_dims)
+                                break
 
                 labels = [f"Image {i + 1}" for i in range(len(image_urls))]
                 selected_label = st.selectbox(
@@ -903,6 +931,7 @@ def render_extracted_primary_product_entries_v2() -> None:
                 }
                 st.caption("Selected primary image preview")
                 st.image(image_urls[selected_index], width=180)
+                st.caption(_format_image_dimensions_for_preview(image_models[selected_index]))
 
             st.text_area("Current Title", key=f"audit_v2_primary_current_title_{entry['entry_id']}", height=85)
             st.text_area("Current Description", key=f"audit_v2_primary_current_description_{entry['entry_id']}", height=120)
@@ -1097,13 +1126,26 @@ def render_extracted_competitor_entries_v2() -> None:
                     {
                         "index": int(img.get("index", idx) or idx),
                         "url": url,
+                        "dimensions": str(img.get("dimensions", "") or ""),
+                        "width": img.get("width"),
+                        "height": img.get("height"),
+                        "show_dimensions_in_powerpoint": bool(img.get("show_dimensions_in_powerpoint", False)),
                     }
                 )
             else:
                 url = str(img or "").strip()
                 if not url:
                     continue
-                normalized.append({"index": idx, "url": url})
+                normalized.append(
+                    {
+                        "index": idx,
+                        "url": url,
+                        "dimensions": "",
+                        "width": None,
+                        "height": None,
+                        "show_dimensions_in_powerpoint": False,
+                    }
+                )
         return normalized
 
     grouped_entries: list[dict[str, Any]] = []
@@ -1308,11 +1350,21 @@ def render_extracted_competitor_entries_v2() -> None:
                 image_index = image.get("index", i)
                 image_id = f"{group.get('record_id', '')}|{image_index}"
                 include_key = f"{selection_prefix}{image_id}"
+                dims_key = f"audit_v2_comp_show_dims_ppt_{image_id}"
                 if include_key not in st.session_state:
                     st.session_state[include_key] = False
+                if dims_key not in st.session_state:
+                    st.session_state[dims_key] = bool(image.get("show_dimensions_in_powerpoint", False))
                 with img_cols[i % len(img_cols)]:
                     st.image(image_url, width=130)
                     st.caption(f"Image {i + 1}")
+                    st.caption(_format_image_dimensions_for_preview(image))
+                    show_dims = st.checkbox("Show dimensions in PowerPoint", key=dims_key)
+                    image["show_dimensions_in_powerpoint"] = bool(show_dims)
+                    for raw_image in record.get("images", []):
+                        if int(raw_image.get("index", -1) or -1) == int(image_index):
+                            raw_image["show_dimensions_in_powerpoint"] = bool(show_dims)
+                            break
                     include = st.checkbox("Selected", key=include_key)
                     if include:
                         if slide_mode in {"single_pdp", "combined"}:

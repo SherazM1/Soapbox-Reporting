@@ -492,6 +492,43 @@ def detect_image_columns(
     return [col for _, col in indexed]
 
 
+def _image_index_from_column_name(col: str) -> int | None:
+    text = str(col or "").strip()
+    if not text:
+        return None
+    match = re.search(r"(\d+)", text)
+    if not match:
+        return None
+    try:
+        return int(match.group(1))
+    except Exception:
+        return None
+
+
+def detect_image_dimension_columns(
+    columns_or_row: pd.DataFrame | pd.Series | list[str] | tuple[str, ...],
+) -> list[str]:
+    """Return all image-dimension columns in numeric order."""
+    columns = _coerce_columns(columns_or_row)
+    indexed: list[tuple[int, str]] = []
+    for col in columns:
+        normalized = re.sub(r"[():]", " ", str(col or "").strip().lower())
+        normalized = re.sub(r"[\s_\-]+", " ", normalized).strip()
+        if not normalized:
+            continue
+        if not normalized.startswith("image "):
+            continue
+        has_dim_token = any(tok in normalized for tok in ("dimension", "dimensions", "size", "resolution"))
+        if not has_dim_token:
+            continue
+        image_idx = _image_index_from_column_name(normalized)
+        if image_idx is None:
+            continue
+        indexed.append((image_idx, col))
+    indexed.sort(key=lambda x: x[0])
+    return [col for _, col in indexed]
+
+
 def detect_description_bullet_columns(
     columns_or_row: pd.DataFrame | pd.Series | list[str] | tuple[str, ...],
 ) -> list[str]:
@@ -561,6 +598,64 @@ def extract_image_urls_from_sheet_row(row: pd.Series) -> list[str]:
     return urls
 
 
+def _parse_dimensions_payload(raw_text: str) -> dict[str, Any]:
+    text = str(raw_text or "").strip()
+    if not text:
+        return {"dimensions": "", "width": None, "height": None}
+    match = re.search(r"(?P<w>\d{2,5})\s*[x×]\s*(?P<h>\d{2,5})", text, flags=re.IGNORECASE)
+    if match:
+        width = int(match.group("w"))
+        height = int(match.group("h"))
+        return {"dimensions": f"{width} x {height}", "width": width, "height": height}
+    return {"dimensions": text, "width": None, "height": None}
+
+
+def _extract_url_and_inline_dimensions(raw_value: str) -> tuple[str, dict[str, Any]]:
+    value = str(raw_value or "").strip()
+    if not value:
+        return "", {"dimensions": "", "width": None, "height": None}
+    if value.startswith(("http://", "https://", "data:image")):
+        first_token = value.split()[0].strip()
+        if first_token.startswith(("http://", "https://", "data:image")):
+            remainder = value[len(first_token) :].strip(" \t\r\n-_|,;")
+            return first_token, _parse_dimensions_payload(remainder)
+    return value, {"dimensions": "", "width": None, "height": None}
+
+
+def extract_images_from_sheet_row(row: pd.Series) -> list[dict[str, Any]]:
+    image_dim_col_map: dict[int, str] = {}
+    for col in detect_image_dimension_columns(row):
+        idx = _image_index_from_column_name(col)
+        if idx is not None:
+            image_dim_col_map[idx] = col
+
+    images: list[dict[str, Any]] = []
+    for pos, col in enumerate(detect_image_columns(row)):
+        image_idx = _image_index_from_column_name(col)
+        if image_idx is None:
+            image_idx = pos + 1
+
+        raw_value = _cell_as_text(row, col)
+        url, inline_dims = _extract_url_and_inline_dimensions(raw_value)
+        if not url:
+            continue
+
+        explicit_dims_text = _cell_as_text(row, image_dim_col_map.get(image_idx, ""))
+        explicit_dims = _parse_dimensions_payload(explicit_dims_text)
+        dims = explicit_dims if explicit_dims.get("dimensions") else inline_dims
+
+        image_payload = {
+            "url": url,
+            "dimensions": str(dims.get("dimensions", "") or ""),
+            "width": dims.get("width"),
+            "height": dims.get("height"),
+            # Prepared for later UI control; no UI behavior is implemented in this prompt.
+            "show_dimensions_in_powerpoint": False,
+        }
+        images.append(image_payload)
+    return images
+
+
 def extract_description_bullets_from_sheet_row(row: pd.Series) -> list[str]:
     bullets: list[str] = []
     for col in detect_description_bullet_columns(row):
@@ -621,8 +716,15 @@ def map_sheet_row_to_cached_record(
     retailer: str = "",
 ) -> dict[str, Any]:
     """Map a single Audit Extract Sheet row into a normalized cached PDP record."""
-    image_urls = extract_image_urls_from_sheet_row(row)
-    images = [make_image(i, url, is_hero=(i == 0)) for i, url in enumerate(image_urls)]
+    extracted_images = extract_images_from_sheet_row(row)
+    images: list[dict[str, Any]] = []
+    for i, img in enumerate(extracted_images):
+        image = make_image(i, img.get("url", ""), is_hero=(i == 0))
+        image["dimensions"] = str(img.get("dimensions", "") or "")
+        image["width"] = img.get("width")
+        image["height"] = img.get("height")
+        image["show_dimensions_in_powerpoint"] = bool(img.get("show_dimensions_in_powerpoint", False))
+        images.append(image)
 
     bullets = extract_feature_bullets_from_sheet_row(row)
     key_features = [make_key_feature(i + 1, text) for i, text in enumerate(bullets)]

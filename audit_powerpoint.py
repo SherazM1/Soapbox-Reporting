@@ -8,11 +8,16 @@ from urllib.request import Request, urlopen
 from typing import Any
 
 from pptx import Presentation
+from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE_TYPE
-from pptx.enum.text import MSO_AUTO_SIZE
+from pptx.enum.text import MSO_AUTO_SIZE, PP_ALIGN
 from pptx.oxml.ns import qn
 from pptx.oxml.xmlchemy import OxmlElement
 from pptx.util import Inches, Pt
+
+GENERATED_FONT_FAMILY = "Raleway"
+PRIMARY_DIM_TEXT_COLOR = RGBColor(0, 128, 128)  # teal
+COMPETITOR_DIM_TEXT_COLOR = RGBColor(27, 56, 98)  # navy
 
 
 def resolve_audit_template_path() -> str:
@@ -85,15 +90,26 @@ def _set_shape_text(shape: Any, text: str, font_size: int | None = None) -> None
     if font_size is not None:
         for run in paragraph.runs:
             run.font.size = Pt(font_size)
+    for run in paragraph.runs:
+        run.font.name = GENERATED_FONT_FAMILY
 
 
-def _replace_shape_text_preserve_style(shape: Any, text: str) -> None:
+def _apply_paragraph_font(paragraph: Any, *, bold: bool | None = None) -> None:
+    for run in paragraph.runs:
+        run.font.name = GENERATED_FONT_FAMILY
+        if bold is not None:
+            run.font.bold = bool(bold)
+
+
+def _replace_shape_text_preserve_style(shape: Any, text: str, *, bold: bool | None = None) -> None:
     """Replace text while preserving existing shape/run styling as much as possible."""
     if not shape or not getattr(shape, "has_text_frame", False):
         return
     tf = shape.text_frame
     if not tf.paragraphs:
         shape.text = _safe_text(text)
+        for paragraph in tf.paragraphs:
+            _apply_paragraph_font(paragraph, bold=bold)
         return
     first_para = tf.paragraphs[0]
     if first_para.runs:
@@ -103,8 +119,11 @@ def _replace_shape_text_preserve_style(shape: Any, text: str) -> None:
         for para in tf.paragraphs[1:]:
             for run in para.runs:
                 run.text = ""
+        _apply_paragraph_font(first_para, bold=bold)
         return
     shape.text = _safe_text(text)
+    for paragraph in tf.paragraphs:
+        _apply_paragraph_font(paragraph, bold=bold)
 
 
 def _set_bullet_block(shape: Any, heading: str, bullets: list[str]) -> None:
@@ -115,13 +134,14 @@ def _set_bullet_block(shape: Any, heading: str, bullets: list[str]) -> None:
     _set_shape_text(shape, "\n".join(lines))
 
 
-def _replace_paragraph_text_preserve_style(paragraph: Any, text: str) -> None:
+def _replace_paragraph_text_preserve_style(paragraph: Any, text: str, *, bold: bool | None = None) -> None:
     if paragraph.runs:
         paragraph.runs[0].text = _safe_text(text)
         for run in paragraph.runs[1:]:
             run.text = ""
     else:
         paragraph.text = _safe_text(text)
+    _apply_paragraph_font(paragraph, bold=bold)
 
 
 def _force_paragraph_bullet(paragraph: Any) -> None:
@@ -168,16 +188,16 @@ def _set_pdp_title_and_item_id(shape: Any, title: str, item_id: str) -> None:
         return
 
     # Keep template title styling on first paragraph.
-    _replace_paragraph_text_preserve_style(tf.paragraphs[0], title)
+    _replace_paragraph_text_preserve_style(tf.paragraphs[0], title, bold=True)
 
     item_text = f"Item ID: {item_id}" if _safe_text(item_id) else ""
     if len(tf.paragraphs) >= 2:
-        _replace_paragraph_text_preserve_style(tf.paragraphs[1], item_text)
+        _replace_paragraph_text_preserve_style(tf.paragraphs[1], item_text, bold=False)
         for para in tf.paragraphs[2:]:
-            _replace_paragraph_text_preserve_style(para, "")
+            _replace_paragraph_text_preserve_style(para, "", bold=False)
     else:
         p = tf.add_paragraph()
-        _replace_paragraph_text_preserve_style(p, item_text)
+        _replace_paragraph_text_preserve_style(p, item_text, bold=False)
         p.level = 0
 
 
@@ -204,7 +224,7 @@ def _set_pdp_image_recommendations(shape: Any, heading: str, bullets: list[str])
         shape.text = _safe_text(heading)
 
     paragraphs = tf.paragraphs
-    _replace_paragraph_text_preserve_style(paragraphs[0], heading)
+    _replace_paragraph_text_preserve_style(paragraphs[0], heading, bold=True)
     paragraphs[0].level = 0
     _force_paragraph_no_list(paragraphs[0])
 
@@ -214,12 +234,12 @@ def _set_pdp_image_recommendations(shape: Any, heading: str, bullets: list[str])
 
     for idx, bullet in enumerate(clean_bullets, start=1):
         p = tf.paragraphs[idx]
-        _replace_paragraph_text_preserve_style(p, bullet)
+        _replace_paragraph_text_preserve_style(p, bullet, bold=False)
         p.level = 0
         _force_paragraph_numbered(p, start_at=idx)
 
     for p in tf.paragraphs[required_paragraphs:]:
-        _replace_paragraph_text_preserve_style(p, "")
+        _replace_paragraph_text_preserve_style(p, "", bold=False)
         _force_paragraph_no_list(p)
 
 
@@ -278,7 +298,7 @@ def _set_heading_and_real_bullets(shape: Any, heading: str, bullets: list[str]) 
     if not tf.paragraphs:
         shape.text = _safe_text(heading)
 
-    _replace_paragraph_text_preserve_style(tf.paragraphs[0], heading)
+    _replace_paragraph_text_preserve_style(tf.paragraphs[0], heading, bold=True)
     tf.paragraphs[0].level = 0
     _force_paragraph_no_list(tf.paragraphs[0])
 
@@ -288,13 +308,13 @@ def _set_heading_and_real_bullets(shape: Any, heading: str, bullets: list[str]) 
 
     for idx, bullet in enumerate(clean_bullets, start=1):
         p = tf.paragraphs[idx]
-        _replace_paragraph_text_preserve_style(p, bullet)
+        _replace_paragraph_text_preserve_style(p, bullet, bold=False)
         p.level = 0
         _force_paragraph_bullet(p)
     _normalize_bullet_paragraphs(tf.paragraphs[1:required_paragraphs])
 
     for p in tf.paragraphs[required_paragraphs:]:
-        _replace_paragraph_text_preserve_style(p, "")
+        _replace_paragraph_text_preserve_style(p, "", bold=False)
         _force_paragraph_no_list(p)
 
 
@@ -342,6 +362,7 @@ def _normalize_bullet_paragraphs(paragraphs: list[Any]) -> None:
 def _emphasize_heading_paragraph(paragraph: Any, min_size_pt: int = 18) -> None:
     paragraph.level = 0
     for run in paragraph.runs:
+        run.font.name = GENERATED_FONT_FAMILY
         run.font.bold = True
         if run.font.size is not None:
             run.font.size = Pt(max(min_size_pt, int(run.font.size.pt)))
@@ -356,7 +377,7 @@ def _set_title_recommendation_block(shape: Any, heading: str, recommended_title:
     if not tf.paragraphs:
         shape.text = _safe_text(heading)
 
-    _replace_paragraph_text_preserve_style(tf.paragraphs[0], heading)
+    _replace_paragraph_text_preserve_style(tf.paragraphs[0], heading, bold=True)
     _force_paragraph_no_list(tf.paragraphs[0])
     _emphasize_heading_paragraph(tf.paragraphs[0], min_size_pt=18)
 
@@ -366,12 +387,12 @@ def _set_title_recommendation_block(shape: Any, heading: str, recommended_title:
         tf.add_paragraph()
 
     bullet_para = tf.paragraphs[1]
-    _replace_paragraph_text_preserve_style(bullet_para, bullet_text)
+    _replace_paragraph_text_preserve_style(bullet_para, bullet_text, bold=False)
     bullet_para.level = 0
     _force_paragraph_no_list(bullet_para)
 
     for p in tf.paragraphs[2:]:
-        _replace_paragraph_text_preserve_style(p, "")
+        _replace_paragraph_text_preserve_style(p, "", bold=False)
         _force_paragraph_no_list(p)
 
 
@@ -445,6 +466,87 @@ def _insert_image_fit_within_shape(
         return True
     except Exception:
         return False
+
+
+def _insert_image_fit_in_rect(
+    slide: Any,
+    *,
+    left: int,
+    top: int,
+    width: int,
+    height: int,
+    image_url: str,
+    inset_ratio: float = 0.0,
+) -> bool:
+    image_bytes = _download_image_bytes(image_url)
+    if not image_bytes:
+        return False
+    try:
+        inset = max(0.0, min(0.25, float(inset_ratio)))
+        inset_x = int(width * inset)
+        inset_y = int(height * inset)
+        left = int(left) + inset_x
+        top = int(top) + inset_y
+        width = max(1, int(width) - 2 * inset_x)
+        height = max(1, int(height) - 2 * inset_y)
+
+        pic = slide.shapes.add_picture(io.BytesIO(image_bytes), 0, 0)
+        src_w = max(1, int(pic.width))
+        src_h = max(1, int(pic.height))
+        scale = min(width / src_w, height / src_h)
+        new_w = max(1, int(src_w * scale))
+        new_h = max(1, int(src_h * scale))
+
+        pic.width = new_w
+        pic.height = new_h
+        pic.left = left + int((width - new_w) / 2)
+        pic.top = top + int((height - new_h) / 2)
+        return True
+    except Exception:
+        return False
+
+
+def _formatted_dimensions_text(width: Any, height: Any, raw_text: Any) -> str:
+    if isinstance(width, (int, float)) and isinstance(height, (int, float)):
+        w = int(width)
+        h = int(height)
+        if w > 0 and h > 0:
+            return f"{w} W x {h} H"
+    raw = _safe_text(raw_text)
+    if not raw:
+        return ""
+    import re as _re
+
+    match = _re.search(r"(?P<w>\d{2,5})\s*[x×]\s*(?P<h>\d{2,5})", raw, flags=_re.IGNORECASE)
+    if match:
+        return f"{int(match.group('w'))} W x {int(match.group('h'))} H"
+    return ""
+
+
+def _add_dimension_textbox(
+    slide: Any,
+    *,
+    left: int,
+    top: int,
+    width: int,
+    height: int,
+    text: str,
+    color: RGBColor,
+    font_size_pt: int = 11,
+) -> None:
+    if not _safe_text(text):
+        return
+    textbox = slide.shapes.add_textbox(int(left), int(top), max(1, int(width)), max(1, int(height)))
+    tf = textbox.text_frame
+    tf.clear()
+    p = tf.paragraphs[0]
+    p.text = _safe_text(text)
+    p.alignment = PP_ALIGN.CENTER
+    for run in p.runs:
+        run.font.name = GENERATED_FONT_FAMILY
+        run.font.size = Pt(font_size_pt)
+        run.font.bold = False
+        run.font.color.rgb = color
 
 
 def _remove_shape_box_treatment(shape: Any) -> None:
@@ -583,11 +685,12 @@ def _find_first_shared_anchor_slide(prs: Presentation) -> Any | None:
 def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
     pdp = pair_payload.get("pdp_slide", {}) or {}
     content = pair_payload.get("content_optimization_slide", {}) or {}
+    selected_primary_payload = pdp.get("selected_primary_image", {}) or {}
 
     title = _safe_text(pdp.get("product_title"))
     item_id = _safe_text(pdp.get("item_id"))
     image_recs = list(content.get("image_recommendations", []) or [])
-    selected_img = (pdp.get("selected_primary_image", {}) or {}).get("url", "")
+    selected_img = selected_primary_payload.get("url", "")
 
     title_shape = _find_pdp_title_shape(slide)
     if title_shape:
@@ -601,6 +704,31 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
     if image_box and _safe_text(selected_img):
         _remove_shape_box_treatment(image_box)
         _insert_image_fit_within_shape(slide, image_box, selected_img, inset_ratio=0.03)
+        show_dims = bool(selected_primary_payload.get("show_dimensions_in_powerpoint", False))
+        dims_text = _formatted_dimensions_text(
+            selected_primary_payload.get("width"),
+            selected_primary_payload.get("height"),
+            selected_primary_payload.get("dimensions_text", ""),
+        )
+        if show_dims and _safe_text(dims_text):
+            dims_h = int(min(image_box.height * 0.12, Inches(0.28)))
+            dims_top = int(image_box.top + image_box.height + Inches(0.03))
+            try:
+                max_bottom = max(int(s.top + s.height) for s in slide.shapes)
+            except Exception:
+                max_bottom = dims_top + dims_h
+            if dims_top + dims_h > max_bottom:
+                dims_top = int(image_box.top + image_box.height - dims_h)
+            _add_dimension_textbox(
+                slide,
+                left=int(image_box.left),
+                top=dims_top,
+                width=int(image_box.width),
+                height=dims_h,
+                text=dims_text,
+                color=PRIMARY_DIM_TEXT_COLOR,
+                font_size_pt=11,
+            )
     _suppress_pdp_image_placeholders(slide)
 
 
@@ -747,7 +875,8 @@ def _populate_competitor_graphics(slide: Any, ordered_assignments: list[dict[str
     for idx, assignment in enumerate(active_assignments):
         if idx >= len(active_slots):
             break
-        _insert_image_over_shape(slide, active_slots[idx], _safe_text(assignment.get("url")))
+        slot = active_slots[idx]
+        _insert_image_over_shape(slide, slot, _safe_text(assignment.get("url")))
 
     notes_shape = _find_shape_contains(slide, "(image placeholder)")
     if notes_shape:
@@ -852,7 +981,7 @@ def _populate_cover_title(prs: Presentation, client_name: str) -> None:
             continue
         text_l = text.lower()
         if "hyper audit" in text_l or text_l.endswith(" audit") or text_l == "audit":
-            _replace_shape_text_preserve_style(shape, target_text)
+            _replace_shape_text_preserve_style(shape, target_text, bold=True)
             break
 
 

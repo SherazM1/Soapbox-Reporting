@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import Any
 
 
@@ -35,6 +36,22 @@ def resolve_effective_outputs(entry: dict[str, Any]) -> dict[str, Any]:
     return edited if _outputs_meaningful(edited) else generated
 
 
+def _format_dimensions_label_from_image(image: dict[str, Any] | None) -> str:
+    image = image or {}
+    width = image.get("width")
+    height = image.get("height")
+    if isinstance(width, (int, float)) and isinstance(height, (int, float)):
+        w = int(width)
+        h = int(height)
+        if w > 0 and h > 0:
+            return f"{w} W x {h} H"
+    raw = str(image.get("dimensions", "") or "").strip()
+    match = re.search(r"(?P<w>\d{2,5})\s*[x×]\s*(?P<h>\d{2,5})", raw, flags=re.IGNORECASE)
+    if match:
+        return f"{int(match.group('w'))} W x {int(match.group('h'))} H"
+    return ""
+
+
 def resolve_primary_image_payload(entry: dict[str, Any]) -> dict[str, Any]:
     record = entry.get("cached_record", {}) or {}
     images = record.get("images", []) or []
@@ -43,6 +60,17 @@ def resolve_primary_image_payload(entry: dict[str, Any]) -> dict[str, Any]:
     selected_index = selected.get("image_index")
     selected_url = str(selected.get("url", "") or "").strip()
     selected_record_id = selected.get("record_id") or record.get("record_id", "")
+    selected_image_obj: dict[str, Any] | None = None
+    if isinstance(selected_index, int) and selected_index >= 0:
+        selected_image_obj = next(
+            (img for img in images if int(img.get("index", -1) or -1) == selected_index),
+            None,
+        )
+    if selected_image_obj is None and selected_url:
+        selected_image_obj = next(
+            (img for img in images if str(img.get("url", "") or "").strip() == selected_url),
+            None,
+        )
 
     if selected_url and isinstance(selected_index, int) and selected_index >= 0:
         return {
@@ -50,6 +78,8 @@ def resolve_primary_image_payload(entry: dict[str, Any]) -> dict[str, Any]:
             "image_index": selected_index,
             "url": selected_url,
             "selection_source": "user_selected",
+            "dimensions_text": _format_dimensions_label_from_image(selected_image_obj),
+            "show_dimensions_in_powerpoint": bool((selected_image_obj or {}).get("show_dimensions_in_powerpoint", False)),
         }
 
     hero = next((img for img in images if img.get("is_hero") and img.get("url")), None)
@@ -59,6 +89,8 @@ def resolve_primary_image_payload(entry: dict[str, Any]) -> dict[str, Any]:
             "image_index": int(hero.get("index", 0)),
             "url": hero.get("url", ""),
             "selection_source": "hero_fallback",
+            "dimensions_text": _format_dimensions_label_from_image(hero),
+            "show_dimensions_in_powerpoint": bool(hero.get("show_dimensions_in_powerpoint", False)),
         }
 
     if images:
@@ -68,6 +100,8 @@ def resolve_primary_image_payload(entry: dict[str, Any]) -> dict[str, Any]:
             "image_index": int(first.get("index", 0)),
             "url": first.get("url", ""),
             "selection_source": "first_image_fallback",
+            "dimensions_text": _format_dimensions_label_from_image(first),
+            "show_dimensions_in_powerpoint": bool(first.get("show_dimensions_in_powerpoint", False)),
         }
 
     return {
@@ -75,6 +109,8 @@ def resolve_primary_image_payload(entry: dict[str, Any]) -> dict[str, Any]:
         "image_index": None,
         "url": "",
         "selection_source": "missing",
+        "dimensions_text": "",
+        "show_dimensions_in_powerpoint": False,
     }
 
 
@@ -157,11 +193,36 @@ def build_competitor_graphics_payload(
             "brand": a.get("brand", ""),
             "item_id": a.get("item_id", ""),
             "source_url": a.get("source_url", ""),
+            "dimensions_text": str(a.get("dimensions_text", "") or ""),
+            "show_dimensions_in_powerpoint": bool(a.get("show_dimensions_in_powerpoint", False)),
         }
         fallback = record_meta.get(record_id, {})
         for key, value in fallback.items():
             if not _text_has_value(row.get(key)):
                 row[key] = value
+        fallback_images = list(fallback.get("images", []) or [])
+        image_match = next(
+            (
+                img
+                for img in fallback_images
+                if int(img.get("index", -1) or -1) == int(row.get("image_index", 0) or 0)
+                and str(img.get("url", "") or "").strip() == str(row.get("url", "") or "").strip()
+            ),
+            None,
+        )
+        if image_match is None:
+            image_match = next(
+                (
+                    img
+                    for img in fallback_images
+                    if int(img.get("index", -1) or -1) == int(row.get("image_index", 0) or 0)
+                ),
+                None,
+            )
+        if not _text_has_value(row.get("dimensions_text", "")):
+            row["dimensions_text"] = _format_dimensions_label_from_image(image_match)
+        if image_match is not None and "show_dimensions_in_powerpoint" in image_match:
+            row["show_dimensions_in_powerpoint"] = bool(image_match.get("show_dimensions_in_powerpoint", False))
         cleaned.append(row)
 
     cleaned.sort(key=lambda x: (x["display_order"], x["record_id"], x["image_index"]))
@@ -226,6 +287,8 @@ def build_competitor_graphics_payload(
                             "brand": record.get("brand", ""),
                             "item_id": record.get("item_id", ""),
                             "source_url": record.get("source_url", ""),
+                            "dimensions_text": _format_dimensions_label_from_image(image),
+                            "show_dimensions_in_powerpoint": bool(image.get("show_dimensions_in_powerpoint", False)),
                         }
                     )
             elif isinstance(selected_ids, list) and selected_ids:
@@ -253,6 +316,8 @@ def build_competitor_graphics_payload(
                             "brand": record.get("brand", ""),
                             "item_id": record.get("item_id", ""),
                             "source_url": record.get("source_url", ""),
+                            "dimensions_text": _format_dimensions_label_from_image(image),
+                            "show_dimensions_in_powerpoint": bool(image.get("show_dimensions_in_powerpoint", False)),
                         }
                     )
             else:
