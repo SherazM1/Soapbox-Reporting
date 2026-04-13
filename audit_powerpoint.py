@@ -552,6 +552,20 @@ def _move_slide_before(prs: Presentation, slide_to_move: Any, anchor_slide: Any)
         return
 
 
+def _move_slide_after(prs: Presentation, slide_to_move: Any, anchor_slide: Any) -> None:
+    move_el = _slide_id_element(prs, slide_to_move)
+    anchor_el = _slide_id_element(prs, anchor_slide)
+    if move_el is None or anchor_el is None:
+        return
+    sld_id_lst = prs.slides._sldIdLst  # pylint: disable=protected-access
+    try:
+        sld_id_lst.remove(move_el)
+        anchor_pos = list(sld_id_lst).index(anchor_el)
+        sld_id_lst.insert(anchor_pos + 1, move_el)
+    except Exception:
+        return
+
+
 def _find_first_shared_anchor_slide(prs: Presentation) -> Any | None:
     anchors = []
     for token in ("Competitor Graphics", "Retail Media Optimizations", "Competitor Ad Graphics", "Let’s connect", "Let's connect"):
@@ -719,6 +733,45 @@ def _populate_competitor_graphics(slide: Any, ordered_assignments: list[dict[str
         _set_shape_text(notes_shape, _safe_text(notes) or "")
 
 
+def _populate_competitor_graphics_slides(
+    prs: Presentation,
+    competitor_template_slide: Any,
+    competitor_payload: dict[str, Any],
+    notes: str,
+) -> None:
+    if competitor_template_slide is None:
+        return
+
+    slide_specs = list(competitor_payload.get("slides", []) or [])
+    if not slide_specs:
+        slide_specs = [
+            {
+                "ordered_assignments": list(competitor_payload.get("ordered_assignments", []) or []),
+            }
+        ]
+
+    if not slide_specs:
+        slide_specs = [{"ordered_assignments": []}]
+
+    duplicate_slides: list[Any] = []
+    previous_slide = competitor_template_slide
+    for _ in slide_specs[1:]:
+        dup = _duplicate_slide(prs, competitor_template_slide)
+        duplicate_slides.append(dup)
+        _move_slide_after(prs, dup, previous_slide)
+        previous_slide = dup
+
+    target_slides = [competitor_template_slide, *duplicate_slides]
+    for idx, spec in enumerate(slide_specs):
+        if idx >= len(target_slides):
+            break
+        _populate_competitor_graphics(
+            target_slides[idx],
+            list(spec.get("ordered_assignments", []) or []),
+            notes,
+        )
+
+
 def _populate_shared_note_slide(slide: Any, heading: str, body_text: str) -> None:
     body = _safe_text(body_text)
     target = None
@@ -828,9 +881,10 @@ def generate_audit_powerpoint_from_template(*, export_plan: dict[str, Any], temp
     competitor_payload = export_plan.get("competitor_graphics_payload", {}) or {}
     shared_sections = export_plan.get("shared_sections_payload", {}) or {}
     if competitor_slide is not None:
-        _populate_competitor_graphics(
+        _populate_competitor_graphics_slides(
+            prs,
             competitor_slide,
-            list(competitor_payload.get("ordered_assignments", []) or []),
+            competitor_payload,
             _safe_text(shared_sections.get("competitor_graphics_notes", "")),
         )
 

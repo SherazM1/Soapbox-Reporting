@@ -247,6 +247,16 @@ def _init_audit_state() -> None:
         st.session_state["audit_v2_primary_fallback_method"] = "Single PDP URL"
     if "audit_v2_competitor_fallback_method" not in st.session_state:
         st.session_state["audit_v2_competitor_fallback_method"] = "Single PDP URL"
+    if "audit_competitor_has_multiple_pdps" not in st.session_state:
+        st.session_state["audit_competitor_has_multiple_pdps"] = False
+    if "audit_competitor_pdp_group_count" not in st.session_state:
+        st.session_state["audit_competitor_pdp_group_count"] = 0
+    if "audit_competitor_make_multiple_slides" not in st.session_state:
+        st.session_state["audit_competitor_make_multiple_slides"] = False
+    if "audit_competitor_slide_mode" not in st.session_state:
+        st.session_state["audit_competitor_slide_mode"] = "single_pdp"
+    if "audit_competitor_slide_mode_selector" not in st.session_state:
+        st.session_state["audit_competitor_slide_mode_selector"] = "Generate One Combined PDP Slide"
 
 
 def _set_extracted_fields(data: dict) -> None:
@@ -607,6 +617,20 @@ def _reset_generated_audit_state_v2() -> None:
     st.session_state["audit_export_plan"] = {}
 
 
+def _reset_competitor_graphics_mode_state_v2() -> None:
+    st.session_state["audit_competitor_has_multiple_pdps"] = False
+    st.session_state["audit_competitor_pdp_group_count"] = 0
+    st.session_state["audit_competitor_make_multiple_slides"] = False
+    st.session_state["audit_competitor_slide_mode"] = "single_pdp"
+    st.session_state["audit_competitor_slide_mode_selector"] = "Generate One Combined PDP Slide"
+    st.session_state["audit_competitor_combined_image_orders"] = {}
+    st.session_state["audit_competitor_multi_image_orders_by_record"] = {}
+    st.session_state["audit_competitor_selected_image_ids_by_record"] = {}
+    st.session_state["audit_competitor_group_summary"] = []
+    st.session_state["audit_v2_comp_selection_signature_combined"] = ()
+    st.session_state["audit_v2_comp_selection_signature_multi"] = ()
+
+
 def _extract_urls_from_df_v2(df_uploaded: pd.DataFrame, selected_col: str) -> list[str]:
     return urls_from_uploaded_dataframe(df_uploaded, selected_col)
 
@@ -954,6 +978,7 @@ def render_competitor_pdp_upload_v2() -> None:
                         st.session_state["audit_competitor_entries"] = records
                         st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
                         st.session_state["audit_competitor_image_orders"] = {}
+                        _reset_competitor_graphics_mode_state_v2()
                         _reset_generated_audit_state_v2()
                         if records:
                             st.success(f"Competitor sheet ingestion complete for {len(records)} row(s).")
@@ -985,6 +1010,7 @@ def render_competitor_pdp_upload_v2() -> None:
                         st.session_state["audit_competitor_entries"] = records
                         st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
                         st.session_state["audit_competitor_image_orders"] = {}
+                        _reset_competitor_graphics_mode_state_v2()
                         _reset_generated_audit_state_v2()
                         if records:
                             st.success(f"Competitor PDP extraction complete for {len(records)} URL.")
@@ -1036,6 +1062,7 @@ def render_competitor_pdp_upload_v2() -> None:
                         st.session_state["audit_competitor_entries"] = records
                         st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
                         st.session_state["audit_competitor_image_orders"] = {}
+                        _reset_competitor_graphics_mode_state_v2()
                         _reset_generated_audit_state_v2()
                         if records:
                             st.success(f"Competitor PDP extraction complete for {len(records)} URL(s).")
@@ -1047,13 +1074,14 @@ def render_competitor_pdp_upload_v2() -> None:
 
 def render_extracted_competitor_entries_v2() -> None:
     st.markdown("### Extracted Competitor Data")
-    st.caption(
-        "Competitor images are grouped by PDP. Select up to 10 total images "
-        "for the shared competitor graphics section."
-    )
     entries = st.session_state.get("audit_competitor_entries", [])
     if not entries:
         st.info("Competitor upload is optional. Add competitor PDPs when needed.")
+        st.session_state["audit_competitor_has_multiple_pdps"] = False
+        st.session_state["audit_competitor_pdp_group_count"] = 0
+        st.session_state["audit_competitor_make_multiple_slides"] = False
+        st.session_state["audit_competitor_slide_mode"] = "single_pdp"
+        st.session_state["audit_competitor_slide_mode_selector"] = "Generate One Combined PDP Slide"
         return
 
     max_slots = 10
@@ -1107,7 +1135,49 @@ def render_extracted_competitor_entries_v2() -> None:
         if int(record.get("image_count", 0) or 0) != len(image_models):
             record["image_count"] = len(image_models)
 
-    def _default_selected_image_ids() -> list[str]:
+    group_count = len(grouped_entries)
+    has_multiple_pdps = group_count > 1
+    st.session_state["audit_competitor_has_multiple_pdps"] = has_multiple_pdps
+    st.session_state["audit_competitor_pdp_group_count"] = group_count
+
+    if not has_multiple_pdps:
+        st.session_state["audit_competitor_make_multiple_slides"] = False
+        slide_mode = "single_pdp"
+        st.session_state["audit_competitor_slide_mode_selector"] = "Generate One Combined PDP Slide"
+        st.caption("Competitor images are grouped by PDP. Select up to 10 images for the competitor graphics slide.")
+    else:
+        st.caption(
+            "Competitor images are grouped by PDP. Choose one combined competitor slide "
+            "or one competitor slide per PDP group."
+        )
+        selector_default = (
+            "Generate Multiple PDP Slides"
+            if bool(st.session_state.get("audit_competitor_make_multiple_slides", False))
+            else "Generate One Combined PDP Slide"
+        )
+        if st.session_state.get("audit_competitor_slide_mode_selector") not in {
+            "Generate Multiple PDP Slides",
+            "Generate One Combined PDP Slide",
+        }:
+            st.session_state["audit_competitor_slide_mode_selector"] = selector_default
+        selected_mode_label = st.radio(
+            "Competitor Graphics Generation Mode",
+            options=[
+                "Generate Multiple PDP Slides",
+                "Generate One Combined PDP Slide",
+            ],
+            key="audit_competitor_slide_mode_selector",
+            horizontal=True,
+        )
+        st.session_state["audit_competitor_make_multiple_slides"] = selected_mode_label == "Generate Multiple PDP Slides"
+        slide_mode = "per_pdp" if selected_mode_label == "Generate Multiple PDP Slides" else "combined"
+        if slide_mode == "per_pdp":
+            st.caption("Multi-slide mode: select up to 10 images per competitor PDP group.")
+        else:
+            st.caption("Combined mode: select up to 10 total images across all competitor PDP groups.")
+    st.session_state["audit_competitor_slide_mode"] = slide_mode
+
+    def _default_selected_image_ids_round_robin() -> list[str]:
         if len(grouped_entries) <= 1:
             return all_image_ids[:max_slots]
 
@@ -1131,38 +1201,78 @@ def render_extracted_competitor_entries_v2() -> None:
             pass_index += 1
         return selected
 
+    def _default_selected_image_ids_multi() -> set[str]:
+        selected_multi: set[str] = set()
+        for group in grouped_entries:
+            group_images = group.get("images", [])
+            for image in group_images[:max_slots]:
+                image_index = int(image.get("index", 0))
+                image_id = f"{group['record_id']}|{image_index}"
+                selected_multi.add(image_id)
+        return selected_multi
+
     selection_signature = tuple(all_image_ids)
-    signature_key = "audit_v2_comp_selection_signature"
+    selection_prefix = "audit_v2_comp_include_combined_" if slide_mode in {"single_pdp", "combined"} else "audit_v2_comp_include_multi_"
+    signature_key = (
+        "audit_v2_comp_selection_signature_combined"
+        if slide_mode in {"single_pdp", "combined"}
+        else "audit_v2_comp_selection_signature_multi"
+    )
     if st.session_state.get(signature_key) != selection_signature:
-        default_ids = set(_default_selected_image_ids())
+        default_ids = (
+            set(_default_selected_image_ids_round_robin())
+            if slide_mode in {"single_pdp", "combined"}
+            else _default_selected_image_ids_multi()
+        )
         for image_id in all_image_ids:
-            st.session_state[f"audit_v2_comp_include_{image_id}"] = image_id in default_ids
+            st.session_state[f"{selection_prefix}{image_id}"] = image_id in default_ids
         st.session_state[signature_key] = selection_signature
 
     control_col_1, control_col_2, control_col_3 = st.columns([1, 1, 2])
     with control_col_1:
         if st.button("Select Default 10", key="audit_v2_comp_select_default_10"):
-            default_ids = set(_default_selected_image_ids())
+            default_ids = (
+                set(_default_selected_image_ids_round_robin())
+                if slide_mode in {"single_pdp", "combined"}
+                else _default_selected_image_ids_multi()
+            )
             for image_id in all_image_ids:
-                st.session_state[f"audit_v2_comp_include_{image_id}"] = image_id in default_ids
+                st.session_state[f"{selection_prefix}{image_id}"] = image_id in default_ids
     with control_col_2:
         if st.button("Clear All", key="audit_v2_comp_clear_all"):
             for image_id in all_image_ids:
-                st.session_state[f"audit_v2_comp_include_{image_id}"] = False
+                st.session_state[f"{selection_prefix}{image_id}"] = False
     with control_col_3:
-        current_selected = sum(
-            1 for image_id in all_image_ids if bool(st.session_state.get(f"audit_v2_comp_include_{image_id}", False))
-        )
-        st.caption(f"Selected: {current_selected} / {max_slots}")
+        if slide_mode in {"single_pdp", "combined"}:
+            current_selected = sum(
+                1 for image_id in all_image_ids if bool(st.session_state.get(f"{selection_prefix}{image_id}", False))
+            )
+            st.caption(f"Selected: {current_selected} / {max_slots}")
+        else:
+            per_group_selected: list[str] = []
+            for group in grouped_entries:
+                group_images = group.get("images", [])
+                group_selected_count = 0
+                for i, image in enumerate(group_images):
+                    image_index = int(image.get("index", i))
+                    image_id = f"{group.get('record_id', '')}|{image_index}"
+                    if bool(st.session_state.get(f"{selection_prefix}{image_id}", False)):
+                        group_selected_count += 1
+                per_group_selected.append(f"{group.get('entry_idx', 0)}: {group_selected_count}/{max_slots}")
+            st.caption("Per-group selected: " + " | ".join(per_group_selected))
 
     selected_image_ids: list[str] = []
     selected_rows: list[dict[str, Any]] = []
+    selected_ids_by_record: dict[str, list[str]] = {}
+    group_image_orders: dict[str, dict[str, int]] = {}
     limit_blocked = False
 
     for group in grouped_entries:
         idx = int(group.get("entry_idx", 0))
         record = group.get("record", {})
         image_models = group.get("images", [])
+        record_id = str(group.get("record_id", ""))
+        group_selected_ids: list[str] = []
         with st.container(border=True):
             st.markdown(f"#### Competitor Entry {idx}")
             c1, c2, c3 = st.columns([2, 1, 1])
@@ -1197,7 +1307,7 @@ def render_extracted_competitor_entries_v2() -> None:
                 image_url = image.get("url", "")
                 image_index = image.get("index", i)
                 image_id = f"{group.get('record_id', '')}|{image_index}"
-                include_key = f"audit_v2_comp_include_{image_id}"
+                include_key = f"{selection_prefix}{image_id}"
                 if include_key not in st.session_state:
                     st.session_state[include_key] = False
                 with img_cols[i % len(img_cols)]:
@@ -1205,12 +1315,23 @@ def render_extracted_competitor_entries_v2() -> None:
                     st.caption(f"Image {i + 1}")
                     include = st.checkbox("Selected", key=include_key)
                     if include:
-                        if len(selected_image_ids) < max_slots:
-                            selected_image_ids.append(image_id)
+                        if slide_mode in {"single_pdp", "combined"}:
+                            if len(selected_image_ids) < max_slots:
+                                selected_image_ids.append(image_id)
+                                group_selected_ids.append(image_id)
+                            else:
+                                st.session_state[include_key] = False
+                                limit_blocked = True
                         else:
-                            st.session_state[include_key] = False
-                            limit_blocked = True
+                            if len(group_selected_ids) < max_slots:
+                                selected_image_ids.append(image_id)
+                                group_selected_ids.append(image_id)
+                            else:
+                                st.session_state[include_key] = False
+                                limit_blocked = True
                     st.caption(f"Source URL: {image_url}")
+        selected_ids_by_record[record_id] = list(group_selected_ids)
+        group_image_orders[record_id] = {image_id: order for order, image_id in enumerate(group_selected_ids, start=1)}
 
     image_orders: dict[str, int] = {image_id: 0 for image_id in all_image_ids}
     for display_order, image_id in enumerate(selected_image_ids, start=1):
@@ -1231,13 +1352,46 @@ def render_extracted_competitor_entries_v2() -> None:
         )
 
     if limit_blocked:
-        st.warning("You can select up to 10 competitor images.")
+        if slide_mode in {"single_pdp", "combined"}:
+            st.warning("You can select up to 10 competitor images in combined mode.")
+        else:
+            st.warning("You can select up to 10 competitor images per PDP group in multi-slide mode.")
 
     selected_count = len(selected_image_ids)
     st.session_state["audit_competitor_image_orders"] = image_orders
+    st.session_state["audit_competitor_combined_image_orders"] = dict(image_orders)
+    st.session_state["audit_competitor_multi_image_orders_by_record"] = dict(group_image_orders)
+    st.session_state["audit_competitor_selected_image_ids_by_record"] = dict(selected_ids_by_record)
+    st.session_state["audit_competitor_group_summary"] = [
+        {
+            "record_id": str(group.get("record_id", "")),
+            "entry_idx": int(group.get("entry_idx", 0)),
+            "source_url": str((group.get("record", {}) or {}).get("source_url", "")),
+            "product_title": str((group.get("record", {}) or {}).get("product_title", "")),
+            "image_ids": [
+                f"{group.get('record_id', '')}|{int(image.get('index', i))}"
+                for i, image in enumerate(group.get("images", []))
+            ],
+        }
+        for group in grouped_entries
+    ]
     st.session_state["audit_competitor_assignments"] = build_competitor_assignments(entries, image_orders)
 
-    st.caption(f"Selected: {selected_count} / {max_slots}")
+    if slide_mode in {"single_pdp", "combined"}:
+        st.caption(f"Selected: {selected_count} / {max_slots}")
+    else:
+        st.caption(f"Selected Total Across Groups: {selected_count}")
+
+    st.session_state["audit_competitor_mode_payload"] = {
+        "mode": slide_mode,
+        "has_multiple_pdps": has_multiple_pdps,
+        "max_images_per_slide": max_slots,
+        "combined_image_orders": st.session_state.get("audit_competitor_combined_image_orders", {}),
+        "selected_image_ids_by_record": st.session_state.get("audit_competitor_selected_image_ids_by_record", {}),
+        "multi_image_orders_by_record": st.session_state.get("audit_competitor_multi_image_orders_by_record", {}),
+        "group_summary": st.session_state.get("audit_competitor_group_summary", []),
+    }
+
     if selected_rows:
         ordered_df = (
             pd.DataFrame(selected_rows)
@@ -1247,7 +1401,10 @@ def render_extracted_competitor_entries_v2() -> None:
         preview_df = ordered_df[
             ["Display Order", "Competitor Title", "Brand", "Item ID", "Image Label", "Image URL"]
         ]
-        st.caption("Ordered competitor image preview for shared template slots")
+        if slide_mode in {"single_pdp", "combined"}:
+            st.caption("Ordered competitor image preview for shared template slots")
+        else:
+            st.caption("Ordered competitor image preview for active multi-slide selection state")
         st.dataframe(preview_df, use_container_width=True, hide_index=True)
     else:
         st.info("No competitor images selected yet.")
@@ -1291,6 +1448,14 @@ def _refresh_audit_export_plan_v2() -> None:
         audit_record["competitor_graphics_notes"] = st.session_state.get("audit_competitor_graphics_notes", "")
         audit_record["retail_media_optimizations"] = st.session_state.get("audit_retail_media_optimizations", "")
         audit_record["competitor_ad_graphics_notes"] = st.session_state.get("audit_competitor_ad_graphics_notes", "")
+        audit_record["competitor_graphics_mode"] = st.session_state.get("audit_competitor_slide_mode", "single_pdp")
+        audit_record["competitor_graphics_has_multiple_pdps"] = bool(
+            st.session_state.get("audit_competitor_has_multiple_pdps", False)
+        )
+        audit_record["competitor_graphics_make_multiple_slides"] = bool(
+            st.session_state.get("audit_competitor_make_multiple_slides", False)
+        )
+        audit_record["competitor_graphics_mode_payload"] = st.session_state.get("audit_competitor_mode_payload", {})
 
     st.session_state["audit_export_plan"] = build_audit_export_plan(
         audit_record=audit_record,

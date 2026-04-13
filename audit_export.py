@@ -122,8 +122,12 @@ def build_product_slide_pair(entry: dict[str, Any], pair_order: int) -> dict[str
 def build_competitor_graphics_payload(
     assignments: list[dict[str, Any]],
     competitor_records: list[dict[str, Any]] | None = None,
+    *,
+    slide_mode: str = "single_pdp",
+    mode_payload: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     competitor_records = competitor_records or []
+    mode_payload = mode_payload or {}
     record_meta = {
         r.get("record_id", ""): {
             "product_title": r.get("product_title", ""),
@@ -131,6 +135,7 @@ def build_competitor_graphics_payload(
             "brand": r.get("brand", ""),
             "item_id": r.get("item_id", ""),
             "source_url": r.get("source_url", ""),
+            "images": list(r.get("images", []) or []),
         }
         for r in competitor_records
         if r.get("record_id")
@@ -160,9 +165,137 @@ def build_competitor_graphics_payload(
         cleaned.append(row)
 
     cleaned.sort(key=lambda x: (x["display_order"], x["record_id"], x["image_index"]))
+    cleaned_by_record: dict[str, list[dict[str, Any]]] = {}
+    for row in cleaned:
+        rid = str(row.get("record_id", ""))
+        if not rid:
+            continue
+        cleaned_by_record.setdefault(rid, []).append(row)
+
+    normalized_mode = str(slide_mode or "").strip().lower()
+    if normalized_mode not in {"single_pdp", "combined", "per_pdp"}:
+        normalized_mode = "single_pdp"
+
+    group_summary = list(mode_payload.get("group_summary", []) or [])
+    ordered_record_ids: list[str] = []
+    for group in group_summary:
+        rid = str(group.get("record_id", "") or "").strip()
+        if rid and rid not in ordered_record_ids:
+            ordered_record_ids.append(rid)
+    if not ordered_record_ids:
+        ordered_record_ids = [str(r.get("record_id", "")).strip() for r in competitor_records if r.get("record_id")]
+
+    slide_specs: list[dict[str, Any]] = []
+    if normalized_mode == "per_pdp":
+        selected_ids_by_record = mode_payload.get("selected_image_ids_by_record", {}) or {}
+        multi_orders_by_record = mode_payload.get("multi_image_orders_by_record", {}) or {}
+        for rid in ordered_record_ids:
+            record = record_meta.get(rid, {})
+            image_by_index: dict[int, dict[str, Any]] = {}
+            for i, image in enumerate(record.get("images", []) or []):
+                img_index = int(image.get("index", i) or i)
+                image_by_index[img_index] = image
+
+            explicit_orders = multi_orders_by_record.get(rid, {}) if isinstance(multi_orders_by_record, dict) else {}
+            selected_ids = selected_ids_by_record.get(rid, []) if isinstance(selected_ids_by_record, dict) else []
+
+            selected_rows: list[dict[str, Any]] = []
+            if isinstance(explicit_orders, dict) and explicit_orders:
+                ordered_ids = sorted(explicit_orders.items(), key=lambda x: int(x[1] or 0))
+                for image_id, order in ordered_ids:
+                    image_id = str(image_id or "")
+                    if "|" not in image_id:
+                        continue
+                    try:
+                        _, idx_raw = image_id.rsplit("|", 1)
+                        image_index = int(idx_raw)
+                    except Exception:
+                        continue
+                    image = image_by_index.get(image_index, {})
+                    image_url = str(image.get("url", "") or "").strip()
+                    if not image_url:
+                        continue
+                    selected_rows.append(
+                        {
+                            "record_id": rid,
+                            "image_index": image_index,
+                            "url": image_url,
+                            "display_order": int(order or 0),
+                            "product_title": record.get("product_title", ""),
+                            "title": record.get("title", record.get("product_title", "")),
+                            "brand": record.get("brand", ""),
+                            "item_id": record.get("item_id", ""),
+                            "source_url": record.get("source_url", ""),
+                        }
+                    )
+            elif isinstance(selected_ids, list) and selected_ids:
+                for order, image_id in enumerate(selected_ids, start=1):
+                    image_id = str(image_id or "")
+                    if "|" not in image_id:
+                        continue
+                    try:
+                        _, idx_raw = image_id.rsplit("|", 1)
+                        image_index = int(idx_raw)
+                    except Exception:
+                        continue
+                    image = image_by_index.get(image_index, {})
+                    image_url = str(image.get("url", "") or "").strip()
+                    if not image_url:
+                        continue
+                    selected_rows.append(
+                        {
+                            "record_id": rid,
+                            "image_index": image_index,
+                            "url": image_url,
+                            "display_order": int(order),
+                            "product_title": record.get("product_title", ""),
+                            "title": record.get("title", record.get("product_title", "")),
+                            "brand": record.get("brand", ""),
+                            "item_id": record.get("item_id", ""),
+                            "source_url": record.get("source_url", ""),
+                        }
+                    )
+            else:
+                selected_rows = list(cleaned_by_record.get(rid, []) or [])
+
+            selected_rows = [
+                row
+                for row in selected_rows
+                if 1 <= int(row.get("display_order", 0) or 0) <= 10 and _text_has_value(row.get("url"))
+            ]
+            selected_rows.sort(key=lambda x: (int(x.get("display_order", 0) or 0), int(x.get("image_index", 0) or 0)))
+            selected_rows = selected_rows[:10]
+            for order, row in enumerate(selected_rows, start=1):
+                row["display_order"] = order
+
+            slide_specs.append(
+                {
+                    "record_id": rid,
+                    "product_title": record.get("product_title", ""),
+                    "assignment_count": len(selected_rows),
+                    "ordered_assignments": selected_rows,
+                }
+            )
+    else:
+        active_rows = cleaned[:10]
+        for order, row in enumerate(active_rows, start=1):
+            row["display_order"] = order
+        slide_specs.append(
+            {
+                "record_id": "",
+                "product_title": "",
+                "assignment_count": len(active_rows),
+                "ordered_assignments": active_rows,
+            }
+        )
+
+    total_slide_assignments = sum(len(spec.get("ordered_assignments", []) or []) for spec in slide_specs)
     return {
-        "assignment_count": len(cleaned),
+        "assignment_count": total_slide_assignments,
+        "raw_assignment_count": len(cleaned),
         "ordered_assignments": cleaned,
+        "slide_mode": normalized_mode,
+        "slides": slide_specs,
     }
 
 
@@ -178,12 +311,13 @@ def build_audit_export_plan(
         build_product_slide_pair(entry, i + 1)
         for i, entry in enumerate(included_entries)
     ]
+    metadata_src = audit_record or {}
     competitor_payload = build_competitor_graphics_payload(
         assignments=competitor_assignments,
         competitor_records=competitor_records or [],
+        slide_mode=metadata_src.get("competitor_graphics_mode", "single_pdp"),
+        mode_payload=metadata_src.get("competitor_graphics_mode_payload", {}) or {},
     )
-
-    metadata_src = audit_record or {}
     return {
         "audit_metadata": {
             "audit_id": metadata_src.get("audit_id", ""),
