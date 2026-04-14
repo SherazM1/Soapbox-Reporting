@@ -636,26 +636,32 @@ def extract_image_urls_from_sheet_row(row: pd.Series) -> list[str]:
 def _parse_dimensions_payload(raw_text: str) -> dict[str, Any]:
     text = str(raw_text or "").strip()
     if not text:
-        return {"dimensions": "", "width": None, "height": None}
-    text = text.replace("Ã—", "x").replace("\xd7", "x")
-    match = re.search("(?P<w>\\d{2,5})\\s*[x\\xd7]\\s*(?P<h>\\d{2,5})", text, flags=re.IGNORECASE)
+        return {"dimensions": "", "dimensions_text": "", "width": None, "height": None}
+    text = html_lib.unescape(text).replace("\xd7", "x")
+    match = re.search(r"(?P<w>\d{2,5})\s*W?\s*[x]\s*(?P<h>\d{2,5})\s*H?", text, flags=re.IGNORECASE)
     if match:
         width = int(match.group("w"))
         height = int(match.group("h"))
-        return {"dimensions": f"{width} x {height}", "width": width, "height": height}
-    return {"dimensions": text, "width": None, "height": None}
+        return {
+            "dimensions": f"{width} x {height}",
+            "dimensions_text": f"{width} W x {height} H",
+            "width": width,
+            "height": height,
+        }
+    return {"dimensions": text, "dimensions_text": text, "width": None, "height": None}
 
 
 def extract_image_info_from_cell(raw_value: str) -> dict[str, Any]:
     value = str(raw_value or "").strip()
     if not value:
-        return {"src": "", "dimensions": "", "width": None, "height": None}
+        return {"src": "", "dimensions": "", "dimensions_text": "", "width": None, "height": None}
 
     src = ""
-    search_text = value.replace("Ã—", "x").replace("\xd7", "x")
-    text_for_dims = search_text
+    search_text = html_lib.unescape(value).replace("\xd7", "x")
+    text_for_dims = ""
+    is_html_cell = "<" in search_text and ">" in search_text
 
-    if "<" in search_text and ">" in search_text:
+    if is_html_cell:
         img_tag_match = re.search(r"(?is)<img\b[^>]*>", search_text)
         if img_tag_match:
             img_tag = img_tag_match.group(0)
@@ -665,8 +671,11 @@ def extract_image_info_from_cell(raw_value: str) -> dict[str, Any]:
             if src_match:
                 raw_src = src_match.group(2) if src_match.lastindex and src_match.lastindex >= 2 else src_match.group(1)
                 src = html_lib.unescape(str(raw_src or "")).strip()
-        text_for_dims = re.sub(r"(?is)<[^>]+>", " ", search_text)
-        text_for_dims = html_lib.unescape(text_for_dims)
+            # New sheet format stores dimensions under the image in the same cell.
+            dims_html = search_text[img_tag_match.end() :]
+            text_for_dims = re.sub(r"(?is)<[^>]+>", " ", dims_html)
+        if not text_for_dims.strip():
+            text_for_dims = re.sub(r"(?is)<[^>]+>", " ", search_text)
 
     if not src and search_text.startswith("data:image"):
         src = search_text.split()[0].strip()
@@ -677,20 +686,26 @@ def extract_image_info_from_cell(raw_value: str) -> dict[str, Any]:
             src = url_match.group(1).strip()
 
     if not src:
-        dim_match = re.search("(?is)\\b\\d{2,5}\\s*W\\s*[x\\xd7]\\s*\\d{2,5}\\s*H\\b", search_text)
+        dim_match = re.search(r"(?is)\b\d{2,5}\s*W?\s*[x]\s*\d{2,5}\s*H?\b", search_text)
         if dim_match:
             src = search_text[: dim_match.start()].strip(" \t\r\n-_|,;")
+            text_for_dims = search_text[dim_match.start() :].strip()
         else:
             src = search_text
 
-    dims_source = text_for_dims
-    if src and src in dims_source:
-        dims_source = dims_source.replace(src, " ", 1)
+    if not text_for_dims:
+        dims_source = search_text
+        if src and src in dims_source:
+            dims_source = dims_source.replace(src, " ", 1)
+    else:
+        dims_source = text_for_dims
+
     dims_source = re.sub(r"\s+", " ", dims_source).strip(" \t\r\n-_|,;")
     dims = _parse_dimensions_payload(dims_source)
     return {
         "src": str(src or "").strip(),
         "dimensions": str(dims.get("dimensions", "") or ""),
+        "dimensions_text": str(dims.get("dimensions_text", "") or ""),
         "width": dims.get("width"),
         "height": dims.get("height"),
     }
@@ -704,9 +719,10 @@ def _extract_url_and_inline_dimensions(raw_value: str) -> tuple[str, dict[str, A
     info = extract_image_info_from_cell(raw_value)
     image_src = str(info.get("src", "") or "").strip()
     if not image_src:
-        return "", {"dimensions": "", "width": None, "height": None}
+        return "", {"dimensions": "", "dimensions_text": "", "width": None, "height": None}
     return image_src, {
         "dimensions": str(info.get("dimensions", "") or ""),
+        "dimensions_text": str(info.get("dimensions_text", "") or ""),
         "width": info.get("width"),
         "height": info.get("height"),
     }
@@ -738,6 +754,7 @@ def extract_images_from_sheet_row(row: pd.Series) -> list[dict[str, Any]]:
         image_payload = {
             "url": url,
             "dimensions": str(dims.get("dimensions", "") or ""),
+            "dimensions_text": str(dims.get("dimensions_text", "") or ""),
             "width": dims.get("width"),
             "height": dims.get("height"),
             # Prepared for later UI control; no UI behavior is implemented in this prompt.
@@ -812,6 +829,7 @@ def map_sheet_row_to_cached_record(
     for i, img in enumerate(extracted_images):
         image = make_image(i, img.get("url", ""), is_hero=(i == 0))
         image["dimensions"] = str(img.get("dimensions", "") or "")
+        image["dimensions_text"] = str(img.get("dimensions_text", "") or "")
         image["width"] = img.get("width")
         image["height"] = img.get("height")
         image["show_dimensions_in_powerpoint"] = bool(img.get("show_dimensions_in_powerpoint", False))
