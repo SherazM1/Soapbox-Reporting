@@ -16,7 +16,7 @@ from pptx.oxml.xmlchemy import OxmlElement
 from pptx.util import Inches, Pt
 
 GENERATED_FONT_FAMILY = "Raleway"
-PRIMARY_DIM_TEXT_COLOR = RGBColor(0, 128, 128)  # teal
+PRIMARY_DIM_TEXT_COLOR = RGBColor(120, 120, 120)  # muted gray
 COMPETITOR_DIM_TEXT_COLOR = RGBColor(27, 56, 98)  # navy
 
 
@@ -511,15 +511,20 @@ def _formatted_dimensions_text(width: Any, height: Any, raw_text: Any) -> str:
         w = int(width)
         h = int(height)
         if w > 0 and h > 0:
-            return f"{w} W x {h} H"
+            return f"{w} × {h}"
     raw = _safe_text(raw_text)
     if not raw:
         return ""
     import re as _re
 
-    match = _re.search(r"(?P<w>\d{2,5})\s*[x×]\s*(?P<h>\d{2,5})", raw, flags=_re.IGNORECASE)
+    normalized_raw = raw.replace("\xd7", "×")
+    match = _re.search(r"(?P<w>\d{2,5})\s*W?\s*[x×]\s*(?P<h>\d{2,5})\s*H?", normalized_raw, flags=_re.IGNORECASE)
     if match:
-        return f"{int(match.group('w'))} W x {int(match.group('h'))} H"
+        return f"{int(match.group('w'))} × {int(match.group('h'))}"
+
+    compact = " ".join(normalized_raw.split()).strip(" \t\r\n-_|,;")
+    if len(compact) <= 40 and any(ch.isdigit() for ch in compact):
+        return compact
     return ""
 
 
