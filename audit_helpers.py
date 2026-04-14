@@ -4,7 +4,7 @@ import base64
 import html as html_lib
 import io
 import re
-from urllib.parse import unquote
+from urllib.parse import unquote, urlparse
 from datetime import date, datetime
 from typing import Any
 
@@ -404,6 +404,36 @@ def _count_image_cell_dimension_hits(df: pd.DataFrame) -> int:
     return hits
 
 
+def _image_column_map_by_index(df: pd.DataFrame) -> dict[int, str]:
+    mapped: dict[int, str] = {}
+    for pos, col in enumerate(detect_image_columns(df)):
+        image_idx = _image_index_from_column_name(col)
+        if image_idx is None:
+            image_idx = pos + 1
+        mapped[image_idx] = col
+    return mapped
+
+
+def _attach_embedded_image_url_fallbacks(preferred_df: pd.DataFrame, embedded_df: pd.DataFrame) -> pd.DataFrame:
+    if preferred_df.empty or embedded_df.empty:
+        return preferred_df
+    out = preferred_df.copy()
+    embedded_map = _image_column_map_by_index(embedded_df)
+    if not embedded_map:
+        return out
+    for image_idx, embedded_col in embedded_map.items():
+        fallback_col = f"__image_fallback_url_{image_idx}"
+        fallback_values: list[str] = []
+        for row_idx in range(len(out)):
+            if row_idx >= len(embedded_df):
+                fallback_values.append("")
+                continue
+            raw_value = embedded_df.iloc[row_idx].get(embedded_col, "")
+            fallback_values.append(_extract_image_source_from_cell(raw_value))
+        out[fallback_col] = fallback_values
+    return out
+
+
 def _parse_html_audit_extract(raw: bytes) -> tuple[pd.DataFrame, list[str]]:
     messages: list[str] = []
     html_text = raw.decode("utf-8", errors="ignore")
@@ -437,10 +467,10 @@ def _parse_html_audit_extract(raw: bytes) -> tuple[pd.DataFrame, list[str]]:
             visible_hits = _count_image_cell_dimension_hits(visible_table_df)
             if visible_hits > embedded_hits:
                 messages.append("Using visible HTML table because image-cell dimensions were richer there.")
-                return visible_table_df, messages
-            return embedded_df, messages
+                return _attach_embedded_image_url_fallbacks(visible_table_df, embedded_df), messages
+            return _attach_embedded_image_url_fallbacks(embedded_df, embedded_df), messages
         if embedded_df is not None:
-            return embedded_df, messages
+            return _attach_embedded_image_url_fallbacks(embedded_df, embedded_df), messages
         if visible_table_df is not None:
             messages.append("Embedded CSV payload not found; parsed visible HTML table instead.")
             return visible_table_df, messages
@@ -625,11 +655,16 @@ def _cell_as_int(row: pd.Series, col: str) -> int | None:
 
 def extract_image_urls_from_sheet_row(row: pd.Series) -> list[str]:
     urls: list[str] = []
-    for col in detect_image_columns(row):
+    for pos, col in enumerate(detect_image_columns(row)):
+        image_idx = _image_index_from_column_name(col)
+        if image_idx is None:
+            image_idx = pos + 1
         value = _cell_as_text(row, col)
-        image_src = _extract_image_source_from_cell(value)
-        if image_src:
-            urls.append(image_src)
+        visible_src = _extract_image_source_from_cell(value)
+        fallback_src = _cell_as_text(row, f"__image_fallback_url_{image_idx}")
+        final_src = _resolve_final_image_url(visible_src, fallback_src)
+        if final_src:
+            urls.append(final_src)
     return urls
 
 
@@ -642,66 +677,113 @@ def _parse_dimensions_payload(raw_text: str) -> dict[str, Any]:
     if match:
         width = int(match.group("w"))
         height = int(match.group("h"))
+        matched_text = re.sub(r"\s+", " ", str(match.group(0) or "")).strip(" \t\r\n-_|,;")
         return {
             "dimensions": f"{width} x {height}",
-            "dimensions_text": f"{width} W x {height} H",
+            "dimensions_text": matched_text or f"{width} W x {height} H",
             "width": width,
             "height": height,
         }
-    return {"dimensions": text, "dimensions_text": text, "width": None, "height": None}
+    return {"dimensions": "", "dimensions_text": "", "width": None, "height": None}
+
+
+def _normalize_image_src_for_runtime(raw_url: str) -> str:
+    url = str(raw_url or "").strip().strip("\"'")
+    if not url:
+        return ""
+    if url.startswith("//"):
+        return f"https:{url}"
+    return url
+
+
+def _is_runtime_image_url(url: str) -> bool:
+    candidate = _normalize_image_src_for_runtime(url)
+    if not candidate:
+        return False
+    if candidate.lower().startswith("data:image"):
+        return True
+    parsed = urlparse(candidate)
+    return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
+
+
+def _is_local_saved_preview_path(url: str) -> bool:
+    candidate = str(url or "").strip().replace("\\", "/").lower()
+    if not candidate:
+        return False
+    if re.match(r"^[a-z][a-z0-9+\-.]*://", candidate):
+        return False
+    if candidate.startswith("data:image"):
+        return False
+    if candidate.startswith("./") or candidate.startswith("../"):
+        return True
+    if "_files/" in candidate:
+        return True
+    if candidate.startswith("/") and "_files/" in candidate:
+        return True
+    if re.match(r"^[a-z]:/", candidate):
+        return True
+    return False
+
+
+def _extract_visible_image_src_from_cell(raw_value: str) -> str:
+    value = str(raw_value or "").strip()
+    if not value:
+        return ""
+    search_text = html_lib.unescape(value).strip()
+    if not search_text:
+        return ""
+    img_tag_match = re.search(r"(?is)<img\b[^>]*>", search_text)
+    if img_tag_match:
+        img_tag = img_tag_match.group(0)
+        src_match = re.search(r"""(?is)\bsrc\s*=\s*(['\"])(.*?)\1""", img_tag)
+        if not src_match:
+            src_match = re.search(r"""(?is)\bsrc\s*=\s*([^\s>]+)""", img_tag)
+        if src_match:
+            raw_src = src_match.group(2) if src_match.lastindex and src_match.lastindex >= 2 else src_match.group(1)
+            return _normalize_image_src_for_runtime(html_lib.unescape(str(raw_src or "")))
+    if search_text.lower().startswith("data:image"):
+        return _normalize_image_src_for_runtime(search_text.split()[0])
+    url_match = re.search(r"(?is)(https?://[^\s\"'<>]+)", search_text)
+    if url_match:
+        return _normalize_image_src_for_runtime(url_match.group(1))
+    if re.match(r"^//[^\s\"'<>]+", search_text):
+        return _normalize_image_src_for_runtime(search_text.split()[0])
+    return ""
+
+
+def _extract_inline_dimensions_from_image_cell(raw_value: str) -> dict[str, Any]:
+    value = str(raw_value or "").strip()
+    if not value:
+        return {"dimensions": "", "dimensions_text": "", "width": None, "height": None}
+    search_text = html_lib.unescape(value).replace("\xd7", "x")
+    text_for_dims = ""
+    img_tag_match = re.search(r"(?is)<img\b[^>]*>", search_text)
+    if img_tag_match:
+        dims_html = search_text[img_tag_match.end() :]
+        text_for_dims = re.sub(r"(?is)<[^>]+>", " ", dims_html)
+    if not text_for_dims.strip():
+        text_for_dims = re.sub(r"(?is)<[^>]+>", " ", search_text)
+    text_for_dims = re.sub(r"\s+", " ", text_for_dims).strip(" \t\r\n-_|,;")
+    return _parse_dimensions_payload(text_for_dims)
+
+
+def _resolve_final_image_url(visible_src: str, fallback_src: str) -> str:
+    visible = _normalize_image_src_for_runtime(visible_src)
+    fallback = _normalize_image_src_for_runtime(fallback_src)
+    visible_usable = _is_runtime_image_url(visible) and not _is_local_saved_preview_path(visible)
+    fallback_usable = _is_runtime_image_url(fallback) and not _is_local_saved_preview_path(fallback)
+    if visible_usable:
+        return visible
+    if fallback_usable:
+        return fallback
+    return ""
 
 
 def extract_image_info_from_cell(raw_value: str) -> dict[str, Any]:
-    value = str(raw_value or "").strip()
-    if not value:
+    if not str(raw_value or "").strip():
         return {"src": "", "dimensions": "", "dimensions_text": "", "width": None, "height": None}
-
-    src = ""
-    search_text = html_lib.unescape(value).replace("\xd7", "x")
-    text_for_dims = ""
-    is_html_cell = "<" in search_text and ">" in search_text
-
-    if is_html_cell:
-        img_tag_match = re.search(r"(?is)<img\b[^>]*>", search_text)
-        if img_tag_match:
-            img_tag = img_tag_match.group(0)
-            src_match = re.search(r"""(?is)\bsrc\s*=\s*(['\"])(.*?)\1""", img_tag)
-            if not src_match:
-                src_match = re.search(r"""(?is)\bsrc\s*=\s*([^\s>]+)""", img_tag)
-            if src_match:
-                raw_src = src_match.group(2) if src_match.lastindex and src_match.lastindex >= 2 else src_match.group(1)
-                src = html_lib.unescape(str(raw_src or "")).strip()
-            # New sheet format stores dimensions under the image in the same cell.
-            dims_html = search_text[img_tag_match.end() :]
-            text_for_dims = re.sub(r"(?is)<[^>]+>", " ", dims_html)
-        if not text_for_dims.strip():
-            text_for_dims = re.sub(r"(?is)<[^>]+>", " ", search_text)
-
-    if not src and search_text.startswith("data:image"):
-        src = search_text.split()[0].strip()
-
-    if not src:
-        url_match = re.search(r"(?is)(https?://[^\s\"'<>]+)", search_text)
-        if url_match:
-            src = url_match.group(1).strip()
-
-    if not src:
-        dim_match = re.search(r"(?is)\b\d{2,5}\s*W?\s*[x]\s*\d{2,5}\s*H?\b", search_text)
-        if dim_match:
-            src = search_text[: dim_match.start()].strip(" \t\r\n-_|,;")
-            text_for_dims = search_text[dim_match.start() :].strip()
-        else:
-            src = search_text
-
-    if not text_for_dims:
-        dims_source = search_text
-        if src and src in dims_source:
-            dims_source = dims_source.replace(src, " ", 1)
-    else:
-        dims_source = text_for_dims
-
-    dims_source = re.sub(r"\s+", " ", dims_source).strip(" \t\r\n-_|,;")
-    dims = _parse_dimensions_payload(dims_source)
+    src = _extract_visible_image_src_from_cell(raw_value)
+    dims = _extract_inline_dimensions_from_image_cell(raw_value)
     return {
         "src": str(src or "").strip(),
         "dimensions": str(dims.get("dimensions", "") or ""),
@@ -712,19 +794,17 @@ def extract_image_info_from_cell(raw_value: str) -> dict[str, Any]:
 
 
 def _extract_image_source_from_cell(raw_value: str) -> str:
-    return str(extract_image_info_from_cell(raw_value).get("src", "") or "").strip()
+    return str(_extract_visible_image_src_from_cell(raw_value) or "").strip()
 
 
 def _extract_url_and_inline_dimensions(raw_value: str) -> tuple[str, dict[str, Any]]:
-    info = extract_image_info_from_cell(raw_value)
-    image_src = str(info.get("src", "") or "").strip()
-    if not image_src:
-        return "", {"dimensions": "", "dimensions_text": "", "width": None, "height": None}
-    return image_src, {
-        "dimensions": str(info.get("dimensions", "") or ""),
-        "dimensions_text": str(info.get("dimensions_text", "") or ""),
-        "width": info.get("width"),
-        "height": info.get("height"),
+    image_src = _extract_visible_image_src_from_cell(raw_value)
+    dims = _extract_inline_dimensions_from_image_cell(raw_value)
+    return str(image_src or "").strip(), {
+        "dimensions": str(dims.get("dimensions", "") or ""),
+        "dimensions_text": str(dims.get("dimensions_text", "") or ""),
+        "width": dims.get("width"),
+        "height": dims.get("height"),
     }
 
 
@@ -742,14 +822,16 @@ def extract_images_from_sheet_row(row: pd.Series) -> list[dict[str, Any]]:
             image_idx = pos + 1
 
         raw_value = _cell_as_text(row, col)
-        url, inline_dims = _extract_url_and_inline_dimensions(raw_value)
-        if not url:
-            continue
+        visible_src, inline_dims = _extract_url_and_inline_dimensions(raw_value)
+        fallback_src = _cell_as_text(row, f"__image_fallback_url_{image_idx}")
+        url = _resolve_final_image_url(visible_src, fallback_src)
 
         explicit_dims_text = _cell_as_text(row, image_dim_col_map.get(image_idx, ""))
         explicit_dims = _parse_dimensions_payload(explicit_dims_text)
         # Source of truth is embedded image-cell text; dimension columns are fallback only.
         dims = inline_dims if inline_dims.get("dimensions") else explicit_dims
+        if not url:
+            continue
 
         image_payload = {
             "url": url,
