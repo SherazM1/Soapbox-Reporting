@@ -40,17 +40,26 @@ def _format_dimensions_label_from_image(image: dict[str, Any] | None) -> str:
     image = image or {}
     width = image.get("width")
     height = image.get("height")
-    if isinstance(width, (int, float)) and isinstance(height, (int, float)):
-        w = int(width)
-        h = int(height)
-        if w > 0 and h > 0:
-            return f"{w} W x {h} H"
-    raw = str(image.get("dimensions", "") or "").strip()
-    match = re.search(r"(?P<w>\d{2,5})\s*[x×]\s*(?P<h>\d{2,5})", raw, flags=re.IGNORECASE)
+    try:
+        w = int(float(str(width).replace(",", "").strip())) if str(width or "").strip() else 0
+        h = int(float(str(height).replace(",", "").strip())) if str(height or "").strip() else 0
+    except Exception:
+        w, h = 0, 0
+    if w > 0 and h > 0:
+        return f"{w} W x {h} H"
+
+    raw = str(image.get("dimensions_text", "") or "").strip()
+    if not raw:
+        raw = str(image.get("dimensions", "") or "").strip()
+    raw = raw.replace("\xd7", "×")
+    match = re.search(r"(?P<w>\d{2,5})\s*W?\s*[x×]\s*(?P<h>\d{2,5})\s*H?", raw, flags=re.IGNORECASE)
     if match:
         return f"{int(match.group('w'))} W x {int(match.group('h'))} H"
-    return ""
 
+    compact = " ".join(raw.split()).strip(" \t\r\n-_|,;")
+    if compact and any(ch.isdigit() for ch in compact):
+        return compact
+    return ""
 
 def resolve_primary_image_payload(entry: dict[str, Any]) -> dict[str, Any]:
     record = entry.get("cached_record", {}) or {}
