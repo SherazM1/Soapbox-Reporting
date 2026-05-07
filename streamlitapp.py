@@ -777,7 +777,8 @@ def render_primary_pdp_upload_v2() -> None:
                 ]
             )
             st.caption("Primary product entries queued for audit review")
-            st.dataframe(preview_df, hide_index=True, use_container_width=True)
+            with st.expander("Primary Upload Preview", expanded=False):
+                st.dataframe(preview_df, hide_index=True, use_container_width=True)
 
 
 def _sync_primary_entry_edits_v2(entry: dict) -> None:
@@ -932,7 +933,6 @@ def safe_render_image(src: str, width: int = 120, unavailable_label: str = "Imag
 
 
 def render_extracted_primary_product_entries_v2() -> None:
-    st.markdown("### Extracted Primary Product Data")
     st.caption(
         "Each primary product entry supports exactly one primary image selection for later slide mapping."
     )
@@ -949,6 +949,22 @@ def render_extracted_primary_product_entries_v2() -> None:
         help="When enabled, all primary entries are included in the PowerPoint export.",
     )
 
+    included_count = 0
+    for entry in entries:
+        if "include_in_export" not in entry:
+            entry["include_in_export"] = True
+        entry_id = entry.get("entry_id") or f"entry-{entry.get('record_id', 'unknown')}"
+        include_key = f"audit_v2_primary_include_export_{entry_id}"
+        if select_all:
+            included_count += 1
+        elif bool(st.session_state.get(include_key, entry.get("include_in_export", True))):
+            included_count += 1
+
+    summary_cols = st.columns(3)
+    summary_cols[0].metric("PDPs extracted", len(entries))
+    summary_cols[1].metric("Included in export", included_count)
+    summary_cols[2].metric("Select All for Export", "ON" if select_all else "OFF")
+
     for idx, entry in enumerate(entries, start=1):
         _sync_primary_entry_edits_v2(entry)
         if "include_in_export" not in entry:
@@ -956,7 +972,9 @@ def render_extracted_primary_product_entries_v2() -> None:
         if select_all:
             entry["include_in_export"] = True
         record = entry.get("cached_record", {})
-        with st.container(border=True):
+        title = str(entry.get("product_title", "") or "Untitled Product").strip()
+        item_id = str(entry.get("item_id", "") or "-").strip()
+        with st.expander(f"Product {idx}: {title} | Item ID: {item_id}", expanded=False):
             st.markdown(f"#### Primary Product Entry {idx}")
             t1, t2, t3 = st.columns([2, 1, 1])
             with t1:
@@ -1267,7 +1285,6 @@ def render_competitor_pdp_upload_v2() -> None:
 
 
 def render_extracted_competitor_entries_v2() -> None:
-    st.markdown("### Extracted Competitor Data")
     entries = st.session_state.get("audit_competitor_entries", [])
     if not entries:
         st.info("Competitor upload is optional. Add competitor PDPs when needed.")
@@ -1468,6 +1485,14 @@ def render_extracted_competitor_entries_v2() -> None:
                 per_group_selected.append(f"{group.get('entry_idx', 0)}: {group_selected_count}/{max_slots}")
             st.caption("Per-group selected: " + " | ".join(per_group_selected))
 
+    current_selected_total = sum(
+        1 for image_id in all_image_ids if bool(st.session_state.get(f"{selection_prefix}{image_id}", False))
+    )
+    summary_cols = st.columns(3)
+    summary_cols[0].metric("Competitor PDPs extracted", len(entries))
+    summary_cols[1].metric("Images found", len(all_image_ids))
+    summary_cols[2].metric("Selected for deck", current_selected_total)
+
     selected_image_ids: list[str] = []
     selected_rows: list[dict[str, Any]] = []
     selected_ids_by_record: dict[str, list[str]] = {}
@@ -1480,7 +1505,8 @@ def render_extracted_competitor_entries_v2() -> None:
         image_models = group.get("images", [])
         record_id = str(group.get("record_id", ""))
         group_selected_ids: list[str] = []
-        with st.container(border=True):
+        competitor_title = str(record.get("product_title", "") or "Untitled Competitor").strip()
+        with st.expander(f"Competitor {idx}: {competitor_title} | {len(image_models)} images", expanded=False):
             st.markdown(f"#### Competitor Entry {idx}")
             c1, c2, c3 = st.columns([2, 1, 1])
             with c1:
@@ -1509,7 +1535,7 @@ def render_extracted_competitor_entries_v2() -> None:
                 f"Reviews: {review_summary}"
             )
 
-            img_cols = st.columns(min(5, max(1, len(image_models))))
+            img_cols = st.columns(min(6, max(1, len(image_models))))
             for i, image in enumerate(image_models):
                 image_url = image.get("url", "")
                 image_index = image.get("index", i)
@@ -1521,7 +1547,7 @@ def render_extracted_competitor_entries_v2() -> None:
                 if dims_key not in st.session_state:
                     st.session_state[dims_key] = bool(image.get("show_dimensions_in_powerpoint", False))
                 with img_cols[i % len(img_cols)]:
-                    st.image(image_url, width=130)
+                    safe_render_image(image_url, width=95)
                     st.caption(f"Image {i + 1}")
                     st.caption(_format_image_dimensions_for_preview(image))
                     show_dims = st.checkbox("Show dimensions in PowerPoint", key=dims_key)
@@ -1732,7 +1758,9 @@ def render_mocked_audit_results_v2() -> None:
         selected_index = min(selected_index, max(0, len(image_urls) - 1))
         selected_url = image_urls[selected_index] if image_urls else None
 
-        with st.container(border=True):
+        title = str(entry.get("product_title", "") or "Untitled Product").strip()
+        item_id = str(entry.get("item_id", "") or "-").strip()
+        with st.expander(f"Product {idx} Outputs: {title} | Item ID: {item_id}", expanded=False):
             st.markdown(f"#### Product Audit Entry {idx}")
             st.markdown("##### Product Summary")
             s1, s2, s3 = st.columns([2, 1, 1])
@@ -1798,6 +1826,12 @@ def render_mocked_audit_results_v2() -> None:
     st.caption("Manual/future section for competitor ad creative observations.")
     st.text_area("Competitor Ad Graphics Notes", key="audit_competitor_ad_graphics_notes", height=110)
 
+
+def render_audit_powerpoint_export_v2() -> None:
+    if not st.session_state.get("audit_generated"):
+        st.info("Generate audit outputs before creating the audit PowerPoint.")
+        return
+
     _refresh_audit_export_plan_v2()
     plan = st.session_state.get("audit_export_plan", {}) or {}
     with st.expander("Export Mapping Preview", expanded=False):
@@ -1831,7 +1865,6 @@ def render_mocked_audit_results_v2() -> None:
             }
             st.json(compact)
 
-    st.subheader("PowerPoint Export")
     included_count = int((plan.get("summary", {}) or {}).get("included_primary_entry_count", 0))
     if included_count <= 0:
         st.info("Include at least one primary product entry to generate the audit PowerPoint.")
@@ -1878,20 +1911,28 @@ def render_content_auditing() -> None:
         st.title("Content Auditing")
         st.caption("Workspace for building first-pass PDP audits and recommendations.")
 
+    st.header("Audit Setup")
     render_audit_setup()
     st.divider()
+
+    st.header("Primary Products")
     render_primary_pdp_upload_v2()
-    st.divider()
     render_extracted_primary_product_entries_v2()
     st.divider()
+
+    st.header("Competitor Graphics")
     render_competitor_pdp_upload_v2()
-    st.divider()
     render_extracted_competitor_entries_v2()
     st.divider()
+
+    st.header("Audit Outputs / Recommendations")
     render_audit_preferences()
-    st.divider()
     render_generate_audit_v2()
     render_mocked_audit_results_v2()
+    st.divider()
+
+    st.header("PowerPoint Export")
+    render_audit_powerpoint_export_v2()
 
 
 def _coerce_conversion_pp(series: pd.Series) -> pd.Series:
