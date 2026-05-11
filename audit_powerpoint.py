@@ -268,22 +268,75 @@ def _title_case_text(text: str) -> str:
     return " ".join(cap_token(t) for t in clean.split())
 
 
-def _clean_bullets_for_slide(items: list[str], max_items: int = 8) -> list[str]:
-    seen: set[str] = set()
+def _clean_bullets_for_slide(items: list[str]) -> list[str]:
     out: list[str] = []
     for item in items or []:
         txt = _safe_text(item).strip().lstrip("-").strip()
         txt = " ".join(txt.split())
         if not txt:
             continue
-        key = txt.lower()
-        if key in seen:
-            continue
-        seen.add(key)
         out.append(txt)
-        if len(out) >= max_items:
-            break
     return out
+
+
+def _set_paragraph_spacing_tight(paragraph: Any, *, line_spacing: float = 0.9) -> None:
+    try:
+        paragraph.space_before = Pt(0)
+    except Exception:
+        pass
+    try:
+        paragraph.space_after = Pt(0)
+    except Exception:
+        pass
+    try:
+        paragraph.line_spacing = line_spacing
+    except Exception:
+        pass
+
+
+def _set_paragraph_font_size(paragraph: Any, size_pt: int) -> None:
+    for run in paragraph.runs:
+        try:
+            run.font.size = Pt(size_pt)
+        except Exception:
+            continue
+
+
+def _apply_content_recommendation_text_fit(tf: Any, bullets: list[str]) -> None:
+    bullet_count = len(bullets)
+    total_chars = sum(len(b) for b in bullets)
+
+    body_size = 16
+    if bullet_count >= 7 or total_chars > 620:
+        body_size = 14
+    elif bullet_count >= 5 or total_chars > 430:
+        body_size = 15
+
+    heading_size = max(body_size + 1, 16)
+    line_spacing = 0.86 if bullet_count >= 7 or total_chars > 620 else 0.9
+
+    try:
+        tf.word_wrap = True
+        tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
+    except Exception:
+        pass
+    for margin_name in ("margin_left", "margin_right"):
+        try:
+            setattr(tf, margin_name, Inches(0.06))
+        except Exception:
+            pass
+    for margin_name in ("margin_top", "margin_bottom"):
+        try:
+            setattr(tf, margin_name, Inches(0.03))
+        except Exception:
+            pass
+
+    if tf.paragraphs:
+        _set_paragraph_spacing_tight(tf.paragraphs[0], line_spacing=0.9)
+        _set_paragraph_font_size(tf.paragraphs[0], heading_size)
+    for paragraph in tf.paragraphs[1 : 1 + bullet_count]:
+        _set_paragraph_spacing_tight(paragraph, line_spacing=line_spacing)
+        _set_paragraph_font_size(paragraph, body_size)
 
 
 def _set_heading_and_real_bullets(shape: Any, heading: str, bullets: list[str]) -> None:
@@ -294,7 +347,7 @@ def _set_heading_and_real_bullets(shape: Any, heading: str, bullets: list[str]) 
     tf.word_wrap = True
     tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
 
-    clean_bullets = _clean_bullets_for_slide(bullets, max_items=8)
+    clean_bullets = _clean_bullets_for_slide(bullets)
     if not tf.paragraphs:
         shape.text = _safe_text(heading)
 
@@ -312,6 +365,7 @@ def _set_heading_and_real_bullets(shape: Any, heading: str, bullets: list[str]) 
         p.level = 0
         _force_paragraph_bullet(p)
     _normalize_bullet_paragraphs(tf.paragraphs[1:required_paragraphs])
+    _apply_content_recommendation_text_fit(tf, clean_bullets)
 
     for p in tf.paragraphs[required_paragraphs:]:
         _replace_paragraph_text_preserve_style(p, "", bold=False)
