@@ -1,0 +1,156 @@
+{
+  "category": "Food & Beverage",
+  "status": "partial",
+  "source": "Food&BeverageContentStyleGuide.pdf",
+  "families": {
+    "dips_spreads": {
+      "display_name": "Dips & Spreads",
+      "product_types": {
+        "fruit_butters": {
+          "display_name": "Fruit Butters",
+          "formula": ["Brand", "Flavor", "Fruit Type", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Fruit Type"],
+          "aliases": ["fruit butter", "fruit butters"],
+          "title_keywords": ["fruit butter", "apple butter", "pumpkin butter"],
+          "context_keywords": ["apple", "pumpkin", "pear", "spread"],
+          "negative_keywords": ["peanut butter", "almond butter", "cashew butter", "nut butter"]
+        },
+        "hummus": {
+          "display_name": "Hummus",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["hummus", "chickpea dip"],
+          "title_keywords": ["hummus", "chickpea dip"],
+          "context_keywords": ["chickpea", "garbanzo", "tahini", "roasted red pepper"],
+          "negative_keywords": []
+        },
+        "sandwich_spreads": {
+          "display_name": "Sandwich Spreads",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Food Condition"],
+          "aliases": ["sandwich spread", "sandwich spreads"],
+          "title_keywords": ["sandwich spread", "sandwich spreads"],
+          "context_keywords": ["sandwich", "deli", "mayo spread"],
+          "negative_keywords": []
+        },
+        "salsas": {
+          "display_name": "Salsas",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack", "Spice Level"],
+          "attributes": ["Brand", "Flavor", "Spice Level"],
+          "aliases": ["salsa", "salsas", "pico de gallo"],
+          "title_keywords": ["salsa", "pico de gallo"],
+          "context_keywords": ["mild", "medium", "hot", "verde", "tomatillo", "chunky"],
+          "negative_keywords": []
+        },
+        "marmalades": {
+          "display_name": "Marmalades",
+          "formula": ["Brand", "Flavor", "Fruit Type", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Flavor", "Fruit Type", "Brand"],
+          "aliases": ["marmalade", "marmalades"],
+          "title_keywords": ["marmalade", "orange marmalade"],
+          "context_keywords": ["orange", "citrus", "fruit spread"],
+          "negative_keywords": []
+        },
+        "dessert_dips": {
+          "display_name": "Dessert Dips",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Nutrition Label", "FSMA Traceability"],
+          "attributes": ["Nutrition Facts Label", "Fsma Section 204 Traceability", "Spice Level"],
+          "aliases": ["dessert dip", "dessert dips"],
+          "title_keywords": ["dessert dip", "dessert dips", "cookie dough dip", "chocolate dip"],
+          "context_keywords": ["sweet", "caramel", "marshmallow", "brownie", "dessert"],
+          "negative_keywords": ["cheese dip", "bean dip", "vegetable dip", "seafood dip"]
+        },
+        "cheese_dips_spreads": {
+          "display_name": "Cheese Dips & Spreads",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Food Form", "Flavor"],
+          "aliases": ["cheese dip", "cheese spread", "queso"],
+          "title_keywords": ["cheese dip", "cheese spread", "queso", "queso dip", "beer cheese dip"],
+          "context_keywords": ["cheddar", "nacho", "jalapeno", "melted cheese"],
+          "negative_keywords": []
+        },
+        "guacamole": {
+          "display_name": "Guacamole",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Spice Level", "Flavor"],
+          "aliases": ["guacamole", "avocado dip"],
+          "title_keywords": ["guacamole", "avocado dip"],
+          "context_keywords": ["avocado", "lime", "cilantro", "jalapeno"],
+          "negative_keywords": []
+        },
+        "bean_dips_spreads": {
+          "display_name": "Bean Dips & Spreads",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Condition", "Flavor"],
+          "aliases": ["bean dip", "bean spread", "refried bean dip"],
+          "title_keywords": ["bean dip", "bean spread", "refried bean dip", "black bean dip"],
+          "context_keywords": ["refried", "black bean", "pinto bean", "seven layer"],
+          "negative_keywords": []
+        },
+        "jams_jellies_preserves": {
+          "display_name": "Jams, Jellies & Preserves",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Jam Jelly And Preserves Type"],
+          "attributes": ["Brand", "Jam Jelly And Preserves Type", "Flavor"],
+          "aliases": ["jam", "jelly", "jellies", "preserve", "preserves", "marmalade", "fruit spread", "fruit butter"],
+          "title_keywords": ["jam", "jelly", "jellies", "preserve", "preserves", "marmalade", "fruit spread", "fruit butter"],
+          "context_keywords": ["strawberry", "grape", "raspberry", "blueberry", "apricot", "four fruit", "sugar free jam", "no added sugar jam"],
+          "negative_keywords": ["peanut butter", "almond butter", "cashew butter", "hazelnut spread", "nut butter", "nut spread"]
+        },
+        "nut_butters_spreads": {
+          "display_name": "Nut Butters & Spreads",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Nut Butter And Spread Type", "Flavor"],
+          "aliases": ["nut butter", "nut spread", "peanut butter", "almond butter", "cashew butter", "hazelnut spread", "nutella", "jif"],
+          "title_keywords": ["peanut butter", "almond butter", "cashew butter", "hazelnut spread", "chocolate hazelnut spread", "nut butter", "nut spread", "nutella", "jif"],
+          "context_keywords": ["spread", "creamy", "crunchy", "cocoa", "hazelnut", "peanut", "almond", "cashew"],
+          "negative_keywords": ["jam", "jelly", "preserve", "preserves", "marmalade", "fruit butter"]
+        },
+        "olive_dips_spreads": {
+          "display_name": "Olive Dips & Spreads",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Olive Type"],
+          "attributes": ["Brand", "Olive Type", "Food Condition"],
+          "aliases": ["olive dip", "olive spread", "tapenade"],
+          "title_keywords": ["olive dip", "olive spread", "tapenade", "olive tapenade"],
+          "context_keywords": ["kalamata", "green olive", "black olive", "mediterranean"],
+          "negative_keywords": []
+        },
+        "pates": {
+          "display_name": "Pates",
+          "formula": ["Brand", "Food Form", "Product/Type", "Key Feature", "Count/Pack", "Meat Type"],
+          "attributes": ["Meat Type", "Food Form", "Brand"],
+          "aliases": ["pate", "pates", "pâté"],
+          "title_keywords": ["pate", "pâté", "liver pate"],
+          "context_keywords": ["liver", "mousse", "terrine", "spreadable meat"],
+          "negative_keywords": []
+        },
+        "seafood_dips_spreads": {
+          "display_name": "Seafood Dips & Spreads",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack", "Seafood Type"],
+          "attributes": ["Seafood Type", "Flavor", "Food Form"],
+          "aliases": ["seafood dip", "seafood spread", "crab dip", "shrimp dip"],
+          "title_keywords": ["seafood dip", "seafood spread", "crab dip", "shrimp dip", "salmon spread"],
+          "context_keywords": ["crab", "shrimp", "salmon", "lobster", "clam"],
+          "negative_keywords": []
+        },
+        "meat_dips_spreads": {
+          "display_name": "Meat Dips & Spreads",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Flavor", "Brand", "Meat Type"],
+          "aliases": ["meat dip", "meat spread"],
+          "title_keywords": ["meat dip", "meat spread", "beef spread", "chicken spread"],
+          "context_keywords": ["beef", "chicken", "pork", "bacon", "sausage"],
+          "negative_keywords": ["pate", "pâté"]
+        },
+        "vegetable_dips": {
+          "display_name": "Vegetable Dips",
+          "formula": ["Brand", "Food Condition", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Flavor", "Brand"],
+          "aliases": ["vegetable dip", "veggie dip"],
+          "title_keywords": ["vegetable dip", "veggie dip", "spinach dip", "artichoke dip", "onion dip"],
+          "context_keywords": ["spinach", "artichoke", "onion", "ranch", "vegetable"],
+          "negative_keywords": ["salsa", "guacamole", "hummus"]
+        }
+      }
+    }
+  }
+}
