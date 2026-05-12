@@ -14,6 +14,7 @@ from audit_export import build_audit_export_plan
 from audit_generate import generate_mvp_outputs_for_primary_entry, is_output_shell_empty
 from audit_models import create_audit_result_record
 from audit_powerpoint import generate_audit_powerpoint_from_template, resolve_audit_template_path
+from audit_style_guides import load_style_guides, match_style_guide_rule
 from audit_helpers import (
     build_competitor_assignments,
     initialize_auditing_session_state,
@@ -77,6 +78,9 @@ VIEW_TO_HUB_QUERY = {
     VIEW_CONTENT_REPORTING: VIEW_CONTENT_REPORTING,
     VIEW_CONTENT_AUDITING: VIEW_CONTENT_AUDITING,
 }
+
+STYLE_GUIDE_AUTO_LABEL = "Auto / Detected"
+STYLE_GUIDE_NONE_LABEL = "No Style Guide"
 
 
 def set_hub_view(view_name: str) -> None:
@@ -862,6 +866,179 @@ def _sync_primary_entry_edits_v2(entry: dict) -> None:
         entry["selected_primary_images"] = [dict(entry["selected_primary_image"])]
 
 
+def _extract_style_guide_key_features(record: dict[str, Any]) -> list[str]:
+    features = record.get("current_key_features", [])
+    if isinstance(features, str):
+        return [line.strip().lstrip("-").strip() for line in features.splitlines() if line.strip()]
+    if not isinstance(features, list):
+        return []
+
+    values: list[str] = []
+    for feature in features:
+        if isinstance(feature, dict):
+            text = str(feature.get("text", "") or "").strip()
+        else:
+            text = str(feature or "").strip()
+        if text:
+            values.append(text)
+    return values
+
+
+def _build_style_guide_product_payload(entry: dict[str, Any], record: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "title": record.get("current_title") or entry.get("product_title", ""),
+        "current_title": record.get("current_title", ""),
+        "product_title": entry.get("product_title", ""),
+        "category": record.get("category", ""),
+        "product_category": record.get("product_category", ""),
+        "subcategory": record.get("subcategory", ""),
+        "product_type": record.get("product_type", ""),
+        "description": record.get("current_description_body", ""),
+        "key_features": _extract_style_guide_key_features(record),
+    }
+
+
+def _style_guide_no_match(match_reason: str = "user_disabled", selection_source: str = "manual_none") -> dict[str, Any]:
+    return {
+        "matched": False,
+        "category": "",
+        "family_id": "",
+        "family_name": "",
+        "product_type_id": "",
+        "product_type_name": "",
+        "formula": [],
+        "attributes": [],
+        "match_reason": match_reason,
+        "confidence": "none",
+        "selection_source": selection_source,
+    }
+
+
+def _style_guide_formula_text(formula: list[Any]) -> str:
+    return " + ".join(str(part) for part in formula if str(part).strip())
+
+
+def _style_guide_option_catalog(guides: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    catalog: dict[str, dict[str, Any]] = {}
+    for guide in guides:
+        category = str(guide.get("category", "") or "").strip()
+        if not category:
+            continue
+        category_item = catalog.setdefault(category, {"guide": guide, "families": {}})
+        for family_id, family in guide.get("families", {}).items():
+            family_name = str(family.get("display_name", family_id) or family_id)
+            family_item = category_item["families"].setdefault(
+                family_id,
+                {"family_id": family_id, "family_name": family_name, "product_types": {}},
+            )
+            for product_type_id, rule in family.get("product_types", {}).items():
+                product_type_name = str(rule.get("display_name", product_type_id) or product_type_id)
+                formula = list(rule.get("formula", []))
+                formula_text = _style_guide_formula_text(formula)
+                label = f"{product_type_name} - {formula_text}" if formula_text else product_type_name
+                family_item["product_types"][label] = {
+                    "category": category,
+                    "family_id": family_id,
+                    "family_name": family_name,
+                    "product_type_id": product_type_id,
+                    "product_type_name": product_type_name,
+                    "formula": formula,
+                    "attributes": list(rule.get("attributes", [])),
+                }
+    return catalog
+
+
+def _ensure_select_value(key: str, options: list[str]) -> None:
+    if st.session_state.get(key) not in options:
+        st.session_state[key] = options[0]
+
+
+def _render_style_guide_match_v2(entry: dict[str, Any], record: dict[str, Any]) -> None:
+    entry_id = entry.get("entry_id") or f"entry-{entry.get('record_id', 'unknown')}"
+    product_payload = _build_style_guide_product_payload(entry, record)
+    guides = load_style_guides()
+    detected = match_style_guide_rule(product_payload, guides)
+    detected_with_source = dict(detected)
+    detected_with_source["selection_source"] = "auto"
+
+    catalog = _style_guide_option_catalog(guides)
+    category_options = [STYLE_GUIDE_AUTO_LABEL, STYLE_GUIDE_NONE_LABEL] + sorted(catalog.keys())
+
+    category_key = f"audit_v2_style_category_{entry_id}"
+    family_key = f"audit_v2_style_family_{entry_id}"
+    product_type_key = f"audit_v2_style_product_type_{entry_id}"
+
+    st.markdown("##### Style Guide Match")
+    if detected.get("matched"):
+        st.caption(
+            "Detected: "
+            f"{detected.get('category', '')} -> {detected.get('family_name', '')} -> "
+            f"{detected.get('product_type_name', '')}"
+        )
+    else:
+        st.caption("Detected: No style guide match")
+    st.caption(f"Confidence: {detected.get('confidence', 'none')}")
+    st.caption(f"Reason: {detected.get('match_reason', 'no_match')}")
+    if detected.get("matched"):
+        st.caption(f"Formula: {_style_guide_formula_text(detected.get('formula', [])) or '-'}")
+
+    _ensure_select_value(category_key, category_options)
+    selected_category = st.selectbox("Override Category", category_options, key=category_key)
+
+    if selected_category == STYLE_GUIDE_AUTO_LABEL:
+        visible_categories = sorted(catalog.keys())
+    elif selected_category == STYLE_GUIDE_NONE_LABEL:
+        visible_categories = []
+    else:
+        visible_categories = [selected_category]
+
+    family_label_map: dict[str, dict[str, Any]] = {}
+    for category in visible_categories:
+        for family_item in catalog.get(category, {}).get("families", {}).values():
+            family_label_map[family_item["family_name"]] = {"category": category, **family_item}
+    family_options = [STYLE_GUIDE_AUTO_LABEL, STYLE_GUIDE_NONE_LABEL] + sorted(family_label_map.keys())
+    _ensure_select_value(family_key, family_options)
+    selected_family = st.selectbox("Override Product Family", family_options, key=family_key)
+
+    if selected_family == STYLE_GUIDE_AUTO_LABEL:
+        visible_families = list(family_label_map.values())
+    elif selected_family == STYLE_GUIDE_NONE_LABEL:
+        visible_families = []
+    else:
+        visible_families = [family_label_map[selected_family]]
+
+    product_type_label_map: dict[str, dict[str, Any]] = {}
+    for family_item in visible_families:
+        for label, product_type in family_item.get("product_types", {}).items():
+            product_type_label_map[label] = product_type
+    product_type_options = [STYLE_GUIDE_AUTO_LABEL, STYLE_GUIDE_NONE_LABEL] + sorted(product_type_label_map.keys())
+    _ensure_select_value(product_type_key, product_type_options)
+    selected_product_type = st.selectbox("Override Product Type Formula", product_type_options, key=product_type_key)
+
+    if STYLE_GUIDE_NONE_LABEL in {selected_category, selected_family, selected_product_type}:
+        entry["style_guide_match"] = _style_guide_no_match()
+        return
+
+    if selected_product_type != STYLE_GUIDE_AUTO_LABEL:
+        override = product_type_label_map[selected_product_type]
+        entry["style_guide_match"] = {
+            "matched": True,
+            "category": override["category"],
+            "family_id": override["family_id"],
+            "family_name": override["family_name"],
+            "product_type_id": override["product_type_id"],
+            "product_type_name": override["product_type_name"],
+            "formula": list(override["formula"]),
+            "attributes": list(override["attributes"]),
+            "match_reason": "user_override",
+            "confidence": "exact",
+            "selection_source": "manual",
+        }
+        return
+
+    entry["style_guide_match"] = detected_with_source if detected.get("matched") else _style_guide_no_match("no_match", "auto")
+
+
 def _format_image_dimensions_for_preview(image: dict[str, Any]) -> str:
     width = image.get("width")
     height = image.get("height")
@@ -1003,6 +1180,8 @@ def render_extracted_primary_product_entries_v2() -> None:
             extraction_errors = record.get("extraction_errors", [])
             if extraction_errors:
                 st.caption("Extraction notes: " + "; ".join(extraction_errors[:3]))
+
+            _render_style_guide_match_v2(entry, record)
 
             images = record.get("images", [])
             image_models = [img for img in images if isinstance(img, dict) and str(img.get("url", "") or "").strip()]

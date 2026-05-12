@@ -822,7 +822,237 @@ def _clean_title_from_validation_flags(title: str, issue_types: set[str]) -> str
     return candidate
 
 
-def generate_recommended_title(record: dict[str, Any], findings: list[dict[str, Any]]) -> str:
+KEY_FEATURE_CLAIMS = (
+    ("no added sugar", "No Added Sugar"),
+    ("sugar free", "Sugar Free"),
+    ("low calorie", "Low Calorie"),
+    ("low-calorie", "Low Calorie"),
+    ("vegan", "Vegan"),
+    ("keto friendly", "Keto Friendly"),
+    ("keto-friendly", "Keto Friendly"),
+    ("organic", "Organic"),
+    ("gluten free", "Gluten Free"),
+    ("gluten-free", "Gluten Free"),
+    ("non gmo", "Non-GMO"),
+    ("non-gmo", "Non-GMO"),
+)
+
+TITLE_RETAILER_PROMO_PATTERNS = (
+    "walmart",
+    "amazon",
+    "target",
+    "instacart",
+    "costco",
+    "kroger",
+    "best selling",
+    "free shipping",
+    "ships free",
+    "in stock",
+    "limited stock",
+    "buy now",
+    "save",
+    "deal",
+    "offer",
+    "clearance",
+    "discount",
+    "sale",
+)
+
+JAM_PRESERVE_TYPES = (
+    "Fruit Butter",
+    "Fruit Spread",
+    "Marmalade",
+    "Preserves",
+    "Preserve",
+    "Jellies",
+    "Jelly",
+    "Jam",
+)
+
+
+def _normalize_title_size(text: str) -> str:
+    text = re.sub(
+        r"\b(?P<num>\d+(?:\.\d+)?)\s*(?P<unit>fl\s*oz|fluid\s*ounce|fluid\s*ounces|oz|ounce|ounces)\b",
+        lambda m: f"{m.group('num')} {'fl oz' if 'fl' in m.group('unit').lower() or 'fluid' in m.group('unit').lower() else 'oz'}",
+        text,
+        flags=re.IGNORECASE,
+    )
+    text = re.sub(
+        r"\b(?P<num>\d+)\s*(?P<unit>pack|packs|count|ct)\b",
+        lambda m: f"{m.group('num')} {'Pack' if m.group('unit').lower().startswith('pack') else ('Count' if m.group('unit').lower().startswith('count') else 'ct')}",
+        text,
+        flags=re.IGNORECASE,
+    )
+    return _norm(text)
+
+
+def _extract_count_pack(title: str) -> str:
+    normalized = _normalize_title_size(title)
+    patterns = (
+        r"\b\d+(?:\.\d+)?\s+fl oz(?:\s+(?:jar|bottle|container|cup|tub|pack))?\b",
+        r"\b\d+(?:\.\d+)?\s+oz(?:\s+(?:jar|bottle|container|cup|tub|pack))?\b",
+        r"\b\d+\s+Pack\b",
+        r"\b\d+\s+Count\b",
+        r"\b\d+\s+ct\b",
+    )
+    for pattern in patterns:
+        match = re.search(pattern, normalized, flags=re.IGNORECASE)
+        if match:
+            return _norm(match.group(0))
+    return ""
+
+
+def _remove_phrase(text: str, phrase: str) -> str:
+    if not phrase:
+        return text
+    escaped = re.escape(phrase).replace(r"\ ", r"[\s-]+")
+    text = re.sub(rf"(?<![A-Za-z0-9]){escaped}(?![A-Za-z0-9])", " ", text, flags=re.IGNORECASE)
+    return _norm(text)
+
+
+def _extract_verified_brand(record: dict[str, Any], title: str) -> str:
+    brand = _norm(str(record.get("brand", "") or ""))
+    if brand:
+        return brand
+    words = _norm(title).split(" ")
+    if len(words) >= 2 and words[0].isupper() and words[1].isupper():
+        return _norm(" ".join(words[:2]))
+    if words and (words[0].istitle() or words[0].isupper()):
+        return words[0]
+    return ""
+
+
+def _extract_key_features_from_title(title: str) -> list[str]:
+    lowered = _normalize_title_size(title).lower()
+    features: list[str] = []
+    for raw, display in KEY_FEATURE_CLAIMS:
+        if re.search(rf"(?<![a-z0-9]){re.escape(raw)}(?![a-z0-9])", lowered):
+            if display not in features:
+                features.append(display)
+    return features
+
+
+def _detect_jam_preserve_type(title: str) -> str:
+    normalized = _normalize_title_size(title)
+    for product_type in JAM_PRESERVE_TYPES:
+        if re.search(rf"(?<![A-Za-z0-9]){re.escape(product_type)}s?(?![A-Za-z0-9])", normalized, flags=re.IGNORECASE):
+            if product_type == "Preserve":
+                return "Preserves"
+            if product_type == "Jellies":
+                return "Jelly"
+            return product_type
+    return ""
+
+
+def _extract_product_type_title_part(title: str, brand: str, count_pack: str, key_features: list[str]) -> str:
+    candidate = _normalize_title_size(title)
+    candidate = _remove_phrase(candidate, brand)
+    candidate = _remove_phrase(candidate, count_pack)
+    for feature in key_features:
+        candidate = _remove_phrase(candidate, feature)
+    for term in TITLE_RETAILER_PROMO_PATTERNS:
+        candidate = _remove_phrase(candidate, term)
+    candidate = re.sub(r"\b[,;:|-]+\b", " ", candidate)
+    candidate = re.sub(r"\s*,\s*", " ", candidate)
+    return _norm(candidate)
+
+
+def _append_unique_title_part(parts: list[str], part: str) -> None:
+    cleaned = _norm(part)
+    if not cleaned:
+        return
+    cleaned_lower = cleaned.lower()
+    for existing in parts:
+        existing_lower = existing.lower()
+        if cleaned_lower == existing_lower or cleaned_lower in existing_lower:
+            return
+    parts.append(cleaned)
+
+
+def _trim_formula_title(parts: list[str], priority_parts: list[str], max_len: int = 90) -> str:
+    candidate_parts = list(parts)
+    candidate = _norm(", ".join(candidate_parts))
+    if len(candidate) <= max_len:
+        return candidate
+
+    priority_lower = {p.lower() for p in priority_parts if p}
+    for i in range(len(candidate_parts) - 1, -1, -1):
+        if candidate_parts[i].lower() in priority_lower:
+            continue
+        trial_parts = candidate_parts[:i] + candidate_parts[i + 1 :]
+        trial = _norm(", ".join(trial_parts))
+        if trial and len(trial) <= max_len:
+            return trial
+        candidate_parts = trial_parts
+    return _norm(", ".join(candidate_parts))[:max_len].rstrip(" ,;-")
+
+
+def _format_formula_title_parts(parts: list[str], formula: list[str]) -> list[str]:
+    if len(parts) < 2:
+        return parts
+    normalized_formula = [part.strip().lower() for part in formula]
+    if (
+        len(normalized_formula) >= 2
+        and normalized_formula[0] == "brand"
+        and normalized_formula[1] == "product/type"
+    ):
+        return [_norm(f"{parts[0]} {parts[1]}"), *parts[2:]]
+    return parts
+
+
+def _generate_style_guide_recommended_title(record: dict[str, Any], style_guide_match: dict[str, Any] | None) -> str:
+    if not isinstance(style_guide_match, dict) or not style_guide_match.get("matched"):
+        return ""
+
+    title = _norm(record.get("current_title") or record.get("product_title") or "")
+    if not title:
+        return ""
+
+    formula = [str(part) for part in style_guide_match.get("formula", []) if str(part).strip()]
+    if not formula:
+        return ""
+
+    brand = _extract_verified_brand(record, title)
+    count_pack = _extract_count_pack(title)
+    all_key_features = _extract_key_features_from_title(title)
+    key_features = all_key_features[:1]
+    product_type = _extract_product_type_title_part(title, brand, count_pack, all_key_features)
+    jam_preserve_type = _detect_jam_preserve_type(title)
+
+    component_values: dict[str, list[str]] = {
+        "brand": [brand],
+        "product/type": [product_type],
+        "key feature": key_features[:2],
+        "count/pack": [count_pack],
+        "jam jelly and preserves type": [jam_preserve_type],
+    }
+
+    parts: list[str] = []
+    for raw_component in formula:
+        component = raw_component.strip().lower()
+        values = component_values.get(component, [])
+        for value in values:
+            if component == "jam jelly and preserves type" and product_type and value.lower() in product_type.lower():
+                continue
+            _append_unique_title_part(parts, value)
+
+    if not parts:
+        return ""
+
+    parts = _format_formula_title_parts(parts, formula)
+    priority_parts = [brand, product_type, count_pack]
+    return _trim_formula_title(parts, priority_parts)
+
+
+def generate_recommended_title(
+    record: dict[str, Any],
+    findings: list[dict[str, Any]],
+    style_guide_match: dict[str, Any] | None = None,
+) -> str:
+    style_title = _generate_style_guide_recommended_title(record, style_guide_match)
+    if style_title:
+        return style_title
+
     base = _norm(record.get("current_title") or record.get("product_title") or "")
     if not base:
         return "Add clear product title with brand, product type, and key differentiator"
@@ -964,13 +1194,26 @@ def generate_top_priority_fixes(findings: list[dict[str, Any]]) -> list[str]:
 def generate_mvp_outputs_for_primary_entry(entry: dict[str, Any]) -> dict[str, Any]:
     record = entry.get("cached_record", {})
     findings = entry.get("rule_findings", []) or []
-    return {
+    style_guide_match = entry.get("style_guide_match", {}) or {}
+    style_title = _generate_style_guide_recommended_title(record, style_guide_match)
+    recommended_title = style_title or generate_recommended_title(record, findings)
+    outputs = {
         "image_recommendations": generate_image_recommendations(record, findings),
-        "recommended_title": generate_recommended_title(record, findings),
+        "recommended_title": recommended_title,
         "description_recommendations": generate_description_recommendations(findings),
         "key_features_recommendations": generate_key_features_recommendations(findings),
         "top_priority_fixes": generate_top_priority_fixes(findings),
     }
+    if style_title and isinstance(style_guide_match, dict) and style_guide_match.get("matched"):
+        formula = [str(part) for part in style_guide_match.get("formula", []) if str(part).strip()]
+        outputs.update(
+            {
+                "recommended_title_source": "style_guide",
+                "title_formula_used": " + ".join(formula),
+                "title_style_guide_product_type": str(style_guide_match.get("product_type_name", "") or ""),
+            }
+        )
+    return outputs
 
 
 def is_output_shell_empty(outputs: dict[str, Any] | None) -> bool:
