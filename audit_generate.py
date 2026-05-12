@@ -872,34 +872,78 @@ JAM_PRESERVE_TYPES = (
 
 def _normalize_title_size(text: str) -> str:
     text = re.sub(
-        r"\b(?P<num>\d+(?:\.\d+)?)\s*(?P<unit>fl\s*oz|fluid\s*ounce|fluid\s*ounces|oz|ounce|ounces)\b",
-        lambda m: f"{m.group('num')} {'fl oz' if 'fl' in m.group('unit').lower() or 'fluid' in m.group('unit').lower() else 'oz'}",
+        r"\b(?P<num>\d+(?:\.\d+)?)\s*(?P<unit>fl\s*oz|fluid\s*ounce|fluid\s*ounces|oz|ounce|ounces|lb|lbs|pound|pounds|g|gram|grams|kg|kilogram|kilograms)\b",
+        lambda m: f"{m.group('num')} {_normalize_measurement_unit(m.group('unit'))}",
         text,
         flags=re.IGNORECASE,
     )
     text = re.sub(
         r"\b(?P<num>\d+)\s*(?P<unit>pack|packs|count|ct)\b",
-        lambda m: f"{m.group('num')} {'Pack' if m.group('unit').lower().startswith('pack') else ('Count' if m.group('unit').lower().startswith('count') else 'ct')}",
+        lambda m: f"{m.group('num')} {_normalize_count_unit(m.group('unit'))}",
         text,
         flags=re.IGNORECASE,
     )
     return _norm(text)
 
 
-def _extract_count_pack(title: str) -> str:
+def _normalize_measurement_unit(unit: str) -> str:
+    normalized = re.sub(r"\s+", " ", unit.lower()).strip()
+    if normalized in {"fl oz", "fluid ounce", "fluid ounces"}:
+        return "fl oz"
+    if normalized in {"oz", "ounce", "ounces"}:
+        return "oz"
+    if normalized in {"lb", "lbs", "pound", "pounds"}:
+        return "lb"
+    if normalized in {"g", "gram", "grams"}:
+        return "g"
+    if normalized in {"kg", "kilogram", "kilograms"}:
+        return "kg"
+    return normalized
+
+
+def _normalize_count_unit(unit: str) -> str:
+    normalized = unit.lower().strip()
+    if normalized.startswith("pack"):
+        return "Pack"
+    return "Count"
+
+
+def _dedupe_count_pack_values(values: list[str]) -> list[str]:
+    out: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        cleaned = _norm(value)
+        key = cleaned.lower()
+        if cleaned and key not in seen:
+            seen.add(key)
+            out.append(cleaned)
+    return out
+
+
+def _extract_count_pack_values(title: str) -> list[str]:
     normalized = _normalize_title_size(title)
-    patterns = (
+    matches: list[tuple[int, str]] = []
+
+    parenthetical_pattern = r"\(\s*(?P<num>\d+)\s*(?P<unit>pack|packs|count|ct)\s*\)"
+    for match in re.finditer(parenthetical_pattern, normalized, flags=re.IGNORECASE):
+        matches.append((match.start(), f"{match.group('num')} {_normalize_count_unit(match.group('unit'))}"))
+
+    patterns = [
         r"\b\d+(?:\.\d+)?\s+fl oz(?:\s+(?:jar|bottle|container|cup|tub|pack))?\b",
         r"\b\d+(?:\.\d+)?\s+oz(?:\s+(?:jar|bottle|container|cup|tub|pack))?\b",
+        r"\b\d+(?:\.\d+)?\s+(?:lb|g|kg)(?:\s+(?:jar|bag|bottle|container|cup|tub|pack))?\b",
         r"\b\d+\s+Pack\b",
         r"\b\d+\s+Count\b",
-        r"\b\d+\s+ct\b",
-    )
+    ]
     for pattern in patterns:
-        match = re.search(pattern, normalized, flags=re.IGNORECASE)
-        if match:
-            return _norm(match.group(0))
-    return ""
+        for match in re.finditer(pattern, normalized, flags=re.IGNORECASE):
+            matches.append((match.start(), match.group(0)))
+    return _dedupe_count_pack_values([value for _, value in sorted(matches, key=lambda item: item[0])])
+
+
+def _extract_count_pack(title: str) -> str:
+    values = _extract_count_pack_values(title)
+    return ", ".join(values)
 
 
 def _remove_phrase(text: str, phrase: str) -> str:
@@ -913,6 +957,9 @@ def _remove_phrase(text: str, phrase: str) -> str:
 def _extract_verified_brand(record: dict[str, Any], title: str) -> str:
     brand = _norm(str(record.get("brand", "") or ""))
     if brand:
+        letters = [ch for ch in brand if ch.isalpha()]
+        if letters and all(ch.isupper() for ch in letters):
+            return brand.title()
         return brand
     words = _norm(title).split(" ")
     if len(words) >= 2 and words[0].isupper() and words[1].isupper():
@@ -947,11 +994,13 @@ def _detect_jam_preserve_type(title: str) -> str:
 def _extract_product_type_title_part(title: str, brand: str, count_pack: str, key_features: list[str]) -> str:
     candidate = _normalize_title_size(title)
     candidate = _remove_phrase(candidate, brand)
-    candidate = _remove_phrase(candidate, count_pack)
+    for count_pack_value in _extract_count_pack_values(title):
+        candidate = _remove_phrase(candidate, count_pack_value)
     for feature in key_features:
         candidate = _remove_phrase(candidate, feature)
     for term in TITLE_RETAILER_PROMO_PATTERNS:
         candidate = _remove_phrase(candidate, term)
+    candidate = re.sub(r"\(\s*\)", " ", candidate)
     candidate = re.sub(r"\b[,;:|-]+\b", " ", candidate)
     candidate = re.sub(r"\s*,\s*", " ", candidate)
     return _norm(candidate)
@@ -1013,7 +1062,8 @@ def _generate_style_guide_recommended_title(record: dict[str, Any], style_guide_
         return ""
 
     brand = _extract_verified_brand(record, title)
-    count_pack = _extract_count_pack(title)
+    count_pack_values = _extract_count_pack_values(title)
+    count_pack = ", ".join(count_pack_values)
     all_key_features = _extract_key_features_from_title(title)
     key_features = all_key_features[:1]
     product_type = _extract_product_type_title_part(title, brand, count_pack, all_key_features)
@@ -1023,7 +1073,7 @@ def _generate_style_guide_recommended_title(record: dict[str, Any], style_guide_
         "brand": [brand],
         "product/type": [product_type],
         "key feature": key_features[:2],
-        "count/pack": [count_pack],
+        "count/pack": count_pack_values,
         "jam jelly and preserves type": [jam_preserve_type],
     }
 
