@@ -913,9 +913,19 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
         _set_pdp_image_recommendations(rec_shape, "Image Recommendations:", image_recs)
 
     def _pdp_image_safe_rect(image_shape: Any, title_shape_local: Any, rec_shape_local: Any) -> tuple[int, int, int, int]:
-        left = int(image_shape.left)
+        slide_margin = int(Inches(0.45))
+        max_right = max(
+            [int(getattr(shape, "left", 0)) + int(getattr(shape, "width", 0)) for shape in slide.shapes]
+            or [int(image_shape.left) + int(image_shape.width)]
+        )
+        max_bottom = max(
+            [int(getattr(shape, "top", 0)) + int(getattr(shape, "height", 0)) for shape in slide.shapes]
+            or [int(image_shape.top) + int(image_shape.height)]
+        )
+
+        left = max(int(image_shape.left), slide_margin)
         top = int(image_shape.top)
-        right = left + int(image_shape.width)
+        right = min(int(image_shape.left) + int(image_shape.width), max_right - slide_margin)
         bottom = top + int(image_shape.height)
         gap = int(Inches(0.12))
 
@@ -927,36 +937,46 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
             if rec_top > top:
                 bottom = min(bottom, rec_top - gap)
 
+        bottom = min(bottom, max_bottom - slide_margin)
         return left, top, max(1, right - left), max(1, bottom - top)
 
-    def _pdp_image_layout_rects(left: int, top: int, width: int, height: int, count: int) -> list[tuple[int, int, int, int]]:
-        # Build fresh grid layout for the current PDP slide only.
-        count = max(1, min(6, int(count or 1)))
-        if count == 1:
-            return [(left, top, width, height)]
+    def _build_pdp_multi_image_grid_rects(
+        left: int, top: int, width: int, height: int, count: int
+    ) -> list[tuple[int, int, int, int]]:
+        # Build fresh strict grid cells for the current PDP slide only.
+        count = max(2, min(6, int(count or 2)))
+        cols = 2 if count in {2, 4} else 3
+        rows = 1 if count in {2, 3} else 2
+        gutter_x = max(int(Inches(0.22)), int(width * 0.045))
+        gutter_y = max(int(Inches(0.18)), int(height * 0.08))
+        pad_x = max(int(Inches(0.10)), int(width * 0.018))
+        pad_y = max(int(Inches(0.08)), int(height * 0.025))
 
-        row_columns_by_count = {
-            2: [2],
-            3: [3],
-            4: [2, 2],
-            5: [3, 2],
-            6: [3, 3],
+        cell_w = max(1, int((width - gutter_x * (cols - 1)) / cols))
+        cell_h = max(1, int((height - gutter_y * (rows - 1)) / rows))
+        grid_w = cell_w * cols + gutter_x * (cols - 1)
+        grid_left = left + int((width - grid_w) / 2)
+
+        positions_by_count = {
+            2: [(0, 0), (0, 1)],
+            3: [(0, 0), (0, 1), (0, 2)],
+            4: [(0, 0), (0, 1), (1, 0), (1, 1)],
+            5: [(0, 0), (0, 1), (0, 2), (1, 0.5), (1, 1.5)],
+            6: [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2)],
         }
-        rows = row_columns_by_count.get(count, [3, 3])
-        gap_x = max(int(Inches(0.08)), int(width * 0.018))
-        gap_y = max(int(Inches(0.08)), int(height * 0.035))
-        row_h = max(1, int((height - gap_y * (len(rows) - 1)) / len(rows)))
 
         rects: list[tuple[int, int, int, int]] = []
-        for row_idx, cols in enumerate(rows):
-            cell_w = max(1, int((width - gap_x * (cols - 1)) / cols))
-            row_w = cell_w * cols + gap_x * (cols - 1)
-            row_left = left + int((width - row_w) / 2)
-            row_top = top + row_idx * (row_h + gap_y)
-            for col_idx in range(cols):
-                if len(rects) >= count:
-                    break
-                rects.append((row_left + col_idx * (cell_w + gap_x), row_top, cell_w, row_h))
+        for row_idx, col_idx in positions_by_count[count]:
+            cell_left = grid_left + int(col_idx * (cell_w + gutter_x))
+            cell_top = top + int(row_idx * (cell_h + gutter_y))
+            rects.append(
+                (
+                    cell_left + pad_x,
+                    cell_top + pad_y,
+                    max(1, cell_w - 2 * pad_x),
+                    max(1, cell_h - 2 * pad_y),
+                )
+            )
         return rects
 
     def _pdp_image_identifier(img_payload: dict[str, Any]) -> str:
@@ -1048,7 +1068,7 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
                     inset_ratio=0.03,
                 )
         else:
-            rects = _pdp_image_layout_rects(
+            rects = _build_pdp_multi_image_grid_rects(
                 safe_left,
                 safe_top,
                 safe_width,
@@ -1077,7 +1097,7 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
                     width=width,
                     height=image_h,
                     image_url=_safe_text(img.get("url", "")),
-                    inset_ratio=0.02,
+                    inset_ratio=0.0,
                 )
                 if show_dims and _safe_text(dims_text) and band_h > 0:
                     _add_dimension_textbox(
