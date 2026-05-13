@@ -89,6 +89,8 @@ def resolve_primary_image_payload(entry: dict[str, Any]) -> dict[str, Any]:
             "selection_source": "user_selected",
             "dimensions_text": _format_dimensions_label_from_image(selected_image_obj),
             "show_dimensions_in_powerpoint": bool((selected_image_obj or {}).get("show_dimensions_in_powerpoint", False)),
+            "width": (selected_image_obj or {}).get("width"),
+            "height": (selected_image_obj or {}).get("height"),
         }
 
     hero = next((img for img in images if img.get("is_hero") and img.get("url")), None)
@@ -100,6 +102,8 @@ def resolve_primary_image_payload(entry: dict[str, Any]) -> dict[str, Any]:
             "selection_source": "hero_fallback",
             "dimensions_text": _format_dimensions_label_from_image(hero),
             "show_dimensions_in_powerpoint": bool(hero.get("show_dimensions_in_powerpoint", False)),
+            "width": hero.get("width"),
+            "height": hero.get("height"),
         }
 
     if images:
@@ -111,6 +115,8 @@ def resolve_primary_image_payload(entry: dict[str, Any]) -> dict[str, Any]:
             "selection_source": "first_image_fallback",
             "dimensions_text": _format_dimensions_label_from_image(first),
             "show_dimensions_in_powerpoint": bool(first.get("show_dimensions_in_powerpoint", False)),
+            "width": first.get("width"),
+            "height": first.get("height"),
         }
 
     return {
@@ -120,6 +126,8 @@ def resolve_primary_image_payload(entry: dict[str, Any]) -> dict[str, Any]:
         "selection_source": "missing",
         "dimensions_text": "",
         "show_dimensions_in_powerpoint": False,
+        "width": None,
+        "height": None,
     }
 
 
@@ -152,9 +160,11 @@ def resolve_primary_images_payload(entry: dict[str, Any]) -> list[dict[str, Any]
                     "selection_source": "user_selected_multi",
                     "dimensions_text": _format_dimensions_label_from_image(image),
                     "show_dimensions_in_powerpoint": bool(image.get("show_dimensions_in_powerpoint", False)),
+                    "width": image.get("width"),
+                    "height": image.get("height"),
                 }
             )
-            if len(ordered) >= 4:
+            if len(ordered) >= 6:
                 break
 
     if not ordered:
@@ -162,7 +172,7 @@ def resolve_primary_images_payload(entry: dict[str, Any]) -> list[dict[str, Any]
         if _text_has_value(single.get("url", "")):
             ordered = [single]
 
-    return ordered[:4]
+    return ordered[:6]
 
 
 def build_product_slide_pair(entry: dict[str, Any], pair_order: int) -> dict[str, Any]:

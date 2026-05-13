@@ -10,7 +10,7 @@ from typing import Any
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE_TYPE
-from pptx.enum.text import MSO_AUTO_SIZE, PP_ALIGN
+from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE, PP_ALIGN
 from pptx.oxml.ns import qn
 from pptx.oxml.xmlchemy import OxmlElement
 from pptx.util import Inches, Pt
@@ -472,6 +472,138 @@ def _download_image_bytes(url: str) -> bytes | None:
         return None
 
 
+def _prepare_powerpoint_image_bytes(image_bytes: bytes | None) -> bytes | None:
+    if not image_bytes:
+        return None
+
+    try:
+        from PIL import Image as PILImage
+    except Exception:
+        # Without Pillow, only pass through common formats PowerPoint handles reliably.
+        if image_bytes.startswith(b"\x89PNG\r\n\x1a\n") or image_bytes.startswith(b"\xff\xd8\xff"):
+            return image_bytes
+        if image_bytes[:6] in (b"GIF87a", b"GIF89a"):
+            return image_bytes
+        if image_bytes.startswith(b"BM"):
+            return image_bytes
+        return None
+
+    try:
+        with PILImage.open(io.BytesIO(image_bytes)) as img:
+            img.verify()
+        with PILImage.open(io.BytesIO(image_bytes)) as img:
+            fmt = (img.format or "").upper()
+            if fmt in {"PNG", "JPEG", "JPG"}:
+                return image_bytes
+
+            converted = io.BytesIO()
+            if img.mode not in {"RGB", "RGBA"}:
+                img = img.convert("RGBA" if "A" in img.getbands() else "RGB")
+            img.save(converted, format="PNG")
+            return converted.getvalue()
+    except Exception:
+        return None
+
+
+def _add_unavailable_image_placeholder(
+    slide: Any,
+    *,
+    left: int,
+    top: int,
+    width: int,
+    height: int,
+) -> None:
+    textbox = slide.shapes.add_textbox(int(left), int(top), max(1, int(width)), max(1, int(height)))
+    tf = textbox.text_frame
+    tf.clear()
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    p = tf.paragraphs[0]
+    p.text = "Image unavailable"
+    p.alignment = PP_ALIGN.CENTER
+    for run in p.runs:
+        run.font.name = GENERATED_FONT_FAMILY
+        run.font.size = Pt(10)
+        run.font.bold = False
+        run.font.color.rgb = PRIMARY_DIM_TEXT_COLOR
+
+
+def _fit_picture_in_rect_from_bytes(
+    slide: Any,
+    image_bytes: bytes,
+    *,
+    left: int,
+    top: int,
+    width: int,
+    height: int,
+) -> bool:
+    try:
+        pic = slide.shapes.add_picture(io.BytesIO(image_bytes), 0, 0)
+        src_w = max(1, int(pic.width))
+        src_h = max(1, int(pic.height))
+        scale = min(max(1, int(width)) / src_w, max(1, int(height)) / src_h)
+        new_w = max(1, int(src_w * scale))
+        new_h = max(1, int(src_h * scale))
+
+        pic.width = new_w
+        pic.height = new_h
+        pic.left = int(left) + int((max(1, int(width)) - new_w) / 2)
+        pic.top = int(top) + int((max(1, int(height)) - new_h) / 2)
+        return True
+    except Exception:
+        return False
+
+
+def _insert_pdp_image_or_placeholder(
+    slide: Any,
+    *,
+    left: int,
+    top: int,
+    width: int,
+    height: int,
+    image_url: str,
+    inset_ratio: float = 0.0,
+) -> bool:
+    inset = max(0.0, min(0.25, float(inset_ratio)))
+    inset_x = int(width * inset)
+    inset_y = int(height * inset)
+    slot_left = int(left) + inset_x
+    slot_top = int(top) + inset_y
+    slot_width = max(1, int(width) - 2 * inset_x)
+    slot_height = max(1, int(height) - 2 * inset_y)
+
+    raw_bytes = _download_image_bytes(image_url)
+    image_bytes = _prepare_powerpoint_image_bytes(raw_bytes)
+    if image_bytes and _fit_picture_in_rect_from_bytes(
+        slide,
+        image_bytes,
+        left=slot_left,
+        top=slot_top,
+        width=slot_width,
+        height=slot_height,
+    ):
+        return True
+
+    # Last chance: if conversion succeeded but PowerPoint rejects the converted bytes, try the original.
+    if raw_bytes and image_bytes is not None and raw_bytes is not image_bytes and _fit_picture_in_rect_from_bytes(
+        slide,
+        raw_bytes,
+        left=slot_left,
+        top=slot_top,
+        width=slot_width,
+        height=slot_height,
+    ):
+        return True
+
+    _add_unavailable_image_placeholder(
+        slide,
+        left=slot_left,
+        top=slot_top,
+        width=slot_width,
+        height=slot_height,
+    )
+    return False
+
+
 def _insert_image_over_shape(slide: Any, target_shape: Any, image_url: str) -> bool:
     image_bytes = _download_image_bytes(image_url)
     if not image_bytes:
@@ -565,16 +697,16 @@ def _formatted_dimensions_text(width: Any, height: Any, raw_text: Any) -> str:
         w = int(width)
         h = int(height)
         if w > 0 and h > 0:
-            return f"{w} × {h}"
+            return f"{w} W x {h} H"
     raw = _safe_text(raw_text)
     if not raw:
         return ""
     import re as _re
 
-    normalized_raw = raw.replace("\xd7", "×")
-    match = _re.search(r"(?P<w>\d{2,5})\s*W?\s*[x×]\s*(?P<h>\d{2,5})\s*H?", normalized_raw, flags=_re.IGNORECASE)
+    normalized_raw = raw.replace("\xd7", "x").replace("×", "x")
+    match = _re.search(r"(?P<w>\d{2,5})\s*W?\s*x\s*(?P<h>\d{2,5})\s*H?", normalized_raw, flags=_re.IGNORECASE)
     if match:
-        return f"{int(match.group('w'))} × {int(match.group('h'))}"
+        return f"{int(match.group('w'))} W x {int(match.group('h'))} H"
 
     compact = " ".join(normalized_raw.split()).strip(" \t\r\n-_|,;")
     if len(compact) <= 40 and any(ch.isdigit() for ch in compact):
@@ -760,41 +892,59 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
     if rec_shape:
         _set_pdp_image_recommendations(rec_shape, "Image Recommendations:", image_recs)
 
+    def _pdp_image_safe_rect(image_shape: Any, title_shape_local: Any, rec_shape_local: Any) -> tuple[int, int, int, int]:
+        left = int(image_shape.left)
+        top = int(image_shape.top)
+        right = left + int(image_shape.width)
+        bottom = top + int(image_shape.height)
+        gap = int(Inches(0.12))
+
+        if title_shape_local is not None:
+            title_bottom = int(title_shape_local.top) + int(title_shape_local.height)
+            top = max(top, title_bottom + gap)
+        if rec_shape_local is not None:
+            rec_top = int(rec_shape_local.top)
+            if rec_top > top:
+                bottom = min(bottom, rec_top - gap)
+
+        return left, top, max(1, right - left), max(1, bottom - top)
+
     def _pdp_image_layout_rects(left: int, top: int, width: int, height: int, count: int) -> list[tuple[int, int, int, int]]:
-        count = max(1, min(4, int(count or 1)))
+        count = max(1, min(6, int(count or 1)))
         if count == 1:
             return [(left, top, width, height)]
-        gap_x = int(width * 0.025)
-        gap_y = int(height * 0.03)
-        if count == 2:
-            cell_w = max(1, int((width - gap_x) / 2))
-            return [
-                (left, top, cell_w, height),
-                (left + cell_w + gap_x, top, cell_w, height),
-            ]
-        if count == 3:
-            gap_x_3 = int(width * 0.02)
-            cell_w = max(1, int((width - (2 * gap_x_3)) / 3))
-            return [
-                (left, top, cell_w, height),
-                (left + cell_w + gap_x_3, top, cell_w, height),
-                (left + 2 * (cell_w + gap_x_3), top, cell_w, height),
-            ]
-        cell_w = max(1, int((width - gap_x) / 2))
-        cell_h = max(1, int((height - gap_y) / 2))
-        return [
-            (left, top, cell_w, cell_h),
-            (left + cell_w + gap_x, top, cell_w, cell_h),
-            (left, top + cell_h + gap_y, cell_w, cell_h),
-            (left + cell_w + gap_x, top + cell_h + gap_y, cell_w, cell_h),
-        ]
+
+        row_columns_by_count = {
+            2: [2],
+            3: [3],
+            4: [2, 2],
+            5: [3, 2],
+            6: [3, 3],
+        }
+        rows = row_columns_by_count.get(count, [3, 3])
+        gap_x = max(int(Inches(0.08)), int(width * 0.018))
+        gap_y = max(int(Inches(0.08)), int(height * 0.035))
+        row_h = max(1, int((height - gap_y * (len(rows) - 1)) / len(rows)))
+
+        rects: list[tuple[int, int, int, int]] = []
+        for row_idx, cols in enumerate(rows):
+            cell_w = max(1, int((width - gap_x * (cols - 1)) / cols))
+            row_w = cell_w * cols + gap_x * (cols - 1)
+            row_left = left + int((width - row_w) / 2)
+            row_top = top + row_idx * (row_h + gap_y)
+            for col_idx in range(cols):
+                if len(rects) >= count:
+                    break
+                rects.append((row_left + col_idx * (cell_w + gap_x), row_top, cell_w, row_h))
+        return rects
 
     image_box = _largest_autoshape(slide)
     if image_box and _safe_text(selected_img):
         _remove_shape_box_treatment(image_box)
+        safe_left, safe_top, safe_width, safe_height = _pdp_image_safe_rect(image_box, title_shape, rec_shape)
         ordered_primary_images = [
             img for img in selected_primary_images if _safe_text((img or {}).get("url", ""))
-        ][:4]
+        ][:6]
         if not ordered_primary_images:
             ordered_primary_images = [{"url": selected_img}]
 
@@ -820,36 +970,44 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
 
             show_dims, dims_text = _img_dims_enabled_and_text(single)
             if show_dims and _safe_text(dims_text):
-                band_h = max(int(image_box.height * 0.11), int(Inches(0.18)))
-                band_h = min(band_h, int(image_box.height * 0.24))
-                image_h = max(1, int(image_box.height) - band_h)
-                _insert_image_fit_in_rect(
+                band_h = max(int(safe_height * 0.11), int(Inches(0.18)))
+                band_h = min(band_h, int(safe_height * 0.24))
+                image_h = max(1, int(safe_height) - band_h)
+                _insert_pdp_image_or_placeholder(
                     slide,
-                    left=int(image_box.left),
-                    top=int(image_box.top),
-                    width=int(image_box.width),
+                    left=safe_left,
+                    top=safe_top,
+                    width=safe_width,
                     height=image_h,
                     image_url=_safe_text(single.get("url", "")),
                     inset_ratio=0.03,
                 )
                 _add_dimension_textbox(
                     slide,
-                    left=int(image_box.left),
-                    top=int(image_box.top + image_h),
-                    width=int(image_box.width),
+                    left=safe_left,
+                    top=safe_top + image_h,
+                    width=safe_width,
                     height=band_h,
                     text=dims_text,
                     color=PRIMARY_DIM_TEXT_COLOR,
                     font_size_pt=11,
                 )
             else:
-                _insert_image_fit_within_shape(slide, image_box, _safe_text(single.get("url", "")), inset_ratio=0.03)
+                _insert_pdp_image_or_placeholder(
+                    slide,
+                    left=safe_left,
+                    top=safe_top,
+                    width=safe_width,
+                    height=safe_height,
+                    image_url=_safe_text(single.get("url", "")),
+                    inset_ratio=0.03,
+                )
         else:
             rects = _pdp_image_layout_rects(
-                int(image_box.left),
-                int(image_box.top),
-                int(image_box.width),
-                int(image_box.height),
+                safe_left,
+                safe_top,
+                safe_width,
+                safe_height,
                 len(ordered_primary_images),
             )
             # Keep tile sizing consistent: when any displayed image has dimensions enabled,
@@ -866,7 +1024,7 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
                 else:
                     band_h = 0
                 image_h = max(1, int(height) - int(band_h))
-                _insert_image_fit_in_rect(
+                _insert_pdp_image_or_placeholder(
                     slide,
                     left=left,
                     top=top,
