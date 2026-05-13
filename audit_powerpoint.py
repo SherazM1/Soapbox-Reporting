@@ -18,6 +18,7 @@ from pptx.util import Inches, Pt
 GENERATED_FONT_FAMILY = "Raleway"
 PRIMARY_DIM_TEXT_COLOR = RGBColor(120, 120, 120)  # muted gray
 COMPETITOR_DIM_TEXT_COLOR = RGBColor(27, 56, 98)  # navy
+PDP_RENDER_SHAPE_PREFIX = "soapbox_pdp_rendered_"
 
 
 def resolve_audit_template_path() -> str:
@@ -514,6 +515,7 @@ def _add_unavailable_image_placeholder(
     height: int,
 ) -> None:
     textbox = slide.shapes.add_textbox(int(left), int(top), max(1, int(width)), max(1, int(height)))
+    textbox.name = f"{PDP_RENDER_SHAPE_PREFIX}placeholder"
     tf = textbox.text_frame
     tf.clear()
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
@@ -538,6 +540,7 @@ def _fit_picture_in_rect_from_bytes(
 ) -> bool:
     try:
         pic = slide.shapes.add_picture(io.BytesIO(image_bytes), 0, 0)
+        pic.name = f"{PDP_RENDER_SHAPE_PREFIX}image"
         src_w = max(1, int(pic.width))
         src_h = max(1, int(pic.height))
         scale = min(max(1, int(width)) / src_w, max(1, int(height)) / src_h)
@@ -728,6 +731,7 @@ def _add_dimension_textbox(
     if not _safe_text(text):
         return
     textbox = slide.shapes.add_textbox(int(left), int(top), max(1, int(width)), max(1, int(height)))
+    textbox.name = f"{PDP_RENDER_SHAPE_PREFIX}dimensions"
     tf = textbox.text_frame
     tf.clear()
     p = tf.paragraphs[0]
@@ -792,6 +796,20 @@ def _largest_autoshape(slide: Any) -> Any:
     if not autoshapes:
         return None
     return max(autoshapes, key=lambda s: int(s.width) * int(s.height))
+
+
+def _remove_shape(slide: Any, shape: Any) -> None:
+    try:
+        slide.shapes._spTree.remove(shape._element)  # pylint: disable=protected-access
+    except Exception:
+        return
+
+
+def _remove_pdp_rendered_image_shapes(slide: Any) -> None:
+    for shape in list(slide.shapes):
+        name = _safe_text(getattr(shape, "name", ""))
+        if name.startswith(PDP_RENDER_SHAPE_PREFIX):
+            _remove_shape(slide, shape)
 
 
 def _duplicate_slide(prs: Presentation, source_slide: Any) -> Any:
@@ -874,10 +892,12 @@ def _find_first_shared_anchor_slide(prs: Presentation) -> Any | None:
 
 
 def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
+    # Reset PDP image render artifacts copied from a previously populated slide.
+    _remove_pdp_rendered_image_shapes(slide)
+
     pdp = pair_payload.get("pdp_slide", {}) or {}
     content = pair_payload.get("content_optimization_slide", {}) or {}
     selected_primary_payload = pdp.get("selected_primary_image", {}) or {}
-    selected_primary_images = list(pdp.get("selected_primary_images", []) or [])
 
     title = _safe_text(pdp.get("product_title"))
     item_id = _safe_text(pdp.get("item_id"))
@@ -910,6 +930,7 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
         return left, top, max(1, right - left), max(1, bottom - top)
 
     def _pdp_image_layout_rects(left: int, top: int, width: int, height: int, count: int) -> list[tuple[int, int, int, int]]:
+        # Build fresh grid layout for the current PDP slide only.
         count = max(1, min(6, int(count or 1)))
         if count == 1:
             return [(left, top, width, height)]
@@ -938,15 +959,39 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
                 rects.append((row_left + col_idx * (cell_w + gap_x), row_top, cell_w, row_h))
         return rects
 
+    def _pdp_image_identifier(img_payload: dict[str, Any]) -> str:
+        url = _safe_text(img_payload.get("url", "")).lower()
+        return " ".join(url.split())
+
+    def _fresh_selected_images_for_current_slide() -> list[dict[str, Any]]:
+        # Reset placement state per slide: copy payload dicts, preserve order, dedupe this slide only.
+        raw_images = list(pdp.get("selected_primary_images", []) or [])
+        fresh_images: list[dict[str, Any]] = []
+        seen_ids: set[str] = set()
+        for raw in raw_images:
+            img = dict(raw or {})
+            identifier = _pdp_image_identifier(img)
+            if not identifier or identifier in seen_ids:
+                continue
+            seen_ids.add(identifier)
+            fresh_images.append(img)
+            if len(fresh_images) >= 6:
+                break
+
+        if not fresh_images and _safe_text(selected_img):
+            fallback = dict(selected_primary_payload or {})
+            fallback["url"] = selected_img
+            fresh_images = [fallback]
+        return fresh_images
+
     image_box = _largest_autoshape(slide)
-    if image_box and _safe_text(selected_img):
+    has_selected_image_url = _safe_text(selected_img) or any(
+        _safe_text((img or {}).get("url", "")) for img in list(pdp.get("selected_primary_images", []) or [])
+    )
+    if image_box and has_selected_image_url:
         _remove_shape_box_treatment(image_box)
         safe_left, safe_top, safe_width, safe_height = _pdp_image_safe_rect(image_box, title_shape, rec_shape)
-        ordered_primary_images = [
-            img for img in selected_primary_images if _safe_text((img or {}).get("url", ""))
-        ][:6]
-        if not ordered_primary_images:
-            ordered_primary_images = [{"url": selected_img}]
+        ordered_primary_images = _fresh_selected_images_for_current_slide()
 
         def _img_dims_enabled_and_text(img_payload: dict[str, Any]) -> tuple[bool, str]:
             enabled = bool(img_payload.get("show_dimensions_in_powerpoint", False))
@@ -1016,6 +1061,7 @@ def _populate_pdp_slide(slide: Any, pair_payload: dict[str, Any]) -> None:
             for idx, img in enumerate(ordered_primary_images):
                 if idx >= len(rects):
                     break
+                # Deterministic assignment: current slide image idx maps to current slide slot idx.
                 left, top, width, height = rects[idx]
                 show_dims, dims_text = _img_dims_enabled_and_text(dict(img or {}))
                 if has_any_dims_enabled:
@@ -1091,13 +1137,6 @@ def _sorted_competitor_slots(slide: Any) -> list[Any]:
         slots.append(shape)
     slots.sort(key=lambda s: (int(s.top), int(s.left)))
     return slots[:10]
-
-
-def _remove_shape(slide: Any, shape: Any) -> None:
-    try:
-        slide.shapes._spTree.remove(shape._element)  # pylint: disable=protected-access
-    except Exception:
-        return
 
 
 def _competitor_row_layout_for_count(count: int) -> list[int]:
