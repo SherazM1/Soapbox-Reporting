@@ -151,6 +151,2246 @@
           "negative_keywords": ["salsa", "guacamole", "hummus"]
         }
       }
+    },
+    "condiments_sauces": {
+      "display_name": "Condiments & Sauces",
+      "product_types": {
+        "gravies": {
+          "display_name": "Gravies",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Flavor", "Brand", "Size"],
+          "aliases": ["gravy", "gravies"],
+          "title_keywords": ["gravy", "brown gravy", "turkey gravy", "chicken gravy", "beef gravy"],
+          "context_keywords": ["savory sauce", "roast", "mashed potatoes", "pan gravy"],
+          "negative_keywords": ["pasta sauce", "pizza sauce", "hot sauce", "barbecue sauce"]
+        },
+        "mayonnaise": {
+          "display_name": "Mayonnaise",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["mayonnaise", "mayo"],
+          "title_keywords": ["mayonnaise", "mayo", "real mayonnaise"],
+          "context_keywords": ["sandwich spread", "creamy mayo", "olive oil mayo", "avocado oil mayo"],
+          "negative_keywords": ["mustard", "ketchup"]
+        },
+        "olives": {
+          "display_name": "Olives",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Olive Type"],
+          "attributes": ["Brand", "Olive Type", "Food Condition"],
+          "aliases": ["olive", "olives"],
+          "title_keywords": ["olives", "green olives", "black olives", "kalamata olives", "stuffed olives"],
+          "context_keywords": ["pitted", "sliced", "whole olives", "manzanilla", "kalamata"],
+          "negative_keywords": ["olive oil", "olive dip", "olive spread", "tapenade"]
+        },
+        "barbecue_sauces": {
+          "display_name": "Barbecue Sauces",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["barbecue sauce", "bbq sauce", "barbeque sauce"],
+          "title_keywords": ["barbecue sauce", "bbq sauce", "barbeque sauce", "hickory barbecue sauce", "honey barbecue sauce"],
+          "context_keywords": ["smoky", "hickory", "grilling sauce", "rib sauce", "sweet and spicy"],
+          "negative_keywords": ["hot sauce", "pasta sauce", "pizza sauce", "steak sauce"]
+        },
+        "mustards": {
+          "display_name": "Mustards",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Mustard Type"],
+          "attributes": ["Brand", "Mustard Type", "Flavor"],
+          "aliases": ["mustard", "mustards"],
+          "title_keywords": ["mustard", "dijon mustard", "yellow mustard", "honey mustard", "spicy brown mustard"],
+          "context_keywords": ["dijon", "yellow", "brown mustard", "stone ground", "sandwich condiment"],
+          "negative_keywords": ["ketchup", "mayonnaise"]
+        },
+        "maple_syrups": {
+          "display_name": "Maple Syrups",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["maple syrup", "pure maple syrup"],
+          "title_keywords": ["maple syrup", "pure maple syrup", "organic maple syrup"],
+          "context_keywords": ["grade a", "amber", "dark robust", "maple flavor"],
+          "negative_keywords": ["pancake syrup", "breakfast syrup", "maple flavored syrup"]
+        },
+        "satay_sauces": {
+          "display_name": "Satay Sauces",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Food Form"],
+          "aliases": ["satay sauce", "peanut sauce"],
+          "title_keywords": ["satay sauce", "peanut sauce", "thai peanut sauce"],
+          "context_keywords": ["satay", "peanut", "thai sauce", "dipping sauce"],
+          "negative_keywords": ["peanut butter", "nut butter", "dessert sauce"]
+        },
+        "wasabi": {
+          "display_name": "Wasabi",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Flavor", "Brand", "Size"],
+          "aliases": ["wasabi"],
+          "title_keywords": ["wasabi", "wasabi paste", "wasabi sauce"],
+          "context_keywords": ["japanese horseradish", "sushi", "spicy paste"],
+          "negative_keywords": ["wasabi peas", "snack mix"]
+        },
+        "other_condiments_sauces": {
+          "display_name": "Other Condiments & Sauces",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Container Type", "Nut Type"],
+          "aliases": ["condiment", "sauce"],
+          "title_keywords": ["condiment", "sauce", "dipping sauce"],
+          "context_keywords": ["table sauce", "finishing sauce", "condiment sauce"],
+          "negative_keywords": ["ketchup", "mustard", "mayonnaise", "mayo", "barbecue sauce", "bbq sauce", "hot sauce", "pasta sauce", "pizza sauce", "soy sauce", "fish sauce", "steak sauce", "tartar sauce", "cocktail sauce", "worcestershire sauce", "salad dressing", "syrup", "honey", "pickles", "olives", "capers", "relish", "chutney", "tahini", "horseradish", "wasabi", "gravy"]
+        },
+        "fish_sauces": {
+          "display_name": "Fish Sauces",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Nutrition Facts Label"],
+          "aliases": ["fish sauce", "fish sauces"],
+          "title_keywords": ["fish sauce", "nam pla", "nuoc mam"],
+          "context_keywords": ["anchovy extract", "thai cooking", "vietnamese sauce", "umami"],
+          "negative_keywords": ["seafood sauce", "cocktail sauce", "tartar sauce"]
+        },
+        "cooking_sauces_marinades": {
+          "display_name": "Cooking Sauces & Marinades",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Cooking Sauce And Marinade Type"],
+          "aliases": ["marinade", "cooking sauce", "simmer sauce", "marinades"],
+          "title_keywords": ["marinade", "cooking sauce", "simmer sauce", "teriyaki marinade", "stir fry sauce"],
+          "context_keywords": ["marinate", "simmer", "meal starter", "cooking base", "skillet sauce"],
+          "negative_keywords": ["pasta sauce", "pizza sauce", "hot sauce", "barbecue sauce", "soy sauce"]
+        },
+        "flavored_syrups": {
+          "display_name": "Flavored Syrups",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["flavored syrup", "coffee syrup", "vanilla syrup"],
+          "title_keywords": ["flavored syrup", "coffee syrup", "vanilla syrup", "caramel syrup", "hazelnut syrup"],
+          "context_keywords": ["coffee flavoring", "drink syrup", "beverage syrup", "sugar free syrup"],
+          "negative_keywords": ["maple syrup", "pancake syrup", "chocolate syrup", "dessert syrup"]
+        },
+        "horseradish": {
+          "display_name": "Horseradish",
+          "formula": ["Brand", "Flavor", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Flavor", "Food Condition", "Brand"],
+          "aliases": ["horseradish", "prepared horseradish"],
+          "title_keywords": ["horseradish", "prepared horseradish", "horseradish sauce"],
+          "context_keywords": ["hot horseradish", "cream style", "seafood condiment", "roast beef"],
+          "negative_keywords": ["wasabi", "cocktail sauce"]
+        },
+        "worcestershire_sauce": {
+          "display_name": "Worcestershire Sauce",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Fsma Section 204 Traceability", "Flavor"],
+          "aliases": ["worcestershire sauce"],
+          "title_keywords": ["worcestershire sauce"],
+          "context_keywords": ["savory sauce", "steak marinade", "umami sauce"],
+          "negative_keywords": ["steak sauce", "soy sauce", "fish sauce"]
+        },
+        "tahini": {
+          "display_name": "Tahini",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Flavor", "Brand", "Size"],
+          "aliases": ["tahini", "sesame tahini"],
+          "title_keywords": ["tahini", "sesame tahini", "tahini paste"],
+          "context_keywords": ["sesame paste", "ground sesame", "middle eastern"],
+          "negative_keywords": ["hummus", "sesame oil"]
+        },
+        "pasta_sauces": {
+          "display_name": "Pasta Sauces",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Pasta Sauce Type"],
+          "aliases": ["pasta sauce", "marinara sauce", "alfredo sauce", "spaghetti sauce"],
+          "title_keywords": ["pasta sauce", "marinara sauce", "alfredo sauce", "spaghetti sauce", "tomato basil sauce"],
+          "context_keywords": ["marinara", "alfredo", "spaghetti", "vodka sauce", "italian sauce"],
+          "negative_keywords": ["pizza sauce", "hot sauce"]
+        },
+        "soy_sauces": {
+          "display_name": "Soy Sauces",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["soy sauce", "tamari"],
+          "title_keywords": ["soy sauce", "tamari", "light soy sauce", "dark soy sauce"],
+          "context_keywords": ["reduced sodium", "low sodium", "asian cooking", "shoyu"],
+          "negative_keywords": ["teriyaki sauce", "fish sauce", "stir fry sauce"]
+        },
+        "ketchup": {
+          "display_name": "Ketchup",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["ketchup", "tomato ketchup"],
+          "title_keywords": ["ketchup", "tomato ketchup"],
+          "context_keywords": ["tomato condiment", "no sugar added", "simply ketchup"],
+          "negative_keywords": ["mustard", "mayonnaise", "hot sauce"]
+        },
+        "steak_sauces": {
+          "display_name": "Steak Sauces",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["steak sauce", "steak sauces"],
+          "title_keywords": ["steak sauce", "a1 sauce"],
+          "context_keywords": ["bold sauce", "beef sauce", "grilling condiment"],
+          "negative_keywords": ["barbecue sauce", "worcestershire sauce", "hot sauce"]
+        },
+        "capers": {
+          "display_name": "Capers",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Container Type"],
+          "attributes": ["Container Type", "Food Condition", "Size"],
+          "aliases": ["capers", "caper"],
+          "title_keywords": ["capers", "nonpareil capers"],
+          "context_keywords": ["brined", "nonpareil", "Mediterranean", "pickled flower buds"],
+          "negative_keywords": ["caper sauce", "tartar sauce"]
+        },
+        "tartar_sauces": {
+          "display_name": "Tartar Sauces",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Flavor", "Brand", "Size"],
+          "aliases": ["tartar sauce", "tartar sauces"],
+          "title_keywords": ["tartar sauce", "dill tartar sauce"],
+          "context_keywords": ["seafood condiment", "fish condiment", "relish sauce"],
+          "negative_keywords": ["cocktail sauce", "mayonnaise"]
+        },
+        "salad_dressings": {
+          "display_name": "Salad Dressings",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Salad Dressing Type"],
+          "aliases": ["salad dressing", "dressing", "vinaigrette dressing"],
+          "title_keywords": ["salad dressing", "ranch dressing", "caesar dressing", "vinaigrette dressing", "italian dressing"],
+          "context_keywords": ["vinaigrette", "ranch", "caesar", "blue cheese", "salad topping"],
+          "negative_keywords": ["ranch dip", "vegetable dip", "marinade"]
+        },
+        "pizza_sauces": {
+          "display_name": "Pizza Sauces",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Nutrition Facts Label"],
+          "aliases": ["pizza sauce", "pizza sauces"],
+          "title_keywords": ["pizza sauce", "traditional pizza sauce"],
+          "context_keywords": ["pizza topping", "tomato sauce for pizza", "pizzeria style"],
+          "negative_keywords": ["pasta sauce"]
+        },
+        "salad_toppings": {
+          "display_name": "Salad Toppings",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Form", "Flavor"],
+          "aliases": ["salad topping", "salad toppings", "crouton topping"],
+          "title_keywords": ["salad topping", "salad toppings", "crouton topping", "croutons"],
+          "context_keywords": ["crispy topping", "bacon bits", "tortilla strips", "salad topper"],
+          "negative_keywords": ["salad dressing", "ranch dressing", "vinaigrette"]
+        },
+        "chutneys": {
+          "display_name": "Chutneys",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Flavor", "Brand", "Food Form"],
+          "aliases": ["chutney", "chutneys"],
+          "title_keywords": ["chutney", "mango chutney", "fruit chutney"],
+          "context_keywords": ["indian condiment", "sweet and spicy", "relish condiment"],
+          "negative_keywords": ["relish", "jam", "preserves"]
+        },
+        "pickles": {
+          "display_name": "Pickles",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack", "Pickle Type"],
+          "attributes": ["Brand", "Pickle Type", "Flavor"],
+          "aliases": ["pickles", "pickle spears", "dill pickles"],
+          "title_keywords": ["pickles", "pickle spears", "dill pickles", "bread and butter pickles", "pickle chips"],
+          "context_keywords": ["kosher dill", "gherkin", "spears", "chips", "whole pickles"],
+          "negative_keywords": ["pickle relish", "relish", "fried pickles"]
+        },
+        "dessert_syrups_sauces": {
+          "display_name": "Dessert Syrups & Sauces",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["dessert syrup", "dessert sauce", "chocolate syrup", "caramel sauce"],
+          "title_keywords": ["dessert syrup", "chocolate syrup", "caramel sauce", "dessert sauce", "strawberry syrup"],
+          "context_keywords": ["ice cream topping", "sundae syrup", "dessert topping", "fudge sauce"],
+          "negative_keywords": ["pancake syrup", "maple syrup", "coffee syrup", "flavored syrup"]
+        },
+        "vinegars": {
+          "display_name": "Vinegars",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Vinegar Type"],
+          "attributes": ["Brand", "Vinegar Type", "Size"],
+          "aliases": ["vinegar", "vinegars"],
+          "title_keywords": ["vinegar", "apple cider vinegar", "balsamic vinegar", "white vinegar", "red wine vinegar"],
+          "context_keywords": ["distilled vinegar", "cider vinegar", "wine vinegar", "rice vinegar"],
+          "negative_keywords": ["vinaigrette", "salad dressing", "vinegar chips"]
+        },
+        "relishes": {
+          "display_name": "Relishes",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Flavor", "Brand", "Size"],
+          "aliases": ["relish", "pickle relish", "relishes"],
+          "title_keywords": ["relish", "pickle relish", "sweet relish", "dill relish"],
+          "context_keywords": ["hot dog relish", "sweet pickle", "dill pickle", "condiment"],
+          "negative_keywords": ["pickles", "chutney", "relish tray"]
+        },
+        "hot_sauces": {
+          "display_name": "Hot Sauces",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Hot Sauce Type"],
+          "aliases": ["hot sauce", "buffalo sauce", "red hot sauce"],
+          "title_keywords": ["hot sauce", "buffalo sauce", "red hot sauce", "pepper sauce", "sriracha sauce"],
+          "context_keywords": ["cayenne pepper", "habanero", "jalapeno", "extra hot", "wing sauce"],
+          "negative_keywords": ["barbecue sauce", "pasta sauce", "pizza sauce"]
+        },
+        "pancake_syrups": {
+          "display_name": "Pancake Syrups",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Nutrition Facts Label"],
+          "aliases": ["pancake syrup", "breakfast syrup", "table syrup"],
+          "title_keywords": ["pancake syrup", "breakfast syrup", "table syrup", "maple flavored syrup"],
+          "context_keywords": ["pancakes", "waffles", "breakfast topping", "butter flavored"],
+          "negative_keywords": ["maple syrup", "pure maple syrup"]
+        },
+        "honey": {
+          "display_name": "Honey",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Honey Type"],
+          "attributes": ["Brand", "Honey Type", "Flavor"],
+          "aliases": ["honey", "raw honey", "clover honey"],
+          "title_keywords": ["honey", "raw honey", "clover honey", "wildflower honey"],
+          "context_keywords": ["pure honey", "organic honey", "squeeze honey", "local honey"],
+          "negative_keywords": ["honey mustard", "honey barbecue sauce", "honey bbq sauce"]
+        },
+        "cocktail_sauces": {
+          "display_name": "Cocktail Sauces",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Nutrition Facts Label"],
+          "aliases": ["cocktail sauce", "cocktail sauces"],
+          "title_keywords": ["cocktail sauce", "seafood cocktail sauce", "shrimp cocktail sauce"],
+          "context_keywords": ["shrimp sauce", "seafood condiment", "horseradish tomato sauce"],
+          "negative_keywords": ["tartar sauce", "hot sauce", "ketchup"]
+        }
+      }
+    },
+    "beverages": {
+      "display_name": "Beverages",
+      "product_types": {
+        "soda_pop": {
+          "display_name": "Soda Pop",
+          "formula": ["Brand", "Product Line", "Product/Type", "Material", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["soda pop", "soda", "soft drink", "cola", "root beer", "lemon lime soda", "ginger ale"],
+          "title_keywords": ["soda pop", "soft drink", "lemon lime soda", "ginger ale", "root beer", "cola", "soda"],
+          "context_keywords": ["carbonated", "caffeine free", "zero sugar soda", "diet soda"],
+          "negative_keywords": ["sparkling water", "tonic water", "soda syrup", "energy drink"]
+        },
+        "hot_cocoa_pods": {
+          "display_name": "Hot Cocoa Pods",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Material", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Food Form"],
+          "aliases": ["hot cocoa pods", "hot chocolate pods", "cocoa pods", "k-cup hot cocoa"],
+          "title_keywords": ["hot cocoa pods", "hot chocolate pods", "cocoa pods", "k-cup hot cocoa", "hot cocoa k-cup pods", "hot chocolate k-cup pods"],
+          "context_keywords": ["single serve pods", "cocoa k cups", "hot chocolate k cups"],
+          "negative_keywords": ["coffee pods", "tea pods", "chocolate drink mix"]
+        },
+        "chocolate_drink_mixes": {
+          "display_name": "Chocolate Drink Mixes",
+          "formula": ["Brand", "Product Line", "Product/Type", "Material", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Drink Mix Type"],
+          "aliases": ["chocolate drink mix", "chocolate milk mix", "cocoa mix", "powdered chocolate drink"],
+          "title_keywords": ["chocolate drink mix", "chocolate milk mix", "powdered chocolate drink", "cocoa mix"],
+          "context_keywords": ["chocolate powder", "milk mix", "nesquik", "ovaltine"],
+          "negative_keywords": ["hot cocoa pods", "drink mixes", "instant breakfast drink"]
+        },
+        "instant_breakfast_drinks": {
+          "display_name": "Instant Breakfast Drinks",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Material", "Size", "Count/Pack"],
+          "attributes": ["Flavor", "Brand", "Multipack Quantity"],
+          "aliases": ["instant breakfast drink", "breakfast drink", "nutritional drink", "meal replacement drink", "nutrition drink"],
+          "title_keywords": ["instant breakfast drink", "breakfast drink", "nutritional drink", "meal replacement drink", "nutrition drink"],
+          "context_keywords": ["protein breakfast", "nutrition shake", "carnation breakfast essentials"],
+          "negative_keywords": ["energy drink", "sports drink", "chocolate drink mix"]
+        },
+        "cocktail_rimming_salts_sugars": {
+          "display_name": "Cocktail Rimming Salts & Sugars",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Material", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Food Condition"],
+          "aliases": ["cocktail rimming salt", "cocktail rimming sugar", "margarita salt", "rimming salt", "rimming sugar"],
+          "title_keywords": ["cocktail rimming salt", "cocktail rimming sugar", "margarita salt", "rimming salt", "rimming sugar"],
+          "context_keywords": ["cocktail rim", "margarita rim", "drink garnish"],
+          "negative_keywords": ["cocktail mixer", "table salt", "sea salt", "granulated sugar", "brown sugar"]
+        },
+        "juices": {
+          "display_name": "Juices",
+          "formula": ["Brand", "Product Line", "Flavor", "Fruit Type", "Product/Type", "Material", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Fruit Type"],
+          "aliases": ["juice", "juices", "apple juice", "orange juice", "grape juice", "cranberry juice", "fruit juice", "vegetable juice"],
+          "title_keywords": ["apple juice", "orange juice", "grape juice", "cranberry juice", "fruit juice", "vegetable juice", "juice"],
+          "context_keywords": ["100% juice", "juice drink", "juice beverage", "pulp free"],
+          "negative_keywords": ["sparkling water", "coconut water", "cocktail mixer", "soda"]
+        },
+        "cocktail_mixers": {
+          "display_name": "Cocktail Mixers",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Material", "Size", "Count/Pack", "Cocktail Mixer Type"],
+          "attributes": ["Cocktail Mixer Type", "Brand", "Flavor"],
+          "aliases": ["cocktail mixer", "cocktail mix", "margarita mix", "bloody mary mix", "mojito mix", "pina colada mix", "sour mix"],
+          "title_keywords": ["cocktail mixer", "margarita mix", "bloody mary mix", "mojito mix", "pina colada mix", "sour mix"],
+          "context_keywords": ["mixer", "cocktail base", "non alcoholic mixer"],
+          "negative_keywords": ["cocktail rimming salt", "cocktail rimming sugar", "juice", "soda syrup"]
+        },
+        "coffee_substitutes": {
+          "display_name": "Coffee Substitutes",
+          "formula": ["Brand", "Product Line", "Product/Type", "Material", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Food Form"],
+          "aliases": ["coffee substitute", "coffee alternative", "chicory coffee", "caffeine free coffee substitute"],
+          "title_keywords": ["coffee substitute", "coffee alternative", "chicory coffee", "caffeine free coffee substitute"],
+          "context_keywords": ["roasted chicory", "herbal coffee", "grain coffee"],
+          "negative_keywords": ["ground coffee", "instant coffee crystals", "instant coffee granules", "coffee pods", "bottled coffee drink", "coffee creamer"]
+        },
+        "sports_drinks": {
+          "display_name": "Sports Drinks",
+          "formula": ["Brand", "Product Line", "Product/Type", "Material", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Container Type"],
+          "aliases": ["sports drink", "electrolyte drink", "hydration drink", "gatorade", "powerade"],
+          "title_keywords": ["sports drink", "electrolyte drink", "hydration drink", "gatorade", "powerade", "thirst quencher"],
+          "context_keywords": ["electrolytes", "hydration", "zero sugar sports drink"],
+          "negative_keywords": ["energy drink", "coconut water", "bottled water"]
+        },
+        "coconut_water": {
+          "display_name": "Coconut Water",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Material", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["coconut water"],
+          "title_keywords": ["coconut water", "pure coconut water"],
+          "context_keywords": ["pure coconut water", "electrolyte coconut water", "coconut beverage"],
+          "negative_keywords": ["plant based milk", "plant-based milk", "sparkling water", "juice"]
+        },
+        "energy_drinks": {
+          "display_name": "Energy Drinks",
+          "formula": ["Brand", "Product Line", "Product/Type", "Material", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["energy drink", "energy beverage", "red bull", "monster energy", "celsius", "bang energy"],
+          "title_keywords": ["energy drink", "energy beverage", "red bull", "monster energy", "celsius", "bang energy"],
+          "context_keywords": ["caffeine", "taurine", "energy boost", "zero sugar energy"],
+          "negative_keywords": ["sports drink", "coffee drink", "instant breakfast drink"]
+        },
+        "non_dairy_creamers": {
+          "display_name": "Non-Dairy Creamers",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Material", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Food Form"],
+          "aliases": ["non-dairy creamer", "non dairy creamer", "coffee creamer", "liquid creamer", "powdered creamer"],
+          "title_keywords": ["non-dairy creamer", "non dairy creamer", "coffee creamer", "liquid creamer", "powdered creamer"],
+          "context_keywords": ["dairy free creamer", "french vanilla creamer", "oat creamer", "almond creamer"],
+          "negative_keywords": ["plant based milk", "plant-based milk", "dairy cream", "milk"]
+        },
+        "soda_syrups": {
+          "display_name": "Soda Syrups",
+          "formula": ["Brand", "Product Line", "Product/Type", "Material", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Manufacturer"],
+          "aliases": ["soda syrup", "drink syrup", "cola syrup", "fountain syrup"],
+          "title_keywords": ["soda syrup", "drink syrup", "cola syrup", "fountain syrup"],
+          "context_keywords": ["soda maker", "sparkling beverage syrup", "syrup concentrate"],
+          "negative_keywords": ["flavored syrup", "pancake syrup", "maple syrup"]
+        },
+        "plant_based_milk": {
+          "display_name": "Plant-Based Milk",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Material", "Size", "Count/Pack", "Plant Based Milk Type"],
+          "attributes": ["Brand", "Plant Based Milk Type", "Flavor"],
+          "aliases": ["plant-based milk", "plant based milk", "almond milk", "oat milk", "soy milk", "coconut milk beverage", "cashew milk"],
+          "title_keywords": ["plant-based milk", "plant based milk", "almond milk", "oat milk", "soy milk", "coconut milk beverage", "cashew milk", "almondmilk", "oatmilk"],
+          "context_keywords": ["dairy free milk", "unsweetened almondmilk", "original oatmilk"],
+          "negative_keywords": ["coconut water", "non-dairy creamer", "non dairy creamer", "dairy milk", "canned coconut milk"]
+        },
+        "bottled_drinking_waters": {
+          "display_name": "Bottled Drinking Waters",
+          "formula": ["Brand", "Product Line", "Product/Type", "Material", "Size", "Count/Pack", "Bottled Drinking Water Type"],
+          "attributes": ["Brand", "Bottled Drinking Water Type", "Size"],
+          "aliases": ["bottled water", "drinking water", "purified water", "spring water", "mineral water"],
+          "title_keywords": ["bottled water", "drinking water", "purified water", "spring water", "mineral water"],
+          "context_keywords": ["water bottles", "purified drinking water", "natural spring water"],
+          "negative_keywords": ["sparkling water", "tonic water", "coconut water"]
+        },
+        "tonic_water": {
+          "display_name": "Tonic Water",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Material", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["tonic water", "diet tonic water"],
+          "title_keywords": ["tonic water", "diet tonic water"],
+          "context_keywords": ["quinine", "mixer", "gin and tonic"],
+          "negative_keywords": ["sparkling water", "bottled water", "soda pop"]
+        },
+        "sparkling_water": {
+          "display_name": "Sparkling Water",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Material", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Bottled Drinking Water Type"],
+          "aliases": ["sparkling water", "seltzer water", "flavored sparkling water", "carbonated water"],
+          "title_keywords": ["flavored sparkling water", "sparkling water", "seltzer water", "carbonated water"],
+          "context_keywords": ["zero calorie sparkling water", "unsweetened sparkling water", "bubbly water"],
+          "negative_keywords": ["tonic water", "soda pop", "bottled water", "energy drink"]
+        },
+        "drink_mixes": {
+          "display_name": "Drink Mixes",
+          "formula": ["Brand", "Product Line", "Claims/Certifications", "Flavor", "Food Form", "Drink Mixes Type", "Retail Packaging", "Size", "Count/Pack", "Container Material", "Container Type", "Packs/Boxes"],
+          "attributes": ["Brand", "Flavor", "Drink Mix Type"],
+          "aliases": ["drink mix", "drink mixes", "powdered drink mix", "liquid drink enhancer", "water enhancer", "lemonade mix", "iced tea mix"],
+          "title_keywords": ["powdered drink mix", "liquid drink enhancer", "water enhancer", "lemonade mix", "iced tea mix", "drink mix"],
+          "context_keywords": ["on-the-go packets", "powder packets", "beverage mix", "flavor packets"],
+          "negative_keywords": ["chocolate drink mix", "instant breakfast drink", "cocktail mixer", "hot cocoa pods"]
+        }
+      }
+    },
+    "coffee_tea": {
+      "display_name": "Coffee & Tea",
+      "product_types": {
+        "tea_bags": {
+          "display_name": "Tea Bags",
+          "formula": ["Brand", "Product Line", "[,]", "Caffeine Designation", "Claims OR Certifications", "Flavor", "Tea Variety", "Product Type", "Retail Packaging", "Count Per Pack", "Count", "X Packs or Boxes of Y"],
+          "attributes": ["Brand", "Flavor", "Tea Variety"],
+          "aliases": ["tea bag", "tea bags", "bagged tea"],
+          "title_keywords": ["tea bags", "tea bag", "bagged tea", "black tea bags", "green tea bags", "herbal tea bags", "chai tea bags"],
+          "context_keywords": ["caffeinated", "decaffeinated", "decaf tea", "individually wrapped", "tea sachets"],
+          "negative_keywords": ["tea pods", "k-cup tea", "powdered tea", "instant tea", "tea concentrate", "bottled tea", "loose leaf tea", "loose-leaf tea", "coffee"]
+        },
+        "coffee_pods": {
+          "display_name": "Coffee Pods",
+          "formula": ["Brand", "Product Line", "Product/Type", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Flavor", "Fsma Section 204 Traceability"],
+          "aliases": ["coffee pod", "coffee pods", "coffee k-cup", "coffee k cups", "single serve coffee"],
+          "title_keywords": ["coffee pods", "coffee pod", "coffee k-cup", "coffee k cups", "k-cup coffee", "single serve coffee pods"],
+          "context_keywords": ["keurig compatible", "single serve cups", "espresso pods", "brew cups"],
+          "negative_keywords": ["tea pods", "hot cocoa pods", "ground coffee", "whole bean coffee", "instant coffee", "bottled coffee", "coffee creamer"]
+        },
+        "powdered_tea": {
+          "display_name": "Powdered Tea",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Flavor", "Tea Variety"],
+          "aliases": ["powdered tea", "tea powder", "instant tea powder"],
+          "title_keywords": ["powdered tea", "tea powder", "instant tea powder", "matcha powder", "chai tea powder"],
+          "context_keywords": ["mix with water", "tea mix", "powdered drink tea", "instant iced tea"],
+          "negative_keywords": ["tea bags", "tea pods", "loose leaf tea", "tea concentrate", "bottled tea", "coffee"]
+        },
+        "bottled_coffee_drinks": {
+          "display_name": "Bottled Coffee Drinks",
+          "formula": ["Brand", "Product Line", "Product/Type", "Count/Pack", "Certification/Rating", "Ib Coffee Drink Type"],
+          "attributes": ["Brand", "Ib Coffee Drink Type", "Flavor"],
+          "aliases": ["bottled coffee drink", "bottled coffee drinks", "ready to drink coffee", "iced coffee drink", "cold brew coffee drink"],
+          "title_keywords": ["bottled coffee drink", "ready to drink coffee", "iced coffee drink", "cold brew coffee drink", "coffee beverage"],
+          "context_keywords": ["rtD coffee", "frappuccino", "latte drink", "mocha drink", "bottled iced coffee"],
+          "negative_keywords": ["ground coffee", "whole bean coffee", "coffee pods", "instant coffee", "coffee creamer", "bottled tea"]
+        },
+        "whole_bean_coffee": {
+          "display_name": "Whole Bean Coffee",
+          "formula": ["Brand", "Product Line", "Food Form", "Product/Type", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Food Form", "Roast Type"],
+          "aliases": ["whole bean coffee", "whole coffee beans", "coffee beans"],
+          "title_keywords": ["whole bean coffee", "whole coffee beans", "coffee beans", "espresso beans"],
+          "context_keywords": ["light roast", "medium roast", "dark roast", "arabica beans", "single origin"],
+          "negative_keywords": ["ground coffee", "instant coffee", "coffee pods", "bottled coffee", "green coffee extract"]
+        },
+        "tea_pods": {
+          "display_name": "Tea Pods",
+          "formula": ["Brand", "Product Line", "Product/Type", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Flavor", "Compatible Devices"],
+          "aliases": ["tea pod", "tea pods", "tea k-cup", "tea k cups", "single serve tea"],
+          "title_keywords": ["tea pods", "tea pod", "tea k-cup", "tea k cups", "k-cup tea", "single serve tea pods"],
+          "context_keywords": ["keurig compatible", "single serve tea cups", "brew over ice tea", "iced tea pods"],
+          "negative_keywords": ["coffee pods", "hot cocoa pods", "tea bags", "powdered tea", "loose leaf tea", "tea concentrate", "bottled tea"]
+        },
+        "instant_coffee": {
+          "display_name": "Instant Coffee",
+          "formula": ["Brand", "Product Line", "Product/Type", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Ib Coffee Drink Type", "Caffeine Designation"],
+          "aliases": ["instant coffee", "soluble coffee", "coffee crystals", "instant espresso"],
+          "title_keywords": ["instant coffee", "soluble coffee", "coffee crystals", "instant espresso", "instant coffee packets"],
+          "context_keywords": ["freeze dried coffee", "decaf instant coffee", "coffee sticks", "single serve packets"],
+          "negative_keywords": ["coffee substitute", "ground coffee", "whole bean coffee", "coffee pods", "bottled coffee", "coffee creamer", "instant tea"]
+        },
+        "bottled_tea_drinks": {
+          "display_name": "Bottled Tea Drinks",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Flavor", "Tea Variety"],
+          "aliases": ["bottled tea drink", "bottled tea drinks", "ready to drink tea", "iced tea drink"],
+          "title_keywords": ["bottled tea drink", "ready to drink tea", "iced tea drink", "bottled iced tea", "tea beverage"],
+          "context_keywords": ["sweet tea", "unsweetened tea", "green tea beverage", "black tea beverage"],
+          "negative_keywords": ["tea bags", "tea pods", "powdered tea", "tea concentrate", "loose leaf tea", "bottled coffee"]
+        },
+        "ground_coffee": {
+          "display_name": "Ground Coffee",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Flavor", "Ib Coffee Drink Type"],
+          "aliases": ["ground coffee", "coffee grounds", "pre ground coffee"],
+          "title_keywords": ["ground coffee", "coffee grounds", "pre ground coffee", "medium roast ground coffee", "dark roast ground coffee"],
+          "context_keywords": ["drip coffee", "french roast", "breakfast blend", "arabica ground", "decaf ground coffee"],
+          "negative_keywords": ["whole bean coffee", "coffee beans", "instant coffee", "coffee pods", "bottled coffee", "coffee creamer"]
+        },
+        "loose_leaf_tea": {
+          "display_name": "Loose-Leaf Tea",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Flavor", "Tea Variety"],
+          "aliases": ["loose-leaf tea", "loose leaf tea", "loose tea"],
+          "title_keywords": ["loose-leaf tea", "loose leaf tea", "loose tea", "loose black tea", "loose green tea", "loose herbal tea"],
+          "context_keywords": ["tea leaves", "full leaf tea", "tea tin", "brew loose tea"],
+          "negative_keywords": ["tea bags", "tea pods", "powdered tea", "tea concentrate", "bottled tea", "coffee"]
+        },
+        "tea_concentrates": {
+          "display_name": "Tea Concentrates",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["tea concentrate", "tea concentrates", "chai concentrate", "iced tea concentrate"],
+          "title_keywords": ["tea concentrate", "tea concentrates", "chai concentrate", "iced tea concentrate", "tea liquid concentrate"],
+          "context_keywords": ["mix with milk", "liquid tea concentrate", "make tea drinks", "concentrated tea"],
+          "negative_keywords": ["tea bags", "tea pods", "powdered tea", "loose leaf tea", "bottled tea", "coffee concentrate"]
+        }
+      }
+    },
+    "breakfast_cereals_bars_grains": {
+      "display_name": "Breakfast Cereals, Bars & Grains",
+      "product_types": {
+        "oatmeal": {
+          "display_name": "Oatmeal",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Oatmeal Type"],
+          "attributes": ["Brand", "Oatmeal Type", "Food Form"],
+          "aliases": ["oatmeal", "oats", "instant oatmeal", "rolled oats"],
+          "title_keywords": ["oatmeal", "instant oatmeal", "quick oats", "rolled oats", "steel cut oats", "old fashioned oats"],
+          "context_keywords": ["oat packets", "breakfast oats", "maple brown sugar", "variety pack oatmeal"],
+          "negative_keywords": ["hot cereal", "grits", "granola", "muesli", "oat milk", "oat creamer", "snack bar", "cereal bar"]
+        },
+        "toaster_pastries": {
+          "display_name": "Toaster Pastries",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size Descriptor"],
+          "aliases": ["toaster pastry", "toaster pastries", "pop tarts", "breakfast pastry"],
+          "title_keywords": ["toaster pastries", "toaster pastry", "pop tarts", "frosted toaster pastries", "breakfast pastry"],
+          "context_keywords": ["frosted", "unfrosted", "fruit filled", "brown sugar cinnamon", "ready to toast"],
+          "negative_keywords": ["breakfast bar", "cereal bar", "snack bar", "pastry dough", "granola bar"]
+        },
+        "grits": {
+          "display_name": "Grits",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["grits", "instant grits", "corn grits"],
+          "title_keywords": ["grits", "instant grits", "quick grits", "corn grits", "cheese grits"],
+          "context_keywords": ["southern style", "butter flavor", "breakfast grits", "hot cereal"],
+          "negative_keywords": ["oatmeal", "granola", "muesli", "rice", "grain blend"]
+        },
+        "packaged_breakfast_cereals": {
+          "display_name": "Packaged Breakfast Cereals",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Packaged Breakfast Cereal Type"],
+          "aliases": ["breakfast cereal", "packaged cereal", "cold cereal", "cereal"],
+          "title_keywords": ["breakfast cereal", "packaged cereal", "cold cereal", "cereal", "corn flakes", "bran cereal", "honey nut cereal"],
+          "context_keywords": ["cereal box", "family size", "kids cereal", "whole grain cereal", "frosted cereal"],
+          "negative_keywords": ["granola", "muesli", "hot cereal", "oatmeal", "cereal bar", "breakfast bar", "rice cereal baby"]
+        },
+        "grains": {
+          "display_name": "Grains",
+          "formula": ["Brand", "Food Form", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Form", "Food Condition"],
+          "aliases": ["grain", "grains", "whole grains", "grain blend"],
+          "title_keywords": ["grains", "grain blend", "whole grains", "quinoa", "barley", "farro", "bulgur"],
+          "context_keywords": ["ancient grains", "dry grains", "cooked grains", "whole grain blend"],
+          "negative_keywords": ["oatmeal", "hot cereal", "breakfast cereal", "granola", "muesli", "rice cakes", "snack bar"]
+        },
+        "snack_bars": {
+          "display_name": "Snack Bars",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Food Condition"],
+          "aliases": ["snack bar", "snack bars", "nutrition bar", "protein bar", "energy bar"],
+          "title_keywords": ["snack bar", "snack bars", "nutrition bar", "protein bar", "energy bar", "meal bar"],
+          "context_keywords": ["high protein", "gluten free bar", "on the go snack", "bar multipack"],
+          "negative_keywords": ["breakfast bar", "cereal bar", "granola bar", "toaster pastry", "candy bar", "ice cream bar"]
+        },
+        "hot_cereal": {
+          "display_name": "Hot Cereal",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["hot cereal", "hot cereals", "cream of wheat", "farina"],
+          "title_keywords": ["hot cereal", "cream of wheat", "farina", "cream of rice", "multigrain hot cereal"],
+          "context_keywords": ["instant hot cereal", "warm breakfast cereal", "hot breakfast", "porridge"],
+          "negative_keywords": ["oatmeal", "grits", "cold cereal", "breakfast cereal", "granola", "muesli"]
+        },
+        "granola": {
+          "display_name": "Granola",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Nutrition Facts Label"],
+          "aliases": ["granola", "granola cereal", "granola clusters"],
+          "title_keywords": ["granola", "granola cereal", "granola clusters", "honey granola", "protein granola"],
+          "context_keywords": ["clusters", "oats and honey", "yogurt topping", "breakfast granola"],
+          "negative_keywords": ["granola bar", "breakfast bar", "cereal bar", "muesli", "oatmeal", "trail mix"]
+        },
+        "breakfast_bars_cereal_bars": {
+          "display_name": "Breakfast Bars & Cereal Bars",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["breakfast bar", "breakfast bars", "cereal bar", "cereal bars", "granola bar", "granola bars"],
+          "title_keywords": ["breakfast bar", "breakfast bars", "cereal bar", "cereal bars", "granola bar", "granola bars", "soft baked breakfast bar"],
+          "context_keywords": ["breakfast on the go", "morning snack", "oat bar", "fruit and grain bar"],
+          "negative_keywords": ["snack bar", "protein bar", "energy bar", "toaster pastry", "candy bar", "granola cereal"]
+        },
+        "muesli": {
+          "display_name": "Muesli",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Size", "Flavor"],
+          "aliases": ["muesli", "muesli cereal"],
+          "title_keywords": ["muesli", "muesli cereal", "swiss muesli", "toasted muesli"],
+          "context_keywords": ["raw oats", "dried fruit", "nuts and seeds", "overnight oats"],
+          "negative_keywords": ["granola", "oatmeal", "breakfast cereal", "hot cereal", "trail mix"]
+        }
+      }
+    },
+    "candy_chocolate_gum": {
+      "display_name": "Candy, Chocolate & Gum",
+      "product_types": {
+        "jelly_beans": {
+          "display_name": "Jelly Beans",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["jelly bean", "jelly beans"],
+          "title_keywords": ["jelly beans", "jelly bean", "gourmet jelly beans", "fruit jelly beans"],
+          "context_keywords": ["bean shaped candy", "assorted flavors", "easter candy", "chewy center"],
+          "negative_keywords": ["gummy candy", "licorice", "hard candy", "candy corn", "coffee beans"]
+        },
+        "cotton_candy": {
+          "display_name": "Cotton Candy",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["cotton candy", "candy floss"],
+          "title_keywords": ["cotton candy", "candy floss", "fluffy cotton candy"],
+          "context_keywords": ["spun sugar", "carnival candy", "tub", "blue raspberry"],
+          "negative_keywords": ["hard candy", "gummy candy", "powder candy", "lollipop"]
+        },
+        "licorice_candy": {
+          "display_name": "Licorice Candy",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["licorice candy", "licorice", "liquorice", "licorice twists"],
+          "title_keywords": ["licorice candy", "licorice", "liquorice", "red licorice", "black licorice", "licorice twists"],
+          "context_keywords": ["twists", "ropes", "strawberry licorice", "soft chewy"],
+          "negative_keywords": ["chewing gum", "gummy candy", "taffy", "lollipop", "sour candy"]
+        },
+        "hard_candy": {
+          "display_name": "Hard Candy",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["hard candy", "hard candies"],
+          "title_keywords": ["hard candy", "hard candies", "fruit hard candy", "wrapped hard candy"],
+          "context_keywords": ["individually wrapped", "sugar free candy", "lozenge style", "long lasting"],
+          "negative_keywords": ["rock candy", "jawbreaker", "mint candy", "sour candy", "gummy candy", "chewy candy", "lollipop"]
+        },
+        "rock_candy": {
+          "display_name": "Rock Candy",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Texture", "Flavor"],
+          "aliases": ["rock candy", "rock candies", "rock candy sticks"],
+          "title_keywords": ["rock candy", "rock candies", "rock candy sticks", "crystal candy"],
+          "context_keywords": ["sugar crystals", "candy sticks", "crystalized sugar", "swizzle sticks"],
+          "negative_keywords": ["hard candy", "jawbreaker", "lollipop", "sour candy", "rock sugar"]
+        },
+        "jawbreakers": {
+          "display_name": "Jawbreakers",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Size", "Flavor"],
+          "aliases": ["jawbreaker", "jawbreakers", "gobstopper", "gobstoppers"],
+          "title_keywords": ["jawbreakers", "jawbreaker", "gobstoppers", "gobstopper", "giant jawbreaker"],
+          "context_keywords": ["hard candy ball", "layered candy", "long lasting candy"],
+          "negative_keywords": ["hard candy", "rock candy", "gumball", "gum ball", "mint candy"]
+        },
+        "caramel_candy": {
+          "display_name": "Caramel Candy",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["caramel candy", "caramels", "caramel chews"],
+          "title_keywords": ["caramel candy", "caramels", "caramel chews", "soft caramels", "sea salt caramels"],
+          "context_keywords": ["chewy caramel", "wrapped caramels", "buttery caramel", "milk caramel"],
+          "negative_keywords": ["caramel sauce", "chocolate truffles", "toffee", "fudge", "candy bars"]
+        },
+        "chewy_candy": {
+          "display_name": "Chewy Candy",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Nutrition Facts Label"],
+          "aliases": ["chewy candy", "chewy candies", "fruit chews", "chews"],
+          "title_keywords": ["chewy candy", "chewy candies", "fruit chews", "chews", "chewy fruit candy"],
+          "context_keywords": ["soft chews", "individually wrapped", "assorted fruit", "bite size chews"],
+          "negative_keywords": ["gummy candy", "taffy", "licorice", "caramel candy", "hard candy", "chewing gum"]
+        },
+        "gummy_candy": {
+          "display_name": "Gummy Candy",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["gummy candy", "gummies", "gummi candy", "gummy bears", "gummy worms"],
+          "title_keywords": ["gummy candy", "gummies", "gummi candy", "gummy bears", "gummy worms", "sour gummies"],
+          "context_keywords": ["gelatin candy", "chewy gummies", "fruit flavored gummies", "soft gummy"],
+          "negative_keywords": ["fruit snacks", "chewy candy", "taffy", "licorice", "jelly beans", "sour candy"]
+        },
+        "candy_brittle": {
+          "display_name": "Candy Brittle",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Food Form"],
+          "aliases": ["candy brittle", "brittle", "peanut brittle"],
+          "title_keywords": ["candy brittle", "brittle", "peanut brittle", "almond brittle", "cashew brittle"],
+          "context_keywords": ["crunchy brittle", "nut brittle", "breakable candy", "homestyle brittle"],
+          "negative_keywords": ["toffee", "chocolate bark", "nut clusters", "caramel candy"]
+        },
+        "candy_canes": {
+          "display_name": "Candy Canes",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Ingredient List Image"],
+          "aliases": ["candy cane", "candy canes"],
+          "title_keywords": ["candy canes", "candy cane", "peppermint candy canes", "mini candy canes"],
+          "context_keywords": ["holiday candy", "christmas candy", "peppermint", "striped candy"],
+          "negative_keywords": ["mint candy", "hard candy", "lollipop", "rock candy"]
+        },
+        "chocolate_truffles": {
+          "display_name": "Chocolate Truffles",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack", "Chocolate Type"],
+          "attributes": ["Brand", "Flavor", "Chocolate Type"],
+          "aliases": ["chocolate truffle", "chocolate truffles", "truffles"],
+          "title_keywords": ["chocolate truffles", "chocolate truffle", "truffles", "dark chocolate truffles", "milk chocolate truffles"],
+          "context_keywords": ["ganache", "filled chocolate", "boxed truffles", "premium chocolates"],
+          "negative_keywords": ["chocolate candy", "candy bars", "chocolate assortment", "fudge", "chocolate covered"]
+        },
+        "chocolate_candy_assortments": {
+          "display_name": "Chocolate & Candy Assortments",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["chocolate assortment", "candy assortment", "chocolate candy assortment", "assorted chocolates", "assorted candy"],
+          "title_keywords": ["chocolate assortment", "candy assortment", "chocolate candy assortment", "assorted chocolates", "assorted candy", "variety candy box"],
+          "context_keywords": ["gift box", "variety pack", "assorted flavors", "boxed chocolates"],
+          "negative_keywords": ["chocolate truffles", "candy bars", "miniatures", "single candy", "gummy candy", "hard candy"]
+        },
+        "fruit_flavored_candy": {
+          "display_name": "Fruit Flavored Candy",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["fruit flavored candy", "fruit candy", "fruit candies"],
+          "title_keywords": ["fruit flavored candy", "fruit candy", "fruit candies", "assorted fruit candy"],
+          "context_keywords": ["fruit flavor", "cherry", "orange", "watermelon", "tropical fruit"],
+          "negative_keywords": ["gummy candy", "fruit snacks", "chewy candy", "taffy", "jelly beans", "lollipop", "sour candy"]
+        },
+        "fudge": {
+          "display_name": "Fudge",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Flavor", "Brand", "Size"],
+          "aliases": ["fudge"],
+          "title_keywords": ["fudge", "chocolate fudge", "peanut butter fudge", "maple fudge"],
+          "context_keywords": ["creamy fudge", "fudge squares", "dessert candy", "confection"],
+          "negative_keywords": ["fudge sauce", "hot fudge", "chocolate truffles", "brownie", "toffee"]
+        },
+        "powder_candy": {
+          "display_name": "Powder Candy",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["powder candy", "powdered candy", "candy powder"],
+          "title_keywords": ["powder candy", "powdered candy", "candy powder", "sour powder candy", "dip powder candy"],
+          "context_keywords": ["powder dip", "candy straws", "sherbet powder", "fun dip"],
+          "negative_keywords": ["drink mix", "powdered drink", "hot cocoa", "sugar", "hard candy"]
+        },
+        "marzipan_candy": {
+          "display_name": "Marzipan Candy",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["marzipan candy", "marzipan", "almond paste candy"],
+          "title_keywords": ["marzipan candy", "marzipan", "almond paste candy", "marzipan fruit"],
+          "context_keywords": ["almond confection", "shaped marzipan", "european candy"],
+          "negative_keywords": ["almond butter", "almond paste baking", "chocolate candy", "halva"]
+        },
+        "chewing_gum": {
+          "display_name": "Chewing Gum",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Fsma Section 204 Traceability"],
+          "aliases": ["chewing gum", "gum", "bubble gum", "sugar free gum"],
+          "title_keywords": ["chewing gum", "bubble gum", "sugar free gum", "gum pack", "gum"],
+          "context_keywords": ["mint gum", "peppermint gum", "spearmint gum", "long lasting flavor"],
+          "negative_keywords": ["gummy candy", "gumball", "gum drops", "licorice", "mint candy"]
+        },
+        "nut_cluster_candy": {
+          "display_name": "Nut Cluster Candy",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Flavor", "Brand", "Nut Type"],
+          "aliases": ["nut cluster candy", "nut clusters", "peanut clusters", "pecan clusters"],
+          "title_keywords": ["nut cluster candy", "nut clusters", "peanut clusters", "pecan clusters", "cashew clusters", "chocolate nut clusters"],
+          "context_keywords": ["cluster candy", "nuts and chocolate", "bite size clusters"],
+          "negative_keywords": ["chocolate covered nuts", "trail mix", "granola clusters", "candy brittle"]
+        },
+        "chocolate_covered_nuts": {
+          "display_name": "Chocolate Covered Nuts",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack", "Chocolate Type"],
+          "attributes": ["Brand", "Chocolate Type", "Flavor"],
+          "aliases": ["chocolate covered nuts", "chocolate covered almonds", "chocolate covered peanuts", "chocolate covered cashews"],
+          "title_keywords": ["chocolate covered nuts", "chocolate covered almonds", "chocolate covered peanuts", "chocolate covered cashews", "dark chocolate almonds"],
+          "context_keywords": ["covered nuts", "milk chocolate nuts", "dark chocolate nuts", "snack nuts"],
+          "negative_keywords": ["nut clusters", "chocolate covered fruit", "chocolate covered snacks", "trail mix"]
+        },
+        "chocolate_covered_snacks": {
+          "display_name": "Chocolate Covered Snacks",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack", "Chocolate Type"],
+          "attributes": ["Brand", "Chocolate Type", "Flavor"],
+          "aliases": ["chocolate covered snacks", "chocolate covered pretzels", "chocolate covered cookies", "chocolate covered crackers"],
+          "title_keywords": ["chocolate covered snacks", "chocolate covered pretzels", "chocolate covered cookies", "chocolate covered crackers", "chocolate dipped pretzels"],
+          "context_keywords": ["covered snack", "dipped snacks", "sweet and salty", "milk chocolate covered"],
+          "negative_keywords": ["chocolate covered nuts", "chocolate covered fruit", "chocolate candy", "candy bars"]
+        },
+        "chocolate_candy": {
+          "display_name": "Chocolate Candy",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Chocolate Type"],
+          "aliases": ["chocolate candy", "chocolates", "chocolate pieces"],
+          "title_keywords": ["chocolate candy", "chocolates", "milk chocolate candy", "dark chocolate candy", "chocolate pieces"],
+          "context_keywords": ["bite size chocolate", "wrapped chocolates", "chocolate drops", "sharing size"],
+          "negative_keywords": ["chocolate truffles", "candy bars", "miniatures", "chocolate assortment", "chocolate covered", "fudge"]
+        },
+        "halva": {
+          "display_name": "Halva",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack", "Halva Type"],
+          "attributes": ["Halva Type", "Flavor", "Brand"],
+          "aliases": ["halva", "halvah", "halawa"],
+          "title_keywords": ["halva", "halvah", "halawa", "sesame halva", "pistachio halva"],
+          "context_keywords": ["sesame confection", "tahini candy", "middle eastern candy"],
+          "negative_keywords": ["marzipan", "fudge", "chocolate candy", "tahini"]
+        },
+        "toffee_candy": {
+          "display_name": "Toffee Candy",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["toffee candy", "toffee", "butter toffee", "english toffee"],
+          "title_keywords": ["toffee candy", "toffee", "butter toffee", "english toffee", "almond toffee"],
+          "context_keywords": ["crunchy toffee", "buttery toffee", "chocolate covered toffee"],
+          "negative_keywords": ["caramel candy", "candy brittle", "fudge", "toffee sauce"]
+        },
+        "mint_candy": {
+          "display_name": "Mint Candy",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["mint candy", "mints", "peppermint candy", "spearmint candy"],
+          "title_keywords": ["mint candy", "mints", "peppermint candy", "spearmint candy", "breath mints"],
+          "context_keywords": ["after dinner mints", "wintergreen", "peppermint", "fresh breath"],
+          "negative_keywords": ["chewing gum", "candy canes", "hard candy", "chocolate mints"]
+        },
+        "sour_candy": {
+          "display_name": "Sour Candy",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["sour candy", "sour candies"],
+          "title_keywords": ["sour candy", "sour candies", "sour belts", "sour straws", "sour worms", "sour gummies"],
+          "context_keywords": ["sour sugar", "tangy candy", "extreme sour", "mouth puckering"],
+          "negative_keywords": ["gummy candy", "hard candy", "fruit flavored candy", "powder candy", "taffy"]
+        },
+        "candy_corn": {
+          "display_name": "Candy Corn",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["candy corn"],
+          "title_keywords": ["candy corn", "harvest candy corn", "autumn mix candy corn"],
+          "context_keywords": ["halloween candy", "fall candy", "tri color candy", "mellowcreme"],
+          "negative_keywords": ["corn snacks", "popcorn", "jelly beans", "gummy candy"]
+        },
+        "lollipops_suckers": {
+          "display_name": "Lollipops & Suckers",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["lollipop", "lollipops", "sucker", "suckers", "suckers candy"],
+          "title_keywords": ["lollipops", "lollipop", "suckers", "sucker", "blow pops", "ring pops"],
+          "context_keywords": ["candy on a stick", "party favor candy", "assorted lollipops"],
+          "negative_keywords": ["hard candy", "candy canes", "rock candy", "chewing gum", "cake pops"]
+        },
+        "candy_bars_miniatures": {
+          "display_name": "Candy Bars & Miniatures",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Chocolate Type"],
+          "aliases": ["candy bar", "candy bars", "mini candy bars", "miniatures", "chocolate bar", "chocolate bars"],
+          "title_keywords": ["candy bars", "candy bar", "mini candy bars", "miniatures", "chocolate bars", "fun size candy"],
+          "context_keywords": ["king size", "snack size", "fun size", "share pack", "assorted miniatures"],
+          "negative_keywords": ["chocolate truffles", "chocolate assortment", "chocolate candy", "snack bar", "protein bar", "granola bar"]
+        },
+        "taffy_candy": {
+          "display_name": "Taffy Candy",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["taffy candy", "taffy", "salt water taffy"],
+          "title_keywords": ["taffy candy", "taffy", "salt water taffy", "chewy taffy"],
+          "context_keywords": ["wrapped taffy", "assorted taffy", "soft taffy", "beach candy"],
+          "negative_keywords": ["chewy candy", "caramel candy", "gummy candy", "licorice"]
+        },
+        "chocolate_covered_fruits": {
+          "display_name": "Chocolate Covered Fruits",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack", "Chocolate Type"],
+          "attributes": ["Brand", "Chocolate Type", "Flavor"],
+          "aliases": ["chocolate covered fruit", "chocolate covered fruits", "chocolate covered raisins", "chocolate covered cherries", "chocolate covered strawberries"],
+          "title_keywords": ["chocolate covered fruit", "chocolate covered fruits", "chocolate covered raisins", "chocolate covered cherries", "chocolate covered strawberries", "dark chocolate raisins"],
+          "context_keywords": ["covered fruit", "dried fruit covered", "milk chocolate fruit", "dark chocolate fruit"],
+          "negative_keywords": ["chocolate covered nuts", "chocolate covered snacks", "fruit snacks", "dried fruit"]
+        }
+      }
+    },
+    "dairy_eggs": {
+      "display_name": "Dairy & Eggs",
+      "product_types": {
+        "milks": {
+          "display_name": "Milks",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Milk Type"],
+          "attributes": ["Milk Type", "Brand", "Percent Of Milk Fat In Dairy"],
+          "aliases": ["milk", "milks", "dairy milk"],
+          "title_keywords": ["milk", "dairy milk", "whole milk", "2% milk", "skim milk", "lactose free milk"],
+          "context_keywords": ["gallon", "half gallon", "reduced fat", "vitamin d", "pasteurized"],
+          "negative_keywords": ["almond milk", "oat milk", "soy milk", "plant-based milk", "plant based milk", "coconut milk beverage", "evaporated milk", "condensed milk"]
+        },
+        "eggs": {
+          "display_name": "Eggs",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Number Of Pieces", "Count Per Pack", "Brand"],
+          "aliases": ["egg", "eggs", "shell eggs"],
+          "title_keywords": ["eggs", "large eggs", "brown eggs", "white eggs", "cage free eggs", "organic eggs"],
+          "context_keywords": ["dozen", "18 count", "grade a", "pasture raised", "free range"],
+          "negative_keywords": ["liquid eggs", "egg whites", "egg substitute", "eggnog", "easter eggs", "chocolate eggs"]
+        },
+        "yogurts": {
+          "display_name": "Yogurts",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Yogurt Type"],
+          "attributes": ["Brand", "Yogurt Type", "Flavor"],
+          "aliases": ["yogurt", "yogurts", "greek yogurt"],
+          "title_keywords": ["yogurt", "yogurts", "greek yogurt", "low fat yogurt", "plain yogurt", "vanilla yogurt"],
+          "context_keywords": ["cultured dairy", "probiotic", "single serve cups", "fruit on the bottom"],
+          "negative_keywords": ["yogurt drink", "kefir", "frozen yogurt", "non dairy yogurt", "yogurt covered"]
+        },
+        "eggnogs": {
+          "display_name": "Eggnogs",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Food Condition"],
+          "aliases": ["eggnog", "egg nog", "eggnogs"],
+          "title_keywords": ["eggnog", "egg nog", "holiday eggnog", "vanilla eggnog"],
+          "context_keywords": ["seasonal dairy drink", "holiday beverage", "nog", "ultra pasteurized"],
+          "negative_keywords": ["eggs", "liquid eggs", "coffee creamer", "milk"]
+        },
+        "cream_cheese": {
+          "display_name": "Cream Cheese",
+          "formula": ["Brand", "Food Form", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Form", "Brand", "Flavor"],
+          "aliases": ["cream cheese", "cream cheese spread"],
+          "title_keywords": ["cream cheese", "cream cheese spread", "whipped cream cheese", "plain cream cheese", "strawberry cream cheese"],
+          "context_keywords": ["brick", "spreadable", "bagel spread", "soft cheese"],
+          "negative_keywords": ["cheese dip", "cheese spread", "cheesecake", "cream", "sour cream"]
+        },
+        "butter_margarine": {
+          "display_name": "Butter & Margarine",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Butter And Margarine Type"],
+          "attributes": ["Brand", "Butter And Margarine Type", "Size"],
+          "aliases": ["butter", "margarine", "butter spread", "buttery spread"],
+          "title_keywords": ["butter", "margarine", "salted butter", "unsalted butter", "butter spread", "buttery spread"],
+          "context_keywords": ["sticks", "quarters", "spreadable", "plant butter", "tub"],
+          "negative_keywords": ["peanut butter", "almond butter", "fruit butter", "butter sauce", "cocoa butter"]
+        },
+        "kefir_yogurt_drinks": {
+          "display_name": "Kefir & Yogurt Drinks",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Yogurt Type", "Flavor"],
+          "aliases": ["kefir", "yogurt drink", "yogurt drinks", "drinkable yogurt"],
+          "title_keywords": ["kefir", "yogurt drink", "yogurt drinks", "drinkable yogurt", "probiotic yogurt drink"],
+          "context_keywords": ["cultured drink", "smoothie drink", "probiotic beverage", "lowfat kefir"],
+          "negative_keywords": ["yogurt", "greek yogurt", "milk", "eggnog", "smoothie mix"]
+        },
+        "dairy_creams": {
+          "display_name": "Dairy Creams",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Dairy Cream Type"],
+          "attributes": ["Brand", "Dairy Cream Type", "Food Condition"],
+          "aliases": ["dairy cream", "heavy cream", "whipping cream", "half and half", "sour cream"],
+          "title_keywords": ["heavy cream", "whipping cream", "heavy whipping cream", "half and half", "sour cream", "light cream"],
+          "context_keywords": ["pasteurized cream", "ultra pasteurized", "dairy topping", "cultured cream"],
+          "negative_keywords": ["coffee creamer", "non-dairy creamer", "cream cheese", "ice cream", "coconut cream"]
+        },
+        "cheeses": {
+          "display_name": "Cheeses",
+          "formula": ["Brand", "Food Form", "Product/Type", "Key Feature", "Count/Pack", "Cheese Type"],
+          "attributes": ["Brand", "Food Form", "Cheese Type"],
+          "aliases": ["cheese", "cheeses"],
+          "title_keywords": ["cheese", "cheddar cheese", "mozzarella cheese", "parmesan cheese", "string cheese", "shredded cheese", "sliced cheese"],
+          "context_keywords": ["block", "slices", "shredded", "crumbles", "sticks"],
+          "negative_keywords": ["cream cheese", "cheese dip", "cheese spread", "cheese crackers", "cheesecake"]
+        },
+        "liquid_eggs": {
+          "display_name": "Liquid Eggs",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Container Type"],
+          "attributes": ["Container Type", "Brand", "Food Form"],
+          "aliases": ["liquid eggs", "liquid egg", "egg whites", "egg substitute"],
+          "title_keywords": ["liquid eggs", "liquid egg", "liquid egg whites", "egg whites", "egg substitute"],
+          "context_keywords": ["carton", "pasteurized", "cholesterol free", "ready to pour"],
+          "negative_keywords": ["eggs", "shell eggs", "eggnog", "mayonnaise"]
+        }
+      }
+    },
+    "canned_jarred_dried_fruits_vegetables": {
+      "display_name": "Canned, Jarred & Dried Fruits & Vegetables",
+      "product_types": {
+        "canned_jarred_vegetables": {
+          "display_name": "Canned & Jarred Vegetables",
+          "formula": ["Brand", "Vegetable Type", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Vegetable Type", "Food Form"],
+          "aliases": ["canned vegetables", "jarred vegetables", "canned vegetable", "jarred vegetable"],
+          "title_keywords": ["canned vegetables", "jarred vegetables", "canned corn", "canned peas", "canned carrots", "canned green beans"],
+          "context_keywords": ["no salt added", "sliced", "whole kernel", "cut vegetables", "in water"],
+          "negative_keywords": ["canned fruit", "jarred fruit", "dry beans", "canned beans", "dried vegetables", "pickles", "olives"]
+        },
+        "applesauce_fruit_sauces": {
+          "display_name": "Applesauce & Fruit Sauces",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Fruit Type"],
+          "aliases": ["applesauce", "apple sauce", "fruit sauce", "fruit sauces"],
+          "title_keywords": ["applesauce", "apple sauce", "fruit sauce", "strawberry applesauce", "cinnamon applesauce", "unsweetened applesauce"],
+          "context_keywords": ["pouches", "cups", "no sugar added", "smooth fruit sauce"],
+          "negative_keywords": ["pasta sauce", "dessert sauce", "apple butter", "fruit snacks", "canned fruit"]
+        },
+        "dry_beans_legumes": {
+          "display_name": "Dry Beans & Legumes",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Dry Beans And Legumes Type"],
+          "attributes": ["Brand", "Dry Beans And Legumes Type", "Food Condition"],
+          "aliases": ["dry beans", "dried beans", "dry legumes", "dried legumes"],
+          "title_keywords": ["dry beans", "dried beans", "black beans dry", "pinto beans dry", "lentils", "split peas", "dry chickpeas"],
+          "context_keywords": ["bagged beans", "uncooked beans", "dried lentils", "bulk beans"],
+          "negative_keywords": ["canned beans", "jarred beans", "bean paste", "bean dip", "green beans"]
+        },
+        "bean_pastes": {
+          "display_name": "Bean Pastes",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack", "Bean Paste Type"],
+          "attributes": ["Flavor", "Bean Paste Type", "Brand"],
+          "aliases": ["bean paste", "bean pastes", "red bean paste", "miso paste"],
+          "title_keywords": ["bean paste", "red bean paste", "sweet bean paste", "miso paste", "soybean paste"],
+          "context_keywords": ["paste", "asian cooking", "fermented bean", "sweetened red bean"],
+          "negative_keywords": ["bean dip", "bean spread", "canned beans", "dry beans", "pasta sauce"]
+        },
+        "canned_jarred_cup_fruits": {
+          "display_name": "Canned, Jarred & Cup Fruits",
+          "formula": ["Brand", "Fruit Type", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Fruit Type", "Food Form"],
+          "aliases": ["canned fruit", "jarred fruit", "fruit cups", "cup fruits"],
+          "title_keywords": ["canned fruit", "jarred fruit", "fruit cups", "peach cups", "mandarin oranges", "pineapple chunks", "fruit cocktail"],
+          "context_keywords": ["in juice", "in syrup", "no sugar added", "diced fruit", "snack cups"],
+          "negative_keywords": ["canned vegetables", "applesauce", "fruit sauce", "dried fruit", "fruit snacks"]
+        },
+        "canned_jarred_beans_legumes": {
+          "display_name": "Canned & Jarred Beans & Legumes",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Canned And Jarred Beans And Legumes Type"],
+          "attributes": ["Brand", "Canned And Jarred Beans And Legumes Type", "Food Condition"],
+          "aliases": ["canned beans", "jarred beans", "canned legumes", "jarred legumes"],
+          "title_keywords": ["canned beans", "jarred beans", "black beans", "pinto beans", "kidney beans", "garbanzo beans", "chickpeas"],
+          "context_keywords": ["no salt added", "in brine", "ready to eat", "canned lentils"],
+          "negative_keywords": ["dry beans", "dried beans", "bean paste", "green beans", "bean dip"]
+        }
+      }
+    },
+    "cooking_wine_oils": {
+      "display_name": "Cooking Wine & Oils",
+      "product_types": {
+        "cooking_wines": {
+          "display_name": "Cooking Wines",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Cooking Wine Type"],
+          "attributes": ["Cooking Wine Type", "Brand", "Food Condition"],
+          "aliases": ["cooking wine", "cooking wines", "cooking sherry", "cooking marsala"],
+          "title_keywords": ["cooking wine", "cooking wines", "red cooking wine", "white cooking wine", "cooking sherry", "cooking marsala"],
+          "context_keywords": ["for cooking", "seasoned wine", "recipe wine", "non beverage wine"],
+          "negative_keywords": ["wine beverage", "drinking wine", "wine vinegar", "cooking oil", "cooking spray"]
+        },
+        "cooking_sprays": {
+          "display_name": "Cooking Sprays",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Cooking Spray Type"],
+          "attributes": ["Brand", "Cooking Spray Type", "Nutrition Facts Label"],
+          "aliases": ["cooking spray", "cooking sprays", "nonstick spray", "oil spray"],
+          "title_keywords": ["cooking spray", "cooking sprays", "nonstick cooking spray", "olive oil spray", "canola oil spray", "baking spray"],
+          "context_keywords": ["aerosol", "non stick", "no stick", "spray oil", "pan spray"],
+          "negative_keywords": ["cooking oil", "spray cleaner", "butter", "whipped cream"]
+        },
+        "cooking_oils": {
+          "display_name": "Cooking Oils",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Cooking Oil Type"],
+          "attributes": ["Brand", "Cooking Oil Type", "Size"],
+          "aliases": ["cooking oil", "cooking oils", "oil", "olive oil", "vegetable oil", "canola oil"],
+          "title_keywords": ["cooking oil", "cooking oils", "olive oil", "vegetable oil", "canola oil", "avocado oil", "coconut oil", "peanut oil"],
+          "context_keywords": ["extra virgin", "high heat", "frying oil", "saute oil", "baking oil"],
+          "negative_keywords": ["cooking spray", "essential oil", "motor oil", "olive dip", "salad dressing", "sesame tahini"]
+        }
+      }
+    },
+    "canned_meats": {
+      "display_name": "Canned Meats",
+      "product_types": {
+        "canned_jarred_poultry": {
+          "display_name": "Canned & Jarred Poultry",
+          "formula": ["Brand", "Food Form", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Form", "Nutrition Facts Label"],
+          "aliases": ["canned poultry", "jarred poultry", "canned chicken", "canned turkey"],
+          "title_keywords": ["canned chicken", "canned turkey", "canned poultry", "jarred poultry", "chicken breast in water", "chunk chicken"],
+          "context_keywords": ["white meat chicken", "packed in water", "ready to eat poultry", "shelf stable chicken"],
+          "negative_keywords": ["canned seafood", "canned tuna", "canned ham", "spam", "meat substitute", "chicken soup"]
+        },
+        "canned_jarred_seafood": {
+          "display_name": "Canned & Jarred Seafood",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Canned And Jarred Seafood Type"],
+          "attributes": ["Brand", "Canned And Jarred Seafood Type", "Food Form"],
+          "aliases": ["canned seafood", "jarred seafood", "canned fish", "canned tuna", "canned salmon"],
+          "title_keywords": ["canned seafood", "jarred seafood", "canned tuna", "canned salmon", "canned sardines", "canned anchovies", "canned crab"],
+          "context_keywords": ["packed in oil", "packed in water", "wild caught", "skinless boneless", "seafood can"],
+          "negative_keywords": ["caviar", "fish roe", "canned chicken", "canned meat", "tuna salad kit", "seafood sauce"]
+        },
+        "canned_packaged_meat_substitutes": {
+          "display_name": "Canned & Packaged Meat Substitutes",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Form", "Food Condition"],
+          "aliases": ["canned meat substitute", "packaged meat substitute", "meat substitute", "plant based meat"],
+          "title_keywords": ["canned meat substitute", "packaged meat substitute", "meat substitute", "plant based meat", "vegetarian meat substitute", "vegan meat substitute"],
+          "context_keywords": ["plant based protein", "meatless", "vegetarian", "vegan", "shelf stable"],
+          "negative_keywords": ["canned chicken", "canned tuna", "canned beef", "canned ham", "canned meat", "tofu"]
+        },
+        "caviar_fish_roe": {
+          "display_name": "Caviar & Fish Roe",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Caviar And Fish Roe Type"],
+          "attributes": ["Caviar And Fish Roe Type", "Brand", "Flavor"],
+          "aliases": ["caviar", "fish roe", "roe", "salmon roe", "tobiko"],
+          "title_keywords": ["caviar", "fish roe", "salmon roe", "tobiko", "masago", "sturgeon caviar"],
+          "context_keywords": ["fish eggs", "sushi roe", "gourmet seafood", "jarred roe"],
+          "negative_keywords": ["canned tuna", "canned seafood", "fish sauce", "seafood dip", "fish oil"]
+        },
+        "canned_jarred_meats": {
+          "display_name": "Canned & Jarred Meats",
+          "formula": ["Brand", "Food Form", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Form", "Food Condition"],
+          "aliases": ["canned meat", "jarred meat", "canned meats", "canned beef", "canned ham"],
+          "title_keywords": ["canned meat", "jarred meat", "canned beef", "canned ham", "luncheon meat", "corned beef", "spam"],
+          "context_keywords": ["ready to eat meat", "shelf stable meat", "potted meat", "meat in can"],
+          "negative_keywords": ["canned chicken", "canned turkey", "canned poultry", "canned seafood", "meat substitute", "dog food"]
+        }
+      }
+    },
+    "frozen_desserts": {
+      "display_name": "Frozen Desserts",
+      "product_types": {
+        "ice_pops": {
+          "display_name": "Ice Pops",
+          "formula": ["Brand", "Food Condition", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Condition", "Flavor"],
+          "aliases": ["ice pop", "ice pops", "freezer pops", "popsicles"],
+          "title_keywords": ["ice pops", "ice pop", "freezer pops", "popsicles", "fruit ice pops", "frozen pops"],
+          "context_keywords": ["frozen treat", "fruit flavored", "ice bar", "kids frozen dessert"],
+          "negative_keywords": ["ice cream bars", "ice cream cones", "ice cream", "sorbet pint", "wafer cones"]
+        },
+        "ice_cream_sorbet_frozen_yogurt": {
+          "display_name": "Ice Cream, Sorbet & Frozen Yogurt",
+          "formula": ["Brand", "Food Condition", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Brand", "Flavor"],
+          "aliases": ["ice cream", "sorbet", "frozen yogurt", "gelato", "sherbet"],
+          "title_keywords": ["ice cream", "sorbet", "frozen yogurt", "gelato", "sherbet", "ice cream pint", "ice cream tub"],
+          "context_keywords": ["frozen dessert", "pint", "quart", "vanilla", "chocolate", "dairy dessert"],
+          "negative_keywords": ["ice cream bars", "ice cream cones", "ice cream sandwich", "ice pops", "wafer cones", "cake cones"]
+        },
+        "ice_cream_bars_cones_novelties": {
+          "display_name": "Ice Cream Bars, Cones & Novelties",
+          "formula": ["Brand", "Food Condition", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Flavor", "Brand"],
+          "aliases": ["ice cream bar", "ice cream bars", "ice cream cone", "ice cream cones", "ice cream novelties", "ice cream sandwich"],
+          "title_keywords": ["ice cream bars", "ice cream bar", "ice cream cones", "ice cream cone", "ice cream sandwiches", "frozen novelties", "fudge bars"],
+          "context_keywords": ["multipack", "novelty", "on a stick", "dipped ice cream", "frozen treat"],
+          "negative_keywords": ["ice pops", "ice cream pint", "ice cream tub", "wafer cones", "cake cones", "sugar cones"]
+        },
+        "ice_cream_wafers_cones": {
+          "display_name": "Ice Cream Wafers & Cones",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Ice Cream Wafer And Cone Type"],
+          "attributes": ["Ice Cream Wafer And Cone Type", "Brand", "Flavor"],
+          "aliases": ["ice cream cones", "ice cream wafers", "wafer cones", "sugar cones", "cake cones"],
+          "title_keywords": ["ice cream cones", "ice cream wafers", "wafer cones", "sugar cones", "cake cones", "waffle cones"],
+          "context_keywords": ["empty cones", "dessert cones", "cone cups", "for ice cream"],
+          "negative_keywords": ["ice cream cone novelty", "ice cream bars", "frozen cones", "ice cream", "wafer cookies"]
+        }
+      }
+    },
+    "pasta_noodles_rice": {
+      "display_name": "Pasta, Noodles & Rice",
+      "product_types": {
+        "rice": {
+          "display_name": "Rice",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Rice Type"],
+          "attributes": ["Brand", "Rice Type", "Size"],
+          "aliases": ["rice", "white rice", "brown rice", "jasmine rice", "basmati rice"],
+          "title_keywords": ["rice", "white rice", "brown rice", "jasmine rice", "basmati rice", "long grain rice", "instant rice"],
+          "context_keywords": ["parboiled", "microwave rice", "ready rice", "rice pouch", "grain"],
+          "negative_keywords": ["rice cakes", "rice cereal", "rice noodles", "rice pudding", "cauliflower rice", "rice vinegar"]
+        },
+        "pasta": {
+          "display_name": "Pasta",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Pasta And Noodle Type"],
+          "attributes": ["Brand", "Pasta And Noodle Type", "Food Condition"],
+          "aliases": ["pasta", "spaghetti", "macaroni", "penne", "fettuccine"],
+          "title_keywords": ["pasta", "spaghetti", "macaroni", "penne pasta", "fettuccine", "rotini", "elbow macaroni"],
+          "context_keywords": ["dry pasta", "semolina", "gluten free pasta", "whole wheat pasta", "boxed pasta"],
+          "negative_keywords": ["pasta sauce", "noodles", "ramen", "rice noodles", "lasagna meal", "mac and cheese"]
+        },
+        "noodles": {
+          "display_name": "Noodles",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Pasta And Noodle Type"],
+          "attributes": ["Brand", "Pasta And Noodle Type", "Flavor"],
+          "aliases": ["noodle", "noodles", "ramen noodles", "rice noodles", "egg noodles"],
+          "title_keywords": ["noodles", "noodle", "ramen noodles", "rice noodles", "egg noodles", "udon noodles", "soba noodles"],
+          "context_keywords": ["instant noodles", "asian noodles", "stir fry noodles", "soup noodles"],
+          "negative_keywords": ["pasta", "spaghetti", "macaroni", "rice", "zucchini noodles", "chicken noodle soup"]
+        }
+      }
+    },
+    "emergency_food": {
+      "display_name": "Emergency Food",
+      "product_types": {
+        "emergency_food_kits": {
+          "display_name": "Emergency Food Kits",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Shelf Life"],
+          "attributes": ["Brand", "Shelf Life", "Container Type"],
+          "aliases": ["emergency food kit", "emergency food kits", "survival food kit", "survival food kits"],
+          "title_keywords": ["emergency food kit", "emergency food kits", "survival food kit", "survival food kits", "food storage kit", "disaster food kit"],
+          "context_keywords": ["long term food storage", "72 hour kit", "preparedness", "bucket", "shelf life"],
+          "negative_keywords": ["mre", "mres", "ice", "emergency food ration", "camping meal"]
+        },
+        "ice": {
+          "display_name": "Ice",
+          "formula": ["Brand", "Food Form", "Product/Type", "Key Feature", "Count/Pack", "Shelf Life"],
+          "attributes": ["Food Form", "Shelf Life", "Food Condition"],
+          "aliases": ["ice", "bagged ice", "ice cubes", "block ice"],
+          "title_keywords": ["bagged ice", "ice cubes", "block ice", "party ice", "ice"],
+          "context_keywords": ["frozen", "cube ice", "ice bag", "cooler ice"],
+          "negative_keywords": ["ice cream", "ice pops", "dry ice", "ice maker", "icing"]
+        },
+        "emergency_food": {
+          "display_name": "Emergency Food",
+          "formula": ["Brand", "Food Form", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Form", "Food Condition"],
+          "aliases": ["emergency food", "survival food", "emergency ration", "food ration"],
+          "title_keywords": ["emergency food", "survival food", "emergency ration", "food ration", "survival meals", "freeze dried emergency food"],
+          "context_keywords": ["long shelf life", "preparedness", "dehydrated meal", "freeze dried meal"],
+          "negative_keywords": ["emergency food kit", "survival food kit", "mre", "mres", "ice"]
+        },
+        "mres": {
+          "display_name": "MREs",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Form", "Flavor"],
+          "aliases": ["mre", "mres", "meal ready to eat", "meals ready to eat"],
+          "title_keywords": ["mre", "mres", "meal ready to eat", "meals ready to eat", "military mre", "ready to eat meal"],
+          "context_keywords": ["field ration", "self heating meal", "emergency meal", "case pack"],
+          "negative_keywords": ["emergency food kit", "survival food kit", "freeze dried food", "ice"]
+        }
+      }
+    },
+    "fresh_produce": {
+      "display_name": "Fresh Produce",
+      "product_types": {
+        "watermelons": {
+          "display_name": "Watermelons",
+          "formula": ["Brand", "Food Condition", "Fruit Type", "Food Form", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Fruit Type", "Food Form"],
+          "aliases": ["watermelon", "watermelons"],
+          "title_keywords": ["watermelon", "watermelons", "seedless watermelon", "mini watermelon", "watermelon chunks"],
+          "context_keywords": ["fresh fruit", "whole watermelon", "cut watermelon", "personal watermelon"],
+          "negative_keywords": ["watermelon candy", "watermelon juice", "watermelon sparkling water", "fruit snacks"]
+        },
+        "fresh_herbs": {
+          "display_name": "Fresh Herbs",
+          "formula": ["Brand", "Food Condition", "Vegetable Type", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Vegetable Type", "Brand"],
+          "aliases": ["fresh herb", "fresh herbs", "herbs"],
+          "title_keywords": ["fresh herbs", "fresh basil", "fresh cilantro", "fresh parsley", "fresh mint", "fresh rosemary", "fresh thyme"],
+          "context_keywords": ["clamshell", "bunched herbs", "produce herb", "refrigerated herb"],
+          "negative_keywords": ["dried herbs", "seasoning", "herbal tea", "mushrooms", "packaged salad"]
+        },
+        "mushrooms": {
+          "display_name": "Mushrooms",
+          "formula": ["Brand", "Food Condition", "Vegetable Type", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Vegetable Type", "Food Form"],
+          "aliases": ["mushroom", "mushrooms", "fresh mushrooms"],
+          "title_keywords": ["mushrooms", "fresh mushrooms", "white mushrooms", "baby bella mushrooms", "portobello mushrooms", "shiitake mushrooms"],
+          "context_keywords": ["sliced mushrooms", "whole mushrooms", "produce", "8 oz package"],
+          "negative_keywords": ["canned mushrooms", "dried mushrooms", "cream of mushroom", "mushroom sauce"]
+        },
+        "fresh_fruits": {
+          "display_name": "Fresh Fruits",
+          "formula": ["Brand", "Food Condition", "Fruit Type", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Fruit Type", "Brand"],
+          "aliases": ["fresh fruit", "fresh fruits", "fruit"],
+          "title_keywords": ["fresh fruit", "fresh fruits", "mangoes", "oranges", "lemons", "limes", "berries", "strawberries", "blueberries"],
+          "context_keywords": ["produce", "ripe", "fresh", "clamshell", "bagged fruit"],
+          "negative_keywords": ["apples", "pears", "bananas", "grapes", "avocados", "watermelon", "canned fruit", "dried fruit", "fruit snacks"]
+        },
+        "packaged_salads": {
+          "display_name": "Packaged Salads",
+          "formula": ["Brand", "Food Condition", "Vegetable Type", "Food Form", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Brand", "Vegetable Type"],
+          "aliases": ["packaged salad", "packaged salads", "salad kit", "salad kits", "bagged salad"],
+          "title_keywords": ["packaged salad", "packaged salads", "salad kit", "salad kits", "bagged salad", "caesar salad kit", "garden salad"],
+          "context_keywords": ["ready to eat salad", "chopped salad", "lettuce blend", "produce salad"],
+          "negative_keywords": ["salad dressing", "salad topping", "fresh herbs", "fresh vegetables", "coleslaw dressing"]
+        },
+        "grapes": {
+          "display_name": "Grapes",
+          "formula": ["Brand", "Food Condition", "Fruit Type", "Food Form", "Product/Type", "Color", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Fruit Type", "Color"],
+          "aliases": ["grape", "grapes", "fresh grapes"],
+          "title_keywords": ["grapes", "fresh grapes", "red grapes", "green grapes", "black grapes", "seedless grapes"],
+          "context_keywords": ["bunch grapes", "produce", "table grapes", "bagged grapes"],
+          "negative_keywords": ["grape juice", "raisins", "grape jelly", "grape candy", "grape tomatoes"]
+        },
+        "onions": {
+          "display_name": "Onions",
+          "formula": ["Brand", "Food Condition", "Vegetable Type", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Vegetable Type", "Food Form"],
+          "aliases": ["onion", "onions", "fresh onions"],
+          "title_keywords": ["onions", "fresh onions", "yellow onions", "red onions", "white onions", "sweet onions", "green onions"],
+          "context_keywords": ["produce", "bagged onions", "whole onions", "scallions"],
+          "negative_keywords": ["onion dip", "onion powder", "onion soup mix", "fried onions"]
+        },
+        "avocados": {
+          "display_name": "Avocados",
+          "formula": ["Brand", "Food Condition", "Fruit Type", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Fruit Type", "Food Form"],
+          "aliases": ["avocado", "avocados", "fresh avocados"],
+          "title_keywords": ["avocados", "avocado", "fresh avocados", "hass avocados", "mini avocados"],
+          "context_keywords": ["ripe", "produce", "bag avocados", "ready to eat"],
+          "negative_keywords": ["guacamole", "avocado oil", "avocado dip", "avocado toast"]
+        },
+        "bananas": {
+          "display_name": "Bananas",
+          "formula": ["Brand", "Food Condition", "Fruit Type", "Food Form", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Fruit Type", "Food Form"],
+          "aliases": ["banana", "bananas", "fresh bananas"],
+          "title_keywords": ["bananas", "banana", "fresh bananas", "organic bananas", "plantains"],
+          "context_keywords": ["bunch", "produce", "ripe bananas", "yellow bananas"],
+          "negative_keywords": ["banana chips", "banana bread", "banana pudding", "banana candy", "banana baby food"]
+        },
+        "fresh_vegetables": {
+          "display_name": "Fresh Vegetables",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Fsma Section 204 Traceability", "Container Material"],
+          "aliases": ["fresh vegetable", "fresh vegetables", "vegetables", "produce vegetables"],
+          "title_keywords": ["fresh vegetables", "fresh vegetable", "broccoli", "carrots", "celery", "peppers", "zucchini", "lettuce"],
+          "context_keywords": ["produce", "fresh", "bagged vegetables", "whole vegetables", "washed"],
+          "negative_keywords": ["canned vegetables", "frozen vegetables", "dried vegetables", "fresh herbs", "mushrooms", "onions", "packaged salad"]
+        },
+        "pears": {
+          "display_name": "Pears",
+          "formula": ["Brand", "Food Condition", "Fruit Type", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Fruit Type", "Plant Variety"],
+          "aliases": ["pear", "pears", "fresh pears"],
+          "title_keywords": ["pears", "pear", "fresh pears", "bartlett pears", "anjou pears", "bosc pears"],
+          "context_keywords": ["produce", "ripe pears", "bagged pears", "tree fruit"],
+          "negative_keywords": ["canned pears", "pear sauce", "pear juice", "dried pears", "pear candy"]
+        },
+        "apples": {
+          "display_name": "Apples",
+          "formula": ["Brand", "Food Condition", "Fruit Type", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Fruit Type", "Plant Variety"],
+          "aliases": ["apple", "apples", "fresh apples"],
+          "title_keywords": ["apples", "apple", "fresh apples", "gala apples", "fuji apples", "honeycrisp apples", "granny smith apples"],
+          "context_keywords": ["produce", "bagged apples", "ripe apples", "tree fruit"],
+          "negative_keywords": ["applesauce", "apple juice", "apple butter", "dried apples", "apple chips", "apple candy"]
+        }
+      }
+    },
+    "fresh_meat": {
+      "display_name": "Fresh Meat",
+      "product_types": {
+        "chicken": {
+          "display_name": "Chicken",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Brand", "Fresh And Frozen Poultry Type"],
+          "aliases": ["chicken", "fresh chicken", "frozen chicken"],
+          "title_keywords": ["chicken", "fresh chicken", "frozen chicken", "chicken breast", "chicken thighs", "chicken drumsticks", "chicken wings"],
+          "context_keywords": ["boneless skinless", "poultry", "air chilled", "family pack"],
+          "negative_keywords": ["canned chicken", "chicken nuggets", "chicken soup", "turkey", "rotisserie chicken"]
+        },
+        "fresh_frozen_poultry": {
+          "display_name": "Fresh & Frozen Poultry",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Condition", "Food Form"],
+          "aliases": ["fresh poultry", "frozen poultry", "poultry"],
+          "title_keywords": ["fresh poultry", "frozen poultry", "poultry", "duck", "cornish hen", "game hen"],
+          "context_keywords": ["whole bird", "poultry cut", "refrigerated poultry", "frozen bird"],
+          "negative_keywords": ["chicken", "turkey", "canned poultry", "poultry seasoning", "plant based poultry"]
+        },
+        "bison": {
+          "display_name": "Bison",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Count Per Pack", "Size", "Manufacturer"],
+          "aliases": ["bison", "buffalo meat", "ground bison"],
+          "title_keywords": ["bison", "ground bison", "bison steak", "bison burgers", "buffalo meat"],
+          "context_keywords": ["lean meat", "grass fed bison", "fresh bison", "frozen bison"],
+          "negative_keywords": ["beef", "pork", "lamb", "meatballs", "buffalo sauce"]
+        },
+        "fresh_frozen_meats": {
+          "display_name": "Fresh & Frozen Meats",
+          "formula": ["Brand", "Food Condition", "Food Form", "Product/Type", "Key Feature", "Count/Pack", "Meat Type"],
+          "attributes": ["Food Condition", "Meat Type", "Food Form"],
+          "aliases": ["fresh meat", "frozen meat", "meats"],
+          "title_keywords": ["fresh meat", "frozen meat", "ground meat", "meat cuts", "mixed meat"],
+          "context_keywords": ["refrigerated meat", "frozen meat", "family pack", "butcher cut"],
+          "negative_keywords": ["beef", "pork", "lamb", "bison", "meatballs", "chicken", "turkey", "canned meat", "meat substitute"]
+        },
+        "pork": {
+          "display_name": "Pork",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Pork Cut"],
+          "attributes": ["Pork Cut", "Brand", "Food Form"],
+          "aliases": ["pork", "fresh pork", "pork chops", "pork loin"],
+          "title_keywords": ["pork", "pork chops", "pork loin", "pork tenderloin", "pork shoulder", "ground pork", "pork ribs"],
+          "context_keywords": ["boneless pork", "fresh pork", "family pack", "center cut"],
+          "negative_keywords": ["bacon", "ham", "sausage", "canned pork", "pork rinds", "pulled pork prepared"]
+        },
+        "turkey": {
+          "display_name": "Turkey",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Poultry Cut", "Brand"],
+          "aliases": ["turkey", "fresh turkey", "frozen turkey", "ground turkey"],
+          "title_keywords": ["turkey", "fresh turkey", "frozen turkey", "ground turkey", "turkey breast", "turkey cutlets", "whole turkey"],
+          "context_keywords": ["poultry", "thanksgiving", "lean ground turkey", "bone in turkey"],
+          "negative_keywords": ["canned turkey", "turkey lunch meat", "turkey bacon", "chicken", "turkey gravy"]
+        },
+        "beef": {
+          "display_name": "Beef",
+          "formula": ["Brand", "Food Form", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Form", "Food Condition", "Brand"],
+          "aliases": ["beef", "fresh beef", "ground beef"],
+          "title_keywords": ["beef", "fresh beef", "ground beef", "beef steak", "beef roast", "sirloin", "ribeye", "chuck roast"],
+          "context_keywords": ["lean ground beef", "grass fed beef", "angus beef", "family pack"],
+          "negative_keywords": ["canned beef", "corned beef canned", "beef jerky", "beef broth", "beef soup", "bison"]
+        },
+        "lamb": {
+          "display_name": "Lamb",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Lamb Cut", "Lean To Fat Ratio"],
+          "attributes": ["Lamb Cut", "Lean To Fat Ratio", "Food Form"],
+          "aliases": ["lamb", "fresh lamb", "ground lamb"],
+          "title_keywords": ["lamb", "fresh lamb", "ground lamb", "lamb chops", "lamb shank", "rack of lamb", "leg of lamb"],
+          "context_keywords": ["grass fed lamb", "bone in lamb", "lean lamb", "fresh meat"],
+          "negative_keywords": ["beef", "pork", "bison", "lamb broth", "lamb dog food"]
+        },
+        "meatballs": {
+          "display_name": "Meatballs",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Meat Type"],
+          "attributes": ["Meat Type", "Brand", "Ingredient List Image"],
+          "aliases": ["meatball", "meatballs", "frozen meatballs", "fresh meatballs"],
+          "title_keywords": ["meatballs", "meatball", "frozen meatballs", "beef meatballs", "turkey meatballs", "italian meatballs"],
+          "context_keywords": ["fully cooked", "homestyle", "italian style", "party size"],
+          "negative_keywords": ["ground beef", "ground pork", "pasta sauce", "spaghetti", "meatball sub"]
+        }
+      }
+    },
+    "bakery": {
+      "display_name": "Bakery",
+      "product_types": {
+        "cookies": {
+          "display_name": "Cookies",
+          "formula": ["Brand OR Product Line", "Claims OR Certifications", "Flavor", "Cookie Type", "[,]", "Retail Packaging", "[,]", "Size", "[,]", "Count per Pack", "Count"],
+          "attributes": ["Brand", "Cookie Type", "Flavor"],
+          "aliases": ["cookie", "cookies"],
+          "title_keywords": ["cookies", "cookie", "chocolate chip cookies", "sandwich cookies", "wafer cookies", "shortbread cookies", "sugar cookies"],
+          "context_keywords": ["bakery cookies", "soft baked", "crunchy cookies", "cookie tray", "snack cookies"],
+          "negative_keywords": ["croutons", "cookie dough", "cookie mix", "ice cream sandwich", "cracker", "biscuit dog treats"]
+        },
+        "pies": {
+          "display_name": "Pies",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Size", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Flavor", "Pie And Pastry Filling Type"],
+          "aliases": ["pie", "pies"],
+          "title_keywords": ["pie", "pies", "apple pie", "cherry pie", "pumpkin pie", "pecan pie"],
+          "context_keywords": ["bakery pie", "whole pie", "fruit pie", "dessert pie"],
+          "negative_keywords": ["pie filling", "sweet pies tarts prepared desserts", "tart", "hand pie", "pizza pie", "pot pie"]
+        },
+        "croutons": {
+          "display_name": "Croutons",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Size", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Flavor", "Food Condition"],
+          "aliases": ["crouton", "croutons"],
+          "title_keywords": ["croutons", "crouton", "seasoned croutons", "garlic croutons", "caesar croutons"],
+          "context_keywords": ["salad topping", "crispy bread cubes", "seasoned bread", "soup topping"],
+          "negative_keywords": ["cookies", "breadsticks", "bread crumbs", "stuffing mix", "salad dressing"]
+        },
+        "cupcakes": {
+          "display_name": "Cupcakes",
+          "formula": ["Brand", "Product Line", "Product/Type", "Size", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Flavor", "Cake Type"],
+          "aliases": ["cupcake", "cupcakes"],
+          "title_keywords": ["cupcakes", "cupcake", "mini cupcakes", "chocolate cupcakes", "vanilla cupcakes"],
+          "context_keywords": ["bakery cupcakes", "frosted cupcakes", "party cupcakes", "snack cakes"],
+          "negative_keywords": ["cakes", "cake mix", "muffins", "cake bites", "cupcake liners"]
+        },
+        "breads_buns": {
+          "display_name": "Breads & Buns",
+          "formula": ["Brand", "Product Line", "Product/Type", "Size", "Count/Pack", "Certification/Rating", "Bread And Bun Type"],
+          "attributes": ["Brand", "Bread And Bun Type", "Food Condition"],
+          "aliases": ["bread", "breads", "bun", "buns", "rolls"],
+          "title_keywords": ["bread", "buns", "hamburger buns", "hot dog buns", "sandwich bread", "dinner rolls", "brioche buns"],
+          "context_keywords": ["bakery bread", "sliced bread", "whole grain bread", "white bread", "wheat bread"],
+          "negative_keywords": ["bagels", "english muffins", "breadsticks", "pizza crust", "tortillas", "taco shells", "bread crumbs"]
+        },
+        "pastries": {
+          "display_name": "Pastries",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Size", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Flavor", "Food Condition"],
+          "aliases": ["pastry", "pastries", "danish", "croissant"],
+          "title_keywords": ["pastries", "pastry", "danish", "croissant", "turnovers", "bear claws"],
+          "context_keywords": ["bakery pastry", "sweet pastry", "breakfast pastry", "filled pastry"],
+          "negative_keywords": ["toaster pastries", "pies", "tarts", "cakes", "cookies", "pie crust"]
+        },
+        "taco_shells": {
+          "display_name": "Taco Shells",
+          "formula": ["Brand", "Product Line", "Product/Type", "Size", "Count/Pack", "Certification/Rating", "Texture"],
+          "attributes": ["Brand", "Texture", "Tortilla And Wrap Type"],
+          "aliases": ["taco shell", "taco shells", "hard taco shells"],
+          "title_keywords": ["taco shells", "taco shell", "hard taco shells", "crunchy taco shells", "stand n stuff shells"],
+          "context_keywords": ["crunchy shells", "corn taco shells", "mexican dinner", "taco night"],
+          "negative_keywords": ["tortillas", "wraps", "soft taco", "tostada shells", "pastry shells"]
+        },
+        "english_muffins": {
+          "display_name": "English Muffins",
+          "formula": ["Brand", "Product Line", "Product/Type", "Size", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Size Descriptor", "Flavor"],
+          "aliases": ["english muffin", "english muffins"],
+          "title_keywords": ["english muffins", "english muffin", "whole wheat english muffins", "original english muffins"],
+          "context_keywords": ["nooks and crannies", "breakfast bread", "toasted muffin", "split muffins"],
+          "negative_keywords": ["muffins", "bagels", "breads", "buns", "cupcakes"]
+        },
+        "bagels": {
+          "display_name": "Bagels",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Size", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Flavor", "Bread And Bun Type"],
+          "aliases": ["bagel", "bagels"],
+          "title_keywords": ["bagels", "bagel", "plain bagels", "everything bagels", "cinnamon raisin bagels", "mini bagels"],
+          "context_keywords": ["breakfast bread", "bakery bagels", "pre sliced", "boiled bagels"],
+          "negative_keywords": ["english muffins", "bread", "buns", "donuts", "bagel chips", "cream cheese"]
+        },
+        "sweet_pies_tarts_prepared_desserts": {
+          "display_name": "Sweet Pies, Tarts & Prepared Desserts",
+          "formula": ["Brand", "Product Line", "Food Condition", "Product/Type", "Size", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Food Condition", "Flavor"],
+          "aliases": ["sweet pie", "sweet pies", "tart", "tarts", "prepared dessert", "prepared desserts"],
+          "title_keywords": ["sweet pies", "sweet pie", "tarts", "tart", "prepared desserts", "dessert cups", "mini tarts"],
+          "context_keywords": ["bakery dessert", "ready to serve dessert", "fruit tart", "dessert tray"],
+          "negative_keywords": ["pies", "pie filling", "pizza crust", "toaster pastries", "cakes", "cookies"]
+        },
+        "tortillas_wraps": {
+          "display_name": "Tortillas & Wraps",
+          "formula": ["Brand", "Product Line", "Product/Type", "Size", "Count/Pack", "Certification/Rating", "Tortilla And Wrap Type"],
+          "attributes": ["Brand", "Tortilla And Wrap Type", "Size"],
+          "aliases": ["tortilla", "tortillas", "wrap", "wraps"],
+          "title_keywords": ["tortillas", "tortilla", "wraps", "flour tortillas", "corn tortillas", "whole wheat wraps", "soft taco tortillas"],
+          "context_keywords": ["soft tortillas", "burrito size", "fajita size", "wrap bread"],
+          "negative_keywords": ["taco shells", "tortilla chips", "pizza crust", "flatbread pizza", "egg wraps"]
+        },
+        "crepes": {
+          "display_name": "Crepes",
+          "formula": ["Brand", "Product Line", "Food Condition", "Flavor", "Product/Type", "Size", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Food Condition", "Flavor", "Size"],
+          "aliases": ["crepe", "crepes"],
+          "title_keywords": ["crepes", "crepe", "french crepes", "filled crepes", "plain crepes"],
+          "context_keywords": ["thin pancakes", "ready to fill", "dessert crepes", "breakfast crepes"],
+          "negative_keywords": ["pancake mix", "tortillas", "wraps", "pastries", "cakes"]
+        },
+        "breadsticks": {
+          "display_name": "Breadsticks",
+          "formula": ["Brand", "Product Line", "Flavor", "Food Condition", "Product/Type", "Size", "Count/Pack", "Certification/Rating", "Bread And Bun Type"],
+          "attributes": ["Brand", "Flavor", "Food Condition"],
+          "aliases": ["breadstick", "breadsticks", "bread sticks"],
+          "title_keywords": ["breadsticks", "breadstick", "bread sticks", "garlic breadsticks", "soft breadsticks", "crispy breadsticks"],
+          "context_keywords": ["italian breadsticks", "dipping bread", "baked breadsticks", "snack bread"],
+          "negative_keywords": ["croutons", "breads", "buns", "pretzels", "cheese sticks"]
+        },
+        "pizza_crusts": {
+          "display_name": "Pizza Crusts",
+          "formula": ["Brand", "Product Line", "Food Condition", "Product/Type", "Size", "Count/Pack", "Certification/Rating", "Pizza Crust Style"],
+          "attributes": ["Food Condition", "Pizza Crust Style", "Brand"],
+          "aliases": ["pizza crust", "pizza crusts", "pizza dough", "pizza shell"],
+          "title_keywords": ["pizza crust", "pizza crusts", "thin crust pizza crust", "cauliflower pizza crust", "pizza dough", "pizza shell"],
+          "context_keywords": ["ready to top", "par baked", "flatbread crust", "make your own pizza"],
+          "negative_keywords": ["pizza sauce", "frozen pizza", "bread", "buns", "tortillas", "pie crust"]
+        },
+        "cakes": {
+          "display_name": "Cakes",
+          "formula": ["Brand", "Product Line", "Product/Type", "Size", "Count/Pack", "Certification/Rating", "Cake Type"],
+          "attributes": ["Brand", "Cake Type", "Flavor"],
+          "aliases": ["cake", "cakes", "bakery cake"],
+          "title_keywords": ["cakes", "cake", "bakery cake", "chocolate cake", "vanilla cake", "birthday cake", "cheesecake"],
+          "context_keywords": ["layer cake", "sheet cake", "dessert cake", "frosted cake"],
+          "negative_keywords": ["cupcakes", "cake mix", "rice cakes", "crab cakes", "cake cones"]
+        }
+      }
+    },
+    "seasonings_spices": {
+      "display_name": "Seasonings & Spices",
+      "product_types": {
+        "salt": {
+          "display_name": "Salt",
+          "formula": ["Brand", "Product/Type", "Size", "Count/Pack", "Certification/Rating", "Salt Type"],
+          "attributes": ["Salt Type", "Brand", "Food Condition"],
+          "aliases": ["salt", "sea salt", "kosher salt", "pink salt"],
+          "title_keywords": ["salt", "sea salt", "kosher salt", "pink salt", "himalayan salt", "iodized salt", "table salt"],
+          "context_keywords": ["fine grain", "coarse salt", "salt grinder", "seasoning salt"],
+          "negative_keywords": ["salt substitute", "cocktail rimming salt", "epsom salt", "bath salt", "salted caramel"]
+        },
+        "salt_substitutes": {
+          "display_name": "Salt Substitutes",
+          "formula": ["Brand", "Product/Type", "Size", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Size", "Flavor"],
+          "aliases": ["salt substitute", "salt substitutes", "no salt substitute"],
+          "title_keywords": ["salt substitute", "salt substitutes", "no salt substitute", "sodium free salt substitute", "lite salt"],
+          "context_keywords": ["sodium free", "reduced sodium", "potassium chloride", "salt alternative"],
+          "negative_keywords": ["sea salt", "kosher salt", "pink salt", "table salt", "cocktail rimming salt"]
+        },
+        "msg": {
+          "display_name": "MSG",
+          "formula": ["Brand", "Product/Type", "Size", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Size", "Count Per Pack"],
+          "aliases": ["msg", "monosodium glutamate"],
+          "title_keywords": ["msg", "monosodium glutamate", "msg seasoning"],
+          "context_keywords": ["umami seasoning", "flavor enhancer", "accent seasoning"],
+          "negative_keywords": ["seasoning blend", "salt", "pepper", "soup mix"]
+        },
+        "pepper_peppercorns": {
+          "display_name": "Pepper & Peppercorns",
+          "formula": ["Brand", "Product/Type", "Size", "Count/Pack", "Certification/Rating"],
+          "attributes": ["Brand", "Pepper And Peppercorn Type", "Flavor"],
+          "aliases": ["pepper", "peppercorn", "peppercorns", "black pepper", "white pepper"],
+          "title_keywords": ["black pepper", "white pepper", "peppercorns", "peppercorn", "ground pepper", "cracked pepper", "pepper grinder"],
+          "context_keywords": ["whole peppercorns", "coarse ground", "fine ground", "pepper mill"],
+          "negative_keywords": ["bell pepper", "jalapeno pepper", "chili pepper", "pepper sauce", "lemon pepper seasoning", "seasoning blend"]
+        },
+        "mixed_spices_seasonings": {
+          "display_name": "Mixed Spices & Seasonings",
+          "formula": ["Brand", "Nutrient Content Claim OR General Standards and Certification", "Flavor", "Food Form OR Food Preparation Method", "Mixed Spices & Seasonings Type", "Size", "Count Per Pack", "Pack", "X Packs of OR Boxes of Y"],
+          "attributes": ["Brand", "Mixed Spice And Seasoning Type", "Flavor"],
+          "aliases": ["seasoning mix", "seasoning blend", "spice blend", "spice mix", "rub"],
+          "title_keywords": ["seasoning mix", "seasoning blend", "spice blend", "spice mix", "taco seasoning", "chili seasoning", "bbq rub", "dry rub"],
+          "context_keywords": ["blend", "rub", "marinade seasoning", "packet", "all purpose seasoning"],
+          "negative_keywords": ["single herb", "single spice", "salt", "peppercorn", "black pepper", "bouillon", "soup mix"]
+        },
+        "single_herbs_spices": {
+          "display_name": "Single Herbs & Spices",
+          "formula": ["Brand", "Nutrient Content Claim OR General Standards and Certification", "Food Form OR Food Preparation Method", "Single Herb And Spice Type", "Size", "Count Per Pack", "Pack", "X Packs of OR Boxes of Y"],
+          "attributes": ["Brand", "Single Herb And Spice Type", "Flavor"],
+          "aliases": ["single herb", "single spice", "herb", "spice"],
+          "title_keywords": ["turmeric", "basil", "oregano", "cumin", "paprika", "garlic powder", "cinnamon", "thyme", "rosemary", "parsley"],
+          "context_keywords": ["ground spice", "dried herb", "whole spice", "organic spice", "spice jar"],
+          "negative_keywords": ["seasoning mix", "seasoning blend", "spice blend", "taco seasoning", "salt", "peppercorns", "fresh herbs"]
+        }
+      }
+    },
+    "soups_broths_bouillon": {
+      "display_name": "Soups, Broths & Bouillon",
+      "product_types": {
+        "prepared_packaged_soups": {
+          "display_name": "Prepared & Packaged Soups",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Food Form"],
+          "aliases": ["soup", "soups", "packaged soup", "prepared soup", "canned soup"],
+          "title_keywords": ["soup", "soups", "canned soup", "packaged soup", "prepared soup", "chowder", "bisque", "chicken noodle soup", "tomato soup"],
+          "context_keywords": ["ready to serve", "condensed soup", "microwave bowl", "soup cup"],
+          "negative_keywords": ["broth", "stock", "bouillon", "soup mix seasoning", "dry soup base"]
+        },
+        "bouillon_broths_stocks": {
+          "display_name": "Bouillon, Broths & Stocks",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Bouillon Broth And Stock Type"],
+          "attributes": ["Brand", "Bouillon Broth And Stock Type", "Nutrition Facts Label"],
+          "aliases": ["bouillon", "broth", "broths", "stock", "stocks"],
+          "title_keywords": ["bouillon", "broth", "stock", "chicken broth", "beef broth", "vegetable broth", "chicken stock", "bouillon cubes"],
+          "context_keywords": ["bone broth", "cooking stock", "soup base", "carton broth", "reduced sodium"],
+          "negative_keywords": ["prepared soup", "canned soup", "chowder", "bisque", "gravy", "sauce"]
+        }
+      }
+    },
+    "tofu_soy_products": {
+      "display_name": "Tofu & Soy Products",
+      "product_types": {
+        "tempeh": {
+          "display_name": "Tempeh",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Nutrition Facts Label", "Size"],
+          "aliases": ["tempeh"],
+          "title_keywords": ["tempeh", "organic tempeh", "soy tempeh", "plant based tempeh"],
+          "context_keywords": ["fermented soy", "plant protein", "meat alternative", "refrigerated"],
+          "negative_keywords": ["tofu", "seitan", "soy sauce", "soy milk"]
+        },
+        "tofu": {
+          "display_name": "Tofu",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Texture"],
+          "attributes": ["Texture", "Brand", "Size"],
+          "aliases": ["tofu", "bean curd"],
+          "title_keywords": ["tofu", "firm tofu", "extra firm tofu", "silken tofu", "soft tofu", "bean curd"],
+          "context_keywords": ["plant protein", "soybean curd", "refrigerated tofu", "water packed"],
+          "negative_keywords": ["tempeh", "seitan", "soy milk", "soy sauce", "tofu noodles"]
+        },
+        "seitan": {
+          "display_name": "Seitan",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Size", "Key Feature", "Count/Pack", "Nutrition Label"],
+          "attributes": ["Size", "Food Condition", "Nutrition Facts Label"],
+          "aliases": ["seitan", "wheat gluten", "vital wheat gluten"],
+          "title_keywords": ["seitan", "wheat gluten", "seitan strips", "seitan pieces", "plant based seitan"],
+          "context_keywords": ["wheat protein", "meat alternative", "vegan protein", "refrigerated"],
+          "negative_keywords": ["tofu", "tempeh", "gluten free", "wheat flour", "bread"]
+        }
+      }
+    },
+    "protein_snacks_nuts_nut_mixes_dried_meats": {
+      "display_name": "Protein Snacks: Nuts, Nut Mixes, Dried Meats",
+      "product_types": {
+        "trail_mixes": {
+          "display_name": "Trail Mixes",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Fsma Section 204 Traceability"],
+          "aliases": ["trail mix", "trail mixes", "nut mix", "snack mix"],
+          "title_keywords": ["trail mix", "trail mixes", "nut mix", "snack mix", "fruit and nut mix", "protein trail mix"],
+          "context_keywords": ["raisins", "chocolate pieces", "nuts and dried fruit", "on the go snack"],
+          "negative_keywords": ["party mix", "chex mix", "mixed nuts", "edible nuts", "granola", "cereal mix"]
+        },
+        "jerky_dried_meats": {
+          "display_name": "Jerky & Dried Meats",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Jerky And Dried Meat Type"],
+          "attributes": ["Brand", "Jerky And Dried Meat Type", "Flavor"],
+          "aliases": ["jerky", "dried meat", "dried meats", "beef jerky", "turkey jerky", "meat sticks"],
+          "title_keywords": ["jerky", "beef jerky", "turkey jerky", "pork jerky", "dried meat", "meat sticks", "beef sticks"],
+          "context_keywords": ["smoked meat snack", "protein snack", "original jerky", "teriyaki jerky"],
+          "negative_keywords": ["bacon", "sausage", "hot dogs", "lunch meat", "deli meat", "fresh beef", "canned meat"]
+        },
+        "edible_seeds": {
+          "display_name": "Edible Seeds",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Edible Seed Type"],
+          "attributes": ["Brand", "Edible Seed Type", "Flavor"],
+          "aliases": ["edible seeds", "seeds", "sunflower seeds", "pumpkin seeds", "chia seeds", "flax seeds"],
+          "title_keywords": ["sunflower seeds", "pumpkin seeds", "chia seeds", "flax seeds", "hemp seeds", "sesame seeds", "edible seeds"],
+          "context_keywords": ["roasted seeds", "salted seeds", "shelled seeds", "snack seeds"],
+          "negative_keywords": ["bird seed", "grass seed", "seed packet", "trail mix", "mixed nuts", "tahini"]
+        },
+        "edible_nuts": {
+          "display_name": "Edible Nuts",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Nut Type"],
+          "attributes": ["Nut Type", "Brand", "Flavor"],
+          "aliases": ["edible nuts", "nuts", "almonds", "cashews", "peanuts", "pistachios", "walnuts", "mixed nuts"],
+          "title_keywords": ["almonds", "cashews", "peanuts", "pistachios", "walnuts", "pecans", "mixed nuts", "edible nuts"],
+          "context_keywords": ["roasted nuts", "salted nuts", "raw nuts", "snack nuts", "party nuts"],
+          "negative_keywords": ["nut butter", "peanut butter", "almond butter", "trail mix", "nut clusters", "chocolate covered nuts", "coconut"]
+        }
+      }
+    },
+    "sausage_dogs_lunch_deli_meats": {
+      "display_name": "Sausage, Dogs, Lunch & Deli Meats",
+      "product_types": {
+        "lunch_deli_meats": {
+          "display_name": "Lunch & Deli Meats",
+          "formula": ["Brand", "Food Form", "Food Condition", "Product/Type", "Key Feature", "Count/Pack", "Meat Type"],
+          "attributes": ["Meat Type", "Brand", "Food Form"],
+          "aliases": ["lunch meat", "deli meat", "deli meats", "cold cuts", "sliced meat"],
+          "title_keywords": ["lunch meat", "deli meat", "cold cuts", "sliced turkey", "sliced ham", "sliced chicken", "roast beef deli meat"],
+          "context_keywords": ["sandwich meat", "pre sliced", "deli slices", "refrigerated meat"],
+          "negative_keywords": ["fresh turkey", "fresh chicken", "fresh beef", "bacon", "sausage", "jerky", "canned meat"]
+        },
+        "sausages_hot_dogs": {
+          "display_name": "Sausages & Hot Dogs",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Condition", "Sausage And Hot Dog Type"],
+          "aliases": ["sausage", "sausages", "hot dog", "hot dogs", "frank", "franks", "bratwurst", "links"],
+          "title_keywords": ["sausages", "sausage", "hot dogs", "hot dog", "franks", "bratwurst", "smoked sausage", "breakfast sausage", "sausage links"],
+          "context_keywords": ["refrigerated sausage", "fully cooked", "links", "grill", "beef franks"],
+          "negative_keywords": ["jerky", "meat sticks", "bacon", "lunch meat", "deli meat", "fresh pork", "fresh chicken"]
+        },
+        "bacon": {
+          "display_name": "Bacon",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Size Descriptor", "Meat Type"],
+          "aliases": ["bacon", "pork bacon", "turkey bacon"],
+          "title_keywords": ["bacon", "pork bacon", "turkey bacon", "thick cut bacon", "center cut bacon", "fully cooked bacon"],
+          "context_keywords": ["smoked bacon", "sliced bacon", "refrigerated bacon", "uncured bacon"],
+          "negative_keywords": ["bacon bits", "bacon jerky", "pork belly", "sausage", "hot dogs", "lunch meat", "fresh pork"]
+        }
+      }
+    },
+  
+    "prepared_frozen_foods": {
+      "display_name": "Prepared & Frozen Foods",
+      "product_types": {
+        "pancakes": {
+          "display_name": "Pancakes",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Brand", "Nutrition Facts Label"],
+          "aliases": ["pancake", "pancakes", "frozen pancakes"],
+          "title_keywords": ["pancakes", "pancake", "frozen pancakes", "mini pancakes", "buttermilk pancakes"],
+          "context_keywords": ["breakfast", "heat and serve", "microwave pancakes", "frozen breakfast"],
+          "negative_keywords": ["waffles", "french toast", "pancake mix", "pancake syrup", "protein pancakes mix"]
+        },
+        "frozen_vegetables": {
+          "display_name": "Frozen Vegetables",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "FSMA Traceability"],
+          "attributes": ["Fsma Section 204 Traceability", "Nutrition Facts Label", "Ingredient List Image"],
+          "aliases": ["frozen vegetable", "frozen vegetables", "frozen veggies"],
+          "title_keywords": ["frozen vegetables", "frozen vegetable", "frozen veggies", "frozen broccoli", "frozen peas", "frozen corn", "frozen mixed vegetables"],
+          "context_keywords": ["steamable bag", "microwave vegetables", "vegetable blend", "frozen produce"],
+          "negative_keywords": ["frozen fruit", "fresh vegetables", "canned vegetables", "dried vegetables", "cauliflower rice"]
+        },
+        "corn_dogs": {
+          "display_name": "Corn Dogs",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Condition", "Nutrition Facts Label"],
+          "aliases": ["corn dog", "corn dogs", "mini corn dogs"],
+          "title_keywords": ["corn dogs", "corn dog", "mini corn dogs", "frozen corn dogs"],
+          "context_keywords": ["breaded hot dog", "frozen snack", "heat and serve", "state fair style"],
+          "negative_keywords": ["hot dogs", "corn bread", "corn chips", "corn kernels"]
+        },
+        "frozen_fruits": {
+          "display_name": "Frozen Fruits",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "FSMA Traceability", "Nutrition Label", "Ingredient List Image"],
+          "attributes": ["Fsma Section 204 Traceability", "Nutrition Facts Label", "Ingredient List Image"],
+          "aliases": ["frozen fruit", "frozen fruits", "frozen berries"],
+          "title_keywords": ["frozen fruit", "frozen fruits", "frozen berries", "frozen strawberries", "frozen blueberries", "frozen mango", "smoothie fruit"],
+          "context_keywords": ["smoothie blend", "frozen produce", "fruit blend", "no sugar added"],
+          "negative_keywords": ["frozen vegetables", "fresh fruit", "canned fruit", "dried fruit", "fruit snacks"]
+        },
+        "packaged_meals": {
+          "display_name": "Packaged Meals",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Condition", "Packaged Meal Type"],
+          "aliases": ["packaged meal", "packaged meals", "frozen meal", "ready meal", "microwave meal"],
+          "title_keywords": ["packaged meal", "packaged meals", "frozen meal", "microwave meal", "ready meal", "frozen dinner", "entree"],
+          "context_keywords": ["heat and eat", "single serve meal", "meal bowl", "ready to heat"],
+          "negative_keywords": ["meal kit", "side dish", "pizza", "sushi", "sandwich", "pasta noodles rice"]
+        },
+        "sushi": {
+          "display_name": "Sushi",
+          "formula": ["Brand", "Food Condition", "Food Form", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Brand", "Food Form"],
+          "aliases": ["sushi", "sushi roll", "sushi rolls"],
+          "title_keywords": ["sushi", "sushi roll", "sushi rolls", "california roll", "spicy tuna roll", "sushi tray"],
+          "context_keywords": ["ready to eat", "refrigerated sushi", "roll combo", "with soy sauce"],
+          "negative_keywords": ["sushi rice", "seaweed snacks", "fish roe", "frozen meal"]
+        },
+        "pizza_bites": {
+          "display_name": "Pizza Bites",
+          "formula": ["Brand", "Flavor", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Food Condition"],
+          "aliases": ["pizza bites", "pizza bite", "pizza rolls", "pizza snacks"],
+          "title_keywords": ["pizza bites", "pizza bite", "pizza rolls", "pizza snacks", "pepperoni pizza bites", "cheese pizza bites"],
+          "context_keywords": ["frozen snack", "bite size pizza", "snack rolls", "microwave snack"],
+          "negative_keywords": ["pizza", "pizza crust", "pizza sauce", "bagel bites", "appetizers"]
+        },
+        "sandwiches_filled_rolls_wraps": {
+          "display_name": "Sandwiches, Filled Rolls & Wraps",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Condition", "Food Form"],
+          "aliases": ["sandwich", "sandwiches", "filled rolls", "wraps", "filled wraps"],
+          "title_keywords": ["sandwiches", "sandwich", "breakfast sandwich", "filled rolls", "wraps", "chicken wrap", "frozen sandwich"],
+          "context_keywords": ["ready to eat", "heat and serve", "refrigerated sandwich", "frozen sandwich"],
+          "negative_keywords": ["tortillas", "wraps bakery", "deli meat", "hot dogs", "appetizers"]
+        },
+        "packaged_appetizers": {
+          "display_name": "Packaged Appetizers",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Condition", "Food Form"],
+          "aliases": ["packaged appetizer", "packaged appetizers", "frozen appetizer", "appetizers"],
+          "title_keywords": ["packaged appetizers", "packaged appetizer", "frozen appetizers", "mozzarella sticks", "jalapeno poppers", "potato skins", "spring rolls"],
+          "context_keywords": ["party appetizers", "heat and serve", "finger food", "shareable"],
+          "negative_keywords": ["sandwiches", "pizza bites", "packaged meals", "side dishes", "snack chips"]
+        },
+        "meal_kits": {
+          "display_name": "Meal Kits",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Condition", "Flavor"],
+          "aliases": ["meal kit", "meal kits", "dinner kit", "recipe kit"],
+          "title_keywords": ["meal kit", "meal kits", "dinner kit", "recipe kit", "taco kit", "stir fry kit"],
+          "context_keywords": ["ready to cook", "ingredients included", "complete meal", "family meal kit"],
+          "negative_keywords": ["packaged meal", "frozen dinner", "side dish", "taco shells", "seasoning kit"]
+        },
+        "savory_pies_quiches": {
+          "display_name": "Savory Pies & Quiches",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Brand", "Size"],
+          "aliases": ["savory pie", "savory pies", "quiche", "quiches", "pot pie"],
+          "title_keywords": ["savory pies", "savory pie", "quiche", "quiches", "pot pie", "chicken pot pie", "mini quiche"],
+          "context_keywords": ["frozen entree", "savory pastry", "heat and serve", "refrigerated quiche"],
+          "negative_keywords": ["sweet pie", "bakery pie", "fruit pie", "pizza", "pie crust"]
+        },
+        "bread_stuffing": {
+          "display_name": "Bread Stuffing",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["bread stuffing", "stuffing", "stuffing mix", "dressing mix"],
+          "title_keywords": ["bread stuffing", "stuffing", "stuffing mix", "cornbread stuffing", "herb stuffing", "turkey stuffing"],
+          "context_keywords": ["holiday side", "seasoned bread cubes", "stove top", "thanksgiving"],
+          "negative_keywords": ["croutons", "bread crumbs", "salad dressing", "stuffed peppers"]
+        },
+        "packaged_side_dishes": {
+          "display_name": "Packaged Side Dishes",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Condition", "Fsma Section 204 Traceability"],
+          "aliases": ["packaged side dish", "packaged side dishes", "side dish", "side dishes"],
+          "title_keywords": ["packaged side dishes", "packaged side dish", "side dish", "side dishes", "mashed potatoes", "macaroni side dish", "rice side dish"],
+          "context_keywords": ["heat and serve", "ready side", "microwave side", "family side"],
+          "negative_keywords": ["packaged meal", "meal kit", "pasta", "rice", "frozen vegetables", "stuffing"]
+        },
+        "waffles": {
+          "display_name": "Waffles",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Food Condition"],
+          "aliases": ["waffle", "waffles", "frozen waffles"],
+          "title_keywords": ["waffles", "waffle", "frozen waffles", "belgian waffles", "homestyle waffles", "mini waffles"],
+          "context_keywords": ["toaster waffles", "breakfast", "frozen breakfast", "heat and serve"],
+          "negative_keywords": ["pancakes", "french toast", "waffle cones", "wafer cookies", "waffle mix"]
+        },
+        "french_toast": {
+          "display_name": "French Toast",
+          "formula": ["Brand", "Flavor", "Food Form", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Flavor", "Food Form", "Ingredient List Image"],
+          "aliases": ["french toast", "french toast sticks"],
+          "title_keywords": ["french toast", "french toast sticks", "frozen french toast", "cinnamon french toast"],
+          "context_keywords": ["breakfast", "heat and serve", "toaster sticks", "frozen breakfast"],
+          "negative_keywords": ["pancakes", "waffles", "toast bread", "texas toast", "french bread"]
+        },
+        "pizza": {
+          "display_name": "Pizza",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Brand", "Fsma Section 204 Traceability"],
+          "aliases": ["pizza", "frozen pizza", "refrigerated pizza"],
+          "title_keywords": ["pizza", "frozen pizza", "refrigerated pizza", "pepperoni pizza", "cheese pizza", "thin crust pizza", "rising crust pizza"],
+          "context_keywords": ["whole pizza", "family size", "bake and serve", "frozen entree"],
+          "negative_keywords": ["pizza bites", "pizza rolls", "pizza crust", "pizza sauce", "bagel bites"]
+        }
+      }
+    },
+    "seafood": {
+      "display_name": "Seafood",
+      "product_types": {
+        "clams": {
+          "display_name": "Clams",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Food Form", "Brand"],
+          "aliases": ["clam", "clams", "clam meat", "clam meats"],
+          "title_keywords": ["clams", "clam", "clam meat", "chopped clams", "whole clams", "littleneck clams", "steamer clams"],
+          "context_keywords": ["shellfish", "mollusk", "shucked clams", "fresh clams", "frozen clams", "clam strips"],
+          "negative_keywords": ["clam chowder", "clam sauce", "clam dip", "canned clams", "scallops", "oysters", "mussels", "shrimp", "crab", "lobster", "fish", "fresh meat", "beef", "chicken", "pork"]
+        },
+        "scallops": {
+          "display_name": "Scallops",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Brand", "Size"],
+          "aliases": ["scallop", "scallops", "sea scallop", "sea scallops", "bay scallop", "bay scallops"],
+          "title_keywords": ["scallops", "scallop", "sea scallops", "bay scallops", "jumbo scallops", "wild caught scallops"],
+          "context_keywords": ["shellfish", "mollusk", "fresh scallops", "frozen scallops", "dry scallops", "diver scallops"],
+          "negative_keywords": ["potato scallops", "scalloped potatoes", "clams", "oysters", "mussels", "shrimp", "crab", "lobster", "fish", "fresh meat", "beef", "chicken", "pork"]
+        },
+        "lobster": {
+          "display_name": "Lobster",
+          "formula": ["Brand", "Food Condition", "Food Form", "Product/Type", "Key Feature", "Count/Pack", "FSMA Traceability"],
+          "attributes": ["Food Condition", "Fsma Section 204 Traceability", "Food Form"],
+          "aliases": ["lobster", "lobsters", "lobster tail", "lobster tails", "lobster meat"],
+          "title_keywords": ["lobster", "lobster tail", "lobster tails", "lobster meat", "whole lobster", "maine lobster"],
+          "context_keywords": ["shellfish", "fresh lobster", "frozen lobster", "cooked lobster", "raw lobster", "claw meat", "knuckle meat"],
+          "negative_keywords": ["lobster bisque", "lobster ravioli", "lobster mac", "lobster dip", "imitation lobster", "crab", "imitation crab", "shrimp", "prawns", "clams", "mussels", "oysters", "scallops", "fresh meat", "beef", "chicken", "pork"]
+        },
+        "fresh_frozen_seafood": {
+          "display_name": "Fresh & Frozen Seafood",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Food Form", "Brand"],
+          "aliases": ["fresh seafood", "frozen seafood", "seafood", "seafood mix", "seafood medley"],
+          "title_keywords": ["fresh seafood", "frozen seafood", "seafood mix", "seafood medley", "mixed seafood", "seafood blend"],
+          "context_keywords": ["fresh", "frozen", "assorted seafood", "shellfish mix", "seafood assortment", "raw seafood", "cooked seafood"],
+          "negative_keywords": ["clams", "clam", "scallops", "scallop", "lobster", "shrimp", "prawns", "prawn", "crab", "fish", "oysters", "oyster", "smoked fish", "dried fish", "imitation crab", "surimi", "mussels", "mussel", "canned seafood", "canned tuna", "canned salmon", "sardines", "anchovies", "seafood dip", "seafood spread", "fresh meat", "beef", "chicken", "pork"]
+        },
+        "dried_fish": {
+          "display_name": "Dried Fish",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Brand", "Texture"],
+          "aliases": ["dried fish", "dry fish", "dehydrated fish", "salted fish"],
+          "title_keywords": ["dried fish", "dry fish", "dehydrated fish", "salted fish", "dried cod", "dried anchovies", "bonito flakes"],
+          "context_keywords": ["dried seafood", "salt dried", "stockfish", "fish flakes", "fish jerky", "preserved fish"],
+          "negative_keywords": ["fresh fish", "frozen fish", "smoked fish", "canned fish", "fish sauce", "fish sticks", "fish fillets", "fish roe", "seafood snack", "beef jerky", "turkey jerky", "pork", "chicken"]
+        },
+        "shrimp_prawns": {
+          "display_name": "Shrimp & Prawns",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Brand", "Shellfish Cut"],
+          "aliases": ["shrimp", "shrimps", "prawn", "prawns", "shrimp prawns"],
+          "title_keywords": ["shrimp", "prawns", "prawn", "jumbo shrimp", "raw shrimp", "cooked shrimp", "peeled shrimp", "tail on shrimp"],
+          "context_keywords": ["shellfish", "fresh shrimp", "frozen shrimp", "deveined shrimp", "shell on shrimp", "ez peel", "white shrimp", "pink shrimp"],
+          "negative_keywords": ["shrimp cocktail sauce", "shrimp chips", "shrimp dip", "shrimp ramen", "shrimp scampi meal", "clams", "mussels", "oysters", "scallops", "crab", "lobster", "fish", "fresh meat", "beef", "chicken", "pork"]
+        },
+        "crab": {
+          "display_name": "Crab",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Crab Type"],
+          "attributes": ["Crab Type", "Shellfish Cut", "Food Condition"],
+          "aliases": ["crab", "crabs", "crab meat", "crab legs", "crab claws"],
+          "title_keywords": ["crab", "crab meat", "crab legs", "crab claws", "snow crab", "king crab", "lump crab", "blue crab"],
+          "context_keywords": ["shellfish", "fresh crab", "frozen crab", "dungeness crab", "stone crab", "claw meat", "backfin crab"],
+          "negative_keywords": ["imitation crab", "surimi", "krab", "crab cake", "crab cakes", "crab dip", "crab rangoon", "crab salad", "canned crab", "lobster", "shrimp", "prawns", "clams", "mussels", "oysters", "scallops", "fish", "fresh meat", "beef", "chicken", "pork"]
+        },
+        "fish": {
+          "display_name": "Fish",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack", "Fish Species"],
+          "attributes": ["Fish Species", "Food Condition", "Brand"],
+          "aliases": ["fish", "fresh fish", "frozen fish", "fish fillet", "fish fillets"],
+          "title_keywords": ["fish", "fish fillet", "fish fillets", "salmon", "tuna steak", "cod", "tilapia", "halibut", "catfish", "trout"],
+          "context_keywords": ["fresh fish", "frozen fish", "wild caught", "farm raised", "fillet", "portion", "steak", "mahi mahi", "snapper", "haddock"],
+          "negative_keywords": ["smoked fish", "dried fish", "fish sauce", "fish sticks", "fish fillets breaded", "breaded fish", "canned tuna", "canned salmon", "sardines", "anchovies", "fish roe", "seafood dip", "shrimp", "prawns", "crab", "imitation crab", "lobster", "clams", "mussels", "oysters", "scallops", "fresh meat", "beef", "chicken", "pork"]
+        },
+        "oysters": {
+          "display_name": "Oysters",
+          "formula": ["Brand", "Food Form", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Form", "Food Condition", "Container Type"],
+          "aliases": ["oyster", "oysters", "oyster meat", "shucked oysters"],
+          "title_keywords": ["oysters", "oyster", "shucked oysters", "oyster meat", "fresh oysters", "raw oysters"],
+          "context_keywords": ["shellfish", "mollusk", "half shell", "in shell oysters", "pacific oysters", "east coast oysters"],
+          "negative_keywords": ["oyster sauce", "oyster crackers", "smoked oysters", "canned oysters", "clam", "clams", "mussels", "scallops", "shrimp", "crab", "lobster", "fish", "fresh meat", "beef", "chicken", "pork"]
+        },
+        "smoked_fish": {
+          "display_name": "Smoked Fish",
+          "formula": ["Brand", "Flavor", "Product/Type", "Key Feature", "Count/Pack", "Fish Species"],
+          "attributes": ["Fish Species", "Flavor", "Brand"],
+          "aliases": ["smoked fish", "smoked salmon", "smoked trout", "smoked whitefish"],
+          "title_keywords": ["smoked fish", "smoked salmon", "smoked trout", "smoked whitefish", "lox", "nova salmon"],
+          "context_keywords": ["hot smoked", "cold smoked", "smokehouse", "ready to eat", "salmon lox", "smoked fillet"],
+          "negative_keywords": ["fresh fish", "frozen fish", "dried fish", "canned smoked fish", "smoked oysters", "smoked mussels", "smoked sausage", "smoked ham", "beef", "chicken", "pork", "fish sauce", "fish sticks"]
+        },
+        "imitation_crab": {
+          "display_name": "Imitation Crab",
+          "formula": ["Brand", "Food Form", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Food Form", "Food Condition"],
+          "aliases": ["imitation crab", "surimi", "krab", "crab stick", "crab sticks"],
+          "title_keywords": ["imitation crab", "surimi", "krab", "crab sticks", "crab stick", "imitation crab meat", "seafood sticks"],
+          "context_keywords": ["pollock", "formed seafood", "flake style", "chunk style", "leg style", "seafood extender"],
+          "negative_keywords": ["real crab", "snow crab", "king crab", "lump crab", "crab legs", "crab claws", "crab cakes", "lobster", "shrimp", "prawns", "clams", "mussels", "oysters", "scallops", "fish fillets", "fresh meat", "beef", "chicken", "pork"]
+        },
+        "mussels": {
+          "display_name": "Mussels",
+          "formula": ["Brand", "Food Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Food Condition", "Manufacturer", "Container Type"],
+          "aliases": ["mussel", "mussels", "mussel meat"],
+          "title_keywords": ["mussels", "mussel", "mussel meat", "fresh mussels", "frozen mussels", "black mussels", "green mussels"],
+          "context_keywords": ["shellfish", "mollusk", "in shell mussels", "half shell mussels", "cooked mussels", "rope grown"],
+          "negative_keywords": ["smoked mussels", "canned mussels", "mussel sauce", "clams", "oysters", "scallops", "shrimp", "crab", "lobster", "fish", "fresh meat", "beef", "chicken", "pork"]
+        }
+      }
+    },
+    "snack_foods": {
+      "display_name": "Snack Foods (All Crisps, Fruity Snack & Shelf Puddings)",
+      "product_types": {
+        "pork_rinds": {
+          "display_name": "Pork Rinds",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["pork rind", "pork rinds", "chicharrones", "pork skins"],
+          "title_keywords": ["pork rinds", "pork rind", "chicharrones", "pork skins", "fried pork skins", "cracklins"],
+          "context_keywords": ["crispy pork", "keto snack", "low carb snack", "seasoned pork rinds", "crunchy pork skins"],
+          "negative_keywords": ["pork roast", "pork chops", "bacon", "jerky", "meat sticks", "chips", "pretzels", "popcorn", "crackers", "party mix"]
+        },
+        "fruit_leathers": {
+          "display_name": "Fruit Leathers",
+          "formula": ["Brand", "Product Line", "Fruit Type", "Product/Type", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Fruit Type", "Size"],
+          "aliases": ["fruit leather", "fruit leathers", "fruit strip", "fruit strips", "fruit roll"],
+          "title_keywords": ["fruit leather", "fruit leathers", "fruit strips", "fruit strip", "fruit rolls", "fruit tape"],
+          "context_keywords": ["pressed fruit", "organic fruit leather", "strawberry fruit leather", "apple fruit strip", "lunchbox snack"],
+          "negative_keywords": ["fruit snacks", "gummies", "gummy candy", "dried fruit", "fruit chips", "fruit bars", "granola bars", "breakfast bars", "candy"]
+        },
+        "food_gift_assortments": {
+          "display_name": "Food Gift Assortments",
+          "formula": ["Brand", "Product Line", "Product/Type", "Size", "Count/Pack", "Food Gift Assortment Type"],
+          "attributes": ["Food Gift Assortment Type", "Brand", "Container Type"],
+          "aliases": ["food gift assortment", "food gift assortments", "gift basket", "snack gift box", "food gift box"],
+          "title_keywords": ["food gift assortment", "gift basket", "snack gift basket", "food gift box", "gourmet gift box", "snack assortment gift"],
+          "context_keywords": ["gift set", "assorted snacks", "holiday gift", "gourmet assortment", "care package", "sampler box"],
+          "negative_keywords": ["snack box", "variety pack", "multipack", "party mix", "trail mix", "candy box", "chocolate gift", "frozen meal", "meal kit"]
+        },
+        "dried_vegetables": {
+          "display_name": "Dried Vegetables",
+          "formula": ["Brand", "Product Line", "Vegetable Type", "Food Form", "Food Condition", "Product/Type", "Size", "Count/Pack"],
+          "attributes": ["Vegetable Type", "Food Form", "Food Condition"],
+          "aliases": ["dried vegetable", "dried vegetables", "dehydrated vegetables", "vegetable chips"],
+          "title_keywords": ["dried vegetables", "dried vegetable", "dehydrated vegetables", "vegetable chips", "dried mushrooms", "dried tomatoes"],
+          "context_keywords": ["dehydrated", "freeze dried vegetables", "veggie chips", "crispy vegetables", "dried peas", "dried carrots"],
+          "negative_keywords": ["seaweed", "seaweed snacks", "dried fruit", "fruit chips", "fresh vegetables", "frozen vegetables", "canned vegetables", "vegetable crackers", "potato chips", "tortilla chips"]
+        },
+        "snack_crackers": {
+          "display_name": "Snack Crackers",
+          "formula": ["Brand", "Product Line", "Product/Type", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Snack Cracker Type", "Flavor"],
+          "aliases": ["snack cracker", "snack crackers", "crackers", "cracker snacks"],
+          "title_keywords": ["snack crackers", "crackers", "cheese crackers", "wheat crackers", "butter crackers", "sandwich crackers"],
+          "context_keywords": ["crispy crackers", "baked crackers", "cracker packs", "snack packs", "whole grain crackers", "mini crackers"],
+          "negative_keywords": ["graham crackers", "animal crackers", "rice cakes", "chips", "pretzels", "popcorn", "party mix", "cracker crust", "breakfast biscuits", "cookies", "candy"]
+        },
+        "rice_cakes": {
+          "display_name": "Rice Cakes",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["rice cake", "rice cakes", "mini rice cakes", "rice crisps"],
+          "title_keywords": ["rice cakes", "rice cake", "mini rice cakes", "caramel rice cakes", "white cheddar rice cakes", "rice crisps"],
+          "context_keywords": ["puffed rice", "light snack", "crispy rice", "gluten free snack", "whole grain rice cakes"],
+          "negative_keywords": ["rice crackers", "rice chips", "rice cereal", "rice krispies", "snack crackers", "popcorn cakes", "chips", "pretzels", "cookies"]
+        },
+        "party_mixes": {
+          "display_name": "Party Mixes",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Multipack Quantity"],
+          "aliases": ["party mix", "party mixes", "snack mix", "snack mixes", "pub mix"],
+          "title_keywords": ["party mix", "party mixes", "snack mix", "pub mix", "chex mix", "trail snack mix", "savory snack mix"],
+          "context_keywords": ["assorted snack mix", "pretzels crackers mix", "cheese snack mix", "bold party blend", "share size"],
+          "negative_keywords": ["snack box", "food gift assortment", "trail mix bars", "granola", "cereal", "nuts only", "chips", "popcorn", "pretzels only", "crackers only"]
+        },
+        "snack_pudding_gelatin": {
+          "display_name": "Snack Pudding & Gelatin",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Size", "Count/Pack", "Snack Pudding And Gelatin Type"],
+          "attributes": ["Flavor", "Brand", "Snack Pudding And Gelatin Type"],
+          "aliases": ["snack pudding", "snack gelatin", "pudding cups", "gelatin cups", "jello cups"],
+          "title_keywords": ["snack pudding", "pudding cups", "gelatin cups", "jello cups", "chocolate pudding cups", "fruit gelatin cups"],
+          "context_keywords": ["shelf stable pudding", "ready to eat pudding", "lunchbox dessert", "gel snack", "pudding snack pack"],
+          "negative_keywords": ["pudding mix", "gelatin mix", "instant pudding", "refrigerated pudding", "frozen dessert", "yogurt", "custard", "candy", "fruit snacks"]
+        },
+        "fruit_snacks": {
+          "display_name": "Fruit Snacks",
+          "formula": ["Brand", "Product Line", "Product/Type", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["fruit snack", "fruit snacks", "fruit gummies", "gummy fruit snacks"],
+          "title_keywords": ["fruit snacks", "fruit snack", "fruit gummies", "gummy fruit snacks", "mixed fruit snacks", "fruit flavored snacks"],
+          "context_keywords": ["lunchbox snack", "pouches", "made with real fruit", "assorted fruit flavors", "kids snack"],
+          "negative_keywords": ["fruit leather", "fruit strips", "dried fruit", "fruit chips", "gummy candy", "candy", "fruit cups", "fruit bars", "breakfast bars"]
+        },
+        "puffed_snacks": {
+          "display_name": "Puffed Snacks",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Puffed Snack Type"],
+          "aliases": ["puffed snack", "puffed snacks", "cheese puffs", "corn puffs", "puff snacks"],
+          "title_keywords": ["puffed snacks", "puffed snack", "cheese puffs", "corn puffs", "puffcorn", "veggie puffs", "pea puffs"],
+          "context_keywords": ["baked puffs", "crunchy puffs", "cheddar puffs", "puffed corn snack", "plant based puffs"],
+          "negative_keywords": ["potato chips", "tortilla chips", "pretzels", "popcorn", "rice cakes", "snack crackers", "cereal", "cheese curls frozen", "puff pastry"]
+        },
+        "pretzels": {
+          "display_name": "Pretzels",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Flavor", "Size"],
+          "aliases": ["pretzel", "pretzels", "pretzel sticks", "pretzel twists"],
+          "title_keywords": ["pretzels", "pretzel", "pretzel sticks", "pretzel twists", "mini pretzels", "pretzel rods", "sourdough pretzels"],
+          "context_keywords": ["salted pretzels", "hard pretzels", "snack pretzels", "gluten free pretzels", "seasoned pretzels"],
+          "negative_keywords": ["soft pretzels frozen", "pretzel buns", "pretzel rolls", "pretzel chips", "chips", "party mix", "crackers", "popcorn", "candy coated pretzels"]
+        },
+        "dried_fruits": {
+          "display_name": "Dried Fruits",
+          "formula": ["Brand", "Product Line", "Fruit Type", "Product/Type", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Fruit Type", "Food Form"],
+          "aliases": ["dried fruit", "dried fruits", "dehydrated fruit", "fruit chips"],
+          "title_keywords": ["dried fruit", "dried fruits", "raisins", "dried cranberries", "dried mango", "dried apricots", "banana chips"],
+          "context_keywords": ["dehydrated fruit", "freeze dried fruit", "unsweetened dried fruit", "fruit pieces", "snacking fruit"],
+          "negative_keywords": ["fruit snacks", "fruit leather", "fruit strips", "fresh fruit", "frozen fruit", "canned fruit", "fruit cups", "trail mix", "granola", "candy"]
+        },
+        "popcorns": {
+          "display_name": "Popcorns",
+          "formula": ["Brand", "Product Line", "Flavor", "Product/Type", "Size", "Count/Pack", "Popcorn Type"],
+          "attributes": ["Brand", "Flavor", "Popcorn Type"],
+          "aliases": ["popcorn", "popcorns", "popped popcorn", "microwave popcorn", "kettle corn"],
+          "title_keywords": ["popcorn", "popped popcorn", "microwave popcorn", "kettle corn", "butter popcorn", "cheddar popcorn", "caramel popcorn"],
+          "context_keywords": ["ready to eat popcorn", "movie theater butter", "popcorn kernels", "snack popcorn", "share size", "mini bags"],
+          "negative_keywords": ["corn chips", "puffcorn", "puffed snacks", "rice cakes", "pretzels", "chips", "party mix", "popcorn chicken", "popcorn shrimp", "cereal"]
+        },
+        "seaweed_sea_vegetables": {
+          "display_name": "Seaweed & Sea Vegetables",
+          "formula": ["Brand", "Product Line", "Product/Type", "Size", "Count/Pack", "Seaweed And Sea Vegetable Type"],
+          "attributes": ["Brand", "Seaweed And Sea Vegetable Type", "Food Form"],
+          "aliases": ["seaweed", "seaweed snack", "seaweed snacks", "sea vegetable", "sea vegetables"],
+          "title_keywords": ["seaweed snacks", "seaweed snack", "seaweed", "roasted seaweed", "nori snacks", "sea vegetables"],
+          "context_keywords": ["roasted nori", "seasoned seaweed", "seaweed sheets", "kelp snack", "wakame", "dulse"],
+          "negative_keywords": ["dried vegetables", "vegetable chips", "sushi nori sheets", "sushi rice", "fish", "seafood", "seaweed salad refrigerated", "chips", "crackers"]
+        },
+        "snack_boxes": {
+          "display_name": "Snack Boxes",
+          "formula": ["Brand", "Product Line", "Food Condition", "Product/Type", "Size", "Count/Pack"],
+          "attributes": ["Food Condition", "Brand", "Food Form"],
+          "aliases": ["snack box", "snack boxes", "snack pack box", "snack variety box", "lunch snack box"],
+          "title_keywords": ["snack box", "snack boxes", "snack variety box", "snack pack box", "lunchbox snack box", "variety snack box"],
+          "context_keywords": ["assorted snacks", "multipack snacks", "lunchbox packs", "individual snack packs", "variety pack box"],
+          "negative_keywords": ["food gift assortment", "gift basket", "party mix", "meal kit", "frozen snack", "prepared meal", "candy box", "protein snack box", "breakfast variety pack"]
+        },
+        "snack_chips": {
+          "display_name": "Snack Chips",
+          "formula": ["Brand AND/OR Product Line", "Nutrient Content Claims AND/OR Third Party Accreditation Symbol on Product Package Code", "Flavor", "Product Type", "Snack Chip Type", "Retail Packaging", "Size", "Count Per Pack", "Container Type", "(X \"Packs of\" OR \"Boxes of\" Y)"],
+          "attributes": ["Brand", "Snack Chip Type", "Flavor"],
+          "aliases": ["snack chip", "snack chips", "chips", "crisps", "potato chips", "tortilla chips"],
+          "title_keywords": ["chips", "snack chips", "potato chips", "tortilla chips", "kettle chips", "corn chips", "pita chips", "crisps"],
+          "context_keywords": ["party size", "family size", "wavy chips", "ridged chips", "sea salt chips", "nacho cheese chips", "restaurant style tortilla chips"],
+          "negative_keywords": ["puffed snacks", "cheese puffs", "pretzels", "popcorn", "rice cakes", "snack crackers", "vegetable chips", "fruit chips", "pork rinds", "chip dip", "chocolate chips", "baking chips", "frozen chips", "fish and chips", "cereal", "granola", "candy"]
+        }
+      }
     }
   }
 }
