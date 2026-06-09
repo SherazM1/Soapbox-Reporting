@@ -19,33 +19,31 @@ def _safe_text(value: Any) -> str:
 def _replace_runs_preserve_style(paragraph: Any, replacements: dict[str, str]) -> None:
     """Replace placeholders while keeping existing run formatting when possible."""
     if not getattr(paragraph, "runs", None):
-        text = paragraph.text
-        replaced = _replace_text(text, replacements)
-        if replaced != text:
-            paragraph.text = replaced
         return
-
-    replaced_any_run = False
-    for run in paragraph.runs:
-        original = run.text
-        replaced = _replace_text(original, replacements)
-        if replaced != original:
-            run.text = replaced
-            replaced_any_run = True
-
+    
+    # Get the full paragraph text
     paragraph_text = "".join(run.text for run in paragraph.runs)
-    if replaced_any_run and not _contains_placeholder(paragraph_text, replacements):
+    
+    # Check if any placeholder exists in the paragraph
+    matched_token = None
+    for token in replacements.keys():
+        if token in paragraph_text:
+            matched_token = token
+            break
+    
+    if matched_token is None:
         return
-
-    # PowerPoint can split a placeholder across several runs. In that case,
-    # replace at paragraph level and keep the first run's style for the result.
-    replaced_text = _replace_text(paragraph_text, replacements)
-    if replaced_text == paragraph_text:
-        return
-
-    paragraph.runs[0].text = replaced_text
-    for run in paragraph.runs[1:]:
-        run.text = ""
+    
+    # Replace the placeholder in the paragraph text
+    new_text = paragraph_text.replace(matched_token, replacements[matched_token])
+    
+    # Clear all runs and set the new text in the first run with original styling
+    if paragraph.runs:
+        first_run = paragraph.runs[0]
+        first_run.text = new_text
+        # Clear all other runs
+        for run in paragraph.runs[1:]:
+            run.text = ""
 
 
 def _replace_text(text: str, replacements: dict[str, str]) -> str:
@@ -212,24 +210,6 @@ def _find_or_create_picture(slide: Any, left: float, top: float, width: float, h
         pass
 
 
-def _populate_slide4_image_grid(slide: Any, positions: list[tuple[float, float, float, float]], image_urls: list[str]) -> None:
-    """
-    Populate image grid on slide with images from URLs.
-    Respects the provided positions list (up to 12 grid cells).
-    """
-    for grid_idx, (left, top, width, height) in enumerate(positions[:12]):
-        if grid_idx >= len(image_urls):
-            break
-        
-        url = image_urls[grid_idx]
-        if not url:
-            continue
-        
-        image_bytes = _load_image_from_url(url)
-        if image_bytes:
-            _find_or_create_picture(slide, left, top, width, height, image_bytes)
-
-
 def _find_slide_by_title_text(prs: Any, title_text: str) -> Any:
     """Find and return a slide object by its title text."""
     for slide in prs.slides:
@@ -246,6 +226,105 @@ def _find_shape_by_name(slide: Any, shape_name: str) -> Any:
         if hasattr(shape, "name") and shape_name in shape.name:
             return shape
     return None
+
+
+def _find_grid_areas_on_slide4(slide: Any) -> tuple[Any, Any, Any]:
+    """
+    Find the three image grid areas on Slide 4.
+    
+    Tries to find named shapes first:
+    - slide4_client_image_grid
+    - slide4_competitor_1_image_grid
+    - slide4_competitor_2_image_grid
+    
+    Falls back to finding placeholder rectangles by position/size heuristics.
+    Returns: (client_grid, competitor1_grid, competitor2_grid) or (None, None, None)
+    """
+    client_grid = _find_shape_by_name(slide, "slide4_client_image_grid")
+    comp1_grid = _find_shape_by_name(slide, "slide4_competitor_1_image_grid")
+    comp2_grid = _find_shape_by_name(slide, "slide4_competitor_2_image_grid")
+    
+    if client_grid and comp1_grid and comp2_grid:
+        return client_grid, comp1_grid, comp2_grid
+    
+    # Fallback: find rectangles that are likely image grids
+    # Typical layout: 3 grids side-by-side, each about same size
+    rectangles = []
+    for shape in slide.shapes:
+        if shape.shape_type == MSO_SHAPE.RECTANGLE or (hasattr(shape, "shape_type") and "RECTANGLE" in str(shape.shape_type)):
+            # Only consider shapes that are likely image grids (reasonable size)
+            if hasattr(shape, "left") and hasattr(shape, "top"):
+                rectangles.append(shape)
+    
+    # Sort by left position to find 3 columns
+    rectangles.sort(key=lambda s: s.left if hasattr(s, "left") else 0)
+    
+    if len(rectangles) >= 3:
+        return rectangles[0], rectangles[1], rectangles[2]
+    
+    return None, None, None
+
+
+def _clear_pictures_in_shape(shape: Any) -> None:
+    """Remove all picture shapes from within a shape or near its bounds."""
+    if not shape or not hasattr(shape, "left") or not hasattr(shape, "top"):
+        return
+    
+    # Get the shape's bounding box
+    shape_left = shape.left
+    shape_top = shape.top
+    shape_right = shape.left + shape.width if hasattr(shape, "width") else shape_left + Inches(2)
+    shape_bottom = shape.top + shape.height if hasattr(shape, "height") else shape_top + Inches(3)
+    
+    # Find and remove pictures within this area
+    parent = shape.parent if hasattr(shape, "parent") else None
+    if parent and hasattr(parent, "shapes"):
+        shapes_to_remove = []
+        for s in parent.shapes:
+            # Check if this is a picture
+            if hasattr(s, "image") or "picture" in str(s.shape_type).lower():
+                # Check if it's within or overlaps the grid bounds
+                if hasattr(s, "left") and hasattr(s, "top"):
+                    if (s.left >= shape_left - Inches(0.1) and 
+                        s.left <= shape_right + Inches(0.1) and
+                        s.top >= shape_top - Inches(0.1) and
+                        s.top <= shape_bottom + Inches(0.1)):
+                        shapes_to_remove.append(s)
+        
+        # Remove marked pictures
+        for s in shapes_to_remove:
+            sp = s.element
+            sp.getparent().remove(sp)
+
+
+def _populate_slide4_image_grid_in_bounds(slide: Any, grid_shape: Any, image_urls: list[str]) -> None:
+    """
+    Populate image grid on slide with images from URLs, respecting the grid shape bounds.
+    """
+    if not grid_shape or not hasattr(grid_shape, "left") or not hasattr(grid_shape, "top"):
+        return
+    
+    # Get grid bounds
+    grid_left = grid_shape.left.inches if hasattr(grid_shape.left, "inches") else grid_shape.left
+    grid_top = grid_shape.top.inches if hasattr(grid_shape.top, "inches") else grid_shape.top
+    grid_width = grid_shape.width.inches if hasattr(grid_shape.width, "inches") else grid_shape.width
+    grid_height = grid_shape.height.inches if hasattr(grid_shape.height, "inches") else grid_shape.height
+    
+    # Calculate grid positions (3 cols x 4 rows)
+    positions = _calculate_grid_positions(grid_left, grid_top, grid_width, grid_height, cols=3, rows=4, gutter=0.1)
+    
+    # Add images
+    for grid_idx, (left, top, width, height) in enumerate(positions[:12]):
+        if grid_idx >= len(image_urls):
+            break
+        
+        url = image_urls[grid_idx]
+        if not url:
+            continue
+        
+        image_bytes = _load_image_from_url(url)
+        if image_bytes:
+            _find_or_create_picture(slide, left, top, width, height, image_bytes)
 
 
 def build_slide4_pdp_benchmark_payload(export_plan: dict, competitor_records: list[dict[str, Any]] | None = None) -> dict[str, Any]:
@@ -314,69 +393,31 @@ def _apply_slide4_placeholders(slide: Any, payload: dict[str, Any]) -> None:
 
 def _apply_slide4_images(slide: Any, payload: dict[str, Any]) -> None:
     """
-    Populate Slide 4 image grids.
+    Populate Slide 4 image grids using existing grid areas.
     
-    Attempts to find named shapes for image grids:
-    - slide4_client_image_grid
-    - slide4_competitor_1_image_grid
-    - slide4_competitor_2_image_grid
-    
-    Falls back to hardcoded positions if shapes not found.
+    Finds existing grid shapes/areas and populates them with images.
+    Clears existing sample images first.
     """
-    # Try to find named shapes first
-    client_shape = _find_shape_by_name(slide, "slide4_client_image_grid")
-    comp1_shape = _find_shape_by_name(slide, "slide4_competitor_1_image_grid")
-    comp2_shape = _find_shape_by_name(slide, "slide4_competitor_2_image_grid")
+    # Find the three image grid areas
+    client_grid, comp1_grid, comp2_grid = _find_grid_areas_on_slide4(slide)
     
-    # Fallback positions if named shapes not found (3 columns, 4 rows each grid)
-    # These are estimated based on typical Slide 4 layout: 3 grids side-by-side
-    fallback_positions = {
-        "client": _calculate_grid_positions(0.5, 1.5, 2.0, 3.0, cols=3, rows=4),
-        "competitor1": _calculate_grid_positions(2.7, 1.5, 2.0, 3.0, cols=3, rows=4),
-        "competitor2": _calculate_grid_positions(4.9, 1.5, 2.0, 3.0, cols=3, rows=4),
-    }
+    # Clear existing pictures in each grid area
+    for grid in [client_grid, comp1_grid, comp2_grid]:
+        if grid:
+            _clear_pictures_in_shape(grid)
     
-    # Populate client images
-    if client_shape and getattr(client_shape, "left", None) is not None:
-        positions = _calculate_grid_positions(
-            client_shape.left.inches,
-            client_shape.top.inches,
-            client_shape.width.inches,
-            client_shape.height.inches,
-        )
-    else:
-        positions = fallback_positions["client"]
+    # Populate each grid with images
+    if client_grid:
+        client_images = payload.get("slide4_client_images", []) or []
+        _populate_slide4_image_grid_in_bounds(slide, client_grid, client_images)
     
-    client_images = payload.get("slide4_client_images", []) or []
-    _populate_slide4_image_grid(slide, positions, client_images)
+    if comp1_grid:
+        comp1_images = payload.get("slide4_competitor_1_images", []) or []
+        _populate_slide4_image_grid_in_bounds(slide, comp1_grid, comp1_images)
     
-    # Populate competitor 1 images
-    if comp1_shape and getattr(comp1_shape, "left", None) is not None:
-        positions = _calculate_grid_positions(
-            comp1_shape.left.inches,
-            comp1_shape.top.inches,
-            comp1_shape.width.inches,
-            comp1_shape.height.inches,
-        )
-    else:
-        positions = fallback_positions["competitor1"]
-    
-    comp1_images = payload.get("slide4_competitor_1_images", []) or []
-    _populate_slide4_image_grid(slide, positions, comp1_images)
-    
-    # Populate competitor 2 images
-    if comp2_shape and getattr(comp2_shape, "left", None) is not None:
-        positions = _calculate_grid_positions(
-            comp2_shape.left.inches,
-            comp2_shape.top.inches,
-            comp2_shape.width.inches,
-            comp2_shape.height.inches,
-        )
-    else:
-        positions = fallback_positions["competitor2"]
-    
-    comp2_images = payload.get("slide4_competitor_2_images", []) or []
-    _populate_slide4_image_grid(slide, positions, comp2_images)
+    if comp2_grid:
+        comp2_images = payload.get("slide4_competitor_2_images", []) or []
+        _populate_slide4_image_grid_in_bounds(slide, comp2_grid, comp2_images)
 
 
 
