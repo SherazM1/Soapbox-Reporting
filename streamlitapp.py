@@ -2054,6 +2054,16 @@ def render_audit_powerpoint_export_v2() -> None:
         ["Current Audit Template", "New Strategic Template"],
         key="audit_template_version",
     )
+    
+    # Slide 9 option for new strategic template
+    include_slide_9 = False
+    if template_version == "New Strategic Template":
+        include_slide_9 = st.checkbox(
+            "Include Slide 9 (Walmart Cash Program Visibility)",
+            value=False,
+            key="audit_include_slide_9",
+        )
+    
     try:
         if template_version == "New Strategic Template":
             template_path = os.path.join("templates", "Audit_Template_New.pptx")
@@ -2068,9 +2078,12 @@ def render_audit_powerpoint_export_v2() -> None:
     if st.button("Generate Audit PowerPoint", key="audit_v2_generate_ppt", type="primary"):
         try:
             if template_version == "New Strategic Template":
+                competitor_records = st.session_state.get("audit_competitor_entries", []) or []
                 ppt_bytes = generate_new_audit_powerpoint_from_template(
                     export_plan=plan,
                     template_path=template_path,
+                    include_slide_9=include_slide_9,
+                    competitor_records=competitor_records,
                 )
             else:
                 ppt_bytes = generate_audit_powerpoint_from_template(
