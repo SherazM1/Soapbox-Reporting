@@ -6,7 +6,6 @@ from urllib.request import urlopen
 
 from pptx import Presentation
 from pptx.util import Inches, Pt
-from pptx.enum.shapes import MSO_SHAPE
 
 from audit_powerpoint import _format_cover_date
 
@@ -62,30 +61,59 @@ def _replace_paragraph_text_preserve_style(paragraph: Any, text: str) -> None:
         paragraph.text = _safe_text(text)
 
 
-def _replace_placeholder_in_shape(shape: Any, placeholder: str, replacement: str) -> bool:
-    """
-    Replace a placeholder string in a shape with a replacement value.
-    Only replaces if the placeholder actually exists in the shape.
-    Returns True if replacement was made.
-    """
-    if not shape or not getattr(shape, "has_text_frame", False):
-        return False
-    
-    tf = shape.text_frame
-    for paragraph in tf.paragraphs:
-        if placeholder in paragraph.text:
-            new_text = paragraph.text.replace(placeholder, replacement)
-            _replace_paragraph_text_preserve_style(paragraph, new_text)
-            return True
-    
-    return False
+def _replace_text_in_paragraph(paragraph: Any, replacements: dict[str, str]) -> dict[str, int]:
+    """Replace template text within a paragraph without creating new shapes."""
+    counts = {target: 0 for target in replacements}
+    if not paragraph:
+        return counts
+
+    for run in getattr(paragraph, "runs", []) or []:
+        run_text = run.text or ""
+        if not run_text:
+            continue
+        new_text = run_text
+        for target, replacement in replacements.items():
+            found = new_text.count(target)
+            if found:
+                counts[target] += found
+                new_text = new_text.replace(target, replacement)
+        if new_text != run_text:
+            run.text = new_text
+
+    paragraph_text = paragraph.text or ""
+    if not any(target in paragraph_text for target in replacements):
+        return counts
+
+    new_text = paragraph_text
+    for target, replacement in replacements.items():
+        found = new_text.count(target)
+        if found:
+            counts[target] += found
+            new_text = new_text.replace(target, replacement)
+
+    _replace_paragraph_text_preserve_style(paragraph, new_text)
+    return counts
+
+
+def _merge_counts(total: dict[str, int], increment: dict[str, int]) -> None:
+    for target, count in increment.items():
+        total[target] = total.get(target, 0) + int(count or 0)
+
+
+def _walk_shapes(shapes: Any) -> list[Any]:
+    found = []
+    for shape in shapes:
+        found.append(shape)
+        if hasattr(shape, "shapes"):
+            found.extend(_walk_shapes(shape.shapes))
+    return found
 
 
 def _find_slide_by_title(prs: Any, title_text: str) -> Any:
     """Find a slide by searching for title text in any shape."""
     title_l = title_text.lower()
     for slide in prs.slides:
-        for shape in slide.shapes:
+        for shape in _walk_shapes(slide.shapes):
             text = _shape_text(shape).lower()
             if title_l in text:
                 return slide
@@ -100,7 +128,7 @@ def _remove_slide_by_title(prs: Any, title_text: str) -> bool:
     title_l = title_text.lower()
     slide_idx = None
     for idx, slide in enumerate(prs.slides):
-        for shape in slide.shapes:
+        for shape in _walk_shapes(slide.shapes):
             text = _shape_text(shape).lower()
             if title_l in text:
                 slide_idx = idx
@@ -117,21 +145,28 @@ def _remove_slide_by_title(prs: Any, title_text: str) -> bool:
     return False
 
 
-def _apply_all_replacements_to_slide(slide: Any, replacements: dict[str, str]) -> None:
-    """Apply all placeholder replacements to all shapes in a slide."""
-    for shape in slide.shapes:
-        if getattr(shape, "has_text_frame", False):
-            for placeholder, replacement in replacements.items():
-                _replace_placeholder_in_shape(shape, placeholder, replacement)
-        # Also handle text in tables
-        if getattr(shape, "has_table", False):
-            for row in shape.table.rows:
-                for cell in row.cells:
-                    for placeholder, replacement in replacements.items():
+def replace_existing_template_text(prs: Any, replacements: dict[str, str]) -> dict[str, int]:
+    """
+    Replace existing template strings in-place across slides, groups, and tables.
+    Returns a replacement count by target string for debug reporting.
+    """
+    counts = {target: 0 for target in replacements}
+    for slide in prs.slides:
+        for shape in _walk_shapes(slide.shapes):
+            if getattr(shape, "has_text_frame", False):
+                for paragraph in shape.text_frame.paragraphs:
+                    _merge_counts(counts, _replace_text_in_paragraph(paragraph, replacements))
+            if getattr(shape, "has_table", False):
+                for row in shape.table.rows:
+                    for cell in row.cells:
                         for paragraph in cell.text_frame.paragraphs:
-                            if placeholder in paragraph.text:
-                                new_text = paragraph.text.replace(placeholder, replacement)
-                                _replace_paragraph_text_preserve_style(paragraph, new_text)
+                            _merge_counts(counts, _replace_text_in_paragraph(paragraph, replacements))
+    for target in replacements:
+        if counts.get(target, 0):
+            print(f"[audit_powerpoint_new] Replaced '{target}' {counts[target]} time(s).")
+        else:
+            print(f"[audit_powerpoint_new] Template text '{target}' was not found.")
+    return counts
 
 
 def _find_pictures_in_region(slide: Any, region_left: float, region_top: float, region_right: float, region_bottom: float) -> list[Any]:
@@ -384,8 +419,16 @@ def _apply_slide4_placeholders(slide: Any, payload: dict[str, Any]) -> None:
         "{{slide4_competitor_1_label}}": payload.get("slide4_competitor_1_label", ""),
         "{{slide4_competitor_2_label}}": payload.get("slide4_competitor_2_label", ""),
     }
-    
-    _apply_all_replacements_to_slide(slide, replacements)
+
+    for shape in _walk_shapes(slide.shapes):
+        if getattr(shape, "has_text_frame", False):
+            for paragraph in shape.text_frame.paragraphs:
+                _replace_text_in_paragraph(paragraph, replacements)
+        if getattr(shape, "has_table", False):
+            for row in shape.table.rows:
+                for cell in row.cells:
+                    for paragraph in cell.text_frame.paragraphs:
+                        _replace_text_in_paragraph(paragraph, replacements)
 
 
 def _apply_slide4_images(slide: Any, payload: dict[str, Any]) -> None:
@@ -604,36 +647,18 @@ def generate_new_audit_powerpoint_from_template(
     client_name = _safe_text(metadata.get("client_name", ""))
     client_company_name = _safe_text(metadata.get("client_company_name", "")) or client_name
     audit_date = _format_cover_date(_safe_text(metadata.get("audit_date", "")))
-    retailer = _safe_text(metadata.get("retailer", ""))
     
     # Handle Slide 9 removal if not included
     if not include_slide_9:
         _remove_slide_by_title(prs, "Walmart Cash Program Visibility")
     
-    # Global replacements
-    global_replacements = {
-        "{{client_name}}": client_name,
-        "{{client_company_name}}": client_company_name,
-        "{{audit_date}}": audit_date,
-        "{{retailer}}": retailer,
+    # Existing template strings are the replacement targets. Do not require manual placeholders.
+    template_replacements = {
+        "The Honest Company": client_company_name,
+        "May 27, 2026": audit_date,
+        "Honest": client_name,
     }
-    
-    # Add Slide 2 placeholders
-    slide2_payload = build_slide2_summary_payload(export_plan)
-    global_replacements.update(slide2_payload)
-    
-    # Process all slides for placeholder replacement (text only)
-    for slide in prs.slides:
-        _apply_all_replacements_to_slide(slide, global_replacements)
-    
-    # Populate Slide 4 with labels (text replacement)
-    slide4 = _find_slide_by_title(prs, "PDP Content Benchmarking")
-    if slide4:
-        slide4_payload = build_slide4_pdp_benchmark_payload(
-            export_plan, competitor_records=competitor_records or []
-        )
-        _apply_slide4_placeholders(slide4, slide4_payload)
-        _apply_slide4_images(slide4, slide4_payload)
+    replace_existing_template_text(prs, template_replacements)
     
     out = io.BytesIO()
     prs.save(out)
