@@ -1,0 +1,6309 @@
+{
+  "category": "Furniture",
+  "status": "partial",
+  "source": "FurnitureContentStyleGuide.pdf",
+  "families": {
+    "bed_furniture": {
+      "display_name": "Bed Furniture",
+      "product_types": {
+        "other_bedroom_furniture": {
+          "display_name": "Other Bedroom Furniture",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Product/Type",
+            "Key Feature",
+            "Size",
+            "Number of Pieces",
+            "Count Per Pack"
+          ],
+          "attributes": [
+            "Number Of Pieces",
+            "Count Per Pack",
+            "Multipack Quantity"
+          ],
+          "aliases": [
+            "other bedroom furniture",
+            "bedroom furniture",
+            "bedroom accessory",
+            "other",
+            "bedroom",
+            "furniture"
+          ],
+          "title_keywords": [
+            "other bedroom furniture",
+            "bedroom furniture",
+            "bedroom accessory",
+            "other",
+            "bedroom",
+            "furniture"
+          ],
+          "context_keywords": [
+            "bedroom accessory",
+            "other",
+            "bedroom",
+            "furniture"
+          ],
+          "negative_keywords": [
+            "bed frame",
+            "bed",
+            "mattress",
+            "headboard",
+            "bunk bed"
+          ]
+        },
+        "bed_frames": {
+          "display_name": "Bed Frames",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Assembled Product Height",
+            "Features4",
+            "Bed Frame Type",
+            "\",\"",
+            "Bed Size"
+          ],
+          "attributes": [
+            "Bed Size",
+            "Brand",
+            "Bed Frame Type"
+          ],
+          "aliases": [
+            "bed frame",
+            "bed frames",
+            "platform frame",
+            "bed",
+            "frames"
+          ],
+          "title_keywords": [
+            "bed frame",
+            "bed frames",
+            "platform frame",
+            "bed",
+            "frames"
+          ],
+          "context_keywords": [
+            "platform frame",
+            "bed",
+            "frames"
+          ],
+          "negative_keywords": [
+            "bed",
+            "headboard",
+            "footboard",
+            "mattress",
+            "box spring"
+          ]
+        },
+        "bed_headboards_footboards": {
+          "display_name": "Bed Headboards & Footboards",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Bed Size",
+            "Home Decor Style4",
+            "Bed Headboards & Footboards Type",
+            "Headboard Style5",
+            "Footboard Style6",
+            "\",\"",
+            "Color7"
+          ],
+          "attributes": [
+            "Bed Size",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "bed headboards and footboard",
+            "bed headboards and footboards",
+            "headboard",
+            "footboard",
+            "bed headboard",
+            "bed",
+            "headboards"
+          ],
+          "title_keywords": [
+            "bed headboards and footboard",
+            "bed headboards and footboards",
+            "headboard",
+            "footboard",
+            "bed headboard",
+            "bed",
+            "headboards",
+            "and",
+            "footboards"
+          ],
+          "context_keywords": [
+            "headboard",
+            "footboard",
+            "bed headboard",
+            "bed",
+            "headboards",
+            "and",
+            "footboards"
+          ],
+          "negative_keywords": [
+            "bed frame",
+            "bed",
+            "mattress",
+            "bed slats"
+          ]
+        },
+        "bed_slats": {
+          "display_name": "Bed Slats",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Slat Width",
+            "Features1",
+            "Product Type",
+            "\",\"",
+            "Bed Size"
+          ],
+          "attributes": [
+            "Bed Size",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "bed slat",
+            "bed slats",
+            "wood slats",
+            "replacement slats",
+            "bed",
+            "slats"
+          ],
+          "title_keywords": [
+            "bed slat",
+            "bed slats",
+            "wood slats",
+            "replacement slats",
+            "bed",
+            "slats"
+          ],
+          "context_keywords": [
+            "wood slats",
+            "replacement slats",
+            "bed",
+            "slats"
+          ],
+          "negative_keywords": [
+            "bed frame",
+            "bunkie board",
+            "box spring",
+            "headboard"
+          ]
+        },
+        "bunkie_boards": {
+          "display_name": "Bunkie Boards",
+          "formula": [
+            "Brand",
+            "Assembled Product Height",
+            "Material",
+            "Features1",
+            "\"Bunkie Board\"",
+            "\",\"",
+            "Bed Size"
+          ],
+          "attributes": [
+            "Inflex Kit Component",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "bunkie board",
+            "bunkie boards",
+            "bunky board",
+            "bunkie",
+            "boards"
+          ],
+          "title_keywords": [
+            "bunkie board",
+            "bunkie boards",
+            "bunky board",
+            "bunkie",
+            "boards"
+          ],
+          "context_keywords": [
+            "bunky board",
+            "bunkie",
+            "boards"
+          ],
+          "negative_keywords": [
+            "bed slats",
+            "box spring",
+            "mattress",
+            "bed frame"
+          ]
+        },
+        "beds": {
+          "display_name": "Beds",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Bed Size",
+            "Home Décor Style4",
+            "Material/Wood Type5/Wood Tone5",
+            "Bed Type6/\"Platform\"/\"Poster\"",
+            "\"with\" Items Included7",
+            "\",\"",
+            "Color8"
+          ],
+          "attributes": [
+            "Bed Size",
+            "Age Group",
+            "Bed Type"
+          ],
+          "aliases": [
+            "bed",
+            "beds",
+            "platform bed",
+            "poster bed"
+          ],
+          "title_keywords": [
+            "bed",
+            "beds",
+            "platform bed",
+            "poster bed"
+          ],
+          "context_keywords": [
+            "platform bed",
+            "poster bed"
+          ],
+          "negative_keywords": [
+            "bed frame",
+            "bunk bed",
+            "loft bed",
+            "daybed",
+            "mattress"
+          ]
+        },
+        "box_springs": {
+          "display_name": "Box Springs",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Assembled Product Height",
+            "Features3",
+            "Bed Size",
+            "Box Spring Type"
+          ],
+          "attributes": [
+            "Bed Size",
+            "Box Spring Type",
+            "Brand"
+          ],
+          "aliases": [
+            "box spring",
+            "box springs",
+            "mattress foundation",
+            "box",
+            "springs"
+          ],
+          "title_keywords": [
+            "box spring",
+            "box springs",
+            "mattress foundation",
+            "box",
+            "springs"
+          ],
+          "context_keywords": [
+            "mattress foundation",
+            "box",
+            "springs"
+          ],
+          "negative_keywords": [
+            "mattress",
+            "bunkie board",
+            "bed slats",
+            "bed frame"
+          ]
+        },
+        "bunk_beds": {
+          "display_name": "Bunk Beds",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Frame Material",
+            "Bed Size",
+            "Bunk Bed Type",
+            "\"with\" Items Included4",
+            "Color5"
+          ],
+          "attributes": [
+            "Bed Size",
+            "Brand",
+            "Color"
+          ],
+          "aliases": [
+            "bunk bed",
+            "bunk beds",
+            "bunk",
+            "beds"
+          ],
+          "title_keywords": [
+            "bunk bed",
+            "bunk beds",
+            "bunk",
+            "beds"
+          ],
+          "context_keywords": [
+            "bunk",
+            "beds"
+          ],
+          "negative_keywords": [
+            "loft bed",
+            "daybed",
+            "bed frame",
+            "mattress"
+          ]
+        },
+        "daybeds": {
+          "display_name": "Daybeds",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Home Décor Style1",
+            "Frame Material",
+            "Features4",
+            "Bed Size",
+            "Bed Type",
+            "\"with\" Items Included4",
+            "Color5"
+          ],
+          "attributes": [
+            "Bed Size",
+            "Brand",
+            "Has Trundle"
+          ],
+          "aliases": [
+            "daybed",
+            "daybeds",
+            "day bed",
+            "trundle daybed"
+          ],
+          "title_keywords": [
+            "daybed",
+            "daybeds",
+            "day bed",
+            "trundle daybed"
+          ],
+          "context_keywords": [
+            "day bed",
+            "trundle daybed"
+          ],
+          "negative_keywords": [
+            "bunk bed",
+            "loft bed",
+            "sofa",
+            "futon"
+          ]
+        },
+        "loft_beds": {
+          "display_name": "Loft Beds",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Home Décor Style1",
+            "Frame Material",
+            "Features4",
+            "Bed Size",
+            "Bed Type",
+            "\"with\" Items Included4",
+            "Color5"
+          ],
+          "attributes": [
+            "Bed Size",
+            "Brand",
+            "Color"
+          ],
+          "aliases": [
+            "loft bed",
+            "loft beds",
+            "loft",
+            "beds"
+          ],
+          "title_keywords": [
+            "loft bed",
+            "loft beds",
+            "loft",
+            "beds"
+          ],
+          "context_keywords": [
+            "loft",
+            "beds"
+          ],
+          "negative_keywords": [
+            "bunk bed",
+            "daybed",
+            "bed frame",
+            "mattress"
+          ]
+        },
+        "mattress_sets": {
+          "display_name": "Mattress Sets",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Mattress Comfort Level",
+            "Mattress Top Type",
+            "Features4",
+            "Bed Size",
+            "Mattress Type",
+            "\"with\" Items Included4"
+          ],
+          "attributes": [
+            "Bed Size",
+            "Brand",
+            "Box Spring Type"
+          ],
+          "aliases": [
+            "mattress set",
+            "mattress sets",
+            "mattress and box spring",
+            "mattress",
+            "sets"
+          ],
+          "title_keywords": [
+            "mattress set",
+            "mattress sets",
+            "mattress and box spring",
+            "mattress",
+            "sets"
+          ],
+          "context_keywords": [
+            "mattress and box spring",
+            "mattress",
+            "sets"
+          ],
+          "negative_keywords": [
+            "mattress only",
+            "box spring",
+            "bed frame",
+            "bedding set"
+          ]
+        },
+        "mattresses": {
+          "display_name": "Mattresses",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Mattress Thickness",
+            "Features4",
+            "Bed Size",
+            "Mattress Comfort Level",
+            "Mattress Top Type",
+            "Mattress Type",
+            "\"with\" Items Included4"
+          ],
+          "attributes": [
+            "Bed Size",
+            "Age Group",
+            "Mattress Type"
+          ],
+          "aliases": [
+            "mattresse",
+            "mattresses",
+            "mattress",
+            "memory foam mattress"
+          ],
+          "title_keywords": [
+            "mattresse",
+            "mattresses",
+            "mattress",
+            "memory foam mattress"
+          ],
+          "context_keywords": [
+            "mattress",
+            "memory foam mattress"
+          ],
+          "negative_keywords": [
+            "mattress set",
+            "box spring",
+            "mattress topper",
+            "bed frame"
+          ]
+        }
+      }
+    },
+    "indoor_furniture_sets": {
+      "display_name": "Indoor Furniture Sets",
+      "product_types": {
+        "play_furniture_sets": {
+          "display_name": "Play Furniture Sets",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Product/Type",
+            "Material",
+            "Color",
+            "Size",
+            "Count/Pack",
+            "Recommended Location"
+          ],
+          "attributes": [
+            "Brand",
+            "Recommended Location",
+            "Color Category"
+          ],
+          "aliases": [
+            "play furniture set",
+            "play furniture sets",
+            "kids furniture set",
+            "play",
+            "furniture",
+            "sets"
+          ],
+          "title_keywords": [
+            "play furniture set",
+            "play furniture sets",
+            "kids furniture set",
+            "play",
+            "furniture",
+            "sets"
+          ],
+          "context_keywords": [
+            "kids furniture set",
+            "play",
+            "furniture",
+            "sets"
+          ],
+          "negative_keywords": [
+            "bedroom set",
+            "living room set",
+            "dining set"
+          ]
+        },
+        "bedroom_furniture_sets": {
+          "display_name": "Bedroom Furniture Sets",
+          "formula": [
+            "Brand",
+            "Global Brand License1",
+            "Product Line1",
+            "Collection1",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Piece Count \"-Piece\"",
+            "Age Group2",
+            "Home Décor Style1",
+            "Material",
+            "Bed Size1",
+            "Bedroom Furniture Set Type",
+            "Color",
+            "Pattern1"
+          ],
+          "attributes": [
+            "Bed Size",
+            "Brand",
+            "Bed Type"
+          ],
+          "aliases": [
+            "bedroom furniture set",
+            "bedroom furniture sets",
+            "bedroom set",
+            "bedroom",
+            "furniture",
+            "sets"
+          ],
+          "title_keywords": [
+            "bedroom furniture set",
+            "bedroom furniture sets",
+            "bedroom set",
+            "bedroom",
+            "furniture",
+            "sets"
+          ],
+          "context_keywords": [
+            "bedroom set",
+            "bedroom",
+            "furniture",
+            "sets"
+          ],
+          "negative_keywords": [
+            "bed frame",
+            "mattress set",
+            "living room set",
+            "dining set"
+          ]
+        },
+        "dining_furniture_sets": {
+          "display_name": "Dining Furniture Sets",
+          "formula": [
+            "Brand",
+            "Global Brand License1",
+            "Product Line1",
+            "Collection1",
+            "Piece Count \"Piece\"",
+            "Age Group2",
+            "Home Decor Style1",
+            "Theme1",
+            "Material",
+            "Features1",
+            "Dining Furniture Set Type",
+            "Color3/Top Color3/Base Color3/Leg Color3"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Seating Capacity",
+            "Piece Count"
+          ],
+          "aliases": [
+            "dining furniture set",
+            "dining furniture sets",
+            "dining set",
+            "table and chairs",
+            "dining",
+            "furniture",
+            "sets"
+          ],
+          "title_keywords": [
+            "dining furniture set",
+            "dining furniture sets",
+            "dining set",
+            "table and chairs",
+            "dining",
+            "furniture",
+            "sets"
+          ],
+          "context_keywords": [
+            "dining set",
+            "table and chairs",
+            "dining",
+            "furniture",
+            "sets"
+          ],
+          "negative_keywords": [
+            "living room set",
+            "bedroom set",
+            "bar stool",
+            "single dining chair"
+          ]
+        },
+        "living_room_furniture_sets": {
+          "display_name": "Living Room Furniture Sets",
+          "formula": [
+            "Brand",
+            "Global Brand License1",
+            "Product Line1",
+            "Collection1",
+            "Piece Count \"Piece\"",
+            "Age Group2",
+            "Home Decor Style1",
+            "Theme1",
+            "Material",
+            "Features1",
+            "Living Room Furniture Set Type",
+            "Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Living Room Furniture Set Type",
+            "Items Included"
+          ],
+          "aliases": [
+            "living room furniture set",
+            "living room furniture sets",
+            "sofa set",
+            "living",
+            "room",
+            "furniture",
+            "sets"
+          ],
+          "title_keywords": [
+            "living room furniture set",
+            "living room furniture sets",
+            "sofa set",
+            "living",
+            "room",
+            "furniture",
+            "sets"
+          ],
+          "context_keywords": [
+            "sofa set",
+            "living",
+            "room",
+            "furniture",
+            "sets"
+          ],
+          "negative_keywords": [
+            "living room table set",
+            "sectional sofa",
+            "bedroom set",
+            "dining set"
+          ]
+        },
+        "living_room_table_sets": {
+          "display_name": "Living Room Table Sets",
+          "formula": [
+            "Brand",
+            "Global Brand License1",
+            "Product Line1",
+            "Collection1",
+            "Piece Count \"Piece\"",
+            "Age Group2",
+            "Home Decor Style1",
+            "Theme1",
+            "Features1",
+            "Items Included1",
+            "\"Table Set\"",
+            "Color",
+            "Pattern1"
+          ],
+          "attributes": [
+            "Brand",
+            "Color",
+            "Vanity Table And Table And Bench Set Type"
+          ],
+          "aliases": [
+            "living room table set",
+            "living room table sets",
+            "coffee table set",
+            "end table set",
+            "living",
+            "room",
+            "table"
+          ],
+          "title_keywords": [
+            "living room table set",
+            "living room table sets",
+            "coffee table set",
+            "end table set",
+            "living",
+            "room",
+            "table",
+            "sets"
+          ],
+          "context_keywords": [
+            "coffee table set",
+            "end table set",
+            "living",
+            "room",
+            "table",
+            "sets"
+          ],
+          "negative_keywords": [
+            "living room furniture set",
+            "dining set",
+            "vanity set",
+            "single table"
+          ]
+        },
+        "modular_building_furniture_systems": {
+          "display_name": "Modular Building & Furniture Systems",
+          "formula": [
+            "Brand",
+            "Global Brand License1",
+            "Product Line1",
+            "Collection1",
+            "Age Group2",
+            "Features1",
+            "Number of Shelves \"Shelves\"1",
+            "Number of Tiers \"Tiers\"1",
+            "Number of Drawers \"Drawers\"1",
+            "Number of Compartments \"-Cube\"1",
+            "Number of Pieces",
+            "\"Pieces\"1",
+            "Home Decor Style1",
+            "Theme1",
+            "Material",
+            "Modular Building & Furniture System Type",
+            "\",\"",
+            "Items Included1",
+            "Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Piece Count",
+            "Color"
+          ],
+          "aliases": [
+            "modular building and furniture system",
+            "modular building and furniture systems",
+            "modular furniture system",
+            "cube storage system",
+            "modular storage organizer",
+            "modular",
+            "building"
+          ],
+          "title_keywords": [
+            "modular building and furniture system",
+            "modular building and furniture systems",
+            "modular furniture system",
+            "cube storage system",
+            "modular storage organizer",
+            "modular",
+            "building",
+            "and",
+            "furniture"
+          ],
+          "context_keywords": [
+            "modular furniture system",
+            "cube storage system",
+            "modular storage organizer",
+            "modular",
+            "building",
+            "and",
+            "furniture",
+            "systems"
+          ],
+          "negative_keywords": [
+            "play furniture set",
+            "living room table set",
+            "shelf unit",
+            "vanity set"
+          ]
+        },
+        "vanity_tables_table_bench_sets": {
+          "display_name": "Vanity Tables & Table & Bench Sets",
+          "formula": [
+            "Brand",
+            "Global Brand License1",
+            "Product Line1",
+            "Collection1",
+            "Piece Count \"Piece\"",
+            "Age Group2",
+            "Home Decor Style1",
+            "Theme1",
+            "Features1",
+            "Vanity Material",
+            "Mount Type",
+            "Vanity Table & Table & Bench Set Type",
+            "\",\"",
+            "Items Included1",
+            "Color",
+            "Pattern1"
+          ],
+          "attributes": [
+            "Color",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "vanity tables and table and bench set",
+            "vanity tables and table and bench sets",
+            "vanity set",
+            "vanity table and bench",
+            "makeup vanity set",
+            "vanity",
+            "tables"
+          ],
+          "title_keywords": [
+            "vanity tables and table and bench set",
+            "vanity tables and table and bench sets",
+            "vanity set",
+            "vanity table and bench",
+            "makeup vanity set",
+            "vanity",
+            "tables",
+            "and",
+            "table"
+          ],
+          "context_keywords": [
+            "vanity set",
+            "vanity table and bench",
+            "makeup vanity set",
+            "vanity",
+            "tables",
+            "and",
+            "table",
+            "bench",
+            "sets"
+          ],
+          "negative_keywords": [
+            "living room table set",
+            "desk",
+            "dining set",
+            "bench only"
+          ]
+        }
+      }
+    },
+    "indoor_seating_furniture": {
+      "display_name": "Indoor Seating Furniture",
+      "product_types": {
+        "armchairs_accent_chairs": {
+          "display_name": "Armchairs & Accent Chairs",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Home Decor Style1",
+            "Age Group3",
+            "Material",
+            "Features1",
+            "Pattern1",
+            "Chair Style",
+            "\"Chair\"",
+            "\"with\" Items Included1",
+            "\",\"",
+            "Color4",
+            "\"(\"",
+            "\"Set of \"",
+            "Piece Count5",
+            "\")\""
+          ],
+          "attributes": [
+            "Age Group",
+            "Brand",
+            "Color"
+          ],
+          "aliases": [
+            "armchairs and accent chair",
+            "armchairs and accent chairs",
+            "armchair",
+            "accent chair",
+            "armchairs",
+            "and",
+            "accent"
+          ],
+          "title_keywords": [
+            "armchairs and accent chair",
+            "armchairs and accent chairs",
+            "armchair",
+            "accent chair",
+            "armchairs",
+            "and",
+            "accent",
+            "chairs"
+          ],
+          "context_keywords": [
+            "armchair",
+            "accent chair",
+            "armchairs",
+            "and",
+            "accent",
+            "chairs"
+          ],
+          "negative_keywords": [
+            "desk chair",
+            "dining chair",
+            "recliner",
+            "sofa"
+          ]
+        },
+        "bar_stools": {
+          "display_name": "Bar Stools",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Seat Shape1",
+            "Features1",
+            "Seat Back Style",
+            "Product Type",
+            "\",\"",
+            "Color4",
+            "\"(\"",
+            "\"Set of \"",
+            "Piece Count",
+            "\")\"5"
+          ],
+          "attributes": [
+            "Material",
+            "Brand",
+            "Color"
+          ],
+          "aliases": [
+            "bar stool",
+            "bar stools",
+            "counter stool",
+            "bar",
+            "stools"
+          ],
+          "title_keywords": [
+            "bar stool",
+            "bar stools",
+            "counter stool",
+            "bar",
+            "stools"
+          ],
+          "context_keywords": [
+            "counter stool",
+            "bar",
+            "stools"
+          ],
+          "negative_keywords": [
+            "stool",
+            "dining chair",
+            "desk chair",
+            "bench"
+          ]
+        },
+        "bean_bag_chairs": {
+          "display_name": "Bean Bag Chairs",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Pattern1",
+            "Size Descriptor1",
+            "Features6",
+            "Seat Back Style7",
+            "Recommended Use6",
+            "Bean Bag Chair Type",
+            "\"with\" Items Included6",
+            "\",\"",
+            "Color4",
+            "\"(\"",
+            "\"Set of \"",
+            "Piece Count",
+            "\")\"5"
+          ],
+          "attributes": [
+            "Age Group",
+            "Brand",
+            "Bean Bag Chair Type"
+          ],
+          "aliases": [
+            "bean bag chair",
+            "bean bag chairs",
+            "beanbag chair",
+            "bean",
+            "bag",
+            "chairs"
+          ],
+          "title_keywords": [
+            "bean bag chair",
+            "bean bag chairs",
+            "beanbag chair",
+            "bean",
+            "bag",
+            "chairs"
+          ],
+          "context_keywords": [
+            "beanbag chair",
+            "bean",
+            "bag",
+            "chairs"
+          ],
+          "negative_keywords": [
+            "accent chair",
+            "gaming chair",
+            "sofa",
+            "pouf"
+          ]
+        },
+        "benches": {
+          "display_name": "Benches",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Shape7",
+            "Pattern1",
+            "Material",
+            "Home Decor Style1",
+            "Recommended Room1",
+            "\"Storage\"/\"Upholstered\"8",
+            "\"Bench\"",
+            "\"with\" Features6",
+            "\",\"",
+            "Color4",
+            "\"(\"",
+            "\"Set of \"",
+            "Piece Count",
+            "\")\"5"
+          ],
+          "attributes": [
+            "Brand",
+            "Color",
+            "Upholstered"
+          ],
+          "aliases": [
+            "benche",
+            "benches",
+            "bench",
+            "storage bench",
+            "upholstered bench"
+          ],
+          "title_keywords": [
+            "benche",
+            "benches",
+            "bench",
+            "storage bench",
+            "upholstered bench"
+          ],
+          "context_keywords": [
+            "bench",
+            "storage bench",
+            "upholstered bench"
+          ],
+          "negative_keywords": [
+            "vanity bench",
+            "stool",
+            "loveseat",
+            "outdoor bench"
+          ]
+        },
+        "chaises": {
+          "display_name": "Chaises",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Is Inflatable8",
+            "Age Group3",
+            "Home Decor Style1",
+            "Theme1",
+            "Pattern1",
+            "Seat Back Style",
+            "Material",
+            "Chaises Type",
+            "Features6",
+            "\",\"",
+            "Color4",
+            "\"(\"",
+            "\"Set of \"",
+            "Piece Count",
+            "\")\"5"
+          ],
+          "attributes": [
+            "Material",
+            "Brand",
+            "Chaise Type"
+          ],
+          "aliases": [
+            "chaise",
+            "chaises",
+            "chaise lounge"
+          ],
+          "title_keywords": [
+            "chaise",
+            "chaises",
+            "chaise lounge"
+          ],
+          "context_keywords": [
+            "chaise lounge"
+          ],
+          "negative_keywords": [
+            "sectional sofa",
+            "loveseat",
+            "daybed",
+            "recliner"
+          ]
+        },
+        "desk_chairs": {
+          "display_name": "Desk Chairs",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Material",
+            "Seat Back Style",
+            "Recommended Location1",
+            "Recommended Use1",
+            "Features6",
+            "Desk Chair Type",
+            "Items Included6",
+            "\",\"",
+            "Color4",
+            "\"(\"",
+            "\"Set of \"",
+            "Piece Count",
+            "\")\"5"
+          ],
+          "attributes": [
+            "Brand",
+            "Desk Chair Type",
+            "Age Group"
+          ],
+          "aliases": [
+            "desk chair",
+            "desk chairs",
+            "office chair",
+            "task chair",
+            "desk",
+            "chairs"
+          ],
+          "title_keywords": [
+            "desk chair",
+            "desk chairs",
+            "office chair",
+            "task chair",
+            "desk",
+            "chairs"
+          ],
+          "context_keywords": [
+            "office chair",
+            "task chair",
+            "desk",
+            "chairs"
+          ],
+          "negative_keywords": [
+            "gaming chair",
+            "dining chair",
+            "accent chair",
+            "reception chair"
+          ]
+        },
+        "dining_chairs": {
+          "display_name": "Dining Chairs",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Home Decor Style1",
+            "Age Group3",
+            "Theme1",
+            "Material",
+            "Pattern1",
+            "Dining Chair Type",
+            "\",\"",
+            "Color4",
+            "\"(\"",
+            "\"Set of \"",
+            "Piece Count",
+            "\")\"5"
+          ],
+          "attributes": [
+            "Brand",
+            "Material",
+            "Color"
+          ],
+          "aliases": [
+            "dining chair",
+            "dining chairs",
+            "kitchen chair",
+            "dining",
+            "chairs"
+          ],
+          "title_keywords": [
+            "dining chair",
+            "dining chairs",
+            "kitchen chair",
+            "dining",
+            "chairs"
+          ],
+          "context_keywords": [
+            "kitchen chair",
+            "dining",
+            "chairs"
+          ],
+          "negative_keywords": [
+            "desk chair",
+            "bar stool",
+            "dining set",
+            "accent chair"
+          ]
+        },
+        "folding_stacking_chairs": {
+          "display_name": "Folding & Stacking Chairs",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Home Decor Style1",
+            "Frame Material",
+            "Recommended Location1",
+            "Recommended Use1",
+            "Features6",
+            "Folding & Stacking Chairs",
+            "\",\"",
+            "Color4",
+            "\"(\"",
+            "\"Set of \"",
+            "Piece Count",
+            "\")\"5"
+          ],
+          "attributes": [
+            "Age Group",
+            "Brand",
+            "Frame Material"
+          ],
+          "aliases": [
+            "folding and stacking chair",
+            "folding and stacking chairs",
+            "folding chair",
+            "stacking chair",
+            "folding",
+            "and",
+            "stacking"
+          ],
+          "title_keywords": [
+            "folding and stacking chair",
+            "folding and stacking chairs",
+            "folding chair",
+            "stacking chair",
+            "folding",
+            "and",
+            "stacking",
+            "chairs"
+          ],
+          "context_keywords": [
+            "folding chair",
+            "stacking chair",
+            "folding",
+            "and",
+            "stacking",
+            "chairs"
+          ],
+          "negative_keywords": [
+            "dining chair",
+            "desk chair",
+            "outdoor chair",
+            "folding table"
+          ]
+        },
+        "futon_frames_sets": {
+          "display_name": "Futon Frames & Sets",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Home Decor Style1",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Pattern1",
+            "Frame Material",
+            "Bed Size",
+            "Features6",
+            "Futon Frame and Set Type",
+            "\"with\" Items Included6",
+            "\",\"",
+            "Color4"
+          ],
+          "attributes": [
+            "Brand",
+            "Color",
+            "Futon Frame And Set Type"
+          ],
+          "aliases": [
+            "futon frames and set",
+            "futon frames and sets",
+            "futon frame",
+            "futon set",
+            "futon",
+            "frames",
+            "and"
+          ],
+          "title_keywords": [
+            "futon frames and set",
+            "futon frames and sets",
+            "futon frame",
+            "futon set",
+            "futon",
+            "frames",
+            "and",
+            "sets"
+          ],
+          "context_keywords": [
+            "futon frame",
+            "futon set",
+            "futon",
+            "frames",
+            "and",
+            "sets"
+          ],
+          "negative_keywords": [
+            "futon pad",
+            "sofa",
+            "bed frame",
+            "mattress"
+          ]
+        },
+        "futon_pads": {
+          "display_name": "Futon Pads",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Pattern1",
+            "Mattress Thickness",
+            "Features6",
+            "Bed Size",
+            "Material",
+            "Futon Pad Type",
+            "\",\"",
+            "Color4"
+          ],
+          "attributes": [
+            "Brand",
+            "Bed Size",
+            "Color"
+          ],
+          "aliases": [
+            "futon pad",
+            "futon pads",
+            "futon mattress",
+            "futon",
+            "pads"
+          ],
+          "title_keywords": [
+            "futon pad",
+            "futon pads",
+            "futon mattress",
+            "futon",
+            "pads"
+          ],
+          "context_keywords": [
+            "futon mattress",
+            "futon",
+            "pads"
+          ],
+          "negative_keywords": [
+            "futon frame",
+            "mattress",
+            "seat cushion",
+            "sofa"
+          ]
+        },
+        "glider_rocking_chairs": {
+          "display_name": "Glider Rocking Chairs",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Home Decor Style1",
+            "Theme1",
+            "Material",
+            "Pattern1",
+            "Recommended Room1",
+            "Features6",
+            "Product Type",
+            "\"with\" Items Included6",
+            "\",\"",
+            "Color4"
+          ],
+          "attributes": [
+            "Age Group",
+            "Brand",
+            "Color"
+          ],
+          "aliases": [
+            "glider rocking chair",
+            "glider rocking chairs",
+            "glider chair",
+            "nursery glider",
+            "glider",
+            "rocking",
+            "chairs"
+          ],
+          "title_keywords": [
+            "glider rocking chair",
+            "glider rocking chairs",
+            "glider chair",
+            "nursery glider",
+            "glider",
+            "rocking",
+            "chairs"
+          ],
+          "context_keywords": [
+            "glider chair",
+            "nursery glider",
+            "glider",
+            "rocking",
+            "chairs"
+          ],
+          "negative_keywords": [
+            "rocking chair",
+            "recliner",
+            "accent chair",
+            "outdoor glider"
+          ]
+        },
+        "loveseats": {
+          "display_name": "Loveseats",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Is Inflatable8",
+            "Home Decor Style1",
+            "Age Group3",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Material",
+            "Pattern1",
+            "Features6",
+            "Sofa & Loveseat Type",
+            "\"with\" Item Included6",
+            "\",\"",
+            "Color4"
+          ],
+          "attributes": [
+            "Sofa And Loveseat Design",
+            "Brand",
+            "Age Group"
+          ],
+          "aliases": [
+            "loveseat",
+            "loveseats",
+            "love seat"
+          ],
+          "title_keywords": [
+            "loveseat",
+            "loveseats",
+            "love seat"
+          ],
+          "context_keywords": [
+            "love seat"
+          ],
+          "negative_keywords": [
+            "sofa",
+            "sectional",
+            "settee",
+            "chair"
+          ]
+        },
+        "reception_chairs_seating": {
+          "display_name": "Reception Chairs & Seating",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Theme1",
+            "Material",
+            "Pattern1",
+            "Recommended Location1",
+            "Recommended Room1",
+            "Recommended Use1",
+            "Features6",
+            "Chair Style",
+            "Items Included6",
+            "\",\"",
+            "Color4",
+            "\"(\"",
+            "\"Set of\"",
+            "Piece Count",
+            "\")\"5"
+          ],
+          "attributes": [
+            "Reception Chair And Seating Type",
+            "Multipack Quantity",
+            "Brand"
+          ],
+          "aliases": [
+            "reception chairs and seating",
+            "reception chair",
+            "waiting room chair",
+            "reception",
+            "chairs",
+            "and",
+            "seating"
+          ],
+          "title_keywords": [
+            "reception chairs and seating",
+            "reception chair",
+            "waiting room chair",
+            "reception",
+            "chairs",
+            "and",
+            "seating"
+          ],
+          "context_keywords": [
+            "waiting room chair",
+            "reception",
+            "chairs",
+            "and",
+            "seating"
+          ],
+          "negative_keywords": [
+            "desk chair",
+            "dining chair",
+            "accent chair",
+            "sofa"
+          ]
+        },
+        "recliners": {
+          "display_name": "Recliners",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Theme1",
+            "Material",
+            "Pattern1",
+            "Recommended Room1",
+            "Recommended Use1",
+            "Features6",
+            "Product Type",
+            "\"with\" Items Included6",
+            "\",\"",
+            "Color4"
+          ],
+          "attributes": [
+            "Brand",
+            "Age Group",
+            "Condition"
+          ],
+          "aliases": [
+            "recliner",
+            "recliners",
+            "reclining chair"
+          ],
+          "title_keywords": [
+            "recliner",
+            "recliners",
+            "reclining chair"
+          ],
+          "context_keywords": [
+            "reclining chair"
+          ],
+          "negative_keywords": [
+            "massage chair",
+            "accent chair",
+            "rocking chair",
+            "loveseat"
+          ]
+        },
+        "rocking_chairs": {
+          "display_name": "Rocking Chairs",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Home Decor Style1",
+            "Pattern1",
+            "Material",
+            "Recommended Location1",
+            "Recommended Room1",
+            "Recommended Use1",
+            "Features6",
+            "Product Type",
+            "\"with\" Items Included6",
+            "\",\"",
+            "Color",
+            "\"(\"",
+            "\"Set of\"",
+            "Piece Count",
+            "\")\"5"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Age Group",
+            "Brand"
+          ],
+          "aliases": [
+            "rocking chair",
+            "rocking chairs",
+            "rocker chair",
+            "rocking",
+            "chairs"
+          ],
+          "title_keywords": [
+            "rocking chair",
+            "rocking chairs",
+            "rocker chair",
+            "rocking",
+            "chairs"
+          ],
+          "context_keywords": [
+            "rocker chair",
+            "rocking",
+            "chairs"
+          ],
+          "negative_keywords": [
+            "glider rocking chair",
+            "recliner",
+            "accent chair",
+            "outdoor rocking chair"
+          ]
+        },
+        "sectional_sofas": {
+          "display_name": "Sectional Sofas",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Is Inflatable8",
+            "Orientation",
+            "Pattern1",
+            "Material",
+            "Features6",
+            "Product Type",
+            "\"with\" Items Included6",
+            "\",\"",
+            "Color4"
+          ],
+          "attributes": [
+            "Brand",
+            "Color",
+            "Condition"
+          ],
+          "aliases": [
+            "sectional sofa",
+            "sectional sofas",
+            "sectional couch",
+            "sectional",
+            "sofas"
+          ],
+          "title_keywords": [
+            "sectional sofa",
+            "sectional sofas",
+            "sectional couch",
+            "sectional",
+            "sofas"
+          ],
+          "context_keywords": [
+            "sectional couch",
+            "sectional",
+            "sofas"
+          ],
+          "negative_keywords": [
+            "sofa",
+            "loveseat",
+            "settee",
+            "chaise"
+          ]
+        },
+        "settees": {
+          "display_name": "Settees",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Is Inflatable8",
+            "Home Decor Style1",
+            "Pattern1",
+            "Material",
+            "Product Type",
+            "\"with\" Item Included6",
+            "\",\"",
+            "Color4"
+          ],
+          "attributes": [
+            "Maximum Load Weight",
+            "Color",
+            "Brand"
+          ],
+          "aliases": [
+            "settee",
+            "settees",
+            "settee bench"
+          ],
+          "title_keywords": [
+            "settee",
+            "settees",
+            "settee bench"
+          ],
+          "context_keywords": [
+            "settee bench"
+          ],
+          "negative_keywords": [
+            "loveseat",
+            "sofa",
+            "bench",
+            "sectional"
+          ]
+        },
+        "sofas_couches": {
+          "display_name": "Sofas & Couches",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Is Inflatable8",
+            "Home Decor Style1",
+            "Pattern1",
+            "Material",
+            "Seat Back Style1",
+            "Features6",
+            "Sofa & Loveseat Type",
+            "\"with\" Items Included6",
+            "\",\"",
+            "Color4"
+          ],
+          "attributes": [
+            "Brand",
+            "Age Group",
+            "Color"
+          ],
+          "aliases": [
+            "sofas and couche",
+            "sofas and couches",
+            "sofa",
+            "couch",
+            "sofas",
+            "and",
+            "couches"
+          ],
+          "title_keywords": [
+            "sofas and couche",
+            "sofas and couches",
+            "sofa",
+            "couch",
+            "sofas",
+            "and",
+            "couches"
+          ],
+          "context_keywords": [
+            "sofa",
+            "couch",
+            "sofas",
+            "and",
+            "couches"
+          ],
+          "negative_keywords": [
+            "loveseat",
+            "sectional",
+            "settee",
+            "futon"
+          ]
+        },
+        "stools": {
+          "display_name": "Stools",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Is Inflatable8",
+            "Age Group3",
+            "Home Décor Style1",
+            "Seat Back Style",
+            "Recommended Location1",
+            "Recommended Room1",
+            "Recommended Use1",
+            "Product Type",
+            "\",\"",
+            "Color4",
+            "\"(\"",
+            "\"Set of\"",
+            "Piece Count",
+            "\")\"5"
+          ],
+          "attributes": [
+            "Color",
+            "Material",
+            "Age Group"
+          ],
+          "aliases": [
+            "stool",
+            "stools"
+          ],
+          "title_keywords": [
+            "stool",
+            "stools"
+          ],
+          "context_keywords": [],
+          "negative_keywords": [
+            "bar stool",
+            "bench",
+            "ottoman",
+            "step stool"
+          ]
+        },
+        "video_game_chairs": {
+          "display_name": "Video Game Chairs",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Theme1",
+            "Pattern1",
+            "Seat Back Style",
+            "Material",
+            "Recommended Use1",
+            "Gaming Chair Type",
+            "\"with\" Items Included6",
+            "\",\"",
+            "Color4"
+          ],
+          "attributes": [
+            "Age Group",
+            "Brand",
+            "Video Game Chair Type"
+          ],
+          "aliases": [
+            "video game chair",
+            "video game chairs",
+            "gaming chair",
+            "gamer chair",
+            "video",
+            "game",
+            "chairs"
+          ],
+          "title_keywords": [
+            "video game chair",
+            "video game chairs",
+            "gaming chair",
+            "gamer chair",
+            "video",
+            "game",
+            "chairs"
+          ],
+          "context_keywords": [
+            "gaming chair",
+            "gamer chair",
+            "video",
+            "game",
+            "chairs"
+          ],
+          "negative_keywords": [
+            "desk chair",
+            "recliner",
+            "bean bag chair",
+            "racing seat"
+          ]
+        }
+      }
+    },
+    "miscellaneous_furniture": {
+      "display_name": "Miscellaneous Furniture",
+      "product_types": {
+        "desk_risers": {
+          "display_name": "Desk Risers",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Maximum Height",
+            "Shape1",
+            "Table Top Material",
+            "Desk Riser Type",
+            "Features1",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Desk Riser Type",
+            "Maximum Number Of Monitors",
+            "Material"
+          ],
+          "aliases": [
+            "desk riser",
+            "desk risers",
+            "monitor riser",
+            "standing desk converter",
+            "desk",
+            "risers"
+          ],
+          "title_keywords": [
+            "desk riser",
+            "desk risers",
+            "monitor riser",
+            "standing desk converter",
+            "desk",
+            "risers"
+          ],
+          "context_keywords": [
+            "monitor riser",
+            "standing desk converter",
+            "desk",
+            "risers"
+          ],
+          "negative_keywords": [
+            "furniture riser",
+            "study carrel",
+            "speaker stand",
+            "desk chair"
+          ]
+        },
+        "furniture_risers": {
+          "display_name": "Furniture Risers",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Assembled Product Height",
+            "Color",
+            "Material",
+            "Product Type",
+            "Number of Pieces2",
+            "\"Count\"2"
+          ],
+          "attributes": [
+            "Count Per Pack",
+            "Furniture Type",
+            "Material"
+          ],
+          "aliases": [
+            "furniture riser",
+            "furniture risers",
+            "bed riser",
+            "chair riser",
+            "furniture",
+            "risers"
+          ],
+          "title_keywords": [
+            "furniture riser",
+            "furniture risers",
+            "bed riser",
+            "chair riser",
+            "furniture",
+            "risers"
+          ],
+          "context_keywords": [
+            "bed riser",
+            "chair riser",
+            "furniture",
+            "risers"
+          ],
+          "negative_keywords": [
+            "desk riser",
+            "step stool",
+            "bed frame",
+            "caster wheel"
+          ]
+        },
+        "partition_panels": {
+          "display_name": "Partition Panels",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Assembled Product Height",
+            "Home Décor Style1",
+            "Pattern1",
+            "Color",
+            "Panel Material",
+            "Number of Panels2",
+            "\"-Panel\"2",
+            "Features3",
+            "Product Type"
+          ],
+          "attributes": [
+            "Panel Material",
+            "Brand",
+            "Multipack Quantity"
+          ],
+          "aliases": [
+            "partition panel",
+            "partition panels",
+            "office partition panel",
+            "partition",
+            "panels"
+          ],
+          "title_keywords": [
+            "partition panel",
+            "partition panels",
+            "office partition panel",
+            "partition",
+            "panels"
+          ],
+          "context_keywords": [
+            "office partition panel",
+            "partition",
+            "panels"
+          ],
+          "negative_keywords": [
+            "room divider",
+            "panel screen",
+            "wall panel",
+            "privacy screen"
+          ]
+        },
+        "room_dividers_panel_screens": {
+          "display_name": "Room Dividers & Panel Screens",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Assembled Product Height",
+            "Features1",
+            "Number of Panels2",
+            "\"-Panel\"2",
+            "Home Décor Style1",
+            "Pattern1",
+            "Color",
+            "Panel Material",
+            "Room Divider & Panel Screen Type"
+          ],
+          "attributes": [
+            "Condition",
+            "Room Divider And Panel Screen Type",
+            "Number Of Panels"
+          ],
+          "aliases": [
+            "room dividers and panel screen",
+            "room dividers and panel screens",
+            "room divider",
+            "panel screen",
+            "folding screen",
+            "room",
+            "dividers"
+          ],
+          "title_keywords": [
+            "room dividers and panel screen",
+            "room dividers and panel screens",
+            "room divider",
+            "panel screen",
+            "folding screen",
+            "room",
+            "dividers",
+            "and",
+            "panel"
+          ],
+          "context_keywords": [
+            "room divider",
+            "panel screen",
+            "folding screen",
+            "room",
+            "dividers",
+            "and",
+            "panel",
+            "screens"
+          ],
+          "negative_keywords": [
+            "partition panel",
+            "window screen",
+            "shower screen",
+            "wall panel"
+          ]
+        },
+        "speaker_stands": {
+          "display_name": "Speaker Stands",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Maximum Height",
+            "Material",
+            "Speaker Stand Type",
+            "\"with\" Features1"
+          ],
+          "attributes": [
+            "Multipack Quantity",
+            "Speaker Stand Type",
+            "Brand"
+          ],
+          "aliases": [
+            "speaker stand",
+            "speaker stands",
+            "speaker",
+            "stands"
+          ],
+          "title_keywords": [
+            "speaker stand",
+            "speaker stands",
+            "speaker",
+            "stands"
+          ],
+          "context_keywords": [
+            "speaker",
+            "stands"
+          ],
+          "negative_keywords": [
+            "tv stand",
+            "plant stand",
+            "desk riser",
+            "microphone stand"
+          ]
+        },
+        "step_stools": {
+          "display_name": "Step Stools",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Number of Steps2",
+            "\"-Step\"2",
+            "Material",
+            "Features3",
+            "Product Type",
+            "\"holds up to\"",
+            "Maximum Load Weight"
+          ],
+          "attributes": [
+            "Age Group",
+            "Brand",
+            "Number Of Steps"
+          ],
+          "aliases": [
+            "step stool",
+            "step stools",
+            "step ladder",
+            "folding step stool",
+            "step",
+            "stools"
+          ],
+          "title_keywords": [
+            "step stool",
+            "step stools",
+            "step ladder",
+            "folding step stool",
+            "step",
+            "stools"
+          ],
+          "context_keywords": [
+            "step ladder",
+            "folding step stool",
+            "step",
+            "stools"
+          ],
+          "negative_keywords": [
+            "stool",
+            "bar stool",
+            "mobility step",
+            "ladder"
+          ]
+        },
+        "study_carrels": {
+          "display_name": "Study Carrels",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Product/Type",
+            "Key Feature",
+            "Material",
+            "Color",
+            "Size"
+          ],
+          "attributes": [
+            "Brand",
+            "Condition",
+            "Color"
+          ],
+          "aliases": [
+            "study carrel",
+            "study carrels",
+            "desk carrel",
+            "privacy carrel",
+            "study",
+            "carrels"
+          ],
+          "title_keywords": [
+            "study carrel",
+            "study carrels",
+            "desk carrel",
+            "privacy carrel",
+            "study",
+            "carrels"
+          ],
+          "context_keywords": [
+            "desk carrel",
+            "privacy carrel",
+            "study",
+            "carrels"
+          ],
+          "negative_keywords": [
+            "desk riser",
+            "partition panel",
+            "desk chair",
+            "cubicle wall"
+          ]
+        }
+      }
+    },
+    "outdoor_seating_furniture": {
+      "display_name": "Outdoor Seating Furniture",
+      "product_types": {
+        "adirondack_chairs": {
+          "display_name": "Adirondack Chairs",
+          "formula": [
+            "Brand",
+            "Collection1",
+            "Product Line1",
+            "Frame Material",
+            "\"Adirondack Chairs\"",
+            "\"- Set of \"",
+            "Count2",
+            "\",\"",
+            "Frame Color3"
+          ],
+          "attributes": [
+            "Frame Material",
+            "Recommended Location",
+            "Material"
+          ],
+          "aliases": [
+            "adirondack chair",
+            "adirondack chairs",
+            "outdoor adirondack chair",
+            "adirondack",
+            "chairs"
+          ],
+          "title_keywords": [
+            "adirondack chair",
+            "adirondack chairs",
+            "outdoor adirondack chair",
+            "adirondack",
+            "chairs"
+          ],
+          "context_keywords": [
+            "outdoor adirondack chair",
+            "adirondack",
+            "chairs"
+          ],
+          "negative_keywords": [
+            "kids adirondack chair",
+            "beach chair",
+            "outdoor lounge chair",
+            "patio set"
+          ]
+        },
+        "beach_chairs": {
+          "display_name": "Beach Chairs",
+          "formula": [
+            "Brand",
+            "Collection1",
+            "Product Line1",
+            "Age Group2",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Features5",
+            "\"Beach Chair\"",
+            "\"with\" Items Included6",
+            "\"- Set of \"",
+            "Count3",
+            "\",\"",
+            "Frame Color4",
+            "Pattern1"
+          ],
+          "attributes": [
+            "Condition",
+            "Brand",
+            "Recommended Location"
+          ],
+          "aliases": [
+            "beach chair",
+            "beach chairs",
+            "folding beach chair",
+            "beach",
+            "chairs"
+          ],
+          "title_keywords": [
+            "beach chair",
+            "beach chairs",
+            "folding beach chair",
+            "beach",
+            "chairs"
+          ],
+          "context_keywords": [
+            "folding beach chair",
+            "beach",
+            "chairs"
+          ],
+          "negative_keywords": [
+            "outdoor lounge chair",
+            "zero gravity chair",
+            "adirondack chair",
+            "camping chair"
+          ]
+        },
+        "hanging_chairs": {
+          "display_name": "Hanging Chairs",
+          "formula": [
+            "Brand",
+            "Collection1",
+            "Product Line1",
+            "Age Group2",
+            "Frame Material",
+            "Shape6",
+            "\"Hanging Chair\"",
+            "\"with\" Items Included5",
+            "\",\"",
+            "Frame Color4",
+            "\"- Set of \"",
+            "Count3"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Condition"
+          ],
+          "aliases": [
+            "hanging chair",
+            "hanging chairs",
+            "egg chair",
+            "hammock chair",
+            "hanging",
+            "chairs"
+          ],
+          "title_keywords": [
+            "hanging chair",
+            "hanging chairs",
+            "egg chair",
+            "hammock chair",
+            "hanging",
+            "chairs"
+          ],
+          "context_keywords": [
+            "egg chair",
+            "hammock chair",
+            "hanging",
+            "chairs"
+          ],
+          "negative_keywords": [
+            "porch swing",
+            "outdoor glider chair",
+            "swing set",
+            "hanging organizer"
+          ]
+        },
+        "kids_adirondack_chairs": {
+          "display_name": "Kids Adirondack Chairs",
+          "formula": [
+            "Brand",
+            "Collection1",
+            "Product Line1",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Pattern1",
+            "Frame Material",
+            "Product Type",
+            "\"- Set of \"",
+            "Count3",
+            "\",\"",
+            "Frame Color"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Condition",
+            "Brand"
+          ],
+          "aliases": [
+            "kids adirondack chair",
+            "kids adirondack chairs",
+            "child adirondack chair",
+            "kids",
+            "adirondack",
+            "chairs"
+          ],
+          "title_keywords": [
+            "kids adirondack chair",
+            "kids adirondack chairs",
+            "child adirondack chair",
+            "kids",
+            "adirondack",
+            "chairs"
+          ],
+          "context_keywords": [
+            "child adirondack chair",
+            "kids",
+            "adirondack",
+            "chairs"
+          ],
+          "negative_keywords": [
+            "adirondack chair",
+            "kids chair",
+            "beach chair",
+            "play furniture set"
+          ]
+        },
+        "outdoor_bar_stools": {
+          "display_name": "Outdoor Bar Stools",
+          "formula": [
+            "Brand",
+            "Collection1",
+            "Product Line1",
+            "Age Group2",
+            "Seat Back Style",
+            "Features5",
+            "Product Type",
+            "\"- Set of \"",
+            "Count3",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Material",
+            "Frame Material"
+          ],
+          "aliases": [
+            "outdoor bar stool",
+            "outdoor bar stools",
+            "patio bar stool",
+            "outdoor",
+            "bar",
+            "stools"
+          ],
+          "title_keywords": [
+            "outdoor bar stool",
+            "outdoor bar stools",
+            "patio bar stool",
+            "outdoor",
+            "bar",
+            "stools"
+          ],
+          "context_keywords": [
+            "patio bar stool",
+            "outdoor",
+            "bar",
+            "stools"
+          ],
+          "negative_keywords": [
+            "bar stool",
+            "outdoor dining chair",
+            "bar set",
+            "stool"
+          ]
+        },
+        "outdoor_benches": {
+          "display_name": "Outdoor Benches",
+          "formula": [
+            "Brand",
+            "Collection1",
+            "Product Line1",
+            "Age Group2",
+            "Frame Material",
+            "Features5",
+            "Product Type",
+            "\"- Set of \"",
+            "Count3",
+            "Frame Color"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "outdoor benche",
+            "outdoor benches",
+            "outdoor bench",
+            "patio bench",
+            "garden bench",
+            "outdoor",
+            "benches"
+          ],
+          "title_keywords": [
+            "outdoor benche",
+            "outdoor benches",
+            "outdoor bench",
+            "patio bench",
+            "garden bench",
+            "outdoor",
+            "benches"
+          ],
+          "context_keywords": [
+            "outdoor bench",
+            "patio bench",
+            "garden bench",
+            "outdoor",
+            "benches"
+          ],
+          "negative_keywords": [
+            "outdoor glider bench",
+            "bench",
+            "porch swing",
+            "settee"
+          ]
+        },
+        "outdoor_chaise_lounges": {
+          "display_name": "Outdoor Chaise Lounges",
+          "formula": [
+            "Brand",
+            "Collection1",
+            "Product Line1",
+            "Age Group2",
+            "Frame Material",
+            "Features5",
+            "Product Type",
+            "\"- Set of \"",
+            "Count3",
+            "Frame Color"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "outdoor chaise lounge",
+            "outdoor chaise lounges",
+            "patio chaise",
+            "chaise lounge",
+            "outdoor",
+            "chaise",
+            "lounges"
+          ],
+          "title_keywords": [
+            "outdoor chaise lounge",
+            "outdoor chaise lounges",
+            "patio chaise",
+            "chaise lounge",
+            "outdoor",
+            "chaise",
+            "lounges"
+          ],
+          "context_keywords": [
+            "patio chaise",
+            "chaise lounge",
+            "outdoor",
+            "chaise",
+            "lounges"
+          ],
+          "negative_keywords": [
+            "outdoor lounge chair",
+            "zero gravity chair",
+            "chaise",
+            "daybed"
+          ]
+        },
+        "outdoor_daybeds": {
+          "display_name": "Outdoor Daybeds",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Collection",
+            "Feature",
+            "Frame Material",
+            "Product Type",
+            "\",\"",
+            "Cushion Color"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Frame Material"
+          ],
+          "aliases": [
+            "outdoor daybed",
+            "outdoor daybeds",
+            "patio daybed",
+            "outdoor",
+            "daybeds"
+          ],
+          "title_keywords": [
+            "outdoor daybed",
+            "outdoor daybeds",
+            "patio daybed",
+            "outdoor",
+            "daybeds"
+          ],
+          "context_keywords": [
+            "patio daybed",
+            "outdoor",
+            "daybeds"
+          ],
+          "negative_keywords": [
+            "daybed",
+            "outdoor sofa",
+            "chaise lounge",
+            "bed"
+          ]
+        },
+        "outdoor_dining_chair": {
+          "display_name": "Outdoor Dining Chair",
+          "formula": [
+            "Brand",
+            "Collection1",
+            "Product Line1",
+            "Age Group2",
+            "Frame Material",
+            "Recommended Location7",
+            "Dining Chair Type",
+            "\"- Set of \"",
+            "Count3",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "outdoor dining chair",
+            "patio dining chair",
+            "outdoor",
+            "dining",
+            "chair"
+          ],
+          "title_keywords": [
+            "outdoor dining chair",
+            "patio dining chair",
+            "outdoor",
+            "dining",
+            "chair"
+          ],
+          "context_keywords": [
+            "outdoor",
+            "dining",
+            "chair"
+          ],
+          "negative_keywords": [
+            "dining chair",
+            "outdoor bar stool",
+            "outdoor bistro set",
+            "dining set"
+          ]
+        },
+        "outdoor_glider_benches": {
+          "display_name": "Outdoor Glider Benches",
+          "formula": [
+            "Brand",
+            "Collection1",
+            "Product Line1",
+            "Age Group2",
+            "Recommended Room1",
+            "Frame Material",
+            "Product Type",
+            "\"with\" Items Included5",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Condition",
+            "Recommended Location",
+            "Brand"
+          ],
+          "aliases": [
+            "outdoor glider benche",
+            "outdoor glider benches",
+            "outdoor glider bench",
+            "patio glider bench",
+            "outdoor",
+            "glider",
+            "benches"
+          ],
+          "title_keywords": [
+            "outdoor glider benche",
+            "outdoor glider benches",
+            "outdoor glider bench",
+            "patio glider bench",
+            "outdoor",
+            "glider",
+            "benches"
+          ],
+          "context_keywords": [
+            "outdoor glider bench",
+            "patio glider bench",
+            "outdoor",
+            "glider",
+            "benches"
+          ],
+          "negative_keywords": [
+            "outdoor bench",
+            "outdoor glider chair",
+            "porch swing",
+            "rocking chair"
+          ]
+        },
+        "outdoor_glider_chairs": {
+          "display_name": "Outdoor Glider Chairs",
+          "formula": [
+            "Brand",
+            "Collection1",
+            "Product Line1",
+            "Age Group2",
+            "Frame Material",
+            "Product Type",
+            "\"- Set of \"",
+            "Count3",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Condition",
+            "Brand"
+          ],
+          "aliases": [
+            "outdoor glider chair",
+            "outdoor glider chairs",
+            "patio glider chair",
+            "outdoor",
+            "glider",
+            "chairs"
+          ],
+          "title_keywords": [
+            "outdoor glider chair",
+            "outdoor glider chairs",
+            "patio glider chair",
+            "outdoor",
+            "glider",
+            "chairs"
+          ],
+          "context_keywords": [
+            "patio glider chair",
+            "outdoor",
+            "glider",
+            "chairs"
+          ],
+          "negative_keywords": [
+            "glider rocking chair",
+            "outdoor glider bench",
+            "rocking chair",
+            "porch swing"
+          ]
+        },
+        "outdoor_lounge_chairs": {
+          "display_name": "Outdoor Lounge Chairs",
+          "formula": [
+            "Brand",
+            "Collection1",
+            "Product Line1",
+            "Age Group2",
+            "Features5",
+            "Frame Material",
+            "Product Type",
+            "\"with\" Items Included5",
+            "\"- Set of \"",
+            "Count3",
+            "Color"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "outdoor lounge chair",
+            "outdoor lounge chairs",
+            "patio lounge chair",
+            "outdoor",
+            "lounge",
+            "chairs"
+          ],
+          "title_keywords": [
+            "outdoor lounge chair",
+            "outdoor lounge chairs",
+            "patio lounge chair",
+            "outdoor",
+            "lounge",
+            "chairs"
+          ],
+          "context_keywords": [
+            "patio lounge chair",
+            "outdoor",
+            "lounge",
+            "chairs"
+          ],
+          "negative_keywords": [
+            "outdoor chaise lounge",
+            "beach chair",
+            "zero gravity chair",
+            "outdoor sofa"
+          ]
+        },
+        "outdoor_loveseats": {
+          "display_name": "Outdoor Loveseats",
+          "formula": [
+            "Brand",
+            "Collection1",
+            "Product Line1",
+            "Age Group2",
+            "Seat Material",
+            "Product Type",
+            "\"with\" Items Included5",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "outdoor loveseat",
+            "outdoor loveseats",
+            "patio loveseat",
+            "outdoor",
+            "loveseats"
+          ],
+          "title_keywords": [
+            "outdoor loveseat",
+            "outdoor loveseats",
+            "patio loveseat",
+            "outdoor",
+            "loveseats"
+          ],
+          "context_keywords": [
+            "patio loveseat",
+            "outdoor",
+            "loveseats"
+          ],
+          "negative_keywords": [
+            "loveseat",
+            "outdoor sofa",
+            "outdoor sectional",
+            "conversation set"
+          ]
+        },
+        "outdoor_sectionals": {
+          "display_name": "Outdoor Sectionals",
+          "formula": [
+            "Brand",
+            "Collection1",
+            "Product Line1",
+            "Age Group2",
+            "Piece Count",
+            "\"- Piece\"",
+            "Seat Material",
+            "Shape",
+            "Product Type",
+            "\"with\" Items Included5",
+            "\",\"",
+            "Color4"
+          ],
+          "attributes": [
+            "Condition",
+            "Brand",
+            "Recommended Location"
+          ],
+          "aliases": [
+            "outdoor sectional",
+            "outdoor sectionals",
+            "patio sectional",
+            "outdoor",
+            "sectionals"
+          ],
+          "title_keywords": [
+            "outdoor sectional",
+            "outdoor sectionals",
+            "patio sectional",
+            "outdoor",
+            "sectionals"
+          ],
+          "context_keywords": [
+            "patio sectional",
+            "outdoor",
+            "sectionals"
+          ],
+          "negative_keywords": [
+            "sectional sofa",
+            "outdoor sofa",
+            "outdoor loveseat",
+            "conversation set"
+          ]
+        },
+        "outdoor_sofas": {
+          "display_name": "Outdoor Sofas",
+          "formula": [
+            "Brand",
+            "Collection1",
+            "Product Line1",
+            "Age Group2",
+            "Seat Material",
+            "Product Type",
+            "Items Included5",
+            "Color4"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "outdoor sofa",
+            "outdoor sofas",
+            "patio sofa",
+            "outdoor",
+            "sofas"
+          ],
+          "title_keywords": [
+            "outdoor sofa",
+            "outdoor sofas",
+            "patio sofa",
+            "outdoor",
+            "sofas"
+          ],
+          "context_keywords": [
+            "patio sofa",
+            "outdoor",
+            "sofas"
+          ],
+          "negative_keywords": [
+            "sofa",
+            "outdoor loveseat",
+            "outdoor sectional",
+            "daybed"
+          ]
+        },
+        "porch_swings": {
+          "display_name": "Porch Swings",
+          "formula": [
+            "Brand",
+            "Collection1",
+            "Product Line1",
+            "Age Group2",
+            "Frame Material",
+            "Porch Swing Type",
+            "\"with\" Items Included5",
+            "\",\"",
+            "Color4"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Porch Swing Type"
+          ],
+          "aliases": [
+            "porch swing",
+            "porch swings",
+            "outdoor swing",
+            "porch",
+            "swings"
+          ],
+          "title_keywords": [
+            "porch swing",
+            "porch swings",
+            "outdoor swing",
+            "porch",
+            "swings"
+          ],
+          "context_keywords": [
+            "outdoor swing",
+            "porch",
+            "swings"
+          ],
+          "negative_keywords": [
+            "hanging chair",
+            "outdoor glider bench",
+            "swing set",
+            "hammock"
+          ]
+        },
+        "zero_gravity_chairs": {
+          "display_name": "Zero-Gravity Chairs",
+          "formula": [
+            "Brand",
+            "Collection1",
+            "Product Line1",
+            "Age Group2",
+            "Features5",
+            "Product Type",
+            "\"with\" Items Included5",
+            "\"-Set of \"",
+            "Count3",
+            "Color4"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Condition"
+          ],
+          "aliases": [
+            "zero-gravity chair",
+            "zero-gravity chairs",
+            "zero gravity chairs",
+            "zero gravity chair",
+            "zero",
+            "gravity",
+            "chairs"
+          ],
+          "title_keywords": [
+            "zero-gravity chair",
+            "zero-gravity chairs",
+            "zero gravity chairs",
+            "zero gravity chair",
+            "zero",
+            "gravity",
+            "chairs"
+          ],
+          "context_keywords": [
+            "zero gravity chairs",
+            "zero gravity chair",
+            "zero",
+            "gravity",
+            "chairs"
+          ],
+          "negative_keywords": [
+            "outdoor chaise lounge",
+            "beach chair",
+            "recliner",
+            "lounge chair"
+          ]
+        }
+      }
+    },
+    "patio_sets": {
+      "display_name": "Patio Sets",
+      "product_types": {
+        "bar_sets": {
+          "display_name": "Bar Sets",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Piece Count",
+            "\"Pcs\"",
+            "Frame Material",
+            "\"Bar Set\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Frame Color",
+            "\"/\"",
+            "Cushion Color"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Material",
+            "Brand"
+          ],
+          "aliases": [
+            "bar set",
+            "bar sets",
+            "patio bar set",
+            "outdoor bar set",
+            "bar",
+            "sets"
+          ],
+          "title_keywords": [
+            "bar set",
+            "bar sets",
+            "patio bar set",
+            "outdoor bar set",
+            "bar",
+            "sets"
+          ],
+          "context_keywords": [
+            "patio bar set",
+            "outdoor bar set",
+            "bar",
+            "sets"
+          ],
+          "negative_keywords": [
+            "outdoor bistro set",
+            "patio furniture set",
+            "bar stools",
+            "dining set"
+          ]
+        },
+        "fire_pit_sets": {
+          "display_name": "Fire Pit Sets",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Piece Count",
+            "\"Pcs\"",
+            "Frame Material",
+            "Fuel Type",
+            "Fire Pit Type",
+            "\"Set\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Frame Color",
+            "\"/\"",
+            "Cushion Color"
+          ],
+          "attributes": [
+            "Material",
+            "Recommended Location",
+            "Brand"
+          ],
+          "aliases": [
+            "fire pit set",
+            "fire pit sets",
+            "firepit set",
+            "patio fire pit set",
+            "fire",
+            "pit",
+            "sets"
+          ],
+          "title_keywords": [
+            "fire pit set",
+            "fire pit sets",
+            "firepit set",
+            "patio fire pit set",
+            "fire",
+            "pit",
+            "sets"
+          ],
+          "context_keywords": [
+            "firepit set",
+            "patio fire pit set",
+            "fire",
+            "pit",
+            "sets"
+          ],
+          "negative_keywords": [
+            "outdoor conversation set",
+            "patio furniture set",
+            "fire pit only",
+            "bar set"
+          ]
+        },
+        "outdoor_bistro_sets": {
+          "display_name": "Outdoor Bistro Sets",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Piece Count",
+            "Frame Material",
+            "\"Outdoor Bistro Sets\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Frame Color",
+            "\"/\"",
+            "Cushion Color"
+          ],
+          "attributes": [
+            "Material",
+            "Recommended Location",
+            "Brand"
+          ],
+          "aliases": [
+            "outdoor bistro set",
+            "outdoor bistro sets",
+            "patio bistro set",
+            "bistro set",
+            "outdoor",
+            "bistro",
+            "sets"
+          ],
+          "title_keywords": [
+            "outdoor bistro set",
+            "outdoor bistro sets",
+            "patio bistro set",
+            "bistro set",
+            "outdoor",
+            "bistro",
+            "sets"
+          ],
+          "context_keywords": [
+            "patio bistro set",
+            "bistro set",
+            "outdoor",
+            "bistro",
+            "sets"
+          ],
+          "negative_keywords": [
+            "bar set",
+            "outdoor dining set",
+            "chat set",
+            "single dining chair"
+          ]
+        },
+        "outdoor_chat_sets": {
+          "display_name": "Outdoor Chat Sets",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Piece Count",
+            "Frame Material",
+            "Features1",
+            "\"Outdoor Chat Sets\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Frame Color",
+            "\"/\"",
+            "Cushion Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Material",
+            "Recommended Location"
+          ],
+          "aliases": [
+            "outdoor chat set",
+            "outdoor chat sets",
+            "patio chat set",
+            "outdoor",
+            "chat",
+            "sets"
+          ],
+          "title_keywords": [
+            "outdoor chat set",
+            "outdoor chat sets",
+            "patio chat set",
+            "outdoor",
+            "chat",
+            "sets"
+          ],
+          "context_keywords": [
+            "patio chat set",
+            "outdoor",
+            "chat",
+            "sets"
+          ],
+          "negative_keywords": [
+            "conversation set",
+            "bistro set",
+            "patio furniture set",
+            "single chair"
+          ]
+        },
+        "outdoor_conversation_sets": {
+          "display_name": "Outdoor Conversation Sets",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Piece Count",
+            "Frame Material",
+            "Features1",
+            "\"Outdoor Conversation Sets\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Frame Color",
+            "\"/\"",
+            "Cushion Color"
+          ],
+          "attributes": [
+            "Condition",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "outdoor conversation set",
+            "outdoor conversation sets",
+            "patio conversation set",
+            "outdoor",
+            "conversation",
+            "sets"
+          ],
+          "title_keywords": [
+            "outdoor conversation set",
+            "outdoor conversation sets",
+            "patio conversation set",
+            "outdoor",
+            "conversation",
+            "sets"
+          ],
+          "context_keywords": [
+            "patio conversation set",
+            "outdoor",
+            "conversation",
+            "sets"
+          ],
+          "negative_keywords": [
+            "chat set",
+            "fire pit set",
+            "patio furniture set",
+            "sectional only"
+          ]
+        },
+        "patio_furniture_sets": {
+          "display_name": "Patio Furniture Sets",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Piece Count",
+            "Frame Material",
+            "Patio Furniture Set Type",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Frame Color",
+            "\"/\"",
+            "Cushion Color"
+          ],
+          "attributes": [
+            "Condition",
+            "Patio Furniture Set Type",
+            "Material"
+          ],
+          "aliases": [
+            "patio furniture set",
+            "patio furniture sets",
+            "outdoor furniture set",
+            "patio",
+            "furniture",
+            "sets"
+          ],
+          "title_keywords": [
+            "patio furniture set",
+            "patio furniture sets",
+            "outdoor furniture set",
+            "patio",
+            "furniture",
+            "sets"
+          ],
+          "context_keywords": [
+            "outdoor furniture set",
+            "patio",
+            "furniture",
+            "sets"
+          ],
+          "negative_keywords": [
+            "bar set",
+            "bistro set",
+            "chat set",
+            "conversation set",
+            "single chair"
+          ]
+        }
+      }
+    },
+    "storage_cabinet_wall_furniture": {
+      "display_name": "Storage, Cabinet & Wall Furniture",
+      "product_types": {
+        "accent_cabinets": {
+          "display_name": "Accent Cabinets",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Product/Type",
+            "Key Feature",
+            "Color",
+            "Size",
+            "Number Of Doors"
+          ],
+          "attributes": [
+            "Brand",
+            "Number Of Doors",
+            "Cabinet Material"
+          ],
+          "aliases": [
+            "accent cabinet",
+            "accent cabinets",
+            "accent",
+            "cabinets"
+          ],
+          "title_keywords": [
+            "accent cabinet",
+            "accent cabinets",
+            "accent",
+            "cabinets"
+          ],
+          "context_keywords": [
+            "accent",
+            "cabinets"
+          ],
+          "negative_keywords": [
+            "cabinet",
+            "bar cabinet",
+            "media cabinet",
+            "pantry cabinet"
+          ]
+        },
+        "microwave_racks": {
+          "display_name": "Microwave Racks",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Product/Type",
+            "Key Feature",
+            "Color",
+            "Size"
+          ],
+          "attributes": [
+            "Brand",
+            "Color Category",
+            "Assembly Required"
+          ],
+          "aliases": [
+            "microwave rack",
+            "microwave racks",
+            "microwave stand",
+            "microwave",
+            "racks"
+          ],
+          "title_keywords": [
+            "microwave rack",
+            "microwave racks",
+            "microwave stand",
+            "microwave",
+            "racks"
+          ],
+          "context_keywords": [
+            "microwave stand",
+            "microwave",
+            "racks"
+          ],
+          "negative_keywords": [
+            "bakers rack",
+            "kitchen cart",
+            "shelf unit",
+            "utility cart"
+          ]
+        },
+        "armoires": {
+          "display_name": "Armoires",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Home Décor Style1",
+            "Assembled Product Width",
+            "Features1",
+            "Armoire Type",
+            "Number of Doors4",
+            "\"with\" Items Included8",
+            "\",\"",
+            "Color",
+            "Pattern"
+          ],
+          "attributes": [
+            "Armoire Type",
+            "Brand",
+            "Age Group"
+          ],
+          "aliases": [
+            "armoire",
+            "armoires",
+            "wardrobe armoire"
+          ],
+          "title_keywords": [
+            "armoire",
+            "armoires",
+            "wardrobe armoire"
+          ],
+          "context_keywords": [
+            "wardrobe armoire"
+          ],
+          "negative_keywords": [
+            "jewelry armoire",
+            "dresser",
+            "cabinet",
+            "closet organizer"
+          ]
+        },
+        "bakers_racks": {
+          "display_name": "Baker's Racks",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Features1",
+            "Assembled Product Width",
+            "Baker's Rack Type",
+            "Number of Shelves",
+            "\"Shelves\"",
+            "\"with\" Items Included8",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Bakers Rack Type",
+            "Condition"
+          ],
+          "aliases": [
+            "baker's rack",
+            "baker's racks",
+            "bakers rack",
+            "baker's",
+            "racks"
+          ],
+          "title_keywords": [
+            "baker's rack",
+            "baker's racks",
+            "bakers rack",
+            "baker's",
+            "racks"
+          ],
+          "context_keywords": [
+            "bakers rack",
+            "baker's",
+            "racks"
+          ],
+          "negative_keywords": [
+            "microwave rack",
+            "kitchen island",
+            "bookcase",
+            "utility cart"
+          ]
+        },
+        "bar_cabinets": {
+          "display_name": "Bar Cabinets",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Home Décor Style1",
+            "Cabinet Material",
+            "Features1",
+            "\"Bar Cabinet\"",
+            "\"with\" Items Included8",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Assembled Product Height",
+            "Color Category"
+          ],
+          "aliases": [
+            "bar cabinet",
+            "bar cabinets",
+            "liquor cabinet",
+            "bar",
+            "cabinets"
+          ],
+          "title_keywords": [
+            "bar cabinet",
+            "bar cabinets",
+            "liquor cabinet",
+            "bar",
+            "cabinets"
+          ],
+          "context_keywords": [
+            "liquor cabinet",
+            "bar",
+            "cabinets"
+          ],
+          "negative_keywords": [
+            "wine cabinet",
+            "accent cabinet",
+            "bars",
+            "patio bar"
+          ]
+        },
+        "bathroom_vanities": {
+          "display_name": "Bathroom Vanities",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Home Decor Style",
+            "Assembled Product Width",
+            "Cabinet Material",
+            "Mount Type4",
+            "Bathroom Vanity Type",
+            "\"with\" Items Included8",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Has Sink",
+            "Assembled Product Width",
+            "Brand"
+          ],
+          "aliases": [
+            "bathroom vanitie",
+            "bathroom vanities",
+            "bathroom vanity",
+            "vanity cabinet",
+            "bathroom",
+            "vanities"
+          ],
+          "title_keywords": [
+            "bathroom vanitie",
+            "bathroom vanities",
+            "bathroom vanity",
+            "vanity cabinet",
+            "bathroom",
+            "vanities"
+          ],
+          "context_keywords": [
+            "bathroom vanity",
+            "vanity cabinet",
+            "bathroom",
+            "vanities"
+          ],
+          "negative_keywords": [
+            "vanity table",
+            "medicine cabinet",
+            "sink caddy",
+            "cabinet"
+          ]
+        },
+        "book_stands": {
+          "display_name": "Book Stands",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Age Group4",
+            "Features1",
+            "Material",
+            "Book Stand Type",
+            "\"with\" Items Included8",
+            "\",\"",
+            "Color5"
+          ],
+          "attributes": [
+            "Material",
+            "Age Group",
+            "Maximum Load Weight"
+          ],
+          "aliases": [
+            "book stand",
+            "book stands",
+            "reading stand",
+            "book",
+            "stands"
+          ],
+          "title_keywords": [
+            "book stand",
+            "book stands",
+            "reading stand",
+            "book",
+            "stands"
+          ],
+          "context_keywords": [
+            "reading stand",
+            "book",
+            "stands"
+          ],
+          "negative_keywords": [
+            "bookcase",
+            "lectern",
+            "tablet stand",
+            "speaker stand"
+          ]
+        },
+        "bookcases": {
+          "display_name": "Bookcases",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Age Group4",
+            "Home Décor Style1",
+            "Number of Shelves5",
+            "Bookcase Type",
+            "\"with\" Items Included8",
+            "\",\"",
+            "Color6"
+          ],
+          "attributes": [
+            "Brand",
+            "Color",
+            "Bookcase Type"
+          ],
+          "aliases": [
+            "bookcase",
+            "bookcases",
+            "bookshelf"
+          ],
+          "title_keywords": [
+            "bookcase",
+            "bookcases",
+            "bookshelf"
+          ],
+          "context_keywords": [
+            "bookshelf"
+          ],
+          "negative_keywords": [
+            "book stand",
+            "shelf unit",
+            "cabinet",
+            "storage crate"
+          ]
+        },
+        "cabinets": {
+          "display_name": "Cabinets",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Age Group4",
+            "Door Style",
+            "Glass Door5",
+            "Recommended Room1",
+            "Cabinet Type",
+            "\"(\"",
+            "Assembled Product Width",
+            "\"x\"",
+            "Assembled Product Height",
+            "\"x\"",
+            "Assembled Product Depth",
+            "\")\"",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Cabinet Type",
+            "Mount Type"
+          ],
+          "aliases": [
+            "cabinet",
+            "cabinets",
+            "storage cabinet"
+          ],
+          "title_keywords": [
+            "cabinet",
+            "cabinets",
+            "storage cabinet"
+          ],
+          "context_keywords": [
+            "storage cabinet"
+          ],
+          "negative_keywords": [
+            "accent cabinet",
+            "bar cabinet",
+            "medicine cabinet",
+            "garage cabinet"
+          ]
+        },
+        "china_cabinets_hutches": {
+          "display_name": "China Cabinets & Hutches",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Home Décor Style1",
+            "China Cabinet & Hutch Type",
+            "\"with\" Items Included8",
+            "Number of Doors4",
+            "Number of Drawers4",
+            "\",\"",
+            "Color",
+            "Pattern1"
+          ],
+          "attributes": [
+            "Brand",
+            "China Cabinet And Hutch Type",
+            "Material"
+          ],
+          "aliases": [
+            "china cabinets and hutche",
+            "china cabinets and hutches",
+            "china cabinet",
+            "hutch",
+            "china",
+            "cabinets",
+            "and"
+          ],
+          "title_keywords": [
+            "china cabinets and hutche",
+            "china cabinets and hutches",
+            "china cabinet",
+            "hutch",
+            "china",
+            "cabinets",
+            "and",
+            "hutches"
+          ],
+          "context_keywords": [
+            "china cabinet",
+            "hutch",
+            "china",
+            "cabinets",
+            "and",
+            "hutches"
+          ],
+          "negative_keywords": [
+            "office hutch",
+            "curio cabinet",
+            "pantry cabinet",
+            "bookcase"
+          ]
+        },
+        "coat_hat_racks": {
+          "display_name": "Coat & Hat Racks",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Age Group4",
+            "Home Décor Style1",
+            "Character5",
+            "Character Group1",
+            "Shape1",
+            "Theme6",
+            "Material",
+            "Coat & Hat Rack Type",
+            "\"with\" Item Included",
+            "Color7",
+            "Pattern1"
+          ],
+          "attributes": [
+            "Mount Type",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "coat and hat rack",
+            "coat and hat racks",
+            "coat rack",
+            "hat rack",
+            "coat",
+            "and",
+            "hat"
+          ],
+          "title_keywords": [
+            "coat and hat rack",
+            "coat and hat racks",
+            "coat rack",
+            "hat rack",
+            "coat",
+            "and",
+            "hat",
+            "racks"
+          ],
+          "context_keywords": [
+            "coat rack",
+            "hat rack",
+            "coat",
+            "and",
+            "hat",
+            "racks"
+          ],
+          "negative_keywords": [
+            "hall tree",
+            "coat hook",
+            "clothes rack",
+            "towel holder"
+          ]
+        },
+        "computer_machine_carts": {
+          "display_name": "Computer & Machine Carts",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Features1",
+            "Computer & Machine Cart Type",
+            "\"with\" Items Includes",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Color",
+            "Material"
+          ],
+          "aliases": [
+            "computer and machine cart",
+            "computer and machine carts",
+            "computer cart",
+            "machine cart",
+            "printer cart",
+            "computer",
+            "and"
+          ],
+          "title_keywords": [
+            "computer and machine cart",
+            "computer and machine carts",
+            "computer cart",
+            "machine cart",
+            "printer cart",
+            "computer",
+            "and",
+            "machine",
+            "carts"
+          ],
+          "context_keywords": [
+            "computer cart",
+            "machine cart",
+            "printer cart",
+            "computer",
+            "and",
+            "machine",
+            "carts"
+          ],
+          "negative_keywords": [
+            "utility cart",
+            "file cart",
+            "desk",
+            "workstation"
+          ]
+        },
+        "credenzas_sideboards": {
+          "display_name": "Credenzas & Sideboards",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Home Décor Style1",
+            "Assembled Product Width",
+            "Credenza & Sideboard Type",
+            "\"with\" Items Included8",
+            "Number of Doors4",
+            "Number of Drawers4",
+            "Number of Shelves4",
+            "\",\"",
+            "Color5",
+            "Pattern1"
+          ],
+          "attributes": [
+            "Brand",
+            "Credenza And Sideboard Type",
+            "Material"
+          ],
+          "aliases": [
+            "credenzas and sideboard",
+            "credenzas and sideboards",
+            "credenza",
+            "sideboard",
+            "buffet cabinet",
+            "credenzas",
+            "and"
+          ],
+          "title_keywords": [
+            "credenzas and sideboard",
+            "credenzas and sideboards",
+            "credenza",
+            "sideboard",
+            "buffet cabinet",
+            "credenzas",
+            "and",
+            "sideboards"
+          ],
+          "context_keywords": [
+            "credenza",
+            "sideboard",
+            "buffet cabinet",
+            "credenzas",
+            "and",
+            "sideboards"
+          ],
+          "negative_keywords": [
+            "accent cabinet",
+            "china cabinet",
+            "dresser",
+            "tv stand"
+          ]
+        },
+        "curio_display_cabinets": {
+          "display_name": "Curio & Display Cabinets",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Home Décor Style1",
+            "Number of Tiers4",
+            "Material",
+            "Curio & Display Cabinet Type",
+            "\"with\" Items Included8",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Curio And Display Cabinet Type",
+            "Cabinet Material"
+          ],
+          "aliases": [
+            "curio and display cabinet",
+            "curio and display cabinets",
+            "curio cabinet",
+            "display cabinet",
+            "curio",
+            "and",
+            "display"
+          ],
+          "title_keywords": [
+            "curio and display cabinet",
+            "curio and display cabinets",
+            "curio cabinet",
+            "display cabinet",
+            "curio",
+            "and",
+            "display",
+            "cabinets"
+          ],
+          "context_keywords": [
+            "curio cabinet",
+            "display cabinet",
+            "curio",
+            "and",
+            "display",
+            "cabinets"
+          ],
+          "negative_keywords": [
+            "china cabinet",
+            "accent cabinet",
+            "bookcase",
+            "media cabinet"
+          ]
+        },
+        "dressers": {
+          "display_name": "Dressers",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Age Group4",
+            "Character1",
+            "Character Group1",
+            "Home Décor Style5",
+            "Number of Drawers6",
+            "\"Dresser\"",
+            "\"with\" Items Included8",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Age Group",
+            "Color",
+            "Brand"
+          ],
+          "aliases": [
+            "dresser",
+            "dressers",
+            "chest of drawers"
+          ],
+          "title_keywords": [
+            "dresser",
+            "dressers",
+            "chest of drawers"
+          ],
+          "context_keywords": [
+            "chest of drawers"
+          ],
+          "negative_keywords": [
+            "nightstand",
+            "armoire",
+            "file cabinet",
+            "changing table"
+          ]
+        },
+        "entertainment_centers": {
+          "display_name": "Entertainment Centers",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Number of Pieces",
+            "\"-Piece\"4",
+            "\"Entertainment Center\"",
+            "Maximum Screen Size",
+            "\"with\" Items Included8",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Maximum Screen Size",
+            "Brand",
+            "Color"
+          ],
+          "aliases": [
+            "entertainment center",
+            "entertainment centers",
+            "wall unit",
+            "entertainment",
+            "centers"
+          ],
+          "title_keywords": [
+            "entertainment center",
+            "entertainment centers",
+            "wall unit",
+            "entertainment",
+            "centers"
+          ],
+          "context_keywords": [
+            "wall unit",
+            "entertainment",
+            "centers"
+          ],
+          "negative_keywords": [
+            "television stand",
+            "media cabinet",
+            "bookcase",
+            "living room set"
+          ]
+        },
+        "file_cabinets_boxes_carts": {
+          "display_name": "File Cabinets, Boxes & Carts",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Age Group4",
+            "Material",
+            "Number of Drawers5",
+            "Number of Shelves5",
+            "Features1",
+            "File Cabinet, Box & Cart Type",
+            "\"with\" Items Included8",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Material",
+            "Brand",
+            "File Cabinet Box And Cart Type"
+          ],
+          "aliases": [
+            "file cabinets, boxes and cart",
+            "file cabinets, boxes and carts",
+            "file cabinets boxes and carts",
+            "file cabinet",
+            "file box",
+            "file cart",
+            "file"
+          ],
+          "title_keywords": [
+            "file cabinets, boxes and cart",
+            "file cabinets, boxes and carts",
+            "file cabinets boxes and carts",
+            "file cabinet",
+            "file box",
+            "file cart",
+            "file",
+            "cabinets",
+            "boxes"
+          ],
+          "context_keywords": [
+            "file cabinets boxes and carts",
+            "file cabinet",
+            "file box",
+            "file cart",
+            "file",
+            "cabinets",
+            "boxes",
+            "and",
+            "carts"
+          ],
+          "negative_keywords": [
+            "computer cart",
+            "utility cart",
+            "dresser",
+            "storage box"
+          ]
+        },
+        "hall_trees": {
+          "display_name": "Hall Trees",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Age Group4",
+            "Home Décor Style1",
+            "Mount Type",
+            "\"Hall Tree\"",
+            "Number of Hooks",
+            "\"-Hooks\"5",
+            "Number of Compartments",
+            "\"- Cubbies\"5",
+            "\"with\" Items Included8",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Number Of Hooks",
+            "Color"
+          ],
+          "aliases": [
+            "hall tree",
+            "hall trees",
+            "entryway tree",
+            "hall",
+            "trees"
+          ],
+          "title_keywords": [
+            "hall tree",
+            "hall trees",
+            "entryway tree",
+            "hall",
+            "trees"
+          ],
+          "context_keywords": [
+            "entryway tree",
+            "hall",
+            "trees"
+          ],
+          "negative_keywords": [
+            "coat rack",
+            "coat hook",
+            "bookcase",
+            "shoe cabinet"
+          ]
+        },
+        "jewelry_armoires": {
+          "display_name": "Jewelry Armoires",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Age Group4",
+            "Home Décor Style1",
+            "Theme5",
+            "Mount Type",
+            "Features1",
+            "\"Jewelry Armoire\"",
+            "\"with\" Item Included",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Color",
+            "Has Mirror",
+            "Brand"
+          ],
+          "aliases": [
+            "jewelry armoire",
+            "jewelry armoires",
+            "jewelry cabinet",
+            "jewelry",
+            "armoires"
+          ],
+          "title_keywords": [
+            "jewelry armoire",
+            "jewelry armoires",
+            "jewelry cabinet",
+            "jewelry",
+            "armoires"
+          ],
+          "context_keywords": [
+            "jewelry cabinet",
+            "jewelry",
+            "armoires"
+          ],
+          "negative_keywords": [
+            "armoire",
+            "jewelry box",
+            "dresser",
+            "vanity table"
+          ]
+        },
+        "kitchen_islands": {
+          "display_name": "Kitchen Islands",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Home Décor Style1",
+            "Top Material",
+            "\"Kitchen Island\"",
+            "Items Included8",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Kitchen Island Type",
+            "Top Material"
+          ],
+          "aliases": [
+            "kitchen island",
+            "kitchen islands",
+            "kitchen island cart",
+            "kitchen",
+            "islands"
+          ],
+          "title_keywords": [
+            "kitchen island",
+            "kitchen islands",
+            "kitchen island cart",
+            "kitchen",
+            "islands"
+          ],
+          "context_keywords": [
+            "kitchen island cart",
+            "kitchen",
+            "islands"
+          ],
+          "negative_keywords": [
+            "kitchen cart",
+            "serving cart",
+            "dining table",
+            "bar cabinet"
+          ]
+        },
+        "kitchen_serving_carts": {
+          "display_name": "Kitchen Serving Carts",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Home Decor Style1",
+            "Number of Tier",
+            "\"-Tier\"4",
+            "Features1",
+            "Material",
+            "\"Kitchen Serving Cart\"",
+            "\"with\" Item Included",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Color Category",
+            "Kitchen Serving And Storage Cart Type"
+          ],
+          "aliases": [
+            "kitchen serving cart",
+            "kitchen serving carts",
+            "serving cart",
+            "kitchen",
+            "serving",
+            "carts"
+          ],
+          "title_keywords": [
+            "kitchen serving cart",
+            "kitchen serving carts",
+            "serving cart",
+            "kitchen",
+            "serving",
+            "carts"
+          ],
+          "context_keywords": [
+            "serving cart",
+            "kitchen",
+            "serving",
+            "carts"
+          ],
+          "negative_keywords": [
+            "kitchen storage cart",
+            "utility cart",
+            "bar cart",
+            "kitchen island"
+          ]
+        },
+        "kitchen_storage_carts": {
+          "display_name": "Kitchen Storage Carts",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Number of Tiers",
+            "\"-Tier\"4",
+            "Features1",
+            "\"Kitchen Storage Cart\"",
+            "\"with\" Items Included8",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Kitchen Serving And Storage Cart Type",
+            "Brand",
+            "Number Of Shelves"
+          ],
+          "aliases": [
+            "kitchen storage cart",
+            "kitchen storage carts",
+            "rolling kitchen cart",
+            "kitchen",
+            "storage",
+            "carts"
+          ],
+          "title_keywords": [
+            "kitchen storage cart",
+            "kitchen storage carts",
+            "rolling kitchen cart",
+            "kitchen",
+            "storage",
+            "carts"
+          ],
+          "context_keywords": [
+            "rolling kitchen cart",
+            "kitchen",
+            "storage",
+            "carts"
+          ],
+          "negative_keywords": [
+            "kitchen serving cart",
+            "utility cart",
+            "microwave rack",
+            "kitchen island"
+          ]
+        },
+        "media_storage_cabinets": {
+          "display_name": "Media Storage Cabinets",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Home Décor Style1",
+            "Features1",
+            "Door Style4",
+            "Media Storage Cabinet Type",
+            "\"with\" Items Included8",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Media Storage Cabinet Type",
+            "Color Category"
+          ],
+          "aliases": [
+            "media storage cabinet",
+            "media storage cabinets",
+            "media cabinet",
+            "media",
+            "storage",
+            "cabinets"
+          ],
+          "title_keywords": [
+            "media storage cabinet",
+            "media storage cabinets",
+            "media cabinet",
+            "media",
+            "storage",
+            "cabinets"
+          ],
+          "context_keywords": [
+            "media cabinet",
+            "media",
+            "storage",
+            "cabinets"
+          ],
+          "negative_keywords": [
+            "television stand",
+            "entertainment center",
+            "accent cabinet",
+            "bookcase"
+          ]
+        },
+        "medicine_cabinets": {
+          "display_name": "Medicine Cabinets",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Mount Type",
+            "Shape4",
+            "\"Medicine Cabinet\"",
+            "\"with\" Items Included8",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Mount Type",
+            "Has Mirror"
+          ],
+          "aliases": [
+            "medicine cabinet",
+            "medicine cabinets",
+            "bathroom medicine cabinet",
+            "medicine",
+            "cabinets"
+          ],
+          "title_keywords": [
+            "medicine cabinet",
+            "medicine cabinets",
+            "bathroom medicine cabinet",
+            "medicine",
+            "cabinets"
+          ],
+          "context_keywords": [
+            "bathroom medicine cabinet",
+            "medicine",
+            "cabinets"
+          ],
+          "negative_keywords": [
+            "bathroom vanity",
+            "storage cabinet",
+            "first aid kit",
+            "kitchen cabinet"
+          ]
+        },
+        "nightstands": {
+          "display_name": "Nightstands",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Home Décor Style1",
+            "Theme4",
+            "\"Nightstand\"",
+            "Items Included8",
+            "\",\"",
+            "\"Set of \"",
+            "Number of Pieces",
+            "\"(if =2)\"",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Color",
+            "Age Group"
+          ],
+          "aliases": [
+            "nightstand",
+            "nightstands",
+            "bedside table"
+          ],
+          "title_keywords": [
+            "nightstand",
+            "nightstands",
+            "bedside table"
+          ],
+          "context_keywords": [
+            "bedside table"
+          ],
+          "negative_keywords": [
+            "dresser",
+            "end table",
+            "bed frame",
+            "accent cabinet"
+          ]
+        },
+        "office_hutches": {
+          "display_name": "Office Hutches",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Home Décor Style1",
+            "Assembled Product Width",
+            "Number of Doors",
+            "\"- Doors\"4",
+            "\",\"",
+            "Number of Drawers4",
+            "\"-Drawers\"4",
+            "\"Office Hutch\"",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Color Category",
+            "Color"
+          ],
+          "aliases": [
+            "office hutche",
+            "office hutches",
+            "office hutch",
+            "desk hutch",
+            "office",
+            "hutches"
+          ],
+          "title_keywords": [
+            "office hutche",
+            "office hutches",
+            "office hutch",
+            "desk hutch",
+            "office",
+            "hutches"
+          ],
+          "context_keywords": [
+            "office hutch",
+            "desk hutch",
+            "office",
+            "hutches"
+          ],
+          "negative_keywords": [
+            "china hutch",
+            "desk",
+            "bookcase",
+            "file cabinet"
+          ]
+        },
+        "ottomans": {
+          "display_name": "Ottomans",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Age Group4",
+            "Character1",
+            "Character Group5",
+            "Home Decor Style1",
+            "Material",
+            "Features1",
+            "\"Ottoman\"",
+            "\"with\" Items Included7",
+            "Color6",
+            "Pattern1"
+          ],
+          "attributes": [
+            "Color",
+            "Material",
+            "Brand"
+          ],
+          "aliases": [
+            "ottoman",
+            "ottomans",
+            "storage ottoman"
+          ],
+          "title_keywords": [
+            "ottoman",
+            "ottomans",
+            "storage ottoman"
+          ],
+          "context_keywords": [
+            "storage ottoman"
+          ],
+          "negative_keywords": [
+            "stool",
+            "bench",
+            "coffee table",
+            "chair"
+          ]
+        },
+        "pantry_cabinets": {
+          "display_name": "Pantry Cabinets",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Mount Type",
+            "Assembled Product Height",
+            "Wood Type4",
+            "\"Pantry Cabinet\"",
+            "\"with\" Items Included5",
+            "\",\"",
+            "Color6/Finish6/Wood Tone6"
+          ],
+          "attributes": [
+            "Brand",
+            "Number Of Doors",
+            "Number Of Shelves"
+          ],
+          "aliases": [
+            "pantry cabinet",
+            "pantry cabinets",
+            "kitchen pantry",
+            "pantry",
+            "cabinets"
+          ],
+          "title_keywords": [
+            "pantry cabinet",
+            "pantry cabinets",
+            "kitchen pantry",
+            "pantry",
+            "cabinets"
+          ],
+          "context_keywords": [
+            "kitchen pantry",
+            "pantry",
+            "cabinets"
+          ],
+          "negative_keywords": [
+            "kitchen island",
+            "bar cabinet",
+            "cabinet",
+            "bookcase"
+          ]
+        },
+        "shoe_cabinets": {
+          "display_name": "Shoe Cabinets",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Age Group4",
+            "Home Décor Style1",
+            "Character1",
+            "Character Group5",
+            "Number of Tiers",
+            "\"-Tier\"6",
+            "\"Shoe Cabinet\"",
+            "Capacity",
+            "\"with\" Items Included8",
+            "Cabinet Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Cabinet Material",
+            "Color Category"
+          ],
+          "aliases": [
+            "shoe cabinet",
+            "shoe cabinets",
+            "shoe storage cabinet",
+            "shoe",
+            "cabinets"
+          ],
+          "title_keywords": [
+            "shoe cabinet",
+            "shoe cabinets",
+            "shoe storage cabinet",
+            "shoe",
+            "cabinets"
+          ],
+          "context_keywords": [
+            "shoe storage cabinet",
+            "shoe",
+            "cabinets"
+          ],
+          "negative_keywords": [
+            "shoe rack",
+            "hall tree",
+            "accent cabinet",
+            "dresser"
+          ]
+        },
+        "television_stands": {
+          "display_name": "Television Stands",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Home Decor Style1",
+            "\"Television Stand\"",
+            "\"for TVs up to\"",
+            "Maximum Screen Size",
+            "\"with\" Items Included8",
+            "Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Maximum Screen Size",
+            "Has Fireplace Feature"
+          ],
+          "aliases": [
+            "television stand",
+            "television stands",
+            "tv stand",
+            "television",
+            "stands"
+          ],
+          "title_keywords": [
+            "television stand",
+            "television stands",
+            "tv stand",
+            "television",
+            "stands"
+          ],
+          "context_keywords": [
+            "tv stand",
+            "television",
+            "stands"
+          ],
+          "negative_keywords": [
+            "entertainment center",
+            "media cabinet",
+            "speaker stand",
+            "coffee table"
+          ]
+        },
+        "utility_carts": {
+          "display_name": "Utility Carts",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Number of Tier",
+            "\"-Tiers\"",
+            "Features1",
+            "File Cabinet, Box, and Cart Type",
+            "\"with\" Items Included8",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Material",
+            "Color"
+          ],
+          "aliases": [
+            "utility cart",
+            "utility carts",
+            "rolling utility cart",
+            "utility",
+            "carts"
+          ],
+          "title_keywords": [
+            "utility cart",
+            "utility carts",
+            "rolling utility cart",
+            "utility",
+            "carts"
+          ],
+          "context_keywords": [
+            "rolling utility cart",
+            "utility",
+            "carts"
+          ],
+          "negative_keywords": [
+            "kitchen cart",
+            "file cart",
+            "computer cart",
+            "bar cart"
+          ]
+        },
+        "wine_cabinets": {
+          "display_name": "Wine Cabinets",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Global Brand License3",
+            "Assembled Product Width",
+            "Cabinet Material",
+            "Number of Bottles",
+            "\"-Bottle\"",
+            "Number of Cooling Zones",
+            "\"Wine Cabinet\"",
+            "\"with\" Features1",
+            "\"including\" Items Included8",
+            "\",\"",
+            "Cabinet Color"
+          ],
+          "attributes": [
+            "Brand",
+            "Color Category",
+            "Cabinet Color"
+          ],
+          "aliases": [
+            "wine cabinet",
+            "wine cabinets",
+            "wine storage cabinet",
+            "wine",
+            "cabinets"
+          ],
+          "title_keywords": [
+            "wine cabinet",
+            "wine cabinets",
+            "wine storage cabinet",
+            "wine",
+            "cabinets"
+          ],
+          "context_keywords": [
+            "wine storage cabinet",
+            "wine",
+            "cabinets"
+          ],
+          "negative_keywords": [
+            "bar cabinet",
+            "wine rack",
+            "beverage refrigerator",
+            "pantry cabinet"
+          ]
+        }
+      }
+    },
+    "table_furniture": {
+      "display_name": "Table Furniture",
+      "product_types": {
+        "activity_tables": {
+          "display_name": "Activity Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Pattern1",
+            "Piece Count4",
+            "\"-Piece\"4",
+            "Features4",
+            "\"Outdoor\"5",
+            "\"Activity Table\"",
+            "\"and Chair Set\"7",
+            "\",\"",
+            "Color6"
+          ],
+          "attributes": [
+            "Age Group",
+            "Brand",
+            "Assembly Required"
+          ],
+          "aliases": [
+            "activity table",
+            "activity tables",
+            "kids activity table",
+            "activity",
+            "tables"
+          ],
+          "title_keywords": [
+            "activity table",
+            "activity tables",
+            "kids activity table",
+            "activity",
+            "tables"
+          ],
+          "context_keywords": [
+            "kids activity table",
+            "activity",
+            "tables"
+          ],
+          "negative_keywords": [
+            "general purpose table",
+            "kids picnic table",
+            "desk",
+            "dining table"
+          ]
+        },
+        "bars": {
+          "display_name": "Bars",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Home Décor Style1",
+            "Features4",
+            "Furniture Bar Shape3",
+            "\"Bar\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Color5"
+          ],
+          "attributes": [
+            "Brand",
+            "Recommended Location",
+            "Color"
+          ],
+          "aliases": [
+            "bar",
+            "bars",
+            "home bar",
+            "furniture bar"
+          ],
+          "title_keywords": [
+            "bar",
+            "bars",
+            "home bar",
+            "furniture bar"
+          ],
+          "context_keywords": [
+            "home bar",
+            "furniture bar"
+          ],
+          "negative_keywords": [
+            "outdoor bar",
+            "bar set",
+            "bar cabinet",
+            "patio bar table"
+          ]
+        },
+        "coffee_tables": {
+          "display_name": "Coffee Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Home Décor Style1",
+            "Features4",
+            "Shape3",
+            "Material",
+            "\"Coffee Table\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Color5"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Table Shape"
+          ],
+          "aliases": [
+            "coffee table",
+            "coffee tables",
+            "cocktail table",
+            "coffee",
+            "tables"
+          ],
+          "title_keywords": [
+            "coffee table",
+            "coffee tables",
+            "cocktail table",
+            "coffee",
+            "tables"
+          ],
+          "context_keywords": [
+            "cocktail table",
+            "coffee",
+            "tables"
+          ],
+          "negative_keywords": [
+            "end table",
+            "console table",
+            "dining table",
+            "tv tray"
+          ]
+        },
+        "conference_room_tables": {
+          "display_name": "Conference Room Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Assembled Product Length",
+            "\"x\"",
+            "Assembled Product Width3",
+            "Features4",
+            "Shape4",
+            "\"Conference Room Table\"",
+            "\",\"",
+            "Color5"
+          ],
+          "attributes": [
+            "Table Shape",
+            "Assembled Product Length",
+            "Conference Room Table Type"
+          ],
+          "aliases": [
+            "conference room table",
+            "conference room tables",
+            "conference table",
+            "conference",
+            "room",
+            "tables"
+          ],
+          "title_keywords": [
+            "conference room table",
+            "conference room tables",
+            "conference table",
+            "conference",
+            "room",
+            "tables"
+          ],
+          "context_keywords": [
+            "conference table",
+            "conference",
+            "room",
+            "tables"
+          ],
+          "negative_keywords": [
+            "dining table",
+            "desk",
+            "folding table",
+            "general purpose table"
+          ]
+        },
+        "console_tables": {
+          "display_name": "Console Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Home Décor Style1",
+            "Features4",
+            "Material",
+            "\"Console Table\"",
+            "\",\"",
+            "Color3"
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Color"
+          ],
+          "aliases": [
+            "console table",
+            "console tables",
+            "sofa table",
+            "console",
+            "tables"
+          ],
+          "title_keywords": [
+            "console table",
+            "console tables",
+            "sofa table",
+            "console",
+            "tables"
+          ],
+          "context_keywords": [
+            "sofa table",
+            "console",
+            "tables"
+          ],
+          "negative_keywords": [
+            "coffee table",
+            "end table",
+            "tv stand",
+            "desk"
+          ]
+        },
+        "desks": {
+          "display_name": "Desks",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Pattern1",
+            "Home Décor Style1",
+            "Features4",
+            "Desk Shape6",
+            "\"Desk\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Color5"
+          ],
+          "attributes": [
+            "Desk Type",
+            "Brand",
+            "Age Group"
+          ],
+          "aliases": [
+            "desk",
+            "desks",
+            "computer desk",
+            "writing desk"
+          ],
+          "title_keywords": [
+            "desk",
+            "desks",
+            "computer desk",
+            "writing desk"
+          ],
+          "context_keywords": [
+            "computer desk",
+            "writing desk"
+          ],
+          "negative_keywords": [
+            "workstation",
+            "drafting table",
+            "sewing table",
+            "desk chair"
+          ]
+        },
+        "dining_tables": {
+          "display_name": "Dining Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Assembled Product Length",
+            "Table Shape3",
+            "Features1",
+            "\"Dining Table\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Color5"
+          ],
+          "attributes": [
+            "Table Shape",
+            "Brand",
+            "Seating Capacity"
+          ],
+          "aliases": [
+            "dining table",
+            "dining tables",
+            "kitchen table",
+            "dining",
+            "tables"
+          ],
+          "title_keywords": [
+            "dining table",
+            "dining tables",
+            "kitchen table",
+            "dining",
+            "tables"
+          ],
+          "context_keywords": [
+            "kitchen table",
+            "dining",
+            "tables"
+          ],
+          "negative_keywords": [
+            "outdoor dining table",
+            "conference table",
+            "coffee table",
+            "dining set"
+          ]
+        },
+        "drafting_tables": {
+          "display_name": "Drafting Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Top Material",
+            "Features4",
+            "Drafting Table Type",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Color5"
+          ],
+          "attributes": [
+            "Age Group",
+            "Brand",
+            "Table Shape"
+          ],
+          "aliases": [
+            "drafting table",
+            "drafting tables",
+            "drawing table",
+            "drafting",
+            "tables"
+          ],
+          "title_keywords": [
+            "drafting table",
+            "drafting tables",
+            "drawing table",
+            "drafting",
+            "tables"
+          ],
+          "context_keywords": [
+            "drawing table",
+            "drafting",
+            "tables"
+          ],
+          "negative_keywords": [
+            "desk",
+            "workstation",
+            "sewing table",
+            "activity table"
+          ]
+        },
+        "end_tables": {
+          "display_name": "End Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Recommended Location7",
+            "Home Décor Style1",
+            "Features4",
+            "Material4/Top Material4/Base Material4",
+            "Table Shape3",
+            "\"End Table\"",
+            "\",\"",
+            "Color5",
+            "\"(\"",
+            "\"Set of\"6",
+            "Piece Count6",
+            "\")\""
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Color"
+          ],
+          "aliases": [
+            "end table",
+            "end tables",
+            "side table",
+            "end",
+            "tables"
+          ],
+          "title_keywords": [
+            "end table",
+            "end tables",
+            "side table",
+            "end",
+            "tables"
+          ],
+          "context_keywords": [
+            "side table",
+            "end",
+            "tables"
+          ],
+          "negative_keywords": [
+            "coffee table",
+            "nightstand",
+            "console table",
+            "living room table set"
+          ]
+        },
+        "folding_tables": {
+          "display_name": "Folding Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Pattern1",
+            "Assembled Product Length",
+            "Recommended Use3",
+            "Features4",
+            "Folding Table Type",
+            "\",\"",
+            "Color5",
+            "Piece Count6",
+            "\"Count\"6"
+          ],
+          "attributes": [
+            "Brand",
+            "Assembled Product Length",
+            "Recommended Location"
+          ],
+          "aliases": [
+            "folding table",
+            "folding tables",
+            "foldable table",
+            "folding",
+            "tables"
+          ],
+          "title_keywords": [
+            "folding table",
+            "folding tables",
+            "foldable table",
+            "folding",
+            "tables"
+          ],
+          "context_keywords": [
+            "foldable table",
+            "folding",
+            "tables"
+          ],
+          "negative_keywords": [
+            "folding chair",
+            "dining table",
+            "conference table",
+            "tv tray"
+          ]
+        },
+        "game_card_tables": {
+          "display_name": "Game & Card Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Sport Team1",
+            "Sports League1",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Pattern1",
+            "Number of Player",
+            "\"Players\"",
+            "Features4",
+            "Game & Card Table Type",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Color5",
+            "\"(\"",
+            "Piece Count6",
+            "\"Count\"6",
+            "\")\""
+          ],
+          "attributes": [
+            "Game And Card Table Type",
+            "Brand",
+            "Condition"
+          ],
+          "aliases": [
+            "game and card table",
+            "game and card tables",
+            "card table",
+            "game table",
+            "poker table",
+            "game",
+            "and"
+          ],
+          "title_keywords": [
+            "game and card table",
+            "game and card tables",
+            "card table",
+            "game table",
+            "poker table",
+            "game",
+            "and",
+            "card",
+            "tables"
+          ],
+          "context_keywords": [
+            "card table",
+            "game table",
+            "poker table",
+            "game",
+            "and",
+            "card",
+            "tables"
+          ],
+          "negative_keywords": [
+            "board game",
+            "folding table",
+            "dining table",
+            "arcade table"
+          ]
+        },
+        "garden_stools": {
+          "display_name": "Garden Stools",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Assembled Product Height",
+            "Home Décor Style1",
+            "Pattern1",
+            "Theme1",
+            "Features4",
+            "Material",
+            "\"Garden Stool\"",
+            "\",\"",
+            "Color5",
+            "\"(\"",
+            "Piece Count6",
+            "\"Count\"6",
+            "\")\""
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Color"
+          ],
+          "aliases": [
+            "garden stool",
+            "garden stools",
+            "ceramic garden stool",
+            "garden",
+            "stools"
+          ],
+          "title_keywords": [
+            "garden stool",
+            "garden stools",
+            "ceramic garden stool",
+            "garden",
+            "stools"
+          ],
+          "context_keywords": [
+            "ceramic garden stool",
+            "garden",
+            "stools"
+          ],
+          "negative_keywords": [
+            "stool",
+            "bar stool",
+            "side table",
+            "plant stand"
+          ]
+        },
+        "general_purpose_tables": {
+          "display_name": "General Purpose Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Age Group3",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Pattern1",
+            "Assembled Product Length",
+            "\"x\"",
+            "Assembled Product Width",
+            "Features4",
+            "Material",
+            "\"General Purpose Table\"",
+            "\"with\" Item Included4",
+            "\",\"",
+            "Color5",
+            "\"(\"",
+            "Piece Count6",
+            "\"Count\"6",
+            "\")\""
+          ],
+          "attributes": [
+            "Brand",
+            "Condition",
+            "Color"
+          ],
+          "aliases": [
+            "general purpose table",
+            "general purpose tables",
+            "utility table",
+            "general",
+            "purpose",
+            "tables"
+          ],
+          "title_keywords": [
+            "general purpose table",
+            "general purpose tables",
+            "utility table",
+            "general",
+            "purpose",
+            "tables"
+          ],
+          "context_keywords": [
+            "utility table",
+            "general",
+            "purpose",
+            "tables"
+          ],
+          "negative_keywords": [
+            "activity table",
+            "folding table",
+            "dining table",
+            "workstation"
+          ]
+        },
+        "kids_picnic_tables": {
+          "display_name": "Kids Picnic Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Character1",
+            "Character Group1",
+            "Theme1",
+            "Pattern1",
+            "Recommended Location3",
+            "Features4",
+            "\"Kids Picnic Table\"",
+            "\"with\" Item Included4",
+            "\",\"",
+            "Color5",
+            "\"(\"",
+            "Piece Count6",
+            "\"Count\"6",
+            "\")\""
+          ],
+          "attributes": [
+            "Age Group",
+            "Recommended Location",
+            "Brand"
+          ],
+          "aliases": [
+            "kids picnic table",
+            "kids picnic tables",
+            "children picnic table",
+            "kids",
+            "picnic",
+            "tables"
+          ],
+          "title_keywords": [
+            "kids picnic table",
+            "kids picnic tables",
+            "children picnic table",
+            "kids",
+            "picnic",
+            "tables"
+          ],
+          "context_keywords": [
+            "children picnic table",
+            "kids",
+            "picnic",
+            "tables"
+          ],
+          "negative_keywords": [
+            "picnic table",
+            "activity table",
+            "kids table",
+            "outdoor dining table"
+          ]
+        },
+        "lecterns": {
+          "display_name": "Lecterns",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Assembled Product Height",
+            "Features4",
+            "Material",
+            "Lectern Type",
+            "\"with\" Item Included4",
+            "\",\"",
+            "Color5",
+            "\"(\"",
+            "Piece Count6",
+            "\"Count\"6",
+            "\")\""
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Lectern Type"
+          ],
+          "aliases": [
+            "lectern",
+            "lecterns",
+            "lecture stand"
+          ],
+          "title_keywords": [
+            "lectern",
+            "lecterns",
+            "lecture stand"
+          ],
+          "context_keywords": [
+            "lecture stand"
+          ],
+          "negative_keywords": [
+            "podium",
+            "book stand",
+            "speaker stand",
+            "desk"
+          ]
+        },
+        "outdoor_bars": {
+          "display_name": "Outdoor Bars",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Home Décor Style1",
+            "Features4",
+            "Furniture Bar Shape3",
+            "\"Outdoor Bar\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Color5",
+            "\"(\"",
+            "Piece Count6",
+            "\"Count\"6",
+            "\")\""
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Furniture Bar Shape"
+          ],
+          "aliases": [
+            "outdoor bar",
+            "outdoor bars",
+            "patio bar",
+            "outdoor",
+            "bars"
+          ],
+          "title_keywords": [
+            "outdoor bar",
+            "outdoor bars",
+            "patio bar",
+            "outdoor",
+            "bars"
+          ],
+          "context_keywords": [
+            "patio bar",
+            "outdoor",
+            "bars"
+          ],
+          "negative_keywords": [
+            "bar",
+            "bar set",
+            "bar cabinet",
+            "patio bar table"
+          ]
+        },
+        "outdoor_bistro_tables": {
+          "display_name": "Outdoor Bistro Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Assembled Product Length",
+            "Frame Material",
+            "Features4",
+            "Table Shape",
+            "\"Outdoor Bistro Table\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Color5",
+            "\"(\"",
+            "Piece Count6",
+            "\"Count\"6",
+            "\")\""
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Table Shape"
+          ],
+          "aliases": [
+            "outdoor bistro table",
+            "outdoor bistro tables",
+            "patio bistro table",
+            "outdoor",
+            "bistro",
+            "tables"
+          ],
+          "title_keywords": [
+            "outdoor bistro table",
+            "outdoor bistro tables",
+            "patio bistro table",
+            "outdoor",
+            "bistro",
+            "tables"
+          ],
+          "context_keywords": [
+            "patio bistro table",
+            "outdoor",
+            "bistro",
+            "tables"
+          ],
+          "negative_keywords": [
+            "outdoor bistro set",
+            "outdoor dining table",
+            "patio bar table",
+            "coffee table"
+          ]
+        },
+        "outdoor_dining_tables": {
+          "display_name": "Outdoor Dining Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Assembled Product Length",
+            "Frame Material",
+            "Features4",
+            "\"Outdoor Dining Table\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Color5",
+            "\"(\"",
+            "Piece Count6",
+            "\"Count\"6",
+            "\")\""
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Table Shape"
+          ],
+          "aliases": [
+            "outdoor dining table",
+            "outdoor dining tables",
+            "patio dining table",
+            "outdoor",
+            "dining",
+            "tables"
+          ],
+          "title_keywords": [
+            "outdoor dining table",
+            "outdoor dining tables",
+            "patio dining table",
+            "outdoor",
+            "dining",
+            "tables"
+          ],
+          "context_keywords": [
+            "patio dining table",
+            "outdoor",
+            "dining",
+            "tables"
+          ],
+          "negative_keywords": [
+            "dining table",
+            "bistro table",
+            "picnic table",
+            "patio set"
+          ]
+        },
+        "patio_bar_tables": {
+          "display_name": "Patio Bar Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Assembled Product Length",
+            "Theme1",
+            "Pattern1",
+            "Shape3",
+            "Features4",
+            "Material",
+            "\"Patio Bar Table\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Color5",
+            "\"(\"",
+            "Piece Count6",
+            "\"Count\"6",
+            "\")\""
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Table Height"
+          ],
+          "aliases": [
+            "patio bar table",
+            "patio bar tables",
+            "outdoor bar table",
+            "patio",
+            "bar",
+            "tables"
+          ],
+          "title_keywords": [
+            "patio bar table",
+            "patio bar tables",
+            "outdoor bar table",
+            "patio",
+            "bar",
+            "tables"
+          ],
+          "context_keywords": [
+            "outdoor bar table",
+            "patio",
+            "bar",
+            "tables"
+          ],
+          "negative_keywords": [
+            "outdoor bar",
+            "bar set",
+            "pub table",
+            "outdoor bistro table"
+          ]
+        },
+        "picnic_tables": {
+          "display_name": "Picnic Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Assembled Product Length",
+            "Features4",
+            "Shape",
+            "Material",
+            "\"Picnic Table\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Color5",
+            "\"(\"",
+            "Piece Count6",
+            "\"Count\"6",
+            "\")\""
+          ],
+          "attributes": [
+            "Brand",
+            "Recommended Location",
+            "Age Group"
+          ],
+          "aliases": [
+            "picnic table",
+            "picnic tables",
+            "outdoor picnic table",
+            "picnic",
+            "tables"
+          ],
+          "title_keywords": [
+            "picnic table",
+            "picnic tables",
+            "outdoor picnic table",
+            "picnic",
+            "tables"
+          ],
+          "context_keywords": [
+            "outdoor picnic table",
+            "picnic",
+            "tables"
+          ],
+          "negative_keywords": [
+            "kids picnic table",
+            "outdoor dining table",
+            "folding table",
+            "bench"
+          ]
+        },
+        "podiums": {
+          "display_name": "Podiums",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Assembled Product Height",
+            "Material",
+            "Features4",
+            "\"Podium\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Color5",
+            "\"(\"",
+            "Piece Count6",
+            "\"Count\"6",
+            "\")\""
+          ],
+          "attributes": [
+            "Podium Type",
+            "Recommended Location",
+            "Maximum Load Weight"
+          ],
+          "aliases": [
+            "podium",
+            "podiums",
+            "presentation podium"
+          ],
+          "title_keywords": [
+            "podium",
+            "podiums",
+            "presentation podium"
+          ],
+          "context_keywords": [
+            "presentation podium"
+          ],
+          "negative_keywords": [
+            "lectern",
+            "speaker stand",
+            "desk",
+            "stage"
+          ]
+        },
+        "pub_tables": {
+          "display_name": "Pub Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Features4",
+            "Shape",
+            "\"(if Shape does not = Rectangle or Square)\"",
+            "Product Type",
+            "\"with Chair Set\"",
+            "\"(if Number of Seats = 1 or more)\"",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Table Height",
+            "Table Shape",
+            "Color"
+          ],
+          "aliases": [
+            "pub table",
+            "pub tables",
+            "counter height table",
+            "pub",
+            "tables"
+          ],
+          "title_keywords": [
+            "pub table",
+            "pub tables",
+            "counter height table",
+            "pub",
+            "tables"
+          ],
+          "context_keywords": [
+            "counter height table",
+            "pub",
+            "tables"
+          ],
+          "negative_keywords": [
+            "patio bar table",
+            "bar set",
+            "dining table",
+            "bar stool"
+          ]
+        },
+        "sewing_tables": {
+          "display_name": "Sewing Tables",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Features4",
+            "\"Sewing Table\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Color5",
+            "\"(\"",
+            "Piece Count6",
+            "\"Count\"6",
+            "\")\""
+          ],
+          "attributes": [
+            "Brand",
+            "Condition",
+            "Recommended Location"
+          ],
+          "aliases": [
+            "sewing table",
+            "sewing tables",
+            "sewing machine table",
+            "sewing",
+            "tables"
+          ],
+          "title_keywords": [
+            "sewing table",
+            "sewing tables",
+            "sewing machine table",
+            "sewing",
+            "tables"
+          ],
+          "context_keywords": [
+            "sewing machine table",
+            "sewing",
+            "tables"
+          ],
+          "negative_keywords": [
+            "desk",
+            "workstation",
+            "drafting table",
+            "machine cart"
+          ]
+        },
+        "table_bases": {
+          "display_name": "Table Bases",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Assembled Product Length",
+            "Material",
+            "Features4",
+            "Table Base Type",
+            "\",\"",
+            "Color5"
+          ],
+          "attributes": [
+            "Table Base Type",
+            "Recommended Location",
+            "Color"
+          ],
+          "aliases": [
+            "table base",
+            "table bases",
+            "replacement table base",
+            "table",
+            "bases"
+          ],
+          "title_keywords": [
+            "table base",
+            "table bases",
+            "replacement table base",
+            "table",
+            "bases"
+          ],
+          "context_keywords": [
+            "replacement table base",
+            "table",
+            "bases"
+          ],
+          "negative_keywords": [
+            "table top",
+            "table set",
+            "bar stool",
+            "chair base"
+          ]
+        },
+        "table_tops": {
+          "display_name": "Table Tops",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Features4",
+            "Table Top Type",
+            "\",\"",
+            "Assembled Product Width",
+            "Shape",
+            "\",\"",
+            "Thickness",
+            "\",\"",
+            "Color"
+          ],
+          "attributes": [
+            "Table Top Type",
+            "Table Top Material",
+            "Table Shape"
+          ],
+          "aliases": [
+            "table top",
+            "table tops",
+            "replacement table top",
+            "table",
+            "tops"
+          ],
+          "title_keywords": [
+            "table top",
+            "table tops",
+            "replacement table top",
+            "table",
+            "tops"
+          ],
+          "context_keywords": [
+            "replacement table top",
+            "table",
+            "tops"
+          ],
+          "negative_keywords": [
+            "table base",
+            "desk top",
+            "countertop",
+            "cutting board"
+          ]
+        },
+        "tv_trays": {
+          "display_name": "TV Trays",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Piece Count",
+            "\"-Piece\"6",
+            "Features4",
+            "\"TV Tray\"",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Color5"
+          ],
+          "attributes": [
+            "Brand",
+            "Number Of Pieces",
+            "Multipack Quantity"
+          ],
+          "aliases": [
+            "tv tray",
+            "tv trays",
+            "tv tray table",
+            "trays"
+          ],
+          "title_keywords": [
+            "tv tray",
+            "tv trays",
+            "tv tray table",
+            "trays"
+          ],
+          "context_keywords": [
+            "tv tray table",
+            "trays"
+          ],
+          "negative_keywords": [
+            "television stand",
+            "folding table",
+            "end table",
+            "serving tray"
+          ]
+        },
+        "workstations": {
+          "display_name": "Workstations",
+          "formula": [
+            "Brand",
+            "Product Line1",
+            "Collection2",
+            "Number of Shelves",
+            "\"Shelf\"1",
+            "Number of Drawers",
+            "\"Drawer\"1",
+            "Features4",
+            "Workstation Type",
+            "\"with\" Items Included4",
+            "\",\"",
+            "Color5"
+          ],
+          "attributes": [
+            "Brand",
+            "Assembly Required",
+            "Has Storage Cabinet"
+          ],
+          "aliases": [
+            "workstation",
+            "workstations",
+            "computer workstation"
+          ],
+          "title_keywords": [
+            "workstation",
+            "workstations",
+            "computer workstation"
+          ],
+          "context_keywords": [
+            "computer workstation"
+          ],
+          "negative_keywords": [
+            "desk",
+            "drafting table",
+            "sewing table",
+            "conference table"
+          ]
+        }
+      }
+    }
+  }
+}

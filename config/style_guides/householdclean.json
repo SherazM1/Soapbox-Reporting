@@ -1,0 +1,5287 @@
+{
+  "category": "Household / Industrial Cleaning / Storage",
+  "status": "partial",
+  "source": "HouseholdCleanContentStyleGuide.pdf",
+  "families": {
+    "cleaners": {
+      "display_name": "Cleaners",
+      "product_types": {
+        "all_purpose_cleaners": {
+          "display_name": "All Purpose Cleaners",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Ingredient Properties",
+            "Household Cleaner Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included OR \"with\"",
+            "Primary Ingredient",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "(Multipack Quantity",
+            "\"Pack\")"
+          ],
+          "attributes": [
+            "Brand",
+            "Household Cleaner Type",
+            "Cleanser Form"
+          ],
+          "aliases": [
+            "all purpose cleaner",
+            "all purpose cleaners",
+            "all-purpose cleaner",
+            "multi purpose cleaner",
+            "multipurpose cleaner",
+            "all"
+          ],
+          "title_keywords": [
+            "all purpose cleaner",
+            "all purpose cleaners",
+            "all-purpose cleaner",
+            "multi purpose cleaner",
+            "multipurpose cleaner",
+            "all",
+            "purpose",
+            "cleaners"
+          ],
+          "context_keywords": [
+            "all-purpose cleaner",
+            "multi purpose cleaner",
+            "multipurpose cleaner",
+            "all",
+            "purpose",
+            "cleaners"
+          ],
+          "negative_keywords": [
+            "bathroom cleaner",
+            "kitchen cleaner",
+            "glass cleaner",
+            "dish soap",
+            "disinfectant spray"
+          ]
+        },
+        "dish_soaps": {
+          "display_name": "Dish Soaps",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Ingredient Properties",
+            "Features",
+            "Cleanser Form",
+            "Detergent & Dish Soap Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "(Multipack Quantity",
+            "\"Pack\")"
+          ],
+          "attributes": [
+            "Brand",
+            "Detergent And Dish Soap Type",
+            "Cleanser Form"
+          ],
+          "aliases": [
+            "dish soap",
+            "dish soaps",
+            "dish liquid",
+            "dishwashing liquid",
+            "dish",
+            "soaps"
+          ],
+          "title_keywords": [
+            "dish soap",
+            "dish soaps",
+            "dish liquid",
+            "dishwashing liquid",
+            "dish",
+            "soaps"
+          ],
+          "context_keywords": [
+            "dish liquid",
+            "dishwashing liquid",
+            "dish",
+            "soaps"
+          ],
+          "negative_keywords": [
+            "dishwasher detergent",
+            "hand soap",
+            "all purpose cleaner",
+            "laundry detergent"
+          ]
+        },
+        "dishwasher_detergents": {
+          "display_name": "Dishwasher Detergents",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "Detergent & Dish Soap Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "(Multipack Quantity",
+            "\"Pack\")"
+          ],
+          "attributes": [
+            "Brand",
+            "Detergent And Dish Soap Type",
+            "Cleanser Form"
+          ],
+          "aliases": [
+            "dishwasher detergent",
+            "dishwasher detergents",
+            "dishwasher pods",
+            "dishwasher tablets",
+            "dishwasher",
+            "detergents"
+          ],
+          "title_keywords": [
+            "dishwasher detergent",
+            "dishwasher detergents",
+            "dishwasher pods",
+            "dishwasher tablets",
+            "dishwasher",
+            "detergents"
+          ],
+          "context_keywords": [
+            "dishwasher pods",
+            "dishwasher tablets",
+            "dishwasher",
+            "detergents"
+          ],
+          "negative_keywords": [
+            "dish soap",
+            "dish liquid",
+            "laundry detergent",
+            "all purpose cleaner"
+          ]
+        },
+        "drain_openers": {
+          "display_name": "Drain Openers",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Use OR Features",
+            "Drain Opener",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "(Multipack Quantity",
+            "\"Pack\")"
+          ],
+          "attributes": [
+            "Brand",
+            "Size",
+            "Cleanser Form"
+          ],
+          "aliases": [
+            "drain opener",
+            "drain openers",
+            "drain cleaner",
+            "clog remover",
+            "drain",
+            "openers"
+          ],
+          "title_keywords": [
+            "drain opener",
+            "drain openers",
+            "drain cleaner",
+            "clog remover",
+            "drain",
+            "openers"
+          ],
+          "context_keywords": [
+            "drain cleaner",
+            "clog remover",
+            "drain",
+            "openers"
+          ],
+          "negative_keywords": [
+            "toilet cleaner",
+            "bathroom cleaner",
+            "pipe fitting",
+            "plunger"
+          ]
+        },
+        "household_cleaners": {
+          "display_name": "Household Cleaners",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Location",
+            "Ingredient Properties OR Features OR Recommended Use",
+            "Household Cleaner Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "(Multipack Quantity",
+            "\"Pack\")"
+          ],
+          "attributes": [
+            "Brand",
+            "Household Cleaner Type",
+            "Cleanser Form"
+          ],
+          "aliases": [
+            "household cleaner",
+            "household cleaners",
+            "home cleaner",
+            "household",
+            "cleaners"
+          ],
+          "title_keywords": [
+            "household cleaner",
+            "household cleaners",
+            "home cleaner",
+            "household",
+            "cleaners"
+          ],
+          "context_keywords": [
+            "home cleaner",
+            "household",
+            "cleaners"
+          ],
+          "negative_keywords": [
+            "all purpose cleaner",
+            "bathroom cleaner",
+            "kitchen cleaner",
+            "glass cleaner",
+            "wood polish"
+          ]
+        },
+        "pet_stain_remover": {
+          "display_name": "Pet Stain Remover",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "Animal Type",
+            "Recommended Surface OR Recommended Use",
+            "Household Cleaner Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "(Multipack Quantity",
+            "\"Pack\")"
+          ],
+          "attributes": [
+            "Brand",
+            "Size",
+            "Cleanser Form"
+          ],
+          "aliases": [
+            "pet stain remover",
+            "pet odor remover",
+            "enzyme cleaner",
+            "pet",
+            "stain",
+            "remover"
+          ],
+          "title_keywords": [
+            "pet stain remover",
+            "pet odor remover",
+            "enzyme cleaner",
+            "pet",
+            "stain",
+            "remover"
+          ],
+          "context_keywords": [
+            "enzyme cleaner",
+            "pet",
+            "stain",
+            "remover"
+          ],
+          "negative_keywords": [
+            "carpet cleaner",
+            "laundry stain remover",
+            "all purpose cleaner",
+            "pet shampoo"
+          ]
+        },
+        "waterproofing_sprays": {
+          "display_name": "Waterproofing Sprays",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Location",
+            "Features",
+            "Recommended Use",
+            "\"Waterproofing Spray\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "(Multipack Quantity",
+            "\"Pack\")"
+          ],
+          "attributes": [
+            "Brand",
+            "Size",
+            "Cleanser Form"
+          ],
+          "aliases": [
+            "waterproofing spray",
+            "waterproofing sprays",
+            "water repellent spray",
+            "fabric protector spray",
+            "waterproofing",
+            "sprays"
+          ],
+          "title_keywords": [
+            "waterproofing spray",
+            "waterproofing sprays",
+            "water repellent spray",
+            "fabric protector spray",
+            "waterproofing",
+            "sprays"
+          ],
+          "context_keywords": [
+            "water repellent spray",
+            "fabric protector spray",
+            "waterproofing",
+            "sprays"
+          ],
+          "negative_keywords": [
+            "cleaner",
+            "disinfectant spray",
+            "sanitizer spray",
+            "air freshener"
+          ]
+        },
+        "wood_polishes": {
+          "display_name": "Wood Polishes",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "Recommended Room",
+            "Recommended Use",
+            "Primary Ingredient",
+            "Household Cleaner Type",
+            "Retail Packing",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "(Multipack Quantity",
+            "\"Pack\")"
+          ],
+          "attributes": [
+            "Brand",
+            "Household Cleaner Type",
+            "Cleanser Form"
+          ],
+          "aliases": [
+            "wood polishe",
+            "wood polishes",
+            "wood polish",
+            "furniture polish",
+            "wood cleaner",
+            "wood"
+          ],
+          "title_keywords": [
+            "wood polishe",
+            "wood polishes",
+            "wood polish",
+            "furniture polish",
+            "wood cleaner",
+            "wood",
+            "polishes"
+          ],
+          "context_keywords": [
+            "wood polish",
+            "furniture polish",
+            "wood cleaner",
+            "wood",
+            "polishes"
+          ],
+          "negative_keywords": [
+            "glass cleaner",
+            "floor cleaner",
+            "all purpose cleaner",
+            "wax melts"
+          ]
+        },
+        "bathroom_cleaners": {
+          "display_name": "Bathroom Cleaners",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Use",
+            "Cleanser Form",
+            "\"Bathroom Cleaner\"",
+            "Cleanser Form",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "\"with\"",
+            "Primary Ingredient",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "(Multipack Quantity",
+            "\"Pack\")"
+          ],
+          "attributes": [
+            "Brand",
+            "Cleanser Form",
+            "Size"
+          ],
+          "aliases": [
+            "bathroom cleaner",
+            "bathroom cleaners",
+            "tub cleaner",
+            "toilet cleaner",
+            "bathroom",
+            "cleaners"
+          ],
+          "title_keywords": [
+            "bathroom cleaner",
+            "bathroom cleaners",
+            "tub cleaner",
+            "toilet cleaner",
+            "bathroom",
+            "cleaners"
+          ],
+          "context_keywords": [
+            "tub cleaner",
+            "toilet cleaner",
+            "bathroom",
+            "cleaners"
+          ],
+          "negative_keywords": [
+            "kitchen cleaner",
+            "glass cleaner",
+            "dish soap",
+            "carpet cleaner"
+          ]
+        },
+        "carpet_cleaners": {
+          "display_name": "Carpet Cleaners",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "\"Carpet Cleaner\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "\"for\"",
+            "Compatible Devices",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "(Multipack Quantity",
+            "\"Pack\")"
+          ],
+          "attributes": [
+            "Brand",
+            "Cleanser Form",
+            "Condition"
+          ],
+          "aliases": [
+            "carpet cleaner",
+            "carpet cleaners",
+            "rug cleaner",
+            "carpet shampoo",
+            "carpet",
+            "cleaners"
+          ],
+          "title_keywords": [
+            "carpet cleaner",
+            "carpet cleaners",
+            "rug cleaner",
+            "carpet shampoo",
+            "carpet",
+            "cleaners"
+          ],
+          "context_keywords": [
+            "rug cleaner",
+            "carpet shampoo",
+            "carpet",
+            "cleaners"
+          ],
+          "negative_keywords": [
+            "pet stain remover",
+            "floor cleaner",
+            "vacuum",
+            "upholstery tool"
+          ]
+        },
+        "glass_cleaners": {
+          "display_name": "Glass Cleaners",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Primary Ingredient",
+            "Recommended Use",
+            "\"Glass Cleaner\" OR \"Glass Cleaner Refill\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "(Multipack Quantity",
+            "\"Pack\")"
+          ],
+          "attributes": [
+            "Brand",
+            "Cleanser Form",
+            "Size"
+          ],
+          "aliases": [
+            "glass cleaner",
+            "glass cleaners",
+            "window cleaner",
+            "mirror cleaner",
+            "glass",
+            "cleaners"
+          ],
+          "title_keywords": [
+            "glass cleaner",
+            "glass cleaners",
+            "window cleaner",
+            "mirror cleaner",
+            "glass",
+            "cleaners"
+          ],
+          "context_keywords": [
+            "window cleaner",
+            "mirror cleaner",
+            "glass",
+            "cleaners"
+          ],
+          "negative_keywords": [
+            "all purpose cleaner",
+            "bathroom cleaner",
+            "screen cleaner",
+            "wood polish"
+          ]
+        },
+        "disinfectant_sprays": {
+          "display_name": "Disinfectant Sprays",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "\"Disinfectant Spray\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "(Multipack Quantity",
+            "\"Pack\")"
+          ],
+          "attributes": [
+            "Brand",
+            "Size",
+            "Cleanser Form"
+          ],
+          "aliases": [
+            "disinfectant spray",
+            "disinfectant sprays",
+            "disinfecting spray",
+            "disinfectant",
+            "sprays"
+          ],
+          "title_keywords": [
+            "disinfectant spray",
+            "disinfectant sprays",
+            "disinfecting spray",
+            "disinfectant",
+            "sprays"
+          ],
+          "context_keywords": [
+            "disinfecting spray",
+            "disinfectant",
+            "sprays"
+          ],
+          "negative_keywords": [
+            "sanitizer spray",
+            "air freshener",
+            "waterproofing spray",
+            "cleaner refill"
+          ]
+        },
+        "kitchen_cleaners": {
+          "display_name": "Kitchen Cleaners",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Use",
+            "Ingredient Properties",
+            "\"Kitchen Cleaner\" OR \"Kitchen Cleaner Refill\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "(Multipack Quantity",
+            "\"Pack\")"
+          ],
+          "attributes": [
+            "Brand",
+            "Cleanser Form",
+            "Size"
+          ],
+          "aliases": [
+            "kitchen cleaner",
+            "kitchen cleaners",
+            "degreaser",
+            "countertop cleaner",
+            "kitchen",
+            "cleaners"
+          ],
+          "title_keywords": [
+            "kitchen cleaner",
+            "kitchen cleaners",
+            "degreaser",
+            "countertop cleaner",
+            "kitchen",
+            "cleaners"
+          ],
+          "context_keywords": [
+            "degreaser",
+            "countertop cleaner",
+            "kitchen",
+            "cleaners"
+          ],
+          "negative_keywords": [
+            "bathroom cleaner",
+            "dish soap",
+            "dishwasher detergent",
+            "glass cleaner"
+          ]
+        },
+        "sanitizer_wands": {
+          "display_name": "Sanitizer Wands",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Sanitization Method",
+            "\"Sanitizer Wand\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "(Multipack Quantity",
+            "\"Pack\")"
+          ],
+          "attributes": [
+            "Sanitization Method",
+            "Brand",
+            "Size"
+          ],
+          "aliases": [
+            "sanitizer wand",
+            "sanitizer wands",
+            "uv sanitizer wand",
+            "disinfection wand",
+            "sanitizer",
+            "wands"
+          ],
+          "title_keywords": [
+            "sanitizer wand",
+            "sanitizer wands",
+            "uv sanitizer wand",
+            "disinfection wand",
+            "sanitizer",
+            "wands"
+          ],
+          "context_keywords": [
+            "uv sanitizer wand",
+            "disinfection wand",
+            "sanitizer",
+            "wands"
+          ],
+          "negative_keywords": [
+            "sanitizer spray",
+            "disinfectant spray",
+            "cleaner",
+            "flashlight"
+          ]
+        },
+        "sanitizer_sprays": {
+          "display_name": "Sanitizer Sprays",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Surface",
+            "\"Sanitizer Spray\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "(Multipack Quantity",
+            "\"Pack\")"
+          ],
+          "attributes": [
+            "Brand",
+            "Cleanser Form",
+            "Size"
+          ],
+          "aliases": [
+            "sanitizer spray",
+            "sanitizer sprays",
+            "sanitizing spray",
+            "sanitizer",
+            "sprays"
+          ],
+          "title_keywords": [
+            "sanitizer spray",
+            "sanitizer sprays",
+            "sanitizing spray",
+            "sanitizer",
+            "sprays"
+          ],
+          "context_keywords": [
+            "sanitizing spray",
+            "sanitizer",
+            "sprays"
+          ],
+          "negative_keywords": [
+            "disinfectant spray",
+            "air freshener",
+            "hand sanitizer",
+            "waterproofing spray"
+          ]
+        },
+        "urinal_deodorizers": {
+          "display_name": "Urinal Deodorizers",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Use",
+            "Color",
+            "\"Urinal Deodorizer\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "Total Count",
+            "\"Count\"",
+            "(Multipack Quantity",
+            "\"Pack\" OR \"Cases\")"
+          ],
+          "attributes": [
+            "Brand",
+            "Scent",
+            "Ib Scent Family"
+          ],
+          "aliases": [
+            "urinal deodorizer",
+            "urinal deodorizers",
+            "urinal screen",
+            "urinal block",
+            "urinal",
+            "deodorizers"
+          ],
+          "title_keywords": [
+            "urinal deodorizer",
+            "urinal deodorizers",
+            "urinal screen",
+            "urinal block",
+            "urinal",
+            "deodorizers"
+          ],
+          "context_keywords": [
+            "urinal screen",
+            "urinal block",
+            "urinal",
+            "deodorizers"
+          ],
+          "negative_keywords": [
+            "air freshener",
+            "toilet cleaner",
+            "bathroom cleaner",
+            "deodorant"
+          ]
+        }
+      }
+    },
+    "disposable_tableware": {
+      "display_name": "Disposable Tableware",
+      "product_types": {
+        "foam_cups": {
+          "display_name": "Foam Cups",
+          "formula": [
+            "Brand",
+            "Global Brand License",
+            "Product Line",
+            "Character Group",
+            "Character",
+            "Occasion",
+            "Features",
+            "\"Disposable Foam Cups\"",
+            "Volume Capacity",
+            "Pattern",
+            "Theme",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "(Pack)"
+          ],
+          "attributes": [
+            "Disposable Volume Capacity",
+            "Material",
+            "Disposable"
+          ],
+          "aliases": [
+            "foam cup",
+            "foam cups",
+            "disposable foam cups",
+            "styrofoam cups",
+            "foam",
+            "cups"
+          ],
+          "title_keywords": [
+            "foam cup",
+            "foam cups",
+            "disposable foam cups",
+            "styrofoam cups",
+            "foam",
+            "cups"
+          ],
+          "context_keywords": [
+            "disposable foam cups",
+            "styrofoam cups",
+            "foam",
+            "cups"
+          ],
+          "negative_keywords": [
+            "paper cups",
+            "plastic cups",
+            "foam bowls",
+            "mugs"
+          ]
+        },
+        "paper_bowls": {
+          "display_name": "Paper Bowls",
+          "formula": [
+            "Brand",
+            "Global Brand License",
+            "Product Line",
+            "Character Group",
+            "Character",
+            "Occasion",
+            "Features",
+            "\"Disposable Paper Bowls\"",
+            "Volume Capacity",
+            "Pattern",
+            "Theme",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "(Pack)"
+          ],
+          "attributes": [
+            "Brand",
+            "Material",
+            "Disposable"
+          ],
+          "aliases": [
+            "paper bowl",
+            "paper bowls",
+            "disposable paper bowls",
+            "paper",
+            "bowls"
+          ],
+          "title_keywords": [
+            "paper bowl",
+            "paper bowls",
+            "disposable paper bowls",
+            "paper",
+            "bowls"
+          ],
+          "context_keywords": [
+            "disposable paper bowls",
+            "paper",
+            "bowls"
+          ],
+          "negative_keywords": [
+            "paper plates",
+            "paper cups",
+            "plastic bowls",
+            "serving trays"
+          ]
+        },
+        "paper_cups": {
+          "display_name": "Paper Cups",
+          "formula": [
+            "Brand",
+            "Global Brand License",
+            "Product Line",
+            "Character Group",
+            "Character",
+            "Occasion",
+            "Features",
+            "\"Disposable Paper Cups\"",
+            "Volume Capacity",
+            "Pattern",
+            "Theme",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "(Pack)"
+          ],
+          "attributes": [
+            "Disposable Volume Capacity",
+            "Material",
+            "Disposable"
+          ],
+          "aliases": [
+            "paper cup",
+            "paper cups",
+            "disposable paper cups",
+            "paper",
+            "cups"
+          ],
+          "title_keywords": [
+            "paper cup",
+            "paper cups",
+            "disposable paper cups",
+            "paper",
+            "cups"
+          ],
+          "context_keywords": [
+            "disposable paper cups",
+            "paper",
+            "cups"
+          ],
+          "negative_keywords": [
+            "foam cups",
+            "plastic cups",
+            "paper bowls",
+            "mugs"
+          ]
+        },
+        "paper_plates": {
+          "display_name": "Paper Plates",
+          "formula": [
+            "Brand",
+            "Global Brand License",
+            "Product Line",
+            "Character Group",
+            "Character",
+            "Occasion",
+            "Features",
+            "\"Disposable Paper Plates\"",
+            "Diameter",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "(Pack)"
+          ],
+          "attributes": [
+            "Brand",
+            "Diameter",
+            "Material"
+          ],
+          "aliases": [
+            "paper plate",
+            "paper plates",
+            "disposable paper plates",
+            "paper",
+            "plates"
+          ],
+          "title_keywords": [
+            "paper plate",
+            "paper plates",
+            "disposable paper plates",
+            "paper",
+            "plates"
+          ],
+          "context_keywords": [
+            "disposable paper plates",
+            "paper",
+            "plates"
+          ],
+          "negative_keywords": [
+            "paper bowls",
+            "serving trays",
+            "plastic cups",
+            "dinnerware set"
+          ]
+        },
+        "plastic_cups": {
+          "display_name": "Plastic Cups",
+          "formula": [
+            "Brand",
+            "Global Brand License",
+            "Product Line",
+            "Character Group",
+            "Character",
+            "Occasion",
+            "Features",
+            "\"Disposable Plastic Cups\"",
+            "Volume Capacity",
+            "Pattern",
+            "Theme",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "(Pack)"
+          ],
+          "attributes": [
+            "Material",
+            "Disposable",
+            "Brand"
+          ],
+          "aliases": [
+            "plastic cup",
+            "plastic cups",
+            "disposable plastic cups",
+            "party cups",
+            "plastic",
+            "cups"
+          ],
+          "title_keywords": [
+            "plastic cup",
+            "plastic cups",
+            "disposable plastic cups",
+            "party cups",
+            "plastic",
+            "cups"
+          ],
+          "context_keywords": [
+            "disposable plastic cups",
+            "party cups",
+            "plastic",
+            "cups"
+          ],
+          "negative_keywords": [
+            "paper cups",
+            "foam cups",
+            "reusable cup",
+            "tumblers"
+          ]
+        },
+        "disposable_forks": {
+          "display_name": "Disposable Forks",
+          "formula": [
+            "Brand",
+            "Global Brand License",
+            "Product Line",
+            "Character Group",
+            "Character",
+            "Occasion",
+            "Material",
+            "Features",
+            "\"Disposable Forks\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Pattern",
+            "Theme",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "(Pack)"
+          ],
+          "attributes": [
+            "Brand",
+            "Color",
+            "Disposable"
+          ],
+          "aliases": [
+            "disposable fork",
+            "disposable forks",
+            "plastic forks",
+            "disposable",
+            "forks"
+          ],
+          "title_keywords": [
+            "disposable fork",
+            "disposable forks",
+            "plastic forks",
+            "disposable",
+            "forks"
+          ],
+          "context_keywords": [
+            "plastic forks",
+            "disposable",
+            "forks"
+          ],
+          "negative_keywords": [
+            "disposable knives",
+            "disposable spoons",
+            "cutlery sets",
+            "reusable fork"
+          ]
+        },
+        "disposable_knives": {
+          "display_name": "Disposable Knives",
+          "formula": [
+            "Brand",
+            "Global Brand License",
+            "Product Line",
+            "Character Group",
+            "Character",
+            "Occasion",
+            "Material",
+            "Features",
+            "\"Disposable Knives\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Pattern",
+            "Theme",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "(Pack)"
+          ],
+          "attributes": [
+            "Brand",
+            "Color",
+            "Disposable"
+          ],
+          "aliases": [
+            "disposable knive",
+            "disposable knives",
+            "plastic knives",
+            "disposable knife",
+            "disposable",
+            "knives"
+          ],
+          "title_keywords": [
+            "disposable knive",
+            "disposable knives",
+            "plastic knives",
+            "disposable knife",
+            "disposable",
+            "knives"
+          ],
+          "context_keywords": [
+            "plastic knives",
+            "disposable knife",
+            "disposable",
+            "knives"
+          ],
+          "negative_keywords": [
+            "disposable forks",
+            "disposable spoons",
+            "cutlery sets",
+            "kitchen knife"
+          ]
+        },
+        "disposable_spoons": {
+          "display_name": "Disposable Spoons",
+          "formula": [
+            "Brand",
+            "Global Brand License",
+            "Product Line",
+            "Character Group",
+            "Character",
+            "Occasion",
+            "Material",
+            "Features",
+            "\"Disposable Spoons\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Pattern",
+            "Theme",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "(Pack)"
+          ],
+          "attributes": [
+            "Brand",
+            "Color",
+            "Disposable"
+          ],
+          "aliases": [
+            "disposable spoon",
+            "disposable spoons",
+            "plastic spoons",
+            "disposable",
+            "spoons"
+          ],
+          "title_keywords": [
+            "disposable spoon",
+            "disposable spoons",
+            "plastic spoons",
+            "disposable",
+            "spoons"
+          ],
+          "context_keywords": [
+            "plastic spoons",
+            "disposable",
+            "spoons"
+          ],
+          "negative_keywords": [
+            "disposable forks",
+            "disposable knives",
+            "cutlery sets",
+            "measuring spoon"
+          ]
+        },
+        "disposable_cutlery_sets": {
+          "display_name": "Disposable Cutlery Sets",
+          "formula": [
+            "Brand",
+            "Global Brand License",
+            "Product Line",
+            "Character Group",
+            "Character",
+            "Occasion",
+            "Material",
+            "Features",
+            "\"Disposable Cutlery Sets\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Pattern",
+            "Theme",
+            "Color",
+            "Piece Count",
+            "\"Pieces\"",
+            "Multipack Quantity",
+            "(Pack)"
+          ],
+          "attributes": [
+            "Brand",
+            "Disposable",
+            "Color"
+          ],
+          "aliases": [
+            "disposable cutlery set",
+            "disposable cutlery sets",
+            "plastic cutlery set",
+            "disposable flatware set",
+            "disposable",
+            "cutlery"
+          ],
+          "title_keywords": [
+            "disposable cutlery set",
+            "disposable cutlery sets",
+            "plastic cutlery set",
+            "disposable flatware set",
+            "disposable",
+            "cutlery",
+            "sets"
+          ],
+          "context_keywords": [
+            "plastic cutlery set",
+            "disposable flatware set",
+            "disposable",
+            "cutlery",
+            "sets"
+          ],
+          "negative_keywords": [
+            "forks only",
+            "knives only",
+            "spoons only",
+            "reusable cutlery"
+          ]
+        },
+        "disposable_serving_trays": {
+          "display_name": "Disposable Serving Trays",
+          "formula": [
+            "Brand",
+            "Global Brand License",
+            "Product Line",
+            "Character Group",
+            "Character",
+            "Occasion",
+            "Material",
+            "Shape",
+            "Features",
+            "Number of Compartments",
+            "\"Compartments\"",
+            "\"Disposable Serving Trays\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Pattern",
+            "Theme",
+            "Color",
+            "Assembled Product Width",
+            "\"x\"",
+            "Assembled Product Length",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "(Pack)"
+          ],
+          "attributes": [
+            "Number Of Pieces",
+            "Material",
+            "Disposable"
+          ],
+          "aliases": [
+            "disposable serving tray",
+            "disposable serving trays",
+            "party serving tray",
+            "compartment tray",
+            "disposable",
+            "serving"
+          ],
+          "title_keywords": [
+            "disposable serving tray",
+            "disposable serving trays",
+            "party serving tray",
+            "compartment tray",
+            "disposable",
+            "serving",
+            "trays"
+          ],
+          "context_keywords": [
+            "party serving tray",
+            "compartment tray",
+            "disposable",
+            "serving",
+            "trays"
+          ],
+          "negative_keywords": [
+            "paper plates",
+            "paper bowls",
+            "cutlery",
+            "storage tray"
+          ]
+        }
+      }
+    },
+    "home_fragrance": {
+      "display_name": "Home Fragrance",
+      "product_types": {
+        "air_fresheners": {
+          "display_name": "Air Fresheners",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "Air Freshener Type",
+            "Form",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Scent",
+            "Air Freshener Type"
+          ],
+          "aliases": [
+            "air freshener",
+            "air fresheners",
+            "room freshener",
+            "odor eliminator",
+            "air",
+            "fresheners"
+          ],
+          "title_keywords": [
+            "air freshener",
+            "air fresheners",
+            "room freshener",
+            "odor eliminator",
+            "air",
+            "fresheners"
+          ],
+          "context_keywords": [
+            "room freshener",
+            "odor eliminator",
+            "air",
+            "fresheners"
+          ],
+          "negative_keywords": [
+            "disinfectant spray",
+            "sanitizer spray",
+            "plug-in refill",
+            "fragrance oil"
+          ]
+        },
+        "candles": {
+          "display_name": "Candles",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Occasion OR Theme",
+            "Number of Wicks",
+            "\"-Wick\"",
+            "Candle Wax Type",
+            "Size",
+            "Candle Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Scent",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Scent",
+            "Candle Type"
+          ],
+          "aliases": [
+            "candle",
+            "candles",
+            "scented candle",
+            "jar candle"
+          ],
+          "title_keywords": [
+            "candle",
+            "candles",
+            "scented candle",
+            "jar candle"
+          ],
+          "context_keywords": [
+            "scented candle",
+            "jar candle"
+          ],
+          "negative_keywords": [
+            "wax melts",
+            "wax warmer",
+            "incense",
+            "potpourri"
+          ]
+        },
+        "fragrance_oils": {
+          "display_name": "Fragrance Oils",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Fragrance Oil Types",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Scent",
+            "Fragrance Oil Type"
+          ],
+          "aliases": [
+            "fragrance oil",
+            "fragrance oils",
+            "scented oil",
+            "aroma oil",
+            "fragrance",
+            "oils"
+          ],
+          "title_keywords": [
+            "fragrance oil",
+            "fragrance oils",
+            "scented oil",
+            "aroma oil",
+            "fragrance",
+            "oils"
+          ],
+          "context_keywords": [
+            "scented oil",
+            "aroma oil",
+            "fragrance",
+            "oils"
+          ],
+          "negative_keywords": [
+            "essential oil",
+            "reed diffuser",
+            "oil diffuser",
+            "plug-in refill"
+          ]
+        },
+        "home_fragrance_sachets": {
+          "display_name": "Home Fragrance Sachets",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Primary Ingredient",
+            "\"Empty Sachet Bags\" OR \"Fragrance Sachet\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Home Fragrance Sachet Type",
+            "Condition"
+          ],
+          "aliases": [
+            "home fragrance sachet",
+            "home fragrance sachets",
+            "fragrance sachet",
+            "scent sachet",
+            "sachet bags",
+            "home"
+          ],
+          "title_keywords": [
+            "home fragrance sachet",
+            "home fragrance sachets",
+            "fragrance sachet",
+            "scent sachet",
+            "sachet bags",
+            "home",
+            "fragrance",
+            "sachets"
+          ],
+          "context_keywords": [
+            "fragrance sachet",
+            "scent sachet",
+            "sachet bags",
+            "home",
+            "fragrance",
+            "sachets"
+          ],
+          "negative_keywords": [
+            "air freshener",
+            "potpourri",
+            "fragrance oil",
+            "storage bags"
+          ]
+        },
+        "incense": {
+          "display_name": "Incense",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Primary Ingredient",
+            "Incense Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Scent",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Incense Type",
+            "Condition"
+          ],
+          "aliases": [
+            "incense",
+            "incense sticks",
+            "incense cones"
+          ],
+          "title_keywords": [
+            "incense",
+            "incense sticks",
+            "incense cones"
+          ],
+          "context_keywords": [
+            "incense cones"
+          ],
+          "negative_keywords": [
+            "incense burner",
+            "candle",
+            "fragrance oil",
+            "reed diffuser"
+          ]
+        },
+        "incense_burners_holders": {
+          "display_name": "Incense Burners & Holders",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "Material",
+            "Theme",
+            "Incense Type",
+            "Incense Burner and Holder Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Incense Burner And Holder Type",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "incense burners and holder",
+            "incense burners and holders",
+            "incense burner",
+            "incense holder",
+            "ash catcher",
+            "incense"
+          ],
+          "title_keywords": [
+            "incense burners and holder",
+            "incense burners and holders",
+            "incense burner",
+            "incense holder",
+            "ash catcher",
+            "incense",
+            "burners",
+            "and"
+          ],
+          "context_keywords": [
+            "incense burner",
+            "incense holder",
+            "ash catcher",
+            "incense",
+            "burners",
+            "and",
+            "holders"
+          ],
+          "negative_keywords": [
+            "incense sticks",
+            "candles",
+            "wax warmer",
+            "oil diffuser"
+          ]
+        },
+        "light_bulb_fragrance_rings": {
+          "display_name": "Light Bulb Fragrance Rings",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "\"Light Bulb Fragrance Ring\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Material",
+            "Condition"
+          ],
+          "aliases": [
+            "light bulb fragrance ring",
+            "light bulb fragrance rings",
+            "scent ring",
+            "light",
+            "bulb",
+            "fragrance"
+          ],
+          "title_keywords": [
+            "light bulb fragrance ring",
+            "light bulb fragrance rings",
+            "scent ring",
+            "light",
+            "bulb",
+            "fragrance",
+            "rings"
+          ],
+          "context_keywords": [
+            "scent ring",
+            "light",
+            "bulb",
+            "fragrance",
+            "rings"
+          ],
+          "negative_keywords": [
+            "light bulb",
+            "plug-in refill",
+            "wax warmer",
+            "oil diffuser"
+          ]
+        },
+        "oil_diffusers": {
+          "display_name": "Oil Diffusers",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Occasion OR Theme",
+            "Features",
+            "Humidification Type",
+            "Volume Capacity",
+            "Oil Diffuser Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Pattern",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Oil Diffuser Type",
+            "Color"
+          ],
+          "aliases": [
+            "oil diffuser",
+            "oil diffusers",
+            "aroma diffuser",
+            "essential oil diffuser",
+            "oil",
+            "diffusers"
+          ],
+          "title_keywords": [
+            "oil diffuser",
+            "oil diffusers",
+            "aroma diffuser",
+            "essential oil diffuser",
+            "oil",
+            "diffusers"
+          ],
+          "context_keywords": [
+            "aroma diffuser",
+            "essential oil diffuser",
+            "oil",
+            "diffusers"
+          ],
+          "negative_keywords": [
+            "fragrance oil",
+            "reed diffuser",
+            "plug-in refill",
+            "humidifier only"
+          ]
+        },
+        "plug_in_fragrance_warmer_refills": {
+          "display_name": "Plug-in Fragrance Warmer Refills",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Plug-in Fragrance Warmer Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Plug In Fragrance Warmer Refill Type",
+            "Scent"
+          ],
+          "aliases": [
+            "plug-in fragrance warmer refill",
+            "plug-in fragrance warmer refills",
+            "plug in fragrance warmer refills",
+            "plug-in refill",
+            "fragrance warmer refill",
+            "air freshener refill"
+          ],
+          "title_keywords": [
+            "plug-in fragrance warmer refill",
+            "plug-in fragrance warmer refills",
+            "plug in fragrance warmer refills",
+            "plug-in refill",
+            "fragrance warmer refill",
+            "air freshener refill",
+            "plug",
+            "fragrance"
+          ],
+          "context_keywords": [
+            "plug in fragrance warmer refills",
+            "plug-in refill",
+            "fragrance warmer refill",
+            "air freshener refill",
+            "plug",
+            "fragrance",
+            "warmer",
+            "refills"
+          ],
+          "negative_keywords": [
+            "oil diffuser",
+            "wax warmer",
+            "reed diffuser",
+            "air freshener spray"
+          ]
+        },
+        "potpourri": {
+          "display_name": "Potpourri",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Occasion",
+            "Features",
+            "Primary Ingredient",
+            "Potpourri Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Scent",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Potpourri Type",
+            "Season"
+          ],
+          "aliases": [
+            "potpourri",
+            "scented botanicals"
+          ],
+          "title_keywords": [
+            "potpourri",
+            "scented botanicals"
+          ],
+          "context_keywords": [],
+          "negative_keywords": [
+            "candles",
+            "wax melts",
+            "fragrance oil",
+            "incense"
+          ]
+        },
+        "reed_diffusers": {
+          "display_name": "Reed Diffusers",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Material",
+            "Home Fragrance Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Scent",
+            "Size"
+          ],
+          "aliases": [
+            "reed diffuser",
+            "reed diffusers",
+            "diffuser reeds",
+            "reed",
+            "diffusers"
+          ],
+          "title_keywords": [
+            "reed diffuser",
+            "reed diffusers",
+            "diffuser reeds",
+            "reed",
+            "diffusers"
+          ],
+          "context_keywords": [
+            "diffuser reeds",
+            "reed",
+            "diffusers"
+          ],
+          "negative_keywords": [
+            "oil diffuser",
+            "fragrance oil",
+            "plug-in refill",
+            "incense sticks"
+          ]
+        },
+        "wax_melts": {
+          "display_name": "Wax Melts",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "\"Wax Melts\" OR \"Wax Tarts\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Scent",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Scent",
+            "Brand",
+            "Home Fragrance Type"
+          ],
+          "aliases": [
+            "wax melt",
+            "wax melts",
+            "wax tarts",
+            "scented wax cubes",
+            "wax",
+            "melts"
+          ],
+          "title_keywords": [
+            "wax melt",
+            "wax melts",
+            "wax tarts",
+            "scented wax cubes",
+            "wax",
+            "melts"
+          ],
+          "context_keywords": [
+            "wax tarts",
+            "scented wax cubes",
+            "wax",
+            "melts"
+          ],
+          "negative_keywords": [
+            "wax warmer",
+            "candles",
+            "fragrance oil",
+            "soap"
+          ]
+        },
+        "wax_warmers": {
+          "display_name": "Wax Warmers",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Occasion OR Theme",
+            "Material",
+            "Wax Warmer Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Color",
+            "Pattern",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Wax Warmer Type",
+            "Mount Type"
+          ],
+          "aliases": [
+            "wax warmer",
+            "wax warmers",
+            "wax melt warmer",
+            "scent warmer",
+            "wax",
+            "warmers"
+          ],
+          "title_keywords": [
+            "wax warmer",
+            "wax warmers",
+            "wax melt warmer",
+            "scent warmer",
+            "wax",
+            "warmers"
+          ],
+          "context_keywords": [
+            "wax melt warmer",
+            "scent warmer",
+            "wax",
+            "warmers"
+          ],
+          "negative_keywords": [
+            "wax melts",
+            "candle",
+            "oil diffuser",
+            "plug-in refill"
+          ]
+        }
+      }
+    },
+    "household_cleaning_supplies": {
+      "display_name": "Household Cleaning Supplies",
+      "product_types": {
+        "broom_mop_handles": {
+          "display_name": "Broom & Mop Handles",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "Tip Diameter",
+            "\"Dia\"",
+            "\"x\"",
+            "Assembled Product Length",
+            "Tip Material",
+            "\"Tip\"",
+            "Attachment Style",
+            "Handle Material",
+            "Broom & Mop Handle Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "\"Extends to\"",
+            "Maximum Length",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Broom And Mop Handle Type",
+            "Handle Material",
+            "Brand"
+          ],
+          "aliases": [
+            "broom and mop handle",
+            "broom and mop handles",
+            "broom handle",
+            "mop handle",
+            "replacement handle",
+            "broom"
+          ],
+          "title_keywords": [
+            "broom and mop handle",
+            "broom and mop handles",
+            "broom handle",
+            "mop handle",
+            "replacement handle",
+            "broom",
+            "and",
+            "mop"
+          ],
+          "context_keywords": [
+            "broom handle",
+            "mop handle",
+            "replacement handle",
+            "broom",
+            "and",
+            "mop",
+            "handles"
+          ],
+          "negative_keywords": [
+            "broom head",
+            "broom",
+            "mop head",
+            "bucket"
+          ]
+        },
+        "broom_heads": {
+          "display_name": "Broom Heads",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Use",
+            "Features",
+            "Assembled Product Width",
+            "\"Wide\"",
+            "Bristle Material",
+            "\"Bristle\"",
+            "Broom Heads Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Assembled Product Width",
+            "Brand",
+            "Broom Head Type"
+          ],
+          "aliases": [
+            "broom head",
+            "broom heads",
+            "replacement broom head",
+            "push broom head",
+            "broom",
+            "heads"
+          ],
+          "title_keywords": [
+            "broom head",
+            "broom heads",
+            "replacement broom head",
+            "push broom head",
+            "broom",
+            "heads"
+          ],
+          "context_keywords": [
+            "replacement broom head",
+            "push broom head",
+            "broom",
+            "heads"
+          ],
+          "negative_keywords": [
+            "broom handle",
+            "broom",
+            "mop head",
+            "brush head"
+          ]
+        },
+        "brooms": {
+          "display_name": "Brooms",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Location",
+            "Recommended Use",
+            "Features",
+            "Product Multifunction Descriptor",
+            "Bristle Material",
+            "Brooms Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "\"Extends to\"",
+            "Maximum Length",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Broom Type",
+            "Recommended Location"
+          ],
+          "aliases": [
+            "broom",
+            "brooms",
+            "push broom",
+            "angle broom"
+          ],
+          "title_keywords": [
+            "broom",
+            "brooms",
+            "push broom",
+            "angle broom"
+          ],
+          "context_keywords": [
+            "push broom",
+            "angle broom"
+          ],
+          "negative_keywords": [
+            "broom head",
+            "broom handle",
+            "mop",
+            "dustpan"
+          ]
+        },
+        "buckets": {
+          "display_name": "Buckets",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Volume Capacity",
+            "Shape",
+            "Features",
+            "Buckets Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Color",
+            "Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Bucket Type",
+            "Material"
+          ],
+          "aliases": [
+            "bucket",
+            "buckets",
+            "cleaning bucket",
+            "mop bucket"
+          ],
+          "title_keywords": [
+            "bucket",
+            "buckets",
+            "cleaning bucket",
+            "mop bucket"
+          ],
+          "context_keywords": [
+            "cleaning bucket",
+            "mop bucket"
+          ],
+          "negative_keywords": [
+            "trash can",
+            "storage bin",
+            "broom",
+            "laundry basket"
+          ]
+        }
+      }
+    },
+    "household_paper_plastic": {
+      "display_name": "Household Paper & Plastic",
+      "product_types": {
+        "disposable_storage_bags": {
+          "display_name": "Disposable Storage Bags",
+          "formula": [
+            "Brand",
+            "Global Brand License",
+            "Product Line",
+            "Character Group",
+            "Character",
+            "Theme",
+            "Occasion",
+            "Recommended Use",
+            "Features",
+            "Food Storage Bag Closure Style",
+            "Volume Capacity",
+            "Disposable Storage Bag Type",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\" OR \"Case\""
+          ],
+          "attributes": [
+            "Brand",
+            "Disposable Storage Bag Type",
+            "Material"
+          ],
+          "aliases": [
+            "disposable storage bag",
+            "disposable storage bags",
+            "food storage bags",
+            "zipper bags",
+            "disposable",
+            "storage"
+          ],
+          "title_keywords": [
+            "disposable storage bag",
+            "disposable storage bags",
+            "food storage bags",
+            "zipper bags",
+            "disposable",
+            "storage",
+            "bags"
+          ],
+          "context_keywords": [
+            "food storage bags",
+            "zipper bags",
+            "disposable",
+            "storage",
+            "bags"
+          ],
+          "negative_keywords": [
+            "food wrap",
+            "beeswax food wrap",
+            "garbage bags",
+            "paper bags"
+          ]
+        },
+        "facial_tissue": {
+          "display_name": "Facial Tissue",
+          "formula": [
+            "Brand",
+            "Global Brand License",
+            "Product Line",
+            "Age Group",
+            "Character Group",
+            "Character",
+            "Occasion",
+            "Theme",
+            "Recommended Use",
+            "Facial Tissue Thickness",
+            "Ingredient Properties",
+            "Primary Ingredient OR Scent",
+            "Shape",
+            "\"Box\"",
+            "Size Descriptor",
+            "Features",
+            "Attachment Style",
+            "Facial Tissue Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Multipack Quantity",
+            "\"Case\" OR \"Cube\" OR \"Pack\" OR \"Flat Box\" (Total Count",
+            "\"Total Tissues\")"
+          ],
+          "attributes": [
+            "Brand",
+            "Features",
+            "Facial Tissue Type"
+          ],
+          "aliases": [
+            "facial tissue",
+            "tissues",
+            "tissue box",
+            "facial",
+            "tissue"
+          ],
+          "title_keywords": [
+            "facial tissue",
+            "tissues",
+            "tissue box",
+            "facial",
+            "tissue"
+          ],
+          "context_keywords": [
+            "tissue box",
+            "facial",
+            "tissue"
+          ],
+          "negative_keywords": [
+            "toilet paper",
+            "flushable wipes",
+            "paper towels",
+            "napkins"
+          ]
+        },
+        "flushable_cleansing_cloths": {
+          "display_name": "Flushable Cleansing Cloths",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Feature",
+            "Ingredient Properties",
+            "\"Flushable Wet Wipes\"",
+            "\"with\"",
+            "Primary Ingredient",
+            "Scent",
+            "Total Count",
+            "\"Wipes\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Number Of Pieces",
+            "Condition"
+          ],
+          "aliases": [
+            "flushable cleansing cloth",
+            "flushable cleansing cloths",
+            "flushable wipes",
+            "flushable wet wipes",
+            "cleansing cloths",
+            "flushable"
+          ],
+          "title_keywords": [
+            "flushable cleansing cloth",
+            "flushable cleansing cloths",
+            "flushable wipes",
+            "flushable wet wipes",
+            "cleansing cloths",
+            "flushable",
+            "cleansing",
+            "cloths"
+          ],
+          "context_keywords": [
+            "flushable wipes",
+            "flushable wet wipes",
+            "cleansing cloths",
+            "flushable",
+            "cleansing",
+            "cloths"
+          ],
+          "negative_keywords": [
+            "facial tissue",
+            "toilet paper",
+            "baby wipes",
+            "cleaning wipes"
+          ]
+        },
+        "food_wraps": {
+          "display_name": "Food Wraps",
+          "formula": [
+            "Brand",
+            "Global Brand License",
+            "Product Line",
+            "Character Group",
+            "Character",
+            "Occasion",
+            "Recommended Use",
+            "Feature",
+            "Material",
+            "Food Wrap Type",
+            "Size",
+            "Form",
+            "Theme OR Pattern",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\" OR \"Cases\" OR \"Boxes\" OR \"Rolls\""
+          ],
+          "attributes": [
+            "Brand",
+            "Food Wrap Type",
+            "Material"
+          ],
+          "aliases": [
+            "food wrap",
+            "food wraps",
+            "plastic wrap",
+            "cling wrap",
+            "food",
+            "wraps"
+          ],
+          "title_keywords": [
+            "food wrap",
+            "food wraps",
+            "plastic wrap",
+            "cling wrap",
+            "food",
+            "wraps"
+          ],
+          "context_keywords": [
+            "plastic wrap",
+            "cling wrap",
+            "food",
+            "wraps"
+          ],
+          "negative_keywords": [
+            "beeswax food wraps",
+            "parchment paper",
+            "storage bags",
+            "foil"
+          ]
+        },
+        "garbage_bags": {
+          "display_name": "Garbage Bags",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Model",
+            "Feature",
+            "Volume Capacity",
+            "Color",
+            "Bag Closure",
+            "Size Descriptor",
+            "Recommended Room",
+            "Recommended Use",
+            "Garbage Bag Type",
+            "Scent",
+            "Total Count",
+            "\"Bags\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Volume Capacity",
+            "Garbage Bag Type"
+          ],
+          "aliases": [
+            "garbage bag",
+            "garbage bags",
+            "trash bags",
+            "can liners",
+            "garbage",
+            "bags"
+          ],
+          "title_keywords": [
+            "garbage bag",
+            "garbage bags",
+            "trash bags",
+            "can liners",
+            "garbage",
+            "bags"
+          ],
+          "context_keywords": [
+            "trash bags",
+            "can liners",
+            "garbage",
+            "bags"
+          ],
+          "negative_keywords": [
+            "storage bags",
+            "food bags",
+            "laundry bags",
+            "paper bags"
+          ]
+        },
+        "paper_towels": {
+          "display_name": "Paper Towels",
+          "formula": [
+            "If Paper Towel Type = Paper Towels or Pick-A-Size Paper Towels: Brand",
+            "Product Line",
+            "Occasion",
+            "Theme OR Pattern",
+            "Recommended Use",
+            "Paper Towel Type",
+            "\"Paper Towel\"",
+            "Color",
+            "Total Count",
+            "Form",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Paper Towel Type",
+            "Number Of Rolls"
+          ],
+          "aliases": [
+            "paper towel",
+            "paper towels",
+            "paper towel rolls",
+            "pick-a-size paper towels",
+            "paper",
+            "towels"
+          ],
+          "title_keywords": [
+            "paper towel",
+            "paper towels",
+            "paper towel rolls",
+            "pick-a-size paper towels",
+            "paper",
+            "towels"
+          ],
+          "context_keywords": [
+            "paper towel rolls",
+            "pick-a-size paper towels",
+            "paper",
+            "towels"
+          ],
+          "negative_keywords": [
+            "toilet paper",
+            "facial tissue",
+            "napkins",
+            "towels"
+          ]
+        },
+        "parchment_paper": {
+          "display_name": "Parchment Paper",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Use",
+            "Features",
+            "\"Parchment Paper\"",
+            "Form",
+            "Size",
+            "Shape",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Condition",
+            "Material"
+          ],
+          "aliases": [
+            "parchment paper",
+            "baking parchment",
+            "parchment sheets",
+            "parchment",
+            "paper"
+          ],
+          "title_keywords": [
+            "parchment paper",
+            "baking parchment",
+            "parchment sheets",
+            "parchment",
+            "paper"
+          ],
+          "context_keywords": [
+            "parchment sheets",
+            "parchment",
+            "paper"
+          ],
+          "negative_keywords": [
+            "food wrap",
+            "wax paper",
+            "beeswax food wraps",
+            "paper towels"
+          ]
+        },
+        "toilet_paper": {
+          "display_name": "Toilet Paper",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Use",
+            "Theme OR Pattern",
+            "Character Group",
+            "Character",
+            "Toilet Paper Thickness",
+            "Material",
+            "Features",
+            "\"Toilet Paper\"",
+            "Scent",
+            "Total Count",
+            "Form",
+            "Multipack Quantity",
+            "\"Pack\" OR \"Rolls Per Carton\" OR \"Rolls per Case\""
+          ],
+          "attributes": [
+            "Brand",
+            "Toilet Paper Roll Size",
+            "Material"
+          ],
+          "aliases": [
+            "toilet paper",
+            "bath tissue",
+            "toilet tissue",
+            "toilet",
+            "paper"
+          ],
+          "title_keywords": [
+            "toilet paper",
+            "bath tissue",
+            "toilet tissue",
+            "toilet",
+            "paper"
+          ],
+          "context_keywords": [
+            "toilet tissue",
+            "toilet",
+            "paper"
+          ],
+          "negative_keywords": [
+            "paper towels",
+            "facial tissue",
+            "flushable wipes",
+            "napkins"
+          ]
+        },
+        "beeswax_food_wraps": {
+          "display_name": "Beeswax Food Wraps",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "Recommended Use",
+            "\"Beeswax Food Wraps\"",
+            "Form",
+            "Size",
+            "Shape",
+            "Pattern OR Theme",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Material",
+            "Brand",
+            "Size"
+          ],
+          "aliases": [
+            "beeswax food wrap",
+            "beeswax food wraps",
+            "beeswax wrap",
+            "reusable food wrap",
+            "beeswax",
+            "food"
+          ],
+          "title_keywords": [
+            "beeswax food wrap",
+            "beeswax food wraps",
+            "beeswax wrap",
+            "reusable food wrap",
+            "beeswax",
+            "food",
+            "wraps"
+          ],
+          "context_keywords": [
+            "beeswax wrap",
+            "reusable food wrap",
+            "beeswax",
+            "food",
+            "wraps"
+          ],
+          "negative_keywords": [
+            "food wraps",
+            "parchment paper",
+            "storage bags",
+            "wax melts"
+          ]
+        }
+      }
+    },
+    "laundry_care": {
+      "display_name": "Laundry Care",
+      "product_types": {
+        "dryer_balls": {
+          "display_name": "Dryer Balls",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Theme",
+            "Animal Type",
+            "Feature",
+            "Size Descriptor",
+            "Material",
+            "\"Dryer Balls\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Material",
+            "Condition"
+          ],
+          "aliases": [
+            "dryer ball",
+            "dryer balls",
+            "wool dryer balls",
+            "laundry dryer balls",
+            "dryer",
+            "balls"
+          ],
+          "title_keywords": [
+            "dryer ball",
+            "dryer balls",
+            "wool dryer balls",
+            "laundry dryer balls",
+            "dryer",
+            "balls"
+          ],
+          "context_keywords": [
+            "wool dryer balls",
+            "laundry dryer balls",
+            "dryer",
+            "balls"
+          ],
+          "negative_keywords": [
+            "dryer sheets",
+            "tennis balls",
+            "fabric softener",
+            "scent boosters"
+          ]
+        },
+        "dryer_sheets": {
+          "display_name": "Dryer Sheets",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Feature",
+            "\"Dryer Sheets\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Count Per Pack",
+            "Condition"
+          ],
+          "aliases": [
+            "dryer sheet",
+            "dryer sheets",
+            "fabric dryer sheets",
+            "dryer",
+            "sheets"
+          ],
+          "title_keywords": [
+            "dryer sheet",
+            "dryer sheets",
+            "fabric dryer sheets",
+            "dryer",
+            "sheets"
+          ],
+          "context_keywords": [
+            "fabric dryer sheets",
+            "dryer",
+            "sheets"
+          ],
+          "negative_keywords": [
+            "dryer balls",
+            "fabric softener liquid",
+            "laundry detergent",
+            "paper towels"
+          ]
+        },
+        "fabric_sizing": {
+          "display_name": "Fabric Sizing",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Feature",
+            "Hold Level",
+            "\"Hold\"",
+            "\"Fabric Sizing\"",
+            "Cleanser Form",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Size",
+            "Condition",
+            "Multipack Quantity"
+          ],
+          "aliases": [
+            "fabric sizing",
+            "laundry sizing",
+            "spray sizing",
+            "fabric",
+            "sizing"
+          ],
+          "title_keywords": [
+            "fabric sizing",
+            "laundry sizing",
+            "spray sizing",
+            "fabric",
+            "sizing"
+          ],
+          "context_keywords": [
+            "spray sizing",
+            "fabric",
+            "sizing"
+          ],
+          "negative_keywords": [
+            "fabric starch",
+            "wrinkle remover",
+            "fabric softener",
+            "stain remover"
+          ]
+        },
+        "fabric_softeners": {
+          "display_name": "Fabric Softeners",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Use",
+            "Features",
+            "Fabric Softener Type",
+            "Container Type",
+            "Scent",
+            "Size",
+            "Total Count OR Number of Loads",
+            "\"Loads\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Fabric Softener Type",
+            "Size"
+          ],
+          "aliases": [
+            "fabric softener",
+            "fabric softeners",
+            "laundry softener",
+            "softener beads",
+            "fabric",
+            "softeners"
+          ],
+          "title_keywords": [
+            "fabric softener",
+            "fabric softeners",
+            "laundry softener",
+            "softener beads",
+            "fabric",
+            "softeners"
+          ],
+          "context_keywords": [
+            "laundry softener",
+            "softener beads",
+            "fabric",
+            "softeners"
+          ],
+          "negative_keywords": [
+            "laundry detergent",
+            "scent booster",
+            "dryer sheets",
+            "fabric starch"
+          ]
+        },
+        "fabric_starch": {
+          "display_name": "Fabric Starch",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Use",
+            "Features",
+            "Hold Level",
+            "\"Fabric Starch\"",
+            "Cleanser Form",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Size",
+            "Cleanser Form"
+          ],
+          "aliases": [
+            "fabric starch",
+            "laundry starch",
+            "spray starch",
+            "fabric",
+            "starch"
+          ],
+          "title_keywords": [
+            "fabric starch",
+            "laundry starch",
+            "spray starch",
+            "fabric",
+            "starch"
+          ],
+          "context_keywords": [
+            "spray starch",
+            "fabric",
+            "starch"
+          ],
+          "negative_keywords": [
+            "fabric sizing",
+            "wrinkle remover",
+            "stain remover",
+            "fabric softener"
+          ]
+        },
+        "fabric_wrinkle_removers": {
+          "display_name": "Fabric Wrinkle Removers",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Use",
+            "Features",
+            "\"Fabric Wrinkle Remover\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Count Per Pack",
+            "Size"
+          ],
+          "aliases": [
+            "fabric wrinkle remover",
+            "fabric wrinkle removers",
+            "wrinkle remover",
+            "wrinkle release spray",
+            "fabric",
+            "wrinkle"
+          ],
+          "title_keywords": [
+            "fabric wrinkle remover",
+            "fabric wrinkle removers",
+            "wrinkle remover",
+            "wrinkle release spray",
+            "fabric",
+            "wrinkle",
+            "removers"
+          ],
+          "context_keywords": [
+            "wrinkle remover",
+            "wrinkle release spray",
+            "fabric",
+            "wrinkle",
+            "removers"
+          ],
+          "negative_keywords": [
+            "fabric starch",
+            "fabric sizing",
+            "stain remover",
+            "iron"
+          ]
+        },
+        "laundry_bleach": {
+          "display_name": "Laundry Bleach",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Use",
+            "Features",
+            "Cleanser Form",
+            "Laundry Bleach Type",
+            "Cleanser Form",
+            "Container Type OR Applicator Type",
+            "Scent",
+            "Size",
+            "Total Count OR Number of Loads",
+            "\"Loads\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Laundry Bleach Type",
+            "Size"
+          ],
+          "aliases": [
+            "laundry bleach",
+            "bleach",
+            "color safe bleach",
+            "laundry"
+          ],
+          "title_keywords": [
+            "laundry bleach",
+            "bleach",
+            "color safe bleach",
+            "laundry"
+          ],
+          "context_keywords": [
+            "color safe bleach",
+            "laundry"
+          ],
+          "negative_keywords": [
+            "stain remover",
+            "laundry sanitizer",
+            "cleaner bleach",
+            "dishwasher detergent"
+          ]
+        },
+        "laundry_detergents": {
+          "display_name": "Laundry Detergents",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Use",
+            "Age Group",
+            "Features",
+            "Cleanser Form",
+            "\"Laundry Detergent OR Laundry Booster\"",
+            "Cleanser Form",
+            "\"with\"",
+            "Primary Ingredient",
+            "Scent",
+            "Size",
+            "Total Count OR Number of Loads",
+            "\"Loads\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Cleanser Form",
+            "Age Group"
+          ],
+          "aliases": [
+            "laundry detergent",
+            "laundry detergents",
+            "laundry booster",
+            "detergent pods",
+            "laundry",
+            "detergents"
+          ],
+          "title_keywords": [
+            "laundry detergent",
+            "laundry detergents",
+            "laundry booster",
+            "detergent pods",
+            "laundry",
+            "detergents"
+          ],
+          "context_keywords": [
+            "laundry booster",
+            "detergent pods",
+            "laundry",
+            "detergents"
+          ],
+          "negative_keywords": [
+            "dishwasher detergent",
+            "fabric softener",
+            "scent booster",
+            "laundry sanitizer"
+          ]
+        },
+        "laundry_sanitizers": {
+          "display_name": "Laundry Sanitizers",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "\"Laundry Sanitizer\"",
+            "Cleanser Form",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Size",
+            "Cleanser Form"
+          ],
+          "aliases": [
+            "laundry sanitizer",
+            "laundry sanitizers",
+            "laundry disinfectant",
+            "laundry",
+            "sanitizers"
+          ],
+          "title_keywords": [
+            "laundry sanitizer",
+            "laundry sanitizers",
+            "laundry disinfectant",
+            "laundry",
+            "sanitizers"
+          ],
+          "context_keywords": [
+            "laundry disinfectant",
+            "laundry",
+            "sanitizers"
+          ],
+          "negative_keywords": [
+            "sanitizer spray",
+            "laundry bleach",
+            "stain remover",
+            "detergent"
+          ]
+        },
+        "laundry_scent_boosters": {
+          "display_name": "Laundry Scent Boosters",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "\"In-Wash Laundry Scent Booster\"",
+            "Cleanser Form",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Scent",
+            "Size"
+          ],
+          "aliases": [
+            "laundry scent booster",
+            "laundry scent boosters",
+            "scent beads",
+            "in-wash scent booster",
+            "laundry",
+            "scent"
+          ],
+          "title_keywords": [
+            "laundry scent booster",
+            "laundry scent boosters",
+            "scent beads",
+            "in-wash scent booster",
+            "laundry",
+            "scent",
+            "boosters"
+          ],
+          "context_keywords": [
+            "scent beads",
+            "in-wash scent booster",
+            "laundry",
+            "scent",
+            "boosters"
+          ],
+          "negative_keywords": [
+            "fabric softener",
+            "laundry detergent",
+            "dryer sheets",
+            "air freshener"
+          ]
+        },
+        "laundry_wash_bags": {
+          "display_name": "Laundry Wash Bags",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Age Group",
+            "Recommended Use OR Features",
+            "Material",
+            "Fastener Type",
+            "\"Laundry Wash Bag\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Assembled Product Width",
+            "\"x\"",
+            "Assembled Product Length",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Count Per Pack",
+            "Age Group"
+          ],
+          "aliases": [
+            "laundry wash bag",
+            "laundry wash bags",
+            "mesh laundry bag",
+            "delicates wash bag",
+            "laundry",
+            "wash"
+          ],
+          "title_keywords": [
+            "laundry wash bag",
+            "laundry wash bags",
+            "mesh laundry bag",
+            "delicates wash bag",
+            "laundry",
+            "wash",
+            "bags"
+          ],
+          "context_keywords": [
+            "mesh laundry bag",
+            "delicates wash bag",
+            "laundry",
+            "wash",
+            "bags"
+          ],
+          "negative_keywords": [
+            "garbage bags",
+            "storage bags",
+            "laundry basket",
+            "dryer sheets"
+          ]
+        },
+        "stain_remover": {
+          "display_name": "Stain Remover",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "Recommended Use",
+            "Stain Remover Type",
+            "Cleanser Form",
+            "Container Type OR Applicator Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Stain Remover Type",
+            "Cleanser Form"
+          ],
+          "aliases": [
+            "stain remover",
+            "laundry stain remover",
+            "spot remover",
+            "stain",
+            "remover"
+          ],
+          "title_keywords": [
+            "stain remover",
+            "laundry stain remover",
+            "spot remover",
+            "stain",
+            "remover"
+          ],
+          "context_keywords": [
+            "spot remover",
+            "stain",
+            "remover"
+          ],
+          "negative_keywords": [
+            "pet stain remover",
+            "laundry bleach",
+            "laundry sanitizer",
+            "carpet cleaner"
+          ]
+        },
+        "lint_removers": {
+          "display_name": "Lint Removers",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Product Multifunction Descriptor",
+            "Features",
+            "Recommended Surface OR Recommended Use",
+            "Material",
+            "Power Type",
+            "Lint Remover Type",
+            "Retail Packaging",
+            "Accessories Included",
+            "Number of Sheets",
+            "\"Sheets per Roll\"",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Count Per Pack",
+            "Condition"
+          ],
+          "aliases": [
+            "lint remover",
+            "lint removers",
+            "lint roller",
+            "fabric shaver",
+            "lint",
+            "removers"
+          ],
+          "title_keywords": [
+            "lint remover",
+            "lint removers",
+            "lint roller",
+            "fabric shaver",
+            "lint",
+            "removers"
+          ],
+          "context_keywords": [
+            "lint roller",
+            "fabric shaver",
+            "lint",
+            "removers"
+          ],
+          "negative_keywords": [
+            "stain remover",
+            "dryer sheets",
+            "pet brush",
+            "vacuum"
+          ]
+        }
+      }
+    },
+    "pest_control": {
+      "display_name": "Pest Control",
+      "product_types": {
+        "fly_swatters": {
+          "display_name": "Fly Swatters",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "Material",
+            "\"Fly Swatter\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Color",
+            "Count",
+            "\"Count\""
+          ],
+          "attributes": [
+            "Pest Type",
+            "Color",
+            "Condition"
+          ],
+          "aliases": [
+            "fly swatter",
+            "fly swatters",
+            "flyswatter",
+            "bug swatter",
+            "fly",
+            "swatters"
+          ],
+          "title_keywords": [
+            "fly swatter",
+            "fly swatters",
+            "flyswatter",
+            "bug swatter",
+            "fly",
+            "swatters"
+          ],
+          "context_keywords": [
+            "flyswatter",
+            "bug swatter",
+            "fly",
+            "swatters"
+          ],
+          "negative_keywords": [
+            "insect repellent",
+            "pest trap",
+            "electronic insect killer",
+            "moth protection"
+          ]
+        },
+        "insect_pest_repellent": {
+          "display_name": "Insect & Pest Repellent",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Location",
+            "Features",
+            "Primary Ingredient OR Active Ingredients",
+            "Pest Type",
+            "Insect Repellent Type",
+            "Form OR Container Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Items Included",
+            "Scent",
+            "Size",
+            "Color",
+            "Count",
+            "\"Count\""
+          ],
+          "attributes": [
+            "Brand",
+            "Pest Type",
+            "Insect And Pest Repellent Type"
+          ],
+          "aliases": [
+            "insect and pest repellent",
+            "insect repellent",
+            "pest repellent",
+            "bug repellent",
+            "insect",
+            "and"
+          ],
+          "title_keywords": [
+            "insect and pest repellent",
+            "insect repellent",
+            "pest repellent",
+            "bug repellent",
+            "insect",
+            "and",
+            "pest",
+            "repellent"
+          ],
+          "context_keywords": [
+            "pest repellent",
+            "bug repellent",
+            "insect",
+            "and",
+            "pest",
+            "repellent"
+          ],
+          "negative_keywords": [
+            "electronic insect killer",
+            "pest bait",
+            "rodent trap",
+            "fly swatter"
+          ]
+        },
+        "moth_protection": {
+          "display_name": "Moth Protection",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "Primary Ingredient",
+            "Moth Protection Type",
+            "Retail Packaging",
+            "\"with\" Items Included",
+            "\"for\"",
+            "Recommended Room AND/OR Recommended Use",
+            "Scent",
+            "Size",
+            "Total Count",
+            "\"Count\""
+          ],
+          "attributes": [
+            "Pest Type",
+            "Brand",
+            "Count Per Pack"
+          ],
+          "aliases": [
+            "moth protection",
+            "moth balls",
+            "moth traps",
+            "moth repellent",
+            "moth",
+            "protection"
+          ],
+          "title_keywords": [
+            "moth protection",
+            "moth balls",
+            "moth traps",
+            "moth repellent",
+            "moth",
+            "protection"
+          ],
+          "context_keywords": [
+            "moth traps",
+            "moth repellent",
+            "moth",
+            "protection"
+          ],
+          "negative_keywords": [
+            "rodent trap",
+            "fly swatter",
+            "bug zapper",
+            "air freshener"
+          ]
+        },
+        "pest_bait_traps_killers": {
+          "display_name": "Pest Bait, Traps & Killers",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Location",
+            "Features",
+            "Number of Doors",
+            "\"Door\"",
+            "Pest Type",
+            "Pest Bait and Trap Killer Type",
+            "Form OR Container Type",
+            "Retail Packaging",
+            "\"with\" Items Included",
+            "Size",
+            "Count",
+            "\"Count\""
+          ],
+          "attributes": [
+            "Pest Type",
+            "Brand",
+            "Pest Bait Trap And Killer Type"
+          ],
+          "aliases": [
+            "pest bait, traps and killer",
+            "pest bait, traps and killers",
+            "pest bait traps and killers",
+            "pest bait",
+            "pest trap",
+            "pest killer"
+          ],
+          "title_keywords": [
+            "pest bait, traps and killer",
+            "pest bait, traps and killers",
+            "pest bait traps and killers",
+            "pest bait",
+            "pest trap",
+            "pest killer",
+            "insect killer",
+            "pest"
+          ],
+          "context_keywords": [
+            "pest bait traps and killers",
+            "pest bait",
+            "pest trap",
+            "pest killer",
+            "insect killer",
+            "pest",
+            "bait",
+            "traps"
+          ],
+          "negative_keywords": [
+            "rodent trap",
+            "insect repellent",
+            "fly swatter",
+            "electronic insect killer"
+          ]
+        },
+        "rodent_traps": {
+          "display_name": "Rodent Traps",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Location",
+            "Features",
+            "Pest Type",
+            "Form",
+            "Rodent Trap Type",
+            "Retail Packaging",
+            "\"with\" Items Included",
+            "Size",
+            "Count",
+            "\"Count\""
+          ],
+          "attributes": [
+            "Pest Type",
+            "Brand",
+            "Rodent Trap Type"
+          ],
+          "aliases": [
+            "rodent trap",
+            "rodent traps",
+            "mouse trap",
+            "rat trap",
+            "rodent",
+            "traps"
+          ],
+          "title_keywords": [
+            "rodent trap",
+            "rodent traps",
+            "mouse trap",
+            "rat trap",
+            "rodent",
+            "traps"
+          ],
+          "context_keywords": [
+            "mouse trap",
+            "rat trap",
+            "rodent",
+            "traps"
+          ],
+          "negative_keywords": [
+            "insect trap",
+            "pest repellent",
+            "moth protection",
+            "fly swatter"
+          ]
+        },
+        "electronic_insect_killers": {
+          "display_name": "Electronic Insect Killers",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Recommended Location",
+            "Coverage Area",
+            "Features",
+            "Wireless Technology",
+            "Pest Type",
+            "Electronic Insect Killer Type",
+            "Retail Packaging",
+            "\"with\" Items Included",
+            "Color",
+            "Count",
+            "\"Count\""
+          ],
+          "attributes": [
+            "Brand",
+            "Pest Type",
+            "Electronic Insect Killer Type"
+          ],
+          "aliases": [
+            "electronic insect killer",
+            "electronic insect killers",
+            "bug zapper",
+            "insect zapper",
+            "electronic",
+            "insect"
+          ],
+          "title_keywords": [
+            "electronic insect killer",
+            "electronic insect killers",
+            "bug zapper",
+            "insect zapper",
+            "electronic",
+            "insect",
+            "killers"
+          ],
+          "context_keywords": [
+            "bug zapper",
+            "insect zapper",
+            "electronic",
+            "insect",
+            "killers"
+          ],
+          "negative_keywords": [
+            "insect repellent",
+            "fly swatter",
+            "pest bait",
+            "light bulb"
+          ]
+        }
+      }
+    },
+    "storage": {
+      "display_name": "Storage",
+      "product_types": {
+        "bathtub_shower_organizers": {
+          "display_name": "Bathtub & Shower Organizers",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Collection",
+            "Age Group",
+            "Features",
+            "Number of Shelves",
+            "\"-\"",
+            "\"Shelf\" OR \"Basket Shelf\" OR Number of Compartments",
+            "\"-\"",
+            "\"Compartment\"",
+            "Material",
+            "Mount Type",
+            "Recommended Use",
+            "Bathtub & Shower Organizer Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Bathtub And Shower Organizer Type",
+            "Material"
+          ],
+          "aliases": [
+            "bathtub and shower organizer",
+            "bathtub and shower organizers",
+            "shower organizer",
+            "bath organizer",
+            "shower caddy",
+            "bathtub"
+          ],
+          "title_keywords": [
+            "bathtub and shower organizer",
+            "bathtub and shower organizers",
+            "shower organizer",
+            "bath organizer",
+            "shower caddy",
+            "bathtub",
+            "and",
+            "shower"
+          ],
+          "context_keywords": [
+            "shower organizer",
+            "bath organizer",
+            "shower caddy",
+            "bathtub",
+            "and",
+            "shower",
+            "organizers"
+          ],
+          "negative_keywords": [
+            "sink caddy",
+            "cabinet organizer",
+            "towel holder",
+            "soap dispenser"
+          ]
+        },
+        "cabinet_organizers": {
+          "display_name": "Cabinet Organizers",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "Number of Shelves",
+            "\"-\"",
+            "\"Shelf\" OR Number of Tiers",
+            "\"-\"",
+            "\"Tiers\" OR Number of Compartments",
+            "\"-\"",
+            "\"Compartment\" OR Number of Dividers",
+            "\"-\"",
+            "\"Dividers\" OR Number of Drawers",
+            "\"-\"",
+            "\"Drawer\"",
+            "Mount Type",
+            "Recommended Room",
+            "Recommended Use",
+            "Cabinet Organizer Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Material",
+            "Cabinet Organizer Type"
+          ],
+          "aliases": [
+            "cabinet organizer",
+            "cabinet organizers",
+            "under sink organizer",
+            "pantry organizer",
+            "cabinet",
+            "organizers"
+          ],
+          "title_keywords": [
+            "cabinet organizer",
+            "cabinet organizers",
+            "under sink organizer",
+            "pantry organizer",
+            "cabinet",
+            "organizers"
+          ],
+          "context_keywords": [
+            "under sink organizer",
+            "pantry organizer",
+            "cabinet",
+            "organizers"
+          ],
+          "negative_keywords": [
+            "closet organizer",
+            "hanging organizer",
+            "sink caddy",
+            "shelf unit"
+          ]
+        },
+        "closet_organizers": {
+          "display_name": "Closet Organizers",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Age Group",
+            "Features",
+            "Mount Type",
+            "Number of Shelves",
+            "\"-\"",
+            "\"Shelf\" OR Number of Pockets",
+            "\"-\"",
+            "\"Pockets\" OR Number of Drawers",
+            "\"-\"",
+            "\"Drawer\" OR Number of Compartments",
+            "\"-\"",
+            "\"Compartment\"",
+            "Closet Organizer Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Closet Organizer Type",
+            "Material"
+          ],
+          "aliases": [
+            "closet organizer",
+            "closet organizers",
+            "closet storage",
+            "closet system",
+            "closet",
+            "organizers"
+          ],
+          "title_keywords": [
+            "closet organizer",
+            "closet organizers",
+            "closet storage",
+            "closet system",
+            "closet",
+            "organizers"
+          ],
+          "context_keywords": [
+            "closet storage",
+            "closet system",
+            "closet",
+            "organizers"
+          ],
+          "negative_keywords": [
+            "cabinet organizer",
+            "shoe rack",
+            "clothes rack",
+            "hanging organizer"
+          ]
+        },
+        "clothes_drying_racks": {
+          "display_name": "Clothes Drying Racks",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "Material",
+            "Recommended Use",
+            "Mount Type",
+            "Number of Fasteners",
+            "\"-\"",
+            "\"Clip\"",
+            "Number of Tiers",
+            "\"-\"",
+            "\"Tiers\"",
+            "Clothing Type",
+            "Clothes Drying Rack Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Clothes Drying Rack Type",
+            "Material"
+          ],
+          "aliases": [
+            "clothes drying rack",
+            "clothes drying racks",
+            "laundry drying rack",
+            "drying rack",
+            "clothes",
+            "drying"
+          ],
+          "title_keywords": [
+            "clothes drying rack",
+            "clothes drying racks",
+            "laundry drying rack",
+            "drying rack",
+            "clothes",
+            "drying",
+            "racks"
+          ],
+          "context_keywords": [
+            "laundry drying rack",
+            "drying rack",
+            "clothes",
+            "drying",
+            "racks"
+          ],
+          "negative_keywords": [
+            "clothes rack",
+            "clothes line",
+            "clothes pins",
+            "towel holder"
+          ]
+        },
+        "clothes_hangers": {
+          "display_name": "Clothes Hangers",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Age Group",
+            "Theme",
+            "Occasion",
+            "Features",
+            "Recommended Use",
+            "Material",
+            "Number of Tiers",
+            "\"-\"",
+            "\"Tier\"",
+            "Clothing Type",
+            "\"Clothes Hangers\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Material",
+            "Clothes Hanger Type",
+            "Age Group"
+          ],
+          "aliases": [
+            "clothes hanger",
+            "clothes hangers",
+            "coat hangers",
+            "garment hangers",
+            "clothes",
+            "hangers"
+          ],
+          "title_keywords": [
+            "clothes hanger",
+            "clothes hangers",
+            "coat hangers",
+            "garment hangers",
+            "clothes",
+            "hangers"
+          ],
+          "context_keywords": [
+            "coat hangers",
+            "garment hangers",
+            "clothes",
+            "hangers"
+          ],
+          "negative_keywords": [
+            "coat hooks",
+            "clothes rack",
+            "closet organizer",
+            "drying rack"
+          ]
+        },
+        "clothes_lines": {
+          "display_name": "Clothes Lines",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "Clothes Line Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Clothes Line Type",
+            "Material",
+            "Recommended Location"
+          ],
+          "aliases": [
+            "clothes line",
+            "clothes lines",
+            "clothesline",
+            "laundry line",
+            "clothes",
+            "lines"
+          ],
+          "title_keywords": [
+            "clothes line",
+            "clothes lines",
+            "clothesline",
+            "laundry line",
+            "clothes",
+            "lines"
+          ],
+          "context_keywords": [
+            "clothesline",
+            "laundry line",
+            "clothes",
+            "lines"
+          ],
+          "negative_keywords": [
+            "clothes drying rack",
+            "clothes pins",
+            "rope",
+            "hanger"
+          ]
+        },
+        "clothes_pins": {
+          "display_name": "Clothes Pins",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Size Descriptor",
+            "Material",
+            "Clothes Pin Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Material",
+            "Clothes Pin Type"
+          ],
+          "aliases": [
+            "clothes pin",
+            "clothes pins",
+            "clothespins",
+            "laundry pins",
+            "clothes",
+            "pins"
+          ],
+          "title_keywords": [
+            "clothes pin",
+            "clothes pins",
+            "clothespins",
+            "laundry pins",
+            "clothes",
+            "pins"
+          ],
+          "context_keywords": [
+            "clothespins",
+            "laundry pins",
+            "clothes",
+            "pins"
+          ],
+          "negative_keywords": [
+            "clothes line",
+            "binder clips",
+            "chip clips",
+            "drying rack"
+          ]
+        },
+        "clothes_racks": {
+          "display_name": "Clothes Racks",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Age Group",
+            "Recommended Use",
+            "Features",
+            "Mount Type",
+            "Home Décor Style",
+            "Number of Hanging Bars",
+            "\"Rods\"",
+            "Number of Shelves",
+            "\"-\"",
+            "\"Shelf\"",
+            "Closet Organizer Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Material",
+            "Closet Organizer Type"
+          ],
+          "aliases": [
+            "clothes rack",
+            "clothes racks",
+            "garment rack",
+            "clothing rack",
+            "clothes",
+            "racks"
+          ],
+          "title_keywords": [
+            "clothes rack",
+            "clothes racks",
+            "garment rack",
+            "clothing rack",
+            "clothes",
+            "racks"
+          ],
+          "context_keywords": [
+            "garment rack",
+            "clothing rack",
+            "clothes",
+            "racks"
+          ],
+          "negative_keywords": [
+            "clothes drying rack",
+            "closet organizer",
+            "coat hooks",
+            "shelf unit"
+          ]
+        },
+        "coat_hooks": {
+          "display_name": "Coat Hooks",
+          "formula": [
+            "Brand",
+            "Global Brand License",
+            "Product Line",
+            "Age Group",
+            "Character Group",
+            "Character",
+            "Theme",
+            "Home Décor Style",
+            "Sports Team",
+            "Sports League",
+            "Number of Hooks",
+            "\"-\"",
+            "\"Hook\"",
+            "\"Coat Hook\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "Maximum Load Weight",
+            "\"Limit\"",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Color",
+            "Material",
+            "Brand"
+          ],
+          "aliases": [
+            "coat hook",
+            "coat hooks",
+            "wall hooks",
+            "coat",
+            "hooks"
+          ],
+          "title_keywords": [
+            "coat hook",
+            "coat hooks",
+            "wall hooks",
+            "coat",
+            "hooks"
+          ],
+          "context_keywords": [
+            "wall hooks",
+            "coat",
+            "hooks"
+          ],
+          "negative_keywords": [
+            "towel holder",
+            "clothes hanger",
+            "clothes rack",
+            "command strips"
+          ]
+        },
+        "deck_boxes": {
+          "display_name": "Deck Boxes",
+          "formula": [
+            "Brand",
+            "Collection",
+            "Recommended Location",
+            "Features",
+            "Volume Capacity",
+            "Material",
+            "\"Deck Box\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Recommended Location",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "deck boxe",
+            "deck boxes",
+            "deck box",
+            "outdoor storage box",
+            "patio storage box",
+            "deck"
+          ],
+          "title_keywords": [
+            "deck boxe",
+            "deck boxes",
+            "deck box",
+            "outdoor storage box",
+            "patio storage box",
+            "deck",
+            "boxes"
+          ],
+          "context_keywords": [
+            "deck box",
+            "outdoor storage box",
+            "patio storage box",
+            "deck",
+            "boxes"
+          ],
+          "negative_keywords": [
+            "storage chest",
+            "storage crate",
+            "storage shed",
+            "tool box"
+          ]
+        },
+        "drawer_shelf_liners": {
+          "display_name": "Drawer & Shelf Liners",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "Drawer & Shelf Liner Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Scent",
+            "\"Scent\"",
+            "Color",
+            "Pattern",
+            "Theme",
+            "Assembled Product Width",
+            "\"x\"",
+            "Assembled Product Length",
+            "Form",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Drawer And Shelf Liner Type",
+            "Color"
+          ],
+          "aliases": [
+            "drawer and shelf liner",
+            "drawer and shelf liners",
+            "drawer liner",
+            "shelf liner",
+            "drawer",
+            "and"
+          ],
+          "title_keywords": [
+            "drawer and shelf liner",
+            "drawer and shelf liners",
+            "drawer liner",
+            "shelf liner",
+            "drawer",
+            "and",
+            "shelf",
+            "liners"
+          ],
+          "context_keywords": [
+            "drawer liner",
+            "shelf liner",
+            "drawer",
+            "and",
+            "shelf",
+            "liners"
+          ],
+          "negative_keywords": [
+            "shelf unit",
+            "cabinet organizer",
+            "food wrap",
+            "paper liner"
+          ]
+        },
+        "garage_cabinets": {
+          "display_name": "Garage Cabinets",
+          "formula": [
+            "Brand",
+            "Collection",
+            "Features",
+            "Size Descriptor",
+            "Material",
+            "Number of Shelves",
+            "\"-\"",
+            "\"Shelf\"",
+            "Number of Drawers",
+            "\"-\"",
+            "\"Drawers\"",
+            "Mount Type",
+            "\"Garage Cabinet\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Material",
+            "Brand",
+            "Mount Type"
+          ],
+          "aliases": [
+            "garage cabinet",
+            "garage cabinets",
+            "garage storage cabinet",
+            "garage",
+            "cabinets"
+          ],
+          "title_keywords": [
+            "garage cabinet",
+            "garage cabinets",
+            "garage storage cabinet",
+            "garage",
+            "cabinets"
+          ],
+          "context_keywords": [
+            "garage storage cabinet",
+            "garage",
+            "cabinets"
+          ],
+          "negative_keywords": [
+            "cabinet organizer",
+            "storage locker",
+            "shelf unit",
+            "tool chest"
+          ]
+        },
+        "hanging_organizers": {
+          "display_name": "Hanging Organizers",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Age Group",
+            "Sports Team",
+            "Sports League",
+            "Number of Shelves",
+            "\"-\"",
+            "\"Shelf\" OR Number of Pockets",
+            "\"-\"",
+            "\"Pockets\" OR Number of Drawers",
+            "\"-\"",
+            "\"Drawers\"",
+            "Mount Type",
+            "Hanging Organizer Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Hanging Organizer Type",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "hanging organizer",
+            "hanging organizers",
+            "over door organizer",
+            "hanging storage",
+            "hanging",
+            "organizers"
+          ],
+          "title_keywords": [
+            "hanging organizer",
+            "hanging organizers",
+            "over door organizer",
+            "hanging storage",
+            "hanging",
+            "organizers"
+          ],
+          "context_keywords": [
+            "over door organizer",
+            "hanging storage",
+            "hanging",
+            "organizers"
+          ],
+          "negative_keywords": [
+            "closet organizer",
+            "cabinet organizer",
+            "shoe rack",
+            "coat hooks"
+          ]
+        },
+        "laundry_baskets_sorters_hampers": {
+          "display_name": "Laundry Baskets, Sorters & Hampers",
+          "formula": [
+            "Brand",
+            "Global Brand License",
+            "Product Line",
+            "Age Group",
+            "Character Group",
+            "Character",
+            "Theme",
+            "Sports League",
+            "Sports Team",
+            "Size Descriptor",
+            "Features",
+            "Number of Bins",
+            "\"-\"",
+            "\"Bins\"",
+            "Laundry Baskets, Sorter, & Hamper Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Laundry Basket Sorter And Hamper Type",
+            "Material"
+          ],
+          "aliases": [
+            "laundry baskets, sorters and hamper",
+            "laundry baskets, sorters and hampers",
+            "laundry baskets sorters and hampers",
+            "laundry basket",
+            "laundry sorter",
+            "hamper"
+          ],
+          "title_keywords": [
+            "laundry baskets, sorters and hamper",
+            "laundry baskets, sorters and hampers",
+            "laundry baskets sorters and hampers",
+            "laundry basket",
+            "laundry sorter",
+            "hamper",
+            "laundry",
+            "baskets"
+          ],
+          "context_keywords": [
+            "laundry baskets sorters and hampers",
+            "laundry basket",
+            "laundry sorter",
+            "hamper",
+            "laundry",
+            "baskets",
+            "sorters",
+            "and"
+          ],
+          "negative_keywords": [
+            "storage bin",
+            "storage box",
+            "garbage bags",
+            "laundry wash bag"
+          ]
+        },
+        "locker_shelves": {
+          "display_name": "Locker Shelves",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "Assembled Product Height",
+            "Material",
+            "\"Locker Shelf\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Age Group",
+            "Assembly Required",
+            "Brand"
+          ],
+          "aliases": [
+            "locker shelve",
+            "locker shelves",
+            "locker shelf",
+            "locker",
+            "shelves"
+          ],
+          "title_keywords": [
+            "locker shelve",
+            "locker shelves",
+            "locker shelf",
+            "locker",
+            "shelves"
+          ],
+          "context_keywords": [
+            "locker shelf",
+            "locker",
+            "shelves"
+          ],
+          "negative_keywords": [
+            "storage locker",
+            "shelf unit",
+            "cabinet shelf",
+            "book shelf"
+          ]
+        },
+        "organizing_racks": {
+          "display_name": "Organizing Racks",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Age Group",
+            "Features",
+            "Character Group",
+            "Character",
+            "Number of Bins",
+            "\"-\"",
+            "\"Bins\" OR Number of Tiers",
+            "\"-\"",
+            "\"Tiers\"",
+            "Recommended Room",
+            "Recommended Use",
+            "\"Storage Organizer Rack\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Age Group",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "organizing rack",
+            "organizing racks",
+            "storage organizer rack",
+            "organizer rack",
+            "organizing",
+            "racks"
+          ],
+          "title_keywords": [
+            "organizing rack",
+            "organizing racks",
+            "storage organizer rack",
+            "organizer rack",
+            "organizing",
+            "racks"
+          ],
+          "context_keywords": [
+            "storage organizer rack",
+            "organizer rack",
+            "organizing",
+            "racks"
+          ],
+          "negative_keywords": [
+            "shoe rack",
+            "clothes rack",
+            "overhead storage rack",
+            "shelf unit"
+          ]
+        },
+        "overhead_storage_racks": {
+          "display_name": "Overhead Storage Racks",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Features",
+            "Recommended Use",
+            "Operating Type",
+            "\"Overhead Ceiling Storage Rack\"",
+            "Assembled Product Length",
+            "\"L\"",
+            "\"x\"",
+            "Assembled Product Width",
+            "\"W\"",
+            "\"x\"",
+            "Assembled Product Height",
+            "\"H\"",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Material",
+            "Assembly Required"
+          ],
+          "aliases": [
+            "overhead storage rack",
+            "overhead storage racks",
+            "ceiling storage rack",
+            "garage overhead rack",
+            "overhead",
+            "storage"
+          ],
+          "title_keywords": [
+            "overhead storage rack",
+            "overhead storage racks",
+            "ceiling storage rack",
+            "garage overhead rack",
+            "overhead",
+            "storage",
+            "racks"
+          ],
+          "context_keywords": [
+            "ceiling storage rack",
+            "garage overhead rack",
+            "overhead",
+            "storage",
+            "racks"
+          ],
+          "negative_keywords": [
+            "organizing rack",
+            "shelf unit",
+            "track storage system",
+            "garage cabinet"
+          ]
+        },
+        "shelves_shelf_units": {
+          "display_name": "Shelves & Shelf Units",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Age Group",
+            "Recommended Room",
+            "Features",
+            "Number of Shelves",
+            "\"-\"",
+            "\"Tiers\"",
+            "Shelf Material",
+            "\"Dimensions:\"",
+            "Assembled Product Width",
+            "\"W\"",
+            "\"x\"",
+            "Shelf Depth",
+            "\"D\"",
+            "\"x\"",
+            "Assembled Product Height",
+            "\"H\"",
+            "Shelf & Shelf Unit Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "\"Total Capacity\"",
+            "Maximum Load Weight",
+            "\"Shelf Capacity\"",
+            "Maximum Load Weight per Shelf",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Shelf And Shelf Unit Type",
+            "Brand",
+            "Material"
+          ],
+          "aliases": [
+            "shelves and shelf unit",
+            "shelves and shelf units",
+            "shelf unit",
+            "storage shelves",
+            "shelving unit",
+            "shelves"
+          ],
+          "title_keywords": [
+            "shelves and shelf unit",
+            "shelves and shelf units",
+            "shelf unit",
+            "storage shelves",
+            "shelving unit",
+            "shelves",
+            "and",
+            "shelf"
+          ],
+          "context_keywords": [
+            "shelf unit",
+            "storage shelves",
+            "shelving unit",
+            "shelves",
+            "and",
+            "shelf",
+            "units"
+          ],
+          "negative_keywords": [
+            "locker shelf",
+            "overhead storage rack",
+            "cabinet organizer",
+            "shoe rack"
+          ]
+        },
+        "shoe_racks": {
+          "display_name": "Shoe Racks",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Collection",
+            "Age Group",
+            "Number of Tiers",
+            "\"-\"",
+            "\"Tier\" OR Number of Compartments",
+            "\"-\"",
+            "\"Compartment\"",
+            "Features",
+            "Mount Type",
+            "Shoe Rack Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "\"Holds up to\"",
+            "Number of Pairs of Shoes",
+            "\"-\"",
+            "\"Pairs of Shoes\"",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Material",
+            "Closet Organizer Type",
+            "Brand"
+          ],
+          "aliases": [
+            "shoe rack",
+            "shoe racks",
+            "shoe organizer",
+            "shoe shelf",
+            "shoe",
+            "racks"
+          ],
+          "title_keywords": [
+            "shoe rack",
+            "shoe racks",
+            "shoe organizer",
+            "shoe shelf",
+            "shoe",
+            "racks"
+          ],
+          "context_keywords": [
+            "shoe organizer",
+            "shoe shelf",
+            "shoe",
+            "racks"
+          ],
+          "negative_keywords": [
+            "closet organizer",
+            "hanging organizer",
+            "shelf unit",
+            "clothes rack"
+          ]
+        },
+        "sink_caddies": {
+          "display_name": "Sink Caddies",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Theme",
+            "Recommended Room",
+            "Features",
+            "Material",
+            "Mount Type",
+            "\"Sink Caddy\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Material",
+            "Color"
+          ],
+          "aliases": [
+            "sink caddie",
+            "sink caddies",
+            "sink caddy",
+            "kitchen sink caddy",
+            "sponge holder",
+            "sink"
+          ],
+          "title_keywords": [
+            "sink caddie",
+            "sink caddies",
+            "sink caddy",
+            "kitchen sink caddy",
+            "sponge holder",
+            "sink",
+            "caddies"
+          ],
+          "context_keywords": [
+            "sink caddy",
+            "kitchen sink caddy",
+            "sponge holder",
+            "sink",
+            "caddies"
+          ],
+          "negative_keywords": [
+            "shower caddy",
+            "cabinet organizer",
+            "soap dish",
+            "dish rack"
+          ]
+        },
+        "storage_chests_boxes": {
+          "display_name": "Storage Chests & Boxes",
+          "formula": [
+            "Brand",
+            "Global Brand License",
+            "Product Line",
+            "Size Descriptor",
+            "Age Group",
+            "Character Group",
+            "Character",
+            "Theme",
+            "Pattern",
+            "Occasion",
+            "Features",
+            "Recommended Use",
+            "Material",
+            "Volume Capacity",
+            "Style",
+            "Clothing Type",
+            "Recommended Room OR Recommended Location",
+            "Seasonal Storage Type",
+            "Storage Chest & Boxes Type",
+            "Retail Packaging",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Material",
+            "Brand",
+            "Storage Chest And Box Type"
+          ],
+          "aliases": [
+            "storage chests and boxe",
+            "storage chests and boxes",
+            "storage chest",
+            "storage box",
+            "storage bin",
+            "storage"
+          ],
+          "title_keywords": [
+            "storage chests and boxe",
+            "storage chests and boxes",
+            "storage chest",
+            "storage box",
+            "storage bin",
+            "storage",
+            "chests",
+            "and"
+          ],
+          "context_keywords": [
+            "storage chest",
+            "storage box",
+            "storage bin",
+            "storage",
+            "chests",
+            "and",
+            "boxes"
+          ],
+          "negative_keywords": [
+            "deck box",
+            "storage crate",
+            "storage locker",
+            "storage shed"
+          ]
+        },
+        "storage_lockers": {
+          "display_name": "Storage Lockers",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Sports Team",
+            "Sports League",
+            "Age Group",
+            "Features",
+            "Number of Doors",
+            "\"-\"",
+            "\"Door\" OR Number of Compartments",
+            "\"-\"",
+            "\"Compartment\"",
+            "Material",
+            "Recommended Use",
+            "\"Storage Locker\"",
+            "Retail Packaging",
+            "\"with\" Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Material",
+            "Age Group"
+          ],
+          "aliases": [
+            "storage locker",
+            "storage lockers",
+            "locker cabinet",
+            "storage",
+            "lockers"
+          ],
+          "title_keywords": [
+            "storage locker",
+            "storage lockers",
+            "locker cabinet",
+            "storage",
+            "lockers"
+          ],
+          "context_keywords": [
+            "locker cabinet",
+            "storage",
+            "lockers"
+          ],
+          "negative_keywords": [
+            "locker shelf",
+            "garage cabinet",
+            "storage shed",
+            "storage box"
+          ]
+        },
+        "storage_sheds": {
+          "display_name": "Storage Sheds",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Collection",
+            "Features",
+            "Material",
+            "Recommended Use",
+            "Orientation",
+            "Storage Shed Type",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Assembled Product Height",
+            "\"x\"",
+            "Assembled Product Length",
+            "\"x\"",
+            "Assembled Product Width",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Material",
+            "Brand",
+            "Condition"
+          ],
+          "aliases": [
+            "storage shed",
+            "storage sheds",
+            "outdoor shed",
+            "garden shed",
+            "storage",
+            "sheds"
+          ],
+          "title_keywords": [
+            "storage shed",
+            "storage sheds",
+            "outdoor shed",
+            "garden shed",
+            "storage",
+            "sheds"
+          ],
+          "context_keywords": [
+            "outdoor shed",
+            "garden shed",
+            "storage",
+            "sheds"
+          ],
+          "negative_keywords": [
+            "deck box",
+            "storage locker",
+            "garage cabinet",
+            "playhouse"
+          ]
+        },
+        "towel_holders": {
+          "display_name": "Towel Holders",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Collection",
+            "Theme",
+            "Recommended Location",
+            "Recommended Room",
+            "Features",
+            "Mount Type",
+            "Recommended Use",
+            "Towel & Washcloth Type",
+            "Towel Holder Type",
+            "Retail Packaging",
+            "\"with\" Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Towel Holder Type",
+            "Brand",
+            "Color"
+          ],
+          "aliases": [
+            "towel holder",
+            "towel holders",
+            "towel rack",
+            "towel bar",
+            "towel",
+            "holders"
+          ],
+          "title_keywords": [
+            "towel holder",
+            "towel holders",
+            "towel rack",
+            "towel bar",
+            "towel",
+            "holders"
+          ],
+          "context_keywords": [
+            "towel rack",
+            "towel bar",
+            "towel",
+            "holders"
+          ],
+          "negative_keywords": [
+            "coat hook",
+            "shower organizer",
+            "clothes rack",
+            "paper towel holder"
+          ]
+        },
+        "track_storage_systems": {
+          "display_name": "Track Storage Systems",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Assembled Product Length",
+            "\"L\"",
+            "Material",
+            "\"Track Storage System\"",
+            "Retail Packaging",
+            "\"with\"",
+            "Accessories Included",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Brand",
+            "Material",
+            "Assembly Instructions"
+          ],
+          "aliases": [
+            "track storage system",
+            "track storage systems",
+            "wall track storage",
+            "garage track system",
+            "track",
+            "storage"
+          ],
+          "title_keywords": [
+            "track storage system",
+            "track storage systems",
+            "wall track storage",
+            "garage track system",
+            "track",
+            "storage",
+            "systems"
+          ],
+          "context_keywords": [
+            "wall track storage",
+            "garage track system",
+            "track",
+            "storage",
+            "systems"
+          ],
+          "negative_keywords": [
+            "overhead storage rack",
+            "garage cabinet",
+            "shelf unit",
+            "curtain track"
+          ]
+        },
+        "storage_crates": {
+          "display_name": "Storage Crates",
+          "formula": [
+            "Brand",
+            "Product Line",
+            "Size Descriptor",
+            "Features",
+            "Material",
+            "Recommended Use",
+            "Storage Crate",
+            "Retail Packaging",
+            "Accessories Included",
+            "Color",
+            "Total Count",
+            "\"Count\"",
+            "Multipack Quantity",
+            "\"Pack\""
+          ],
+          "attributes": [
+            "Assembled Product Width",
+            "Material",
+            "Color"
+          ],
+          "aliases": [
+            "storage crate",
+            "storage crates",
+            "plastic crate",
+            "storage",
+            "crates"
+          ],
+          "title_keywords": [
+            "storage crate",
+            "storage crates",
+            "plastic crate",
+            "storage",
+            "crates"
+          ],
+          "context_keywords": [
+            "plastic crate",
+            "storage",
+            "crates"
+          ],
+          "negative_keywords": [
+            "storage box",
+            "deck box",
+            "milk crate",
+            "pet crate"
+          ]
+        }
+      }
+    }
+  }
+}

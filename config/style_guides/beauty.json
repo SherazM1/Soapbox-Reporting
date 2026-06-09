@@ -1,0 +1,1571 @@
+{
+  "category": "Beauty",
+  "status": "partial",
+  "source": "BeautyContentStyleGuide.pdf",
+  "families": {
+    "skin_care": {
+      "display_name": "Skin Care",
+      "product_types": {
+        "other_skin_care_supplies": {
+          "display_name": "Other Skin Care Supplies",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Size", "Count/Pack", "Net Content UOM"],
+          "attributes": ["Product Net Content Uom", "Product Net Content Quantity", "Multipack Quantity"],
+          "aliases": ["other skin care supply", "other skin care supplies", "skin care supplies", "skincare supplies"],
+          "title_keywords": ["skin care supply", "skincare supply", "skin care tool", "skin care accessory"],
+          "context_keywords": ["skin care", "skincare", "face care", "beauty routine", "net content", "multipack"],
+          "negative_keywords": ["acne cream", "acne treatment", "face serum", "facial cleanser", "facial moisturizer", "eye cream", "eye mask", "makeup", "hair", "shampoo", "conditioner"]
+        },
+        "acne_creams": {
+          "display_name": "Acne Creams",
+          "formula": ["Brand", "Product Line", "Ingredient Preference OR Features", "Acne Cream Type", "Form", "with", "Active Ingredients", "Size OR Total Count \"Count\"", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Skin Care Concern", "Acne Cream Type"],
+          "aliases": ["acne cream", "acne creams", "blemish cream", "pimple cream", "spot cream"],
+          "title_keywords": ["acne cream", "blemish cream", "pimple cream", "spot treatment cream", "acne spot treatment"],
+          "context_keywords": ["acne", "blemish", "breakout", "pimple", "salicylic acid", "benzoyl peroxide", "zit"],
+          "negative_keywords": ["acne treatment system", "acne kit", "acne set", "cleanser", "face wash", "patch", "pimple patch", "serum", "moisturizer", "mask", "hair", "makeup"]
+        },
+        "acne_treatment_systems": {
+          "display_name": "Acne Treatment Systems",
+          "formula": ["Brand", "Product Line", "Retail Packaging", "with", "Active Ingredients", "Piece Count \"-Piece Set\"", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Body Part", "Skin Care Concern"],
+          "aliases": ["acne treatment system", "acne treatment systems", "acne kit", "acne treatment kit", "acne regimen"],
+          "title_keywords": ["acne treatment system", "acne treatment kit", "acne regimen", "acne set", "blemish kit"],
+          "context_keywords": ["acne", "blemish", "breakout", "step system", "piece set", "kit", "regimen"],
+          "negative_keywords": ["acne cream", "spot cream", "single cream", "facial cleanser", "face wash", "serum", "moisturizer", "mask", "makeup", "hair"]
+        },
+        "exfoliants_scrubs": {
+          "display_name": "Exfoliants & Scrubs",
+          "formula": ["Brand", "Product Line", "Primary Ingredient", "Skin Care Key Benefit", "Body Part", "Exfoliant & Scrub Type", "Scent", "Size", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Skin Care Concern", "Body Part"],
+          "aliases": ["exfoliant", "exfoliants", "scrub", "scrubs", "face scrub", "facial scrub"],
+          "title_keywords": ["exfoliant", "exfoliating scrub", "facial scrub", "face scrub", "skin polish"],
+          "context_keywords": ["exfoliate", "exfoliating", "scrub", "polish", "resurfacing", "dead skin", "smoothing"],
+          "negative_keywords": ["body wash", "cleanser", "face wash", "facial mask", "peel", "toner", "makeup", "hair scrub", "scalp scrub", "shampoo"]
+        },
+        "eye_creams_serums": {
+          "display_name": "Eye Creams & Serums",
+          "formula": ["Brand", "Product Line", "Ingredient Preference OR Skin Care Key Benefit", "Eye OR Under-Eye", "Cream OR Serum", "for", "Skin Care Concern", "Size", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Skin Care Concern", "Body Part"],
+          "aliases": ["eye cream", "eye creams", "eye serum", "eye serums", "under-eye cream", "under eye serum"],
+          "title_keywords": ["eye cream", "eye serum", "under-eye cream", "under eye cream", "under-eye serum", "under eye serum"],
+          "context_keywords": ["eye area", "under eye", "dark circles", "puffiness", "crow's feet", "fine lines"],
+          "negative_keywords": ["eye mask", "under-eye mask", "eye pads", "makeup", "concealer", "mascara", "eyeliner", "face serum", "facial moisturizer", "hair"]
+        },
+        "eye_masks": {
+          "display_name": "Eye Masks",
+          "formula": ["Brand", "Product Line", "Ingredient Preference OR Skin Care Key Benefit", "Eye OR Under-Eye", "Masks OR Pads", "with", "Primary Ingredient", "Count per Pack", "Retail Packaging", "Total Count \"Count\"", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Body Part", "Skin Care Concern"],
+          "aliases": ["eye mask", "eye masks", "under-eye mask", "under eye mask", "eye pads", "under-eye patches"],
+          "title_keywords": ["eye mask", "eye masks", "under-eye mask", "under eye patch", "eye pads", "eye patches"],
+          "context_keywords": ["under eye", "puffiness", "dark circles", "cooling", "hydrogel", "pads", "patches"],
+          "negative_keywords": ["eye cream", "eye serum", "face mask", "sleep mask", "mascara", "concealer", "hair mask"]
+        },
+        "face_serums": {
+          "display_name": "Face Serums",
+          "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Primary Ingredient", "Skin Care Key Benefit", "Face Serum", "for", "Skin Type \"Skin\"", "Size", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Skin Care Concern", "Age Group"],
+          "aliases": ["face serum", "face serums", "facial serum", "facial serums", "skin serum"],
+          "title_keywords": ["face serum", "facial serum", "vitamin c serum", "hyaluronic acid serum", "retinol serum"],
+          "context_keywords": ["serum", "brightening", "hydrating", "anti aging", "retinol", "vitamin c", "hyaluronic acid", "niacinamide"],
+          "negative_keywords": ["eye serum", "hair serum", "facial moisturizer", "face cream", "facial treatment", "facial cleanser", "toner", "makeup", "foundation"]
+        },
+        "facial_cleansers": {
+          "display_name": "Facial Cleansers",
+          "formula": ["Brand", "Product Line", "Ingredient Preference OR Skin Care Key Benefit OR Feature", "Facial Cleanser", "Form", "for", "Skin Type \"Skin\"", "Size OR Total Count \"Count\"", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Skin Care Concern", "Skin Type"],
+          "aliases": ["facial cleanser", "facial cleansers", "face cleanser", "face wash", "cleansing gel", "cleansing foam"],
+          "title_keywords": ["facial cleanser", "face cleanser", "face wash", "cleansing gel", "cleansing foam", "cream cleanser"],
+          "context_keywords": ["cleanser", "cleansing", "wash", "foam", "gel", "daily cleanser", "skin type"],
+          "negative_keywords": ["facial wipes", "cleansing wipes", "makeup remover", "micellar water", "toner", "astringent", "body wash", "shampoo", "makeup"]
+        },
+        "facial_masks": {
+          "display_name": "Facial Masks",
+          "formula": ["Brand", "Product Line", "Skin Care Key Benefit", "Primary Ingredient", "Facial Mask Type", "Face Mask", "Size OR Count per Pack \"Count OR Sheets\"", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Facial Mask Type", "Age Group"],
+          "aliases": ["facial mask", "facial masks", "face mask", "face masks", "sheet mask", "clay mask"],
+          "title_keywords": ["face mask", "facial mask", "sheet mask", "clay mask", "peel off mask", "sleeping mask"],
+          "context_keywords": ["mask", "sheet", "clay", "charcoal", "hydrating", "detox", "pore", "brightening"],
+          "negative_keywords": ["eye mask", "hair mask", "facial peel", "facial treatment", "face serum", "moisturizer", "cleanser", "medical mask", "makeup"]
+        },
+        "facial_moisturizers": {
+          "display_name": "Facial Moisturizers",
+          "formula": ["Brand", "Product Line", "Primary Ingredient", "Ingredient Preference OR Skin Care Key Benefit", "Facial Moisturizer", "for", "Skin Type \"Skin\"", "Size", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Skin Care Concern", "Size"],
+          "aliases": ["facial moisturizer", "facial moisturizers", "face moisturizer", "face cream", "facial lotion"],
+          "title_keywords": ["facial moisturizer", "face moisturizer", "face cream", "facial lotion", "hydrating cream"],
+          "context_keywords": ["moisturizer", "moisturizing", "hydrating", "cream", "lotion", "day cream", "night cream", "skin type"],
+          "negative_keywords": ["tinted moisturizer", "bb cream", "cc cream", "foundation", "face serum", "eye cream", "body lotion", "cleanser", "makeup"]
+        },
+        "facial_toners_astringents": {
+          "display_name": "Facial Toners & Astringents",
+          "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Ingredient Preference OR Skin Care Key Benefit", "Facial Toner OR Facial Astringent", "with", "Primary Ingredient OR Active Ingredient Name", "Size", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Skin Care Concern", "Ingredients"],
+          "aliases": ["facial toner", "facial toners", "face toner", "facial astringent", "astringent"],
+          "title_keywords": ["facial toner", "face toner", "toner", "facial astringent", "astringent"],
+          "context_keywords": ["tone", "toning", "astringent", "witch hazel", "pore refining", "balancing", "clarifying"],
+          "negative_keywords": ["cleanser", "face wash", "makeup remover", "micellar water", "serum", "essence", "setting spray", "hair toner"]
+        },
+        "facial_treatments": {
+          "display_name": "Facial Treatments",
+          "formula": ["Brand", "Product Line", "Skin Care Key Benefit OR Ingredient Preference", "Primary Ingredient OR Active Ingredient Name", "Recommended Use", "Facial Treatment OR Facial Peel", "Form", "Size OR Count per Pack \"Count\"", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Skin Care Concern", "Body Part"],
+          "aliases": ["facial treatment", "facial treatments", "face treatment", "facial peel", "face peel"],
+          "title_keywords": ["facial treatment", "face treatment", "facial peel", "face peel", "resurfacing treatment"],
+          "context_keywords": ["treatment", "peel", "resurfacing", "dark spot", "anti aging", "repair", "overnight", "targeted"],
+          "negative_keywords": ["facial cleanser", "face wash", "facial mask", "sheet mask", "face serum", "moisturizer", "toner", "makeup", "hair treatment"]
+        },
+        "facial_wipes": {
+          "display_name": "Facial Wipes",
+          "formula": ["Brand", "Product Line", "Primary Ingredient", "Skin Care Key Benefit OR Ingredient Preference", "Product Multifunction Descriptor", "Retail Packaging", "Makeup Removing OR Facial Cleansing OR Makeup Removing and Cleansing", "Form", "Count per Pack \"Count\"", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Skin Type", "Skin Care Concern"],
+          "aliases": ["facial wipe", "facial wipes", "face wipes", "cleansing wipes", "makeup removing wipes"],
+          "title_keywords": ["facial wipes", "face wipes", "cleansing wipes", "makeup remover wipes", "makeup removing wipes"],
+          "context_keywords": ["wipe", "wipes", "towelettes", "cleansing cloths", "makeup removing", "facial cleansing", "count"],
+          "negative_keywords": ["facial cleanser", "face wash", "makeup remover liquid", "micellar water", "baby wipes", "disinfecting wipes", "hair", "makeup"]
+        },
+        "makeup_removers": {
+          "display_name": "Makeup Removers",
+          "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Ingredient Preference OR Skin Care Key Benefit", "Body Part", "Makeup Remover OR Micellar Cleansing Water", "Form", "with", "Primary Ingredient", "Size", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Skin Type", "Body Part"],
+          "aliases": ["makeup remover", "makeup removers", "micellar water", "micellar cleansing water", "eye makeup remover"],
+          "title_keywords": ["makeup remover", "makeup removers", "micellar water", "micellar cleansing water", "eye makeup remover"],
+          "context_keywords": ["remove makeup", "makeup removing", "waterproof makeup", "micellar", "cleansing water", "eye makeup"],
+          "negative_keywords": ["facial cleanser", "face wash", "facial wipes", "toner", "astringent", "setting spray", "makeup primer", "hair"]
+        },
+        "skin_care_sets": {
+          "display_name": "Skin Care Sets",
+          "formula": ["Brand", "Product Line", "Number of Steps \"-Step\"", "Skin Care Key Benefit", "Skin Care", "Piece Count \"-Piece\"", "Retail Packaging", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Age Group", "Body Part"],
+          "aliases": ["skin care set", "skin care sets", "skincare set", "skincare kit", "skin care kit"],
+          "title_keywords": ["skin care set", "skincare set", "skin care kit", "skincare kit", "routine set"],
+          "context_keywords": ["set", "kit", "routine", "step", "piece", "regimen", "gift set", "skin care"],
+          "negative_keywords": ["makeup set", "hair care set", "shampoo conditioner set", "acne treatment system", "single cleanser", "single moisturizer", "single serum"]
+        },
+        "skin_lighteners": {
+          "display_name": "Skin Lighteners",
+          "formula": ["Brand", "Product Line", "Skin Care Key Benefit", "Skin Lightener", "Form", "for", "Body Part", "Size OR Total Count \"Count\"", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Age Group", "Form"],
+          "aliases": ["skin lightener", "skin lighteners", "skin brightener", "dark spot corrector", "fade cream"],
+          "title_keywords": ["skin lightener", "skin lightening", "skin brightener", "dark spot corrector", "fade cream"],
+          "context_keywords": ["lightening", "brightening", "dark spot", "hyperpigmentation", "fade", "even tone", "discoloration"],
+          "negative_keywords": ["foundation", "concealer", "highlighter", "bronzer", "self tanner", "hair lightener", "bleach", "cleanser", "moisturizer"]
+        }
+      }
+    },
+    "hair_care": {
+      "display_name": "Hair Care",
+      "product_types": {
+        "three_in_one_shampoo_conditioner_body_washes": {
+          "display_name": "3-in-1 Shampoo, Conditioner & Body Washes",
+          "formula": ["Brand", "Product Line", "Gender", "Age Group", "3-in-1 Shampoo Conditioner & Body Wash", "with", "Primary Ingredient", "Scent", "Size", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Shampoo And Conditioner Type", "Size"],
+          "aliases": ["3-in-1 shampoo conditioner body wash", "3 in 1 shampoo conditioner body wash", "three in one shampoo conditioner body wash"],
+          "title_keywords": ["3-in-1 shampoo conditioner body wash", "3 in 1 shampoo conditioner body wash", "shampoo conditioner body wash"],
+          "context_keywords": ["3-in-1", "three in one", "shampoo", "conditioner", "body wash", "hair and body"],
+          "negative_keywords": ["shampoo only", "conditioner only", "shampoo conditioner set", "body wash only", "facial cleanser", "skin care", "makeup"]
+        },
+        "conditioners": {
+          "display_name": "Conditioners",
+          "formula": ["Brand", "Product Line", "Hair Care Key Benefits", "Age Group", "Shampoo & Conditioner Type", "with", "Primary Ingredient", "Scent", "Size", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Shampoo And Conditioner Type", "Hair Type"],
+          "aliases": ["conditioner", "conditioners", "hair conditioner", "rinse out conditioner"],
+          "title_keywords": ["conditioner", "hair conditioner", "moisturizing conditioner", "repair conditioner"],
+          "context_keywords": ["condition", "conditioning", "detangle", "hydrating", "moisture", "hair type"],
+          "negative_keywords": ["shampoo", "conditioning shampoo", "dry shampoo", "shampoo conditioner set", "3-in-1", "leave in treatment", "hair mask", "skin care", "makeup"]
+        },
+        "conditioning_shampoos": {
+          "display_name": "Conditioning Shampoos",
+          "formula": ["Brand", "Product Line", "Features", "Hair Care Key Benefits", "Age Group", "Shampoo & Conditioner Type", "with", "Primary Ingredient", "Scent", "Size", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Shampoo And Conditioner Type", "Ib Hair Care Key Benefits"],
+          "aliases": ["conditioning shampoo", "conditioning shampoos", "moisturizing shampoo", "2-in-1 shampoo"],
+          "title_keywords": ["conditioning shampoo", "moisturizing shampoo", "2-in-1 shampoo", "shampoo and conditioner"],
+          "context_keywords": ["shampoo", "conditioning", "moisturizing", "cleansing", "2-in-1", "hair care"],
+          "negative_keywords": ["conditioner only", "dry shampoo", "shampoo conditioner set", "3-in-1 body wash", "hair mask", "skin care", "makeup"]
+        },
+        "dry_shampoos": {
+          "display_name": "Dry Shampoos",
+          "formula": ["Brand", "Product Line", "Hair Care Key Benefits", "Dry Shampoo", "with", "Primary Ingredient", "Scent", "Size", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Shampoo And Conditioner Type", "Hair Type"],
+          "aliases": ["dry shampoo", "dry shampoos", "waterless shampoo", "shampoo spray"],
+          "title_keywords": ["dry shampoo", "waterless shampoo", "dry shampoo spray", "dry shampoo powder"],
+          "context_keywords": ["dry shampoo", "oil absorbing", "refresh", "between washes", "aerosol", "powder"],
+          "negative_keywords": ["liquid shampoo", "conditioner", "conditioning shampoo", "hair spray", "texturizing spray", "skin care", "makeup"]
+        },
+        "hair_scalp_treatments": {
+          "display_name": "Hair & Scalp Treatments",
+          "formula": ["Brand", "Product Line", "Active OR Primary Ingredients", "Hair Care Key Benefits", "Hair & Scalp Treatment Type", "Size", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Hair Type", "Size"],
+          "aliases": ["hair treatment", "hair treatments", "scalp treatment", "hair and scalp treatment", "scalp care"],
+          "title_keywords": ["hair treatment", "scalp treatment", "hair and scalp treatment", "scalp care", "leave-in treatment"],
+          "context_keywords": ["scalp", "treatment", "repair", "itchy scalp", "dry scalp", "leave-in", "hair care"],
+          "negative_keywords": ["hair loss treatment", "minoxidil", "hair mask", "hair oil", "hair serum", "shampoo", "conditioner", "facial treatment", "skin care", "makeup"]
+        },
+        "hair_loss_treatments": {
+          "display_name": "Hair Loss Treatments",
+          "formula": ["Brand", "Product Line", "Active Ingredients", "Hair Loss Treatment Type", "for", "Gender", "Size", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Hair Loss Treatment Type", "Size"],
+          "aliases": ["hair loss treatment", "hair loss treatments", "hair regrowth treatment", "thinning hair treatment", "minoxidil"],
+          "title_keywords": ["hair loss treatment", "hair regrowth treatment", "thinning hair treatment", "minoxidil", "hair growth treatment"],
+          "context_keywords": ["hair loss", "regrowth", "thinning", "minoxidil", "men", "women", "foam", "topical"],
+          "negative_keywords": ["scalp treatment", "hair mask", "hair oil", "hair serum", "shampoo", "conditioner", "styling", "skin care", "makeup"]
+        },
+        "hair_masks": {
+          "display_name": "Hair Masks",
+          "formula": ["Brand", "Product Line", "Hair Care Key Benefits", "Hair Mask", "with", "Primary Ingredient", "Scent", "Size", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Hair Type", "Ib Hair Care Key Benefits"],
+          "aliases": ["hair mask", "hair masks", "deep conditioning mask", "hair masque"],
+          "title_keywords": ["hair mask", "hair masque", "deep conditioning mask", "repair mask"],
+          "context_keywords": ["mask", "masque", "deep conditioning", "repair", "hydrating", "hair treatment"],
+          "negative_keywords": ["face mask", "facial mask", "eye mask", "scalp treatment", "conditioner", "hair oil", "hair serum", "skin care", "makeup"]
+        },
+        "hair_oils": {
+          "display_name": "Hair Oils",
+          "formula": ["Brand", "Product Line", "Primary Ingredient", "Hair Oil", "Size", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Hair Type", "Ingredients"],
+          "aliases": ["hair oil", "hair oils", "argan oil hair", "coconut hair oil", "scalp oil"],
+          "title_keywords": ["hair oil", "argan hair oil", "coconut hair oil", "scalp oil", "hair treatment oil"],
+          "context_keywords": ["oil", "argan", "coconut", "castor", "jojoba", "shine", "frizz", "scalp"],
+          "negative_keywords": ["hair serum", "face oil", "body oil", "essential oil", "hair spray", "pomade", "wax", "skin care", "makeup"]
+        },
+        "hair_pomades": {
+          "display_name": "Hair Pomades",
+          "formula": ["Brand", "Product Line", "Hair Care Key Benefits", "Hair Pomade", "with", "Primary Ingredient", "Size", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Hair Product Form", "Hair Type"],
+          "aliases": ["hair pomade", "hair pomades", "pomade", "styling pomade"],
+          "title_keywords": ["hair pomade", "pomade", "styling pomade", "matte pomade"],
+          "context_keywords": ["pomade", "hold", "styling", "shine", "matte", "men's hair", "barber"],
+          "negative_keywords": ["hair wax", "styling wax", "hair gel", "hair cream", "hair mousse", "hair spray", "skin care", "makeup"]
+        },
+        "hair_serums": {
+          "display_name": "Hair Serums",
+          "formula": ["Brand", "Product Line", "Hair Care Key Benefits", "Hair Serum", "with", "Primary Ingredient", "Size", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Ib Hair Care Key Benefits", "Hair Type"],
+          "aliases": ["hair serum", "hair serums", "anti frizz serum", "shine serum"],
+          "title_keywords": ["hair serum", "anti-frizz serum", "shine serum", "smoothing serum"],
+          "context_keywords": ["serum", "frizz", "shine", "smoothing", "split ends", "heat protect", "hair care"],
+          "negative_keywords": ["face serum", "eye serum", "hair oil", "scalp oil", "hair spray", "styling gel", "skin care", "makeup"]
+        },
+        "hair_sprays": {
+          "display_name": "Hair Sprays",
+          "formula": ["Brand", "Product Line", "Hair Care Key Benefits", "Hair Styling Gel, Mousse, Spray & Serum Type", "Hair Spray", "with", "Primary Ingredient", "Features", "Size", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Hair Product Form", "Hair Styling Gel Mousse Spray And Serum Type"],
+          "aliases": ["hair spray", "hair sprays", "hairspray", "finishing spray", "styling spray"],
+          "title_keywords": ["hair spray", "hairspray", "finishing spray", "styling spray", "hold spray"],
+          "context_keywords": ["spray", "hold", "finishing", "flexible hold", "extra hold", "aerosol", "humidity"],
+          "negative_keywords": ["makeup setting spray", "face mist", "dry shampoo", "hair serum", "hair gel", "hair mousse", "skin care", "makeup"]
+        },
+        "hair_styling_creams": {
+          "display_name": "Hair Styling Creams",
+          "formula": ["Brand", "Product Line", "Hair Care Key Benefits", "Features", "Hair Styling Cream", "with", "Primary Ingredient", "Size", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Hair Type", "Size"],
+          "aliases": ["hair styling cream", "hair styling creams", "styling cream", "curl cream", "hair cream"],
+          "title_keywords": ["hair styling cream", "styling cream", "curl cream", "smoothing cream", "hair cream"],
+          "context_keywords": ["cream", "styling", "curl", "frizz", "smooth", "definition", "leave-in"],
+          "negative_keywords": ["facial cream", "eye cream", "hair gel", "hair mousse", "hair wax", "pomade", "conditioner", "skin care", "makeup"]
+        },
+        "hair_styling_gels": {
+          "display_name": "Hair Styling Gels",
+          "formula": ["Brand", "Product Line", "Hair Care Key Benefits", "Dispenser Style", "Hair Styling Gel", "with", "Primary Ingredient", "Size", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Hair Type", "Hair Product Form"],
+          "aliases": ["hair styling gel", "hair styling gels", "hair gel", "styling gel"],
+          "title_keywords": ["hair styling gel", "hair gel", "styling gel", "curl gel", "strong hold gel"],
+          "context_keywords": ["gel", "hold", "styling", "curl", "edge", "definition", "dispenser"],
+          "negative_keywords": ["facial gel", "shower gel", "hair cream", "hair mousse", "hair wax", "pomade", "conditioner", "skin care", "makeup"]
+        },
+        "hair_styling_mousses": {
+          "display_name": "Hair Styling Mousses",
+          "formula": ["Brand", "Product Line", "Hair Care Key Benefits", "Dispenser Style", "Hair Styling Mousse", "with", "Primary Ingredient", "Size", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Hair Type", "Hair Product Form"],
+          "aliases": ["hair styling mousse", "hair styling mousses", "hair mousse", "styling mousse"],
+          "title_keywords": ["hair styling mousse", "hair mousse", "styling mousse", "volumizing mousse", "curl mousse"],
+          "context_keywords": ["mousse", "foam", "volume", "curl", "styling", "hold", "dispenser"],
+          "negative_keywords": ["hair gel", "hair cream", "hair wax", "pomade", "shaving mousse", "skin care", "makeup"]
+        },
+        "hair_styling_waxes": {
+          "display_name": "Hair Styling Waxes",
+          "formula": ["Brand", "Product Line", "Hair Care Key Benefits", "Dispenser Style", "Hair Styling", "Form", "with", "Primary Ingredient", "Size", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Hair Product Form", "Hair Type"],
+          "aliases": ["hair styling wax", "hair styling waxes", "hair wax", "styling wax"],
+          "title_keywords": ["hair styling wax", "hair wax", "styling wax", "matte wax", "hair paste"],
+          "context_keywords": ["wax", "styling", "texture", "hold", "matte", "paste", "definition"],
+          "negative_keywords": ["hair pomade", "pomade", "hair gel", "hair cream", "hair mousse", "wax strips", "skin care", "makeup"]
+        },
+        "shampoo_conditioner_sets": {
+          "display_name": "Shampoo & Conditioner Sets",
+          "formula": ["Brand", "Product Line", "Hair Care Key Benefits", "Age Group", "Shampoo & Conditioner Type", "Retail Packaging", "with", "Primary Ingredient", "Scent", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Shampoo And Conditioner Type", "Hair Type"],
+          "aliases": ["shampoo conditioner set", "shampoo and conditioner set", "shampoo conditioner sets", "shampoo and conditioner bundle"],
+          "title_keywords": ["shampoo conditioner set", "shampoo and conditioner set", "shampoo conditioner duo", "shampoo conditioner bundle"],
+          "context_keywords": ["set", "duo", "bundle", "shampoo", "conditioner", "piece", "pack"],
+          "negative_keywords": ["shampoo only", "conditioner only", "conditioning shampoo", "3-in-1", "body wash", "hair mask", "skin care", "makeup"]
+        },
+        "shampoos": {
+          "display_name": "Shampoos",
+          "formula": ["Brand", "Product Line", "Features", "Hair Care Key Benefits", "Age Group", "Shampoo & Conditioner Type", "with", "Primary Ingredients", "Scent", "Size", "Piece Count \"Piece\"", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Shampoo And Conditioner Type", "Hair Type"],
+          "aliases": ["shampoo", "shampoos", "hair shampoo", "cleansing shampoo"],
+          "title_keywords": ["shampoo", "hair shampoo", "clarifying shampoo", "hydrating shampoo", "volumizing shampoo"],
+          "context_keywords": ["shampoo", "cleansing", "wash", "hair type", "sulfate free", "scalp", "lather"],
+          "negative_keywords": ["conditioner", "conditioning shampoo", "dry shampoo", "shampoo conditioner set", "3-in-1", "body wash", "facial cleanser", "skin care", "makeup"]
+        }
+      }
+    },
+    "face_makeup": {
+      "display_name": "Face Makeup",
+      "product_types": {
+        "bb_cream": {
+          "display_name": "BB Cream",
+          "formula": ["Brand", "Product Line", "Form", "BB Cream", "for", "Skin Type \"Skin\"", "Ingredient Preference", "Makeup Finish \"Finish\"", "Features", "\"SPF\" SPF Value", "Color", "Size", "Retail Packaging"],
+          "attributes": ["Brand", "Color", "Size"],
+          "aliases": ["bb cream", "beauty balm", "blemish balm", "bb creams"],
+          "title_keywords": ["bb cream", "beauty balm", "blemish balm", "bb tinted cream"],
+          "context_keywords": ["bb", "beauty balm", "blemish balm", "spf", "tinted", "coverage", "skin type"],
+          "negative_keywords": ["cc cream", "tinted moisturizer", "foundation", "concealer", "facial moisturizer", "skin care", "hair"]
+        },
+        "blush": {
+          "display_name": "Blush",
+          "formula": ["Brand", "Product Line", "Form", "Blush", "Makeup Finish \"Finish\"", "Features", "Color", "Size", "Retail Packaging"],
+          "attributes": ["Brand", "Makeup Form", "Color"],
+          "aliases": ["blush", "blusher", "rouge", "cheek color", "cheek blush"],
+          "title_keywords": ["blush", "blusher", "powder blush", "cream blush", "liquid blush", "cheek color"],
+          "context_keywords": ["cheek", "rosy", "flush", "makeup finish", "shade", "color"],
+          "negative_keywords": ["bronzer", "bronzing", "contour", "highlighter", "foundation", "concealer", "skin care", "hair"]
+        },
+        "bronzing_makeup": {
+          "display_name": "Bronzing Makeup",
+          "formula": ["Brand", "Product Line", "Bronzer OR Bronzing", "Form", "Makeup Finish \"Finish\"", "Features", "Color", "Size"],
+          "attributes": ["Brand", "Makeup Form", "Color"],
+          "aliases": ["bronzer", "bronzers", "bronzing makeup", "bronzing powder", "bronzing cream"],
+          "title_keywords": ["bronzer", "bronzing makeup", "bronzing powder", "cream bronzer", "liquid bronzer"],
+          "context_keywords": ["bronze", "bronzing", "sun-kissed", "warmth", "contour", "face makeup"],
+          "negative_keywords": ["blush", "highlighter", "contour set", "self tanner", "foundation", "finishing powder", "skin care", "hair"]
+        },
+        "cc_cream": {
+          "display_name": "CC Cream",
+          "formula": ["Brand", "Product Line", "Form", "CC Cream", "for", "Skin Type \"Skin\"", "Ingredient Preference", "Makeup Finish \"Finish\"", "Features", "\"SPF\" SPF Value", "Color", "Size", "Retail Packaging"],
+          "attributes": ["Brand", "Size", "Makeup Form"],
+          "aliases": ["cc cream", "color correcting cream", "complexion corrector", "cc creams"],
+          "title_keywords": ["cc cream", "color correcting cream", "complexion correcting cream", "cc tinted cream"],
+          "context_keywords": ["cc", "color correct", "complexion", "spf", "tinted", "coverage", "skin type"],
+          "negative_keywords": ["bb cream", "tinted moisturizer", "foundation", "concealer", "color corrector palette", "facial moisturizer", "skin care", "hair"]
+        },
+        "concealer_makeup": {
+          "display_name": "Concealer Makeup",
+          "formula": ["Brand", "Product Line", "Form", "Concealer Makeup", "Makeup Coverage \"Coverage\"", "Makeup Finish \"Finish\"", "Ingredient Preference", "Features", "Color", "Size"],
+          "attributes": ["Brand", "Makeup Form", "Color"],
+          "aliases": ["concealer", "concealers", "concealer makeup", "under eye concealer", "cover up makeup"],
+          "title_keywords": ["concealer", "concealer makeup", "under eye concealer", "cover up", "color concealer"],
+          "context_keywords": ["conceal", "coverage", "under eye", "dark circles", "blemish", "shade", "makeup finish"],
+          "negative_keywords": ["foundation", "bb cream", "cc cream", "primer", "highlighter", "skin care", "eye cream", "hair"]
+        },
+        "contour_makeup_set": {
+          "display_name": "Contour Makeup Set",
+          "formula": ["Brand", "Product Line", "Form", "Contour Makeup", "Makeup Finish \"Finish\"", "Features", "Color", "Size"],
+          "attributes": ["Brand", "Color", "Makeup Form"],
+          "aliases": ["contour makeup set", "contour set", "contour kit", "contouring makeup"],
+          "title_keywords": ["contour makeup", "contour set", "contour kit", "contour palette", "contouring stick"],
+          "context_keywords": ["contour", "sculpt", "define", "palette", "kit", "shade", "face makeup"],
+          "negative_keywords": ["bronzer", "blush", "highlighter", "foundation", "concealer", "makeup brush set", "skin care", "hair"]
+        },
+        "foundation_makeup": {
+          "display_name": "Foundation Makeup",
+          "formula": ["Brand", "Product Line", "Form", "Foundation Makeup", "for", "Skin Type \"Skin\"", "Makeup Coverage \"Coverage\"", "Makeup Finish \"Finish\"", "Ingredient Preference", "Features", "\"SPF\" SPF Value", "Color", "Size", "Retail Packaging"],
+          "attributes": ["Brand", "Makeup Form", "Color"],
+          "aliases": ["foundation", "foundations", "foundation makeup", "liquid foundation", "powder foundation"],
+          "title_keywords": ["foundation", "foundation makeup", "liquid foundation", "powder foundation", "cream foundation", "stick foundation"],
+          "context_keywords": ["foundation", "coverage", "shade", "makeup finish", "skin type", "spf", "complexion"],
+          "negative_keywords": ["foundation primer", "primer", "bb cream", "cc cream", "tinted moisturizer", "concealer", "finishing powder", "skin care", "hair"]
+        },
+        "foundation_primers": {
+          "display_name": "Foundation Primers",
+          "formula": ["Brand", "Product Line", "Form", "Foundation Primer OR Primer", "for", "Skin Type \"Skin\"", "Skin Care Key Benefits", "Features", "Color", "Size", "Retail Packaging"],
+          "attributes": ["Brand", "Skin Type", "Makeup Form"],
+          "aliases": ["foundation primer", "foundation primers", "makeup primer", "face primer", "primer"],
+          "title_keywords": ["foundation primer", "makeup primer", "face primer", "pore primer", "hydrating primer"],
+          "context_keywords": ["primer", "prep", "pore", "smooth", "grip", "base", "before makeup", "skin type"],
+          "negative_keywords": ["foundation", "setting spray", "finishing powder", "facial moisturizer", "serum", "eye primer", "skin care", "hair"]
+        },
+        "highlighter_makeup": {
+          "display_name": "Highlighter Makeup",
+          "formula": ["Brand", "Product Line", "Form", "Features", "Highlighter OR Highlighter Makeup", "Makeup Finish \"Finish\"", "Features", "Color", "Size"],
+          "attributes": ["Brand", "Makeup Form", "Color"],
+          "aliases": ["highlighter", "highlighters", "highlighter makeup", "illuminator", "face highlighter"],
+          "title_keywords": ["highlighter", "highlighter makeup", "face highlighter", "illuminator", "glow stick"],
+          "context_keywords": ["highlight", "glow", "luminous", "shimmer", "radiance", "cheekbone", "face makeup"],
+          "negative_keywords": ["skin lightener", "bronzer", "blush", "contour", "concealer", "foundation", "hair highlighter", "skin care", "hair"]
+        },
+        "makeup_finishing_powders": {
+          "display_name": "Makeup Finishing Powders",
+          "formula": ["Brand", "Product Line", "Form", "Finishing/Setting Powder", "for", "Skin Type", "Makeup Finish \"Finish\"", "Features", "Color", "Size", "Retail Packaging"],
+          "attributes": ["Brand", "Makeup Form", "Size"],
+          "aliases": ["makeup finishing powder", "makeup finishing powders", "setting powder", "finishing powder", "loose powder"],
+          "title_keywords": ["finishing powder", "setting powder", "makeup finishing powder", "loose powder", "pressed powder"],
+          "context_keywords": ["powder", "setting", "finishing", "translucent", "matte", "shine control", "makeup finish"],
+          "negative_keywords": ["foundation powder", "powder foundation", "setting spray", "foundation primer", "blush", "bronzer", "baby powder", "skin care", "hair"]
+        },
+        "makeup_setting_sprays": {
+          "display_name": "Makeup Setting Sprays",
+          "formula": ["Brand", "Product Line", "Makeup Setting OR Makeup Finishing", "Form", "for", "Skin Type", "Makeup Finish \"Finish\"", "Features", "Size", "Retail Packaging"],
+          "attributes": ["Brand", "Makeup Form", "Size"],
+          "aliases": ["makeup setting spray", "makeup setting sprays", "setting spray", "finishing spray", "makeup finishing spray"],
+          "title_keywords": ["makeup setting spray", "setting spray", "makeup finishing spray", "finishing spray", "fixing spray"],
+          "context_keywords": ["setting spray", "finishing", "lock makeup", "longwear", "mist", "matte", "dewy"],
+          "negative_keywords": ["hair spray", "facial mist", "toner spray", "finishing powder", "foundation primer", "makeup remover", "skin care", "hair"]
+        },
+        "tinted_moisturizers": {
+          "display_name": "Tinted Moisturizers",
+          "formula": ["Brand", "Product Line", "Tinted", "Form", "Moisturizer", "for", "Skin Type \"Skin\"", "Skin Care Key Benefits", "Ingredient Preference", "Makeup Finish \"Finish\"", "Features", "\"SPF\" SPF Value", "Color", "Size", "Retail Packaging"],
+          "attributes": ["Brand", "Color", "Makeup Form"],
+          "aliases": ["tinted moisturizer", "tinted moisturizers", "tinted face moisturizer", "skin tint", "tinted hydrator"],
+          "title_keywords": ["tinted moisturizer", "tinted face moisturizer", "skin tint", "tinted hydrator", "moisturizer with tint"],
+          "context_keywords": ["tinted", "moisturizer", "skin tint", "hydrating", "spf", "sheer coverage", "skin type"],
+          "negative_keywords": ["facial moisturizer", "bb cream", "cc cream", "foundation", "concealer", "skin care only", "body lotion", "hair"]
+        }
+      }
+    },
+    "eye_makeup": {
+      "display_name": "Eye Makeup",
+      "product_types": {
+        "eye_primer": {
+          "display_name": "Eye Primer",
+          "formula": ["Brand", "Product Line", "Features", "Makeup Finish", "Eyeshadow Primer", "Makeup Form", "\"SPF\" SPF Value", "Color", "Retail Packaging"],
+          "attributes": ["Brand", "Size", "Makeup Finish"],
+          "aliases": ["eye primer", "eye primers", "eyeshadow primer", "eye shadow primer", "lid primer"],
+          "title_keywords": ["eyeshadow primer", "eye shadow primer", "eye primer", "lid primer", "eyelid primer"],
+          "context_keywords": ["primer", "eyeshadow base", "lid", "eyelid", "crease proof", "longwear", "makeup finish"],
+          "negative_keywords": ["eyelash primer", "lash primer", "foundation primer", "face primer", "lip primer", "eyeliner", "mascara", "eyeshadow palette", "eyebrow"]
+        },
+        "eye_shadow": {
+          "display_name": "Eye Shadow",
+          "formula": ["Brand", "Product Line/Character/Character Group/Theme/Sports League/Sports Team", "Features", "Makeup Finish", "Makeup Form", "Eyeshadow", "Duo/Trio/Quad/Palette", "Makeup Form", "Makeup Coverage", "Color", "Retail Packaging"],
+          "attributes": ["Brand", "Color", "Makeup Form"],
+          "aliases": ["eye shadow", "eyeshadow", "eye shadows", "eyeshadows", "eyeshadow palette"],
+          "title_keywords": ["eyeshadow", "eye shadow", "eyeshadow palette", "shadow palette", "eyeshadow quad", "eyeshadow duo"],
+          "context_keywords": ["shadow", "palette", "duo", "trio", "quad", "matte", "shimmer", "crease", "lid"],
+          "negative_keywords": ["eye primer", "eyeshadow primer", "eyeliner", "mascara", "brow powder", "contour palette", "face palette", "lip palette", "foundation"]
+        },
+        "eyebrow_eyelash_enhancers": {
+          "display_name": "Eyebrow & Eyelash Enhancers",
+          "formula": ["Brand", "Product Line", "Features", "Eyelash &/or Eyebrow Growth or Enhancer", "Makeup Form", "with", "Active Ingredients", "Retail Packaging"],
+          "attributes": ["Brand", "Makeup Form", "Ib Retail Packaging"],
+          "aliases": ["eyebrow eyelash enhancer", "eyebrow and eyelash enhancer", "lash brow enhancer", "eyelash growth serum", "brow growth serum"],
+          "title_keywords": ["eyelash enhancer", "eyebrow enhancer", "lash enhancer", "brow enhancer", "eyelash growth", "eyebrow growth"],
+          "context_keywords": ["growth", "enhancer", "serum", "lash", "brow", "eyelash", "eyebrow", "active ingredients"],
+          "negative_keywords": ["eyebrow conditioner", "eyelash primer", "eye primer", "mascara", "eyebrow color", "brow tint", "eyebrow sealer", "lip plumper"]
+        },
+        "eyebrow_color": {
+          "display_name": "Eyebrow Color",
+          "formula": ["Brand", "Product Line", "Features", "Makeup Finish", "Eyebrow Color OR Eyebrow Tint", "Makeup Form", "Color", "Retail Packaging"],
+          "attributes": ["Brand", "Color", "Makeup Form"],
+          "aliases": ["eyebrow color", "eyebrow tint", "brow color", "brow tint", "eyebrow makeup"],
+          "title_keywords": ["eyebrow color", "eyebrow tint", "brow color", "brow tint", "brow pencil", "brow powder"],
+          "context_keywords": ["brow", "eyebrow", "tint", "color", "fill", "define", "pencil", "powder", "pomade"],
+          "negative_keywords": ["eyebrow sealer", "brow sealer", "eyebrow conditioner", "eyebrow growth", "eyelash enhancer", "eyeliner", "mascara", "hair color"]
+        },
+        "eyebrow_conditioner": {
+          "display_name": "Eyebrow Conditioner",
+          "formula": ["Brand", "Product Line", "Features", "Eyebrow Conditioner with Active Ingredients", "Makeup Form", "Retail Packaging"],
+          "attributes": ["Brand", "Size", "Makeup Form"],
+          "aliases": ["eyebrow conditioner", "eyebrow conditioners", "brow conditioner", "brow conditioning serum"],
+          "title_keywords": ["eyebrow conditioner", "brow conditioner", "brow conditioning serum", "eyebrow conditioning gel"],
+          "context_keywords": ["conditioner", "conditioning", "brow", "eyebrow", "nourishing", "active ingredients", "serum"],
+          "negative_keywords": ["eyebrow color", "brow tint", "eyebrow sealer", "eyebrow enhancer", "eyelash enhancer", "eyelash primer", "mascara", "hair conditioner"]
+        },
+        "eyebrow_sealers": {
+          "display_name": "Eyebrow Sealers",
+          "formula": ["Brand", "Product Line", "Features", "Eyebrow Sealer OR Eyebrow", "Makeup Form", "with", "Active Ingredients", "Color", "Retail Packaging"],
+          "attributes": ["Brand", "Makeup Form", "Size"],
+          "aliases": ["eyebrow sealer", "eyebrow sealers", "brow sealer", "brow sealant", "eyebrow gel"],
+          "title_keywords": ["eyebrow sealer", "brow sealer", "brow sealant", "clear brow gel", "eyebrow setting gel"],
+          "context_keywords": ["sealer", "sealant", "brow", "eyebrow", "setting", "hold", "gel", "clear"],
+          "negative_keywords": ["eyebrow color", "brow tint", "eyebrow conditioner", "eyebrow enhancer", "eyelash primer", "mascara", "hair gel", "lip sealer"]
+        },
+        "eyelash_primers": {
+          "display_name": "Eyelash Primers",
+          "formula": ["Brand", "Product Line", "Features", "Eyelash Primer", "Makeup Form", "Color", "Retail Packaging"],
+          "attributes": ["Brand", "Size", "Makeup Form"],
+          "aliases": ["eyelash primer", "eyelash primers", "lash primer", "mascara primer", "lash base"],
+          "title_keywords": ["eyelash primer", "lash primer", "mascara primer", "lash base", "white lash primer"],
+          "context_keywords": ["lash", "eyelash", "primer", "mascara base", "volume", "lengthening", "prep"],
+          "negative_keywords": ["eye primer", "eyeshadow primer", "foundation primer", "lip primer", "mascara", "eyelash enhancer", "brow primer", "eyeliner"]
+        },
+        "eyeliner": {
+          "display_name": "Eyeliner",
+          "formula": ["Brand", "Product Line/Character/Character Group/Theme/Sports League/Sports Team", "Features", "Makeup Finish", "Makeup Form", "Eyeliner", "Makeup Form", "Color", "Retail Packaging"],
+          "attributes": ["Brand", "Color", "Makeup Form"],
+          "aliases": ["eyeliner", "eyeliners", "eye liner", "liquid eyeliner", "pencil eyeliner"],
+          "title_keywords": ["eyeliner", "eye liner", "liquid eyeliner", "pencil eyeliner", "gel eyeliner", "felt tip liner", "kohl liner"],
+          "context_keywords": ["liner", "line", "waterline", "wing", "kohl", "liquid", "gel", "pencil", "felt tip"],
+          "negative_keywords": ["lip liner", "mascara", "eyeshadow", "eye primer", "brow pencil", "eyebrow color", "foundation", "concealer"]
+        },
+        "mascara": {
+          "display_name": "Mascara",
+          "formula": ["Brand", "Product Line/Character/Character Group/Theme/Sports League/Sports Team", "Features", "Makeup Finish", "Lip Liner Type", "Mascara", "Makeup Coverage", "Color", "Retail Packaging"],
+          "attributes": ["Brand", "Color", "Makeup Brush And Applicator Type"],
+          "aliases": ["mascara", "mascaras", "lash mascara", "waterproof mascara", "volumizing mascara"],
+          "title_keywords": ["mascara", "lash mascara", "waterproof mascara", "volumizing mascara", "lengthening mascara", "curling mascara"],
+          "context_keywords": ["lash", "lashes", "volume", "length", "curl", "waterproof", "wand", "applicator"],
+          "negative_keywords": ["eyelash primer", "lash primer", "eyelash enhancer", "eyeliner", "eyeshadow", "brow gel", "lip liner", "foundation"]
+        }
+      }
+    },
+    "lip_products": {
+      "display_name": "Lip Products",
+      "product_types": {
+        "lip_balms_conditioners": {
+          "display_name": "Lip Balms & Conditioners",
+          "formula": ["Brand", "Product Line/Character/Character Group/Theme/Sports League/Sports Team", "Features", "Makeup Finish", "Lip Balm & Conditioner Type with Active Ingredients", "SPF", "Color OR Flavor", "Retail Packaging"],
+          "attributes": ["Brand", "Lip Balm And Conditioner Type", "Size"],
+          "aliases": ["lip balm", "lip balms", "lip conditioner", "lip conditioners", "chapstick"],
+          "title_keywords": ["lip balm", "lip conditioner", "balm stick", "medicated lip balm", "spf lip balm", "chapstick"],
+          "context_keywords": ["balm", "conditioner", "moisturizing", "hydrating", "chapped lips", "spf", "flavor"],
+          "negative_keywords": ["lip primer", "lip gloss", "lipstick", "lip liner", "lip plumper", "lip scrub", "lip stain", "eye makeup"]
+        },
+        "lip_glosses": {
+          "display_name": "Lip Glosses",
+          "formula": ["Brand", "Product Line/Character/Character Group/Theme/Sports League/Sports Team", "Features", "Makeup Finish", "Lip Gloss with Active Ingredients", "Color or Flavor", "Retail Packaging"],
+          "attributes": ["Brand", "Color", "Makeup Form"],
+          "aliases": ["lip gloss", "lip glosses", "gloss", "lip shine", "glossy lip color"],
+          "title_keywords": ["lip gloss", "lip glosses", "clear gloss", "glossy lip", "lip shine"],
+          "context_keywords": ["gloss", "glossy", "shine", "high shine", "sheer color", "flavor", "lip color"],
+          "negative_keywords": ["lip plumper", "plumping gloss", "lipstick", "lip stain", "lip liner", "lip balm", "eye gloss", "mascara"]
+        },
+        "lip_liners": {
+          "display_name": "Lip Liners",
+          "formula": ["Brand", "Product Line/Character/Character Group/Theme/Sports League/Sports Team", "Features", "Makeup Finish", "Lip Liner Type", "Lip Liner", "Makeup Form", "Color", "Retail Packaging"],
+          "attributes": ["Brand", "Color", "Makeup Form"],
+          "aliases": ["lip liner", "lip liners", "lip pencil", "liner pencil", "mouth liner"],
+          "title_keywords": ["lip liner", "lip pencil", "lip liner pencil", "retractable lip liner", "lip defining pencil"],
+          "context_keywords": ["liner", "line lips", "define", "outline", "pencil", "retractable", "lip color"],
+          "negative_keywords": ["eyeliner", "eye liner", "lipstick", "lip gloss", "lip stain", "lip primer", "lip balm", "mascara"]
+        },
+        "lip_plumpers": {
+          "display_name": "Lip Plumpers",
+          "formula": ["Brand", "Product Line", "Features", "Makeup Finish", "Lip Plumping", "Makeup Form", "with Active Ingredients", "Color or Flavor", "Retail Packaging"],
+          "attributes": ["Brand", "Color", "Ib Retail Packaging"],
+          "aliases": ["lip plumper", "lip plumpers", "lip plumping gloss", "plumping lip gloss", "lip volumizer"],
+          "title_keywords": ["lip plumper", "lip plumping", "plumping gloss", "lip volumizer", "plumping lip gloss"],
+          "context_keywords": ["plump", "plumping", "volume", "fuller lips", "tingle", "active ingredients", "gloss"],
+          "negative_keywords": ["lip gloss", "lip balm", "lip primer", "lipstick", "lip stain", "lip scrub", "mascara", "eyelash enhancer"]
+        },
+        "lip_primers": {
+          "display_name": "Lip Primers",
+          "formula": ["Brand", "Product Line", "Features", "Lip Primer", "with Active Ingredients", "Color", "Retail Packaging"],
+          "attributes": ["Brand", "Size", "Ib Retail Packaging"],
+          "aliases": ["lip primer", "lip primers", "lip base", "lipstick primer", "lip prep"],
+          "title_keywords": ["lip primer", "lipstick primer", "lip base", "lip prep", "lip color primer"],
+          "context_keywords": ["primer", "prep", "base", "smooth lips", "before lipstick", "longwear", "active ingredients"],
+          "negative_keywords": ["eye primer", "eyeshadow primer", "eyelash primer", "foundation primer", "lip balm", "lip conditioner", "lip gloss", "lip plumper"]
+        },
+        "lip_scrubs": {
+          "display_name": "Lip Scrubs",
+          "formula": ["Brand", "Product Line", "Features", "Active Ingredients", "Lip Scrub", "Ingredient Claims", "Flavor", "Retail Packaging"],
+          "attributes": ["Brand", "Size", "Ib Retail Packaging"],
+          "aliases": ["lip scrub", "lip scrubs", "lip exfoliator", "lip exfoliant", "sugar lip scrub"],
+          "title_keywords": ["lip scrub", "lip exfoliator", "sugar lip scrub", "exfoliating lip scrub", "lip polish"],
+          "context_keywords": ["scrub", "exfoliate", "exfoliating", "sugar", "polish", "smooth lips", "flavor"],
+          "negative_keywords": ["face scrub", "body scrub", "lip balm", "lip conditioner", "lip primer", "lip plumper", "lip gloss", "eyeshadow"]
+        },
+        "lip_stains": {
+          "display_name": "Lip Stains",
+          "formula": ["Brand", "Product Line", "Features", "Makeup Finish", "Type", "with Active Ingredients", "Color", "Retail Packaging"],
+          "attributes": ["Brand", "Color", "Lip Stain Type"],
+          "aliases": ["lip stain", "lip stains", "lip tint", "lip tints", "stain lipstick"],
+          "title_keywords": ["lip stain", "lip tint", "lip color stain", "longwear lip stain", "matte lip stain"],
+          "context_keywords": ["stain", "tint", "longwear", "transfer resistant", "matte", "color", "lip color"],
+          "negative_keywords": ["lipstick", "liquid lipstick", "lip gloss", "lip liner", "lip balm", "cheek stain", "eyeshadow", "mascara"]
+        },
+        "lipsticks": {
+          "display_name": "Lipsticks",
+          "formula": ["Brand", "Product Line/Character/Character Group/Theme/Sports League/Sports Team", "Features", "Makeup Finish", "Lipstick with Active Ingredients", "Color", "Retail Packaging"],
+          "attributes": ["Brand", "Color", "Makeup Form"],
+          "aliases": ["lipstick", "lipsticks", "liquid lipstick", "matte lipstick", "lip color"],
+          "title_keywords": ["lipstick", "liquid lipstick", "matte lipstick", "cream lipstick", "satin lipstick", "lip color"],
+          "context_keywords": ["lipstick", "lip color", "matte", "satin", "cream", "liquid", "bullet", "shade"],
+          "negative_keywords": ["lip stain", "lip tint", "lip gloss", "lip liner", "lip balm", "lip primer", "eyeshadow", "mascara"]
+        }
+      }
+    },
+    "fragrances": {
+      "display_name": "Fragrances",
+      "product_types": {
+        "body_sprays": {
+          "display_name": "Body Sprays",
+          "formula": ["Brand or Global Brand License", "Product Line", "Scent", "Piece Count \"-Piece\"", "Body", "Applicator Type", "Retail Packaging", "for", "Gender & Age Group", "Size", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Gender", "Scent"],
+          "aliases": ["body spray", "body sprays", "fragrance body spray", "body mist", "fragrance mist"],
+          "title_keywords": ["body spray", "body sprays", "body mist", "fragrance mist", "perfumed body spray"],
+          "context_keywords": ["body", "spray", "mist", "scent", "fragrance", "applicator", "for men", "for women"],
+          "negative_keywords": ["cologne", "perfume", "eau de parfum", "eau de toilette", "fragrance set", "setting spray", "hair spray", "body paint"]
+        },
+        "colognes": {
+          "display_name": "Colognes",
+          "formula": ["Brand or Global Brand License", "Product Line", "Fragrance Concentration", "Cologne for", "Age Group or Gender", "Size", "Applicator Type"],
+          "attributes": ["Brand", "Gender", "Size"],
+          "aliases": ["cologne", "colognes", "men's cologne", "eau de cologne"],
+          "title_keywords": ["cologne", "eau de cologne", "men's cologne", "cologne spray", "cologne for men"],
+          "context_keywords": ["cologne", "fragrance concentration", "spray", "men", "male", "masculine", "eau de cologne"],
+          "negative_keywords": ["perfume", "parfum", "body spray", "body mist", "fragrance set", "aftershave", "deodorant", "makeup"]
+        },
+        "fragrance_sets": {
+          "display_name": "Fragrance Sets",
+          "formula": ["Brand or Global Brand License", "Product Line", "Piece Count \"-Piece\"", "Applicator Type", "Fragrance", "Retail Packaging", "for", "Gender & Age Group"],
+          "attributes": ["Brand", "Gender", "Age Group"],
+          "aliases": ["fragrance set", "fragrance sets", "perfume set", "cologne set", "fragrance gift set"],
+          "title_keywords": ["fragrance set", "fragrance gift set", "perfume set", "cologne set", "scent set"],
+          "context_keywords": ["set", "gift set", "piece", "fragrance", "perfume", "cologne", "spray", "retail packaging"],
+          "negative_keywords": ["single perfume", "single cologne", "body spray", "body mist", "makeup set", "skin care set", "hair accessory set"]
+        },
+        "perfumes": {
+          "display_name": "Perfumes",
+          "formula": ["Brand or Global Brand License", "Product Line", "Fragrance Concentration", "Perfume for", "Age Group or Gender", "Size", "Applicator Type"],
+          "attributes": ["Brand", "Gender", "Ib Scent Family"],
+          "aliases": ["perfume", "perfumes", "parfum", "eau de parfum", "women's perfume"],
+          "title_keywords": ["perfume", "parfum", "eau de parfum", "perfume spray", "perfume for women"],
+          "context_keywords": ["perfume", "parfum", "fragrance concentration", "scent family", "spray", "women", "floral", "woody"],
+          "negative_keywords": ["cologne", "eau de cologne", "body spray", "body mist", "fragrance set", "deodorant", "makeup", "room spray"]
+        }
+      }
+    },
+    "beauty_storage_organization": {
+      "display_name": "Beauty Storage & Organization",
+      "product_types": {
+        "hair_dryer_stands": {
+          "display_name": "Hair Dryer Stands",
+          "formula": ["Brand", "Product Line", "Model", "Features", "Mount Type", "Hair Dryer Stand", "Finish"],
+          "attributes": ["Brand", "Mount Type", "Maximum Load Weight"],
+          "aliases": ["hair dryer stand", "hair dryer stands", "blow dryer stand", "hair dryer holder"],
+          "title_keywords": ["hair dryer stand", "blow dryer stand", "hair dryer holder", "wall mount hair dryer holder"],
+          "context_keywords": ["hair dryer", "blow dryer", "stand", "holder", "mount", "mount type", "finish"],
+          "negative_keywords": ["makeup bag", "makeup case", "makeup organizer", "hair dryer", "curling iron", "storage bag", "cosmetic case"]
+        },
+        "makeup_bags": {
+          "display_name": "Makeup Bags",
+          "formula": ["Brand", "Feature", "Age Group", "Material", "Cosmetic Bag & Case Type", "Makeup Bag", "with", "Fastener Type", "Pattern", "Color", "Piece Count", "Gift Set"],
+          "attributes": ["Brand", "Color", "Cosmetic Bag And Case Type"],
+          "aliases": ["makeup bag", "makeup bags", "cosmetic bag", "cosmetics bag", "toiletry makeup bag"],
+          "title_keywords": ["makeup bag", "cosmetic bag", "travel makeup bag", "toiletry bag", "makeup pouch"],
+          "context_keywords": ["bag", "pouch", "cosmetic", "makeup", "zipper", "fastener", "travel", "material"],
+          "negative_keywords": ["makeup case", "train case", "makeup organizer", "drawer organizer", "hair dryer stand", "handbag", "purse"]
+        },
+        "makeup_cases": {
+          "display_name": "Makeup Cases",
+          "formula": ["Brand", "Feature", "Age Group", "Material", "Cosmetic Bag & Case Type", "Makeup Case", "with", "Fastener Type", "Pattern", "Color", "Piece Count", "Gift Set"],
+          "attributes": ["Brand", "Cosmetic Bag And Case Type", "Number Of Drawers"],
+          "aliases": ["makeup case", "makeup cases", "cosmetic case", "cosmetics case", "train case"],
+          "title_keywords": ["makeup case", "cosmetic case", "train case", "makeup train case", "travel makeup case"],
+          "context_keywords": ["case", "train case", "cosmetic", "makeup", "handle", "fastener", "drawers", "travel"],
+          "negative_keywords": ["makeup bag", "makeup pouch", "makeup organizer", "acrylic organizer", "hair dryer stand", "phone case"]
+        },
+        "makeup_organizers": {
+          "display_name": "Makeup Organizers",
+          "formula": ["Brand", "Material", "Mount Type", "Features", "Makeup Organizer", "with", "Number of Compartments \"Compartments\"", "Color"],
+          "attributes": ["Brand", "Color", "Number Of Drawers"],
+          "aliases": ["makeup organizer", "makeup organizers", "cosmetic organizer", "cosmetics organizer", "vanity organizer"],
+          "title_keywords": ["makeup organizer", "cosmetic organizer", "vanity organizer", "makeup storage organizer", "acrylic makeup organizer"],
+          "context_keywords": ["organizer", "storage", "compartments", "drawers", "vanity", "acrylic", "mount type"],
+          "negative_keywords": ["makeup bag", "makeup case", "train case", "hair dryer stand", "desk organizer", "jewelry organizer"]
+        }
+      }
+    },
+    "body_makeup": {
+      "display_name": "Body Makeup",
+      "product_types": {
+        "body_glitter": {
+          "display_name": "Body Glitter",
+          "formula": ["Brand", "Product Line", "Features and/or Makeup Finish", "Piece Count \"-Piece\"", "Body Glitter Type", "Makeup Form", "Retail Packaging", "Color", "Size", "Container Type", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Body Glitter Type", "Color"],
+          "aliases": ["body glitter", "body glitters", "glitter gel", "body shimmer", "festival glitter"],
+          "title_keywords": ["body glitter", "glitter gel", "body shimmer", "festival glitter", "face and body glitter"],
+          "context_keywords": ["glitter", "shimmer", "sparkle", "body", "festival", "makeup finish", "container"],
+          "negative_keywords": ["body paint", "henna", "temporary tattoo", "tattoo aftercare", "lip gloss", "eyeshadow glitter", "craft glitter"]
+        },
+        "body_paint": {
+          "display_name": "Body Paint",
+          "formula": ["Brand", "Product Line", "Age Group", "Sports League or Global Brand License", "Sports Team or Character", "Features and/or Makeup Finish and/or Ingredient Preference and/or Ingredient Properties and/or Ingredient Claims", "Piece Count \"-Piece\"", "Body Paint Type", "Retail Packaging", "Color", "Size", "Container Type", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Color", "Body Paint Type"],
+          "aliases": ["body paint", "body paints", "face paint", "face and body paint", "costume paint"],
+          "title_keywords": ["body paint", "face paint", "face and body paint", "costume paint", "sports body paint"],
+          "context_keywords": ["paint", "body", "face", "costume", "sports team", "character", "color", "container"],
+          "negative_keywords": ["body glitter", "henna paste", "temporary tattoo", "tattoo aftercare", "foundation", "concealer", "wall paint"]
+        },
+        "henna_applicators": {
+          "display_name": "Henna Applicators",
+          "formula": ["Brand", "Product Line", "Features", "Material", "Piece Count \"-Piece\"", "Henna Applicator Type", "Retail Packaging", "Holds", "Up to", "Volume Capacity", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Assembled Product Length", "Brand", "Container Type"],
+          "aliases": ["henna applicator", "henna applicators", "henna cone applicator", "henna bottle", "mehndi applicator"],
+          "title_keywords": ["henna applicator", "henna cone", "henna bottle", "mehndi applicator", "henna applicator bottle"],
+          "context_keywords": ["henna", "mehndi", "applicator", "cone", "bottle", "tip", "holds", "volume capacity"],
+          "negative_keywords": ["henna paste", "henna powder", "henna kit", "henna stencil", "temporary tattoo", "body paint", "tattoo aftercare"]
+        },
+        "henna_body_art_kits": {
+          "display_name": "Henna Body Art Kits",
+          "formula": ["Brand", "Product Line", "Features", "Piece Count \"-Piece\"", "Henna Body Art Kit", "for", "Age Group", "with", "Accessories Included", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Henna Body Art Kit Type", "Brand", "Piece Count"],
+          "aliases": ["henna body art kit", "henna kit", "henna kits", "mehndi kit", "henna tattoo kit"],
+          "title_keywords": ["henna body art kit", "henna kit", "mehndi kit", "henna tattoo kit", "henna art set"],
+          "context_keywords": ["henna", "mehndi", "kit", "set", "accessories included", "piece", "body art"],
+          "negative_keywords": ["henna paste only", "henna powder", "henna applicator", "henna stencil", "temporary tattoo", "body paint", "tattoo aftercare"]
+        },
+        "henna_paste_powder": {
+          "display_name": "Henna Paste & Powder",
+          "formula": ["Brand", "Product Line", "Features and/or Ingredient Preference and/or Ingredient Properties and/or Ingredient Claims", "Henna Paste & Powder Type", "Retail Packaging", "Color", "Size", "Container Type", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Size", "Brand", "Count Per Pack"],
+          "aliases": ["henna paste", "henna powder", "henna paste powder", "mehndi paste", "mehndi powder"],
+          "title_keywords": ["henna paste", "henna powder", "mehndi paste", "mehndi powder", "natural henna powder"],
+          "context_keywords": ["henna", "mehndi", "paste", "powder", "natural", "color", "container", "count"],
+          "negative_keywords": ["henna kit", "henna applicator", "henna stencil", "temporary tattoo", "body paint", "tattoo aftercare", "hair dye"]
+        },
+        "henna_stencils": {
+          "display_name": "Henna Stencils",
+          "formula": ["Brand", "Product Line", "Features", "Henna Stencil Type", "Retail Packaging", "Theme", "Piece Count", "Container Type", "Count", "Pieces Total", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Ib Retail Packaging", "Size"],
+          "aliases": ["henna stencil", "henna stencils", "mehndi stencil", "henna tattoo stencil", "body art stencil"],
+          "title_keywords": ["henna stencil", "henna stencils", "mehndi stencil", "henna tattoo stencil", "body art stencil"],
+          "context_keywords": ["henna", "mehndi", "stencil", "theme", "pieces total", "body art", "template"],
+          "negative_keywords": ["henna paste", "henna powder", "henna applicator", "henna kit", "temporary tattoo", "body paint", "tattoo aftercare"]
+        },
+        "tattoo_piercing_aftercare": {
+          "display_name": "Tattoo & Piercing Aftercare",
+          "formula": ["Brand", "Product Line", "Features and/or Skin Care Key Benefits and/or Ingredient Preference and/or Ingredient Properties and/or Ingredient Claims", "Piece Count \"-Piece\"", "Tattoo & Piercing Aftercare Type", "Makeup Form", "Retail Packaging", "with", "Primary Ingredient", "Scent", "Size", "Container Type", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Tattoo And Piercing Aftercare Type", "Brand", "Size"],
+          "aliases": ["tattoo aftercare", "piercing aftercare", "tattoo piercing aftercare", "tattoo balm", "piercing cleaner"],
+          "title_keywords": ["tattoo aftercare", "piercing aftercare", "tattoo balm", "tattoo lotion", "piercing cleaner", "tattoo care"],
+          "context_keywords": ["aftercare", "tattoo", "piercing", "balm", "lotion", "cleanser", "healing", "primary ingredient"],
+          "negative_keywords": ["temporary tattoo", "henna", "body paint", "body glitter", "tattoo stencil", "piercing jewelry", "facial treatment"]
+        },
+        "temporary_tattoos": {
+          "display_name": "Temporary Tattoos",
+          "formula": ["Brand", "Product Line", "Sports League or Global Brand License", "Sports Team or Character", "Features", "Body Part", "Temporary Tattoo Type", "Retail Packaging", "for", "Age Group", "Theme", "Pack of", "Count per Pack", "Container Type", "Count \"Pieces\"", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Temporary Tattoo Type", "Color"],
+          "aliases": ["temporary tattoo", "temporary tattoos", "fake tattoo", "tattoo stickers", "temporary body tattoo"],
+          "title_keywords": ["temporary tattoo", "temporary tattoos", "tattoo stickers", "fake tattoo", "kids temporary tattoos"],
+          "context_keywords": ["temporary", "tattoo", "stickers", "body part", "theme", "pack of", "pieces", "character"],
+          "negative_keywords": ["tattoo aftercare", "piercing aftercare", "henna", "body paint", "body glitter", "permanent tattoo", "tattoo machine"]
+        }
+      }
+    },
+    "hair_accessories": {
+      "display_name": "Hair Accessories",
+      "product_types": {
+        "decorative_hair_combs": {
+          "display_name": "Decorative Hair Combs",
+          "formula": ["Brand", "Product Line", "Collection", "Age Group", "Sports Team or Sport League or Designer or Character or Character Group or Theme or Embellishment Type", "Decorative Hair Comb Type", "Pattern", "Count Per Pack or Count \"ct\"", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Decorative Hair Comb Type", "Material"],
+          "aliases": ["decorative hair comb", "decorative hair combs", "hair comb", "side comb", "bridal hair comb"],
+          "title_keywords": ["decorative hair comb", "hair comb", "side comb", "bridal hair comb", "ornamental hair comb"],
+          "context_keywords": ["comb", "decorative", "hair", "embellishment", "bridal", "pattern", "count", "ct"],
+          "negative_keywords": ["hair brush", "detangling comb", "fashion headband", "hair clip", "barrette", "ponytail holder", "hair extension"]
+        },
+        "fashion_headbands": {
+          "display_name": "Fashion Headbands",
+          "formula": ["Brand", "Product Line", "Collection or Designer", "Age Group", "Sports Team or Sport League or Character or Character Group or Theme or Embellishment Type", "Material", "Features", "Fashion Headband Type", "in", "Pattern", "Color", "Count Per Pack or Count \"ct\"", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Age Group", "Fashion Headband Type"],
+          "aliases": ["fashion headband", "fashion headbands", "hair headband", "headband", "decorative headband"],
+          "title_keywords": ["fashion headband", "headband", "hair headband", "decorative headband", "knotted headband"],
+          "context_keywords": ["headband", "fashion", "hair", "material", "pattern", "color", "embellishment", "ct"],
+          "negative_keywords": ["sports headband", "sweatband", "hair comb", "barrette", "hair clip", "ponytail holder", "hair accessory set"]
+        },
+        "hair_accessory_sets": {
+          "display_name": "Hair Accessory Sets",
+          "formula": ["Brand", "Product Line", "Collection or Designer", "Age Group", "Sports Team or Sport League or Character or Character Group or Pattern or Theme or Embellishment Type", "Piece Count \"-Piece\"", "Hair Accessory Set", "with", "Decorative Hair Comb Type and/or Fashion Headband Type and/or Hair Barrette, Pin & Clip Type and/or Ponytail Holder & Scrunchie Type", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Age Group", "Material"],
+          "aliases": ["hair accessory set", "hair accessory sets", "hair accessories set", "hair accessories kit", "hair set"],
+          "title_keywords": ["hair accessory set", "hair accessories set", "hair accessory kit", "hair clip set", "hair bow set"],
+          "context_keywords": ["set", "kit", "piece", "with", "hair accessories", "clips", "headbands", "scrunchies", "combs"],
+          "negative_keywords": ["single headband", "single hair clip", "single barrette", "single scrunchie", "hair extension", "wig adhesive", "makeup set"]
+        },
+        "hair_barrettes_pins_clips": {
+          "display_name": "Hair Barrettes, Pins & Clips",
+          "formula": ["Brand", "Product Line", "Collection or Designer", "Age Group", "Sports Team or Sport League or Character or Character Group or Pattern or Theme or Embellishment Type", "Hair Barrette, Pin & Clip Type", "Color", "Count Per Pack or Count \"ct\"", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Age Group", "Hair Barrette Pin And Clip Type"],
+          "aliases": ["hair barrette", "hair barrettes", "hair pin", "hair pins", "hair clip", "hair clips"],
+          "title_keywords": ["hair barrette", "hair clip", "hair pin", "bobby pin", "snap clip", "claw clip"],
+          "context_keywords": ["barrette", "clip", "pin", "bobby", "claw", "snap", "hair", "color", "ct"],
+          "negative_keywords": ["paper clip", "binder clip", "hair comb", "headband", "ponytail holder", "scrunchie", "hair extension"]
+        },
+        "hair_extensions": {
+          "display_name": "Hair Extensions",
+          "formula": ["Brand", "Product Line", "Collection or Designer", "Age Group", "Hair Type", "Wig & Toupee Wig Type", "Fastener Type", "Hair Extension Type", "Assembled Product Length", "Hair Color Shade", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Hair Extension Type", "Hair Type"],
+          "aliases": ["hair extension", "hair extensions", "clip in hair extensions", "hair weft", "ponytail extension"],
+          "title_keywords": ["hair extension", "hair extensions", "clip-in extensions", "hair weft", "ponytail extension", "braiding hair"],
+          "context_keywords": ["extension", "weft", "clip in", "hair type", "hair color shade", "length", "fastener"],
+          "negative_keywords": ["wig adhesive", "wig glue", "hair accessory set", "hair clip", "barrette", "hairnet", "hair dye"]
+        },
+        "hairnets": {
+          "display_name": "Hairnets",
+          "formula": ["Brand", "Product Line", "Collection or Designer", "Features", "Embellishment Type", "Material", "Diameter", "Hairnet Type", "for", "Recommended Use", "Color", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Hairnet Type", "Brand", "Material"],
+          "aliases": ["hairnet", "hairnets", "hair net", "hair nets", "bun net"],
+          "title_keywords": ["hairnet", "hair net", "bun net", "invisible hairnet", "mesh hairnet"],
+          "context_keywords": ["hairnet", "net", "bun", "mesh", "diameter", "recommended use", "material"],
+          "negative_keywords": ["fashion headband", "hair extension", "hair clip", "barrette", "wig cap", "fish net", "food service hairnet"]
+        },
+        "ponytail_holders_scrunchies": {
+          "display_name": "Ponytail Holders & Scrunchies",
+          "formula": ["Brand", "Product Line", "Collection or Designer", "Age Group", "Sports Team or Sport League or Character or Character Group or Theme or Embellishment Type", "Ponytail Holder & Scrunchie Type", "Color", "Pattern", "Count Per Pack or Count \"ct\"", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Age Group", "Material"],
+          "aliases": ["ponytail holder", "ponytail holders", "scrunchie", "scrunchies", "hair tie"],
+          "title_keywords": ["ponytail holder", "scrunchie", "scrunchies", "hair tie", "hair elastic", "ponytail elastic"],
+          "context_keywords": ["ponytail", "scrunchie", "hair tie", "elastic", "holder", "color", "pattern", "ct"],
+          "negative_keywords": ["headband", "hair clip", "barrette", "hair comb", "rubber bands office", "hair extension", "hair accessory set"]
+        },
+        "wig_liquid_adhesives": {
+          "display_name": "Wig Liquid Adhesives",
+          "formula": ["Brand", "Product Line", "Collection or Designer", "Features", "Wig Adhesive Type", "Size", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Wig Liquid Adhesive Type", "Brand", "Color Category"],
+          "aliases": ["wig liquid adhesive", "wig adhesive", "wig glue", "lace wig glue", "hairpiece adhesive"],
+          "title_keywords": ["wig adhesive", "wig glue", "lace wig glue", "wig liquid adhesive", "hairpiece adhesive"],
+          "context_keywords": ["wig", "adhesive", "glue", "lace", "bond", "hold", "liquid", "size"],
+          "negative_keywords": ["hair extensions", "hair gel", "eyelash glue", "nail glue", "temporary tattoo", "hair accessory set", "hairnet"]
+        }
+      }
+    },
+    "beauty_accessories": {
+      "display_name": "Beauty Accessories",
+      "product_types": {
+        "other_makeup_brushes_tools": {
+          "display_name": "Other Makeup Brushes & Tools",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Material", "Color", "Count/Pack", "Net Content UOM", "Net Content"],
+          "attributes": ["Product Net Content Uom", "Product Net Content Quantity", "Number Of Pieces"],
+          "aliases": ["other makeup brush tool", "other makeup brushes tools", "makeup tools", "cosmetic tools"],
+          "title_keywords": ["makeup tool", "makeup tools", "cosmetic tool", "beauty tool", "makeup brush tool"],
+          "context_keywords": ["makeup", "cosmetic", "tool", "brush", "material", "color", "count", "net content"],
+          "negative_keywords": ["makeup brush", "makeup sponge", "puff", "wedge", "tweezers", "eyelash curler", "false eyelashes", "hair tool", "skin care tool"]
+        },
+        "cosmetic_brush_guards": {
+          "display_name": "Cosmetic Brush Guards",
+          "formula": ["Brand", "Product Line", "Makeup OR Cosmetic Brush", "Guard OR Protector", "Retail Packaging", "Cosmetic Brush Guard Type", "Features", "Material", "Color"],
+          "attributes": ["Brand", "Material", "Ib Retail Packaging"],
+          "aliases": ["cosmetic brush guard", "cosmetic brush guards", "makeup brush guard", "makeup brush protector", "brush protector"],
+          "title_keywords": ["cosmetic brush guard", "makeup brush guard", "brush protector", "brush guards", "makeup brush protector"],
+          "context_keywords": ["brush", "guard", "protector", "makeup brush", "cosmetic brush", "retail packaging", "material"],
+          "negative_keywords": ["makeup brush", "brush cleanser", "brush cleaner", "brush holder", "cosmetic bag", "hair brush", "toothbrush"]
+        },
+        "cosmetic_pencil_sharpeners": {
+          "display_name": "Cosmetic Pencil Sharpeners",
+          "formula": ["Brand", "Product Line", "Number of Holes \"Hole\"", "Size Descriptor", "Makeup Pencil Sharpener OR Cosmetic Pencil Sharpener", "for", "Cosmetic Pencil Sharpener Type", "Features", "Material", "Color"],
+          "attributes": ["Cosmetic Pencil Sharpener Type", "Brand", "Number Of Holes"],
+          "aliases": ["cosmetic pencil sharpener", "cosmetic pencil sharpeners", "makeup pencil sharpener", "eyeliner sharpener", "lip pencil sharpener"],
+          "title_keywords": ["cosmetic pencil sharpener", "makeup pencil sharpener", "eyeliner sharpener", "lip liner sharpener", "dual hole sharpener"],
+          "context_keywords": ["sharpener", "pencil", "hole", "dual hole", "makeup pencil", "cosmetic pencil", "eyeliner", "lip liner"],
+          "negative_keywords": ["eyeliner", "lip liner", "brow pencil", "school pencil sharpener", "tweezers", "makeup brush", "eyelash curler"]
+        },
+        "eyebrow_stencils": {
+          "display_name": "Eyebrow Stencils",
+          "formula": ["Brand", "Product Line", "Features", "Eyebrow Stencil Type", "Retail Packaging", "Eyebrow Shape"],
+          "attributes": ["Brand", "Eyebrow Stencil Type", "Size"],
+          "aliases": ["eyebrow stencil", "eyebrow stencils", "brow stencil", "brow stencils", "eyebrow shaping stencil"],
+          "title_keywords": ["eyebrow stencil", "brow stencil", "eyebrow shaping stencil", "brow shaping stencil", "eyebrow template"],
+          "context_keywords": ["eyebrow", "brow", "stencil", "shape", "template", "retail packaging", "arch"],
+          "negative_keywords": ["henna stencil", "eyebrow color", "brow pencil", "eyebrow sealer", "eyebrow conditioner", "false eyelashes", "eyeliner"]
+        },
+        "eyelash_combs": {
+          "display_name": "Eyelash Combs",
+          "formula": ["Brand", "Product Line", "Features", "Eyelash Comb Type", "Material", "Color"],
+          "attributes": ["Brand", "Material", "Eyelash Comb Type"],
+          "aliases": ["eyelash comb", "eyelash combs", "lash comb", "lash separator", "mascara comb"],
+          "title_keywords": ["eyelash comb", "lash comb", "lash separator", "mascara comb", "folding lash comb"],
+          "context_keywords": ["eyelash", "lash", "comb", "separator", "mascara", "material", "color"],
+          "negative_keywords": ["hair comb", "decorative hair comb", "eyelash curler", "eyelash curler pad", "mascara", "false eyelash applicator"]
+        },
+        "eyelash_curler_pads": {
+          "display_name": "Eyelash Curler Pads",
+          "formula": ["Brand", "Product Line", "Features", "Eyelash Curler Replacement OR Refill Pad(s)", "for", "Compatible Brand", "Compatible Model \"Eyelash Curlers\"", "Material", "Color"],
+          "attributes": ["Brand", "Count Per Pack", "Piece Count"],
+          "aliases": ["eyelash curler pad", "eyelash curler pads", "lash curler pad", "eyelash curler refill", "eyelash curler replacement pad"],
+          "title_keywords": ["eyelash curler pad", "eyelash curler pads", "curler refill pads", "replacement lash curler pads", "eyelash curler refill"],
+          "context_keywords": ["replacement", "refill", "pad", "pads", "eyelash curler", "compatible brand", "compatible model"],
+          "negative_keywords": ["eyelash curler", "lash curler", "false eyelashes", "eyelash comb", "eyelash primer", "makeup sponge", "hair curler"]
+        },
+        "eyelash_curlers": {
+          "display_name": "Eyelash Curlers",
+          "formula": ["Brand", "Product Line", "Heated", "Eyelash Curler", "w/", "Accessories Included", "Features", "Color"],
+          "attributes": ["Brand", "Power Type", "Material"],
+          "aliases": ["eyelash curler", "eyelash curlers", "lash curler", "heated eyelash curler", "heated lash curler"],
+          "title_keywords": ["eyelash curler", "lash curler", "heated eyelash curler", "heated lash curler", "classic eyelash curler"],
+          "context_keywords": ["eyelash", "lash", "curler", "heated", "curl", "accessories", "power type"],
+          "negative_keywords": ["eyelash curler pads", "curler refill pads", "hair curler", "curling iron", "false eyelash applicator", "mascara"]
+        },
+        "eyelid_tapes": {
+          "display_name": "Eyelid Tapes",
+          "formula": ["Brand", "Product Line", "Features", "Eyelid Tape OR Strips", "Size Descriptor", "Ingredient Preference", "Color", "Size"],
+          "attributes": ["Brand", "Size", "Color"],
+          "aliases": ["eyelid tape", "eyelid tapes", "eyelid strips", "double eyelid tape", "eye lift tape"],
+          "title_keywords": ["eyelid tape", "eyelid strips", "double eyelid tape", "eye lift tape", "crease tape"],
+          "context_keywords": ["eyelid", "tape", "strips", "double eyelid", "crease", "lift", "size", "color"],
+          "negative_keywords": ["false eyelash adhesive", "eyelash glue", "medical tape", "fashion tape", "eye primer", "eyeliner", "skin tape"]
+        },
+        "face_mirrors": {
+          "display_name": "Face Mirrors",
+          "formula": ["Brand", "Product Line", "Size", "Shape", "Material", "Mount Type", "Face Mirror Type", "Face OR Makeup", "Mirror", "w/", "Accessories Included", "Features", "Magnification \"Magnification\"", "Color"],
+          "attributes": ["Face Mirror Type", "Brand", "Magnification"],
+          "aliases": ["face mirror", "face mirrors", "makeup mirror", "vanity mirror", "magnifying mirror"],
+          "title_keywords": ["face mirror", "makeup mirror", "vanity mirror", "magnifying mirror", "lighted makeup mirror"],
+          "context_keywords": ["mirror", "face", "makeup", "vanity", "magnification", "mount type", "shape", "lighted"],
+          "negative_keywords": ["wall mirror decor", "compact powder", "makeup palette", "phone mirror", "hair dryer stand", "makeup organizer"]
+        },
+        "false_eyelash_adhesives": {
+          "display_name": "False Eyelash Adhesives",
+          "formula": ["Brand", "Product Line", "False Eyelash Adhesive", "Adhesive Form", "for", "Skin Care Concern", "Ingredient Preference", "Features", "Color", "Size"],
+          "attributes": ["Brand", "Adhesive Form", "Size"],
+          "aliases": ["false eyelash adhesive", "false eyelash glue", "lash adhesive", "lash glue", "eyelash adhesive"],
+          "title_keywords": ["false eyelash adhesive", "lash adhesive", "lash glue", "eyelash glue", "strip lash adhesive"],
+          "context_keywords": ["adhesive", "glue", "lash", "eyelash", "false eyelash", "clear", "black", "waterproof"],
+          "negative_keywords": ["false eyelashes", "false eyelash applicator", "eyelash curler", "wig adhesive", "nail glue", "eyelid tape", "mascara"]
+        },
+        "false_eyelash_applicators": {
+          "display_name": "False Eyelash Applicators",
+          "formula": ["Brand", "Product Line", "False Eyelash Applicator Tool(s)", "for", "False Eyelash Type", "w/", "Accessories Included", "Features", "Material", "Color"],
+          "attributes": ["Brand", "False Eyelash Applicator Type", "Material"],
+          "aliases": ["false eyelash applicator", "false eyelash applicators", "lash applicator", "eyelash applicator", "lash tweezer"],
+          "title_keywords": ["false eyelash applicator", "lash applicator", "eyelash applicator tool", "lash tweezer", "false lash tool"],
+          "context_keywords": ["applicator", "tool", "false eyelash", "lash", "tweezer", "accessories", "material"],
+          "negative_keywords": ["false eyelashes", "false eyelash adhesive", "lash glue", "eyelash curler", "tweezers", "mascara", "eyeliner"]
+        },
+        "false_eyelashes": {
+          "display_name": "False Eyelashes",
+          "formula": ["Brand", "Product Line", "Size Descriptor", "Material", "False Eyelashes", "Retail Packaging", "w/", "Accessories Included", "False Eyelash Type", "Features", "Color", "Size"],
+          "attributes": ["Brand", "False Eyelash Type", "Color"],
+          "aliases": ["false eyelashes", "false lashes", "fake eyelashes", "fake lashes", "strip lashes"],
+          "title_keywords": ["false eyelashes", "false lashes", "fake eyelashes", "strip lashes", "individual lashes", "magnetic lashes"],
+          "context_keywords": ["false", "lashes", "eyelashes", "strip", "individual", "magnetic", "volume", "length"],
+          "negative_keywords": ["false eyelash adhesive", "lash glue", "false eyelash applicator", "eyelash curler", "eyelash primer", "mascara", "hair extensions"]
+        },
+        "makeup_blotting_paper": {
+          "display_name": "Makeup Blotting Paper",
+          "formula": ["Brand", "Product Line", "Features", "Makeup OR Facial Blotting Paper", "Skin Care Concern", "Primary Ingredient", "Size"],
+          "attributes": ["Brand", "Skin Type", "Size"],
+          "aliases": ["makeup blotting paper", "facial blotting paper", "blotting paper", "oil blotting sheets", "blotting sheets"],
+          "title_keywords": ["makeup blotting paper", "facial blotting paper", "oil blotting sheets", "blotting sheets", "shine control paper"],
+          "context_keywords": ["blotting", "paper", "sheets", "oil", "shine", "facial", "makeup", "skin type"],
+          "negative_keywords": ["tissue paper", "rolling paper", "makeup wipes", "facial wipes", "makeup remover", "setting powder", "filter paper"]
+        },
+        "makeup_brush_cleansers": {
+          "display_name": "Makeup Brush Cleansers",
+          "formula": ["Brand", "Product Line", "Features", "Makeup Brush Cleanser Type", "Form", "Retail Packaging", "Material", "Size"],
+          "attributes": ["Brand", "Makeup Brush Cleanser Type", "Power Type"],
+          "aliases": ["makeup brush cleanser", "makeup brush cleansers", "makeup brush cleaner", "cosmetic brush cleanser", "brush cleaning solution"],
+          "title_keywords": ["makeup brush cleanser", "makeup brush cleaner", "cosmetic brush cleanser", "brush cleanser", "brush cleaning solution"],
+          "context_keywords": ["brush", "cleanser", "cleaner", "cleaning", "solution", "soap", "spray", "makeup brush"],
+          "negative_keywords": ["makeup brush", "cosmetic brush guard", "facial cleanser", "hair brush cleaner", "makeup remover", "brush holder"]
+        },
+        "makeup_brushes_applicators": {
+          "display_name": "Makeup Brushes & Applicators",
+          "formula": ["Brand", "Product Line", "Features", "Tip Style", "Makeup Form", "Makeup Type", "Makeup Brush & Applicator Type", "Material", "Color", "Pattern", "Theme", "Size Descriptor", "Model"],
+          "attributes": ["Brand", "Makeup Brush And Applicator Type", "Material"],
+          "aliases": ["makeup brush", "makeup brushes", "makeup applicator", "cosmetic brush", "foundation brush"],
+          "title_keywords": ["makeup brush", "makeup brushes", "cosmetic brush", "foundation brush", "blush brush", "eyeshadow brush"],
+          "context_keywords": ["brush", "applicator", "makeup type", "tip style", "bristles", "foundation", "blush", "eyeshadow"],
+          "negative_keywords": ["makeup sponge", "beauty sponge", "puff", "wedge", "brush cleanser", "brush guard", "hair brush", "paint brush"]
+        },
+        "makeup_puffs_sponges_wedges": {
+          "display_name": "Makeup Puffs, Sponges & Wedges",
+          "formula": ["Brand", "Product Line", "Makeup Form", "Makeup Type", "Makeup Puff, Sponge & Wedge Type", "Shape", "Shape", "Features", "Material", "Color", "Size Descriptor"],
+          "attributes": ["Brand", "Makeup Puff Sponge And Wedge Type", "Material"],
+          "aliases": ["makeup puff", "makeup puffs", "makeup sponge", "makeup sponges", "makeup wedge"],
+          "title_keywords": ["makeup sponge", "makeup sponges", "beauty sponge", "makeup puff", "makeup wedges", "blending sponge"],
+          "context_keywords": ["sponge", "puff", "wedge", "blend", "beauty blender", "shape", "makeup form", "material"],
+          "negative_keywords": ["makeup brush", "makeup applicator brush", "brush cleanser", "kitchen sponge", "bath sponge", "hair sponge", "cosmetic brush"]
+        },
+        "nose_shaping_clips": {
+          "display_name": "Nose Shaping Clips",
+          "formula": ["Brand", "Product Line", "Material", "Nose Shaping Clip(s)", "Features", "Color"],
+          "attributes": ["Brand", "Material", "Color"],
+          "aliases": ["nose shaping clip", "nose shaping clips", "nose clip", "nose lifter", "nose shaper"],
+          "title_keywords": ["nose shaping clip", "nose shaping clips", "nose shaper", "nose lifter", "nose bridge clip"],
+          "context_keywords": ["nose", "shaping", "clip", "shaper", "lifter", "bridge", "material", "color"],
+          "negative_keywords": ["swim nose clip", "nose ring", "nose stud", "tweezers", "eyelash curler", "blackhead remover", "face mask"]
+        },
+        "tweezers": {
+          "display_name": "Tweezers",
+          "formula": ["Brand", "Product Line", "Size Descriptor", "Tip Style", "Tip", "Features", "Recommended Use", "Tweezer(s)", "for", "Body Part", "Material", "Color", "Pattern", "Theme", "Model"],
+          "attributes": ["Brand", "Tip Style", "Material"],
+          "aliases": ["tweezer", "tweezers", "eyebrow tweezers", "slant tweezers", "precision tweezers"],
+          "title_keywords": ["tweezers", "tweezer", "eyebrow tweezers", "slant tweezers", "point tip tweezers", "precision tweezers"],
+          "context_keywords": ["tweezers", "tip", "tip style", "slant", "point", "brow", "hair removal", "material"],
+          "negative_keywords": ["false eyelash applicator", "lash tweezer", "cosmetic pencil sharpener", "blackhead remover", "nose shaping clip", "pliers", "scissors"]
+        }
+      }
+    },
+    "hair_tools": {
+      "display_name": "Hair Tools",
+      "product_types": {
+        "other_hair_styling_tools_products": {
+          "display_name": "Other Hair Styling Tools & Products",
+          "formula": ["Brand", "Product Line", "Product/Type", "Color"],
+          "attributes": ["Brand", "Instructions", "Hair Type"],
+          "aliases": ["other hair styling tool", "other hair styling tools", "hair styling tool", "hair styling tools", "hair tool"],
+          "title_keywords": ["hair styling tool", "hair styling tools", "hair tool", "hair styling product", "styling tool"],
+          "context_keywords": ["hair", "styling", "tool", "product type", "color", "instructions", "hair type"],
+          "negative_keywords": ["hair brush", "hair comb", "hair dryer", "flat iron", "curling iron", "curling wand", "hot air brush", "beauty accessory"]
+        },
+        "hair_braiders": {
+          "display_name": "Hair Braiders",
+          "formula": ["Brand", "Product Line", "Automatic", "Hair Braider", "with", "Product Accessories Included", "Color"],
+          "attributes": ["Brand", "Hair Braider Type", "Power Type"],
+          "aliases": ["hair braider", "hair braiders", "automatic hair braider", "braiding tool", "hair braiding machine"],
+          "title_keywords": ["hair braider", "automatic hair braider", "braiding tool", "hair braiding machine", "electric hair braider"],
+          "context_keywords": ["braider", "braiding", "automatic", "hair", "accessories included", "power type", "color"],
+          "negative_keywords": ["braiding hair", "hair extensions", "hair brush", "hair comb", "curling iron", "hair dryer", "hair accessory"]
+        },
+        "hair_brushes": {
+          "display_name": "Hair Brushes",
+          "formula": ["Brand", "Product Line", "Age Group", "Character", "Size Descriptor", "Professional", "Material", "Size", "Bristle Type", "Shape", "Hair Brush Type", "Features", "Color", "Pattern"],
+          "attributes": ["Brand", "Hair Brush Type", "Age Group"],
+          "aliases": ["hair brush", "hair brushes", "detangling brush", "paddle brush", "round brush"],
+          "title_keywords": ["hair brush", "hair brushes", "detangling brush", "paddle brush", "round brush", "boar bristle brush"],
+          "context_keywords": ["brush", "bristle", "paddle", "round", "detangle", "hair brush type", "professional"],
+          "negative_keywords": ["makeup brush", "facial brush", "hair comb", "straightening brush", "hot air brush", "dryer brush", "toothbrush"]
+        },
+        "hair_combs": {
+          "display_name": "Hair Combs",
+          "formula": ["Brand", "Product Line", "Age Group", "Character", "Size Descriptor", "Size", "Material", "Tooth Type", "Hair Comb Type", "Features", "Color", "Pattern"],
+          "attributes": ["Brand", "Hair Comb Type", "Hair Type"],
+          "aliases": ["hair comb", "hair combs", "wide tooth comb", "tail comb", "detangling comb"],
+          "title_keywords": ["hair comb", "hair combs", "wide tooth comb", "rat tail comb", "detangling comb", "styling comb"],
+          "context_keywords": ["comb", "tooth", "teeth", "wide tooth", "tail comb", "hair type", "material"],
+          "negative_keywords": ["decorative hair comb", "eyelash comb", "hair brush", "barber comb accessory", "comb set decorative", "makeup brush"]
+        },
+        "hair_crimping_irons": {
+          "display_name": "Hair Crimping Irons",
+          "formula": ["Brand", "Product Line", "Size Descriptor", "Plate Width", "Material", "Hair Crimping Iron", "Features", "Color"],
+          "attributes": ["Brand", "Hair Type", "Maximum Temperature"],
+          "aliases": ["hair crimping iron", "hair crimping irons", "crimping iron", "hair crimper", "crimper iron"],
+          "title_keywords": ["hair crimping iron", "crimping iron", "hair crimper", "crimper iron", "ceramic crimper"],
+          "context_keywords": ["crimp", "crimping", "iron", "plate width", "maximum temperature", "texture", "waves"],
+          "negative_keywords": ["curling iron", "curling wand", "flat iron", "straightener", "hair roller", "hair dryer", "waffle maker"]
+        },
+        "hair_curling_irons": {
+          "display_name": "Hair Curling Irons",
+          "formula": ["Brand", "Product Line", "Size Descriptor", "Professional", "Barrel Diameter", "Material", "Hair Curling Iron Type", "Features", "Color"],
+          "attributes": ["Brand", "Hair Curling Iron Type", "Barrel Diameter"],
+          "aliases": ["hair curling iron", "hair curling irons", "curling iron", "curling tongs", "curling iron wand"],
+          "title_keywords": ["hair curling iron", "curling iron", "ceramic curling iron", "professional curling iron", "barrel curling iron"],
+          "context_keywords": ["curling iron", "barrel", "barrel diameter", "clamp", "curls", "professional", "material"],
+          "negative_keywords": ["curling wand", "automatic curling machine", "flat iron", "crimping iron", "hair rollers", "hot air brush", "hair dryer"]
+        },
+        "hair_curling_machines": {
+          "display_name": "Hair Curling Machines",
+          "formula": ["Brand", "Product Line", "Professional", "Material", "Automatic Hair Curling Machine", "Features", "Color"],
+          "attributes": ["Brand", "Hair Type", "Material"],
+          "aliases": ["hair curling machine", "hair curling machines", "automatic hair curler", "automatic curling machine", "auto curler"],
+          "title_keywords": ["automatic hair curling machine", "hair curling machine", "automatic hair curler", "auto curler", "cordless auto curler"],
+          "context_keywords": ["automatic", "curling machine", "auto curler", "curl chamber", "professional", "material", "hair type"],
+          "negative_keywords": ["curling iron", "curling wand", "hair rollers", "crimping iron", "flat iron", "hair dryer", "hair braider"]
+        },
+        "hair_curling_wands": {
+          "display_name": "Hair Curling Wands",
+          "formula": ["Brand", "Product Line", "Size Descriptor", "Professional", "Barrel Diameter", "Material", "Hair Curling Wand", "Features", "Color"],
+          "attributes": ["Brand", "Hair Type", "Size Descriptor"],
+          "aliases": ["hair curling wand", "hair curling wands", "curling wand", "curl wand", "tapered wand"],
+          "title_keywords": ["hair curling wand", "curling wand", "curl wand", "tapered curling wand", "ceramic curling wand"],
+          "context_keywords": ["wand", "curling wand", "barrel", "barrel diameter", "clamp free", "curls", "professional"],
+          "negative_keywords": ["curling iron", "automatic curling machine", "flat iron", "crimping iron", "hair dryer", "hot air brush", "magic wand"]
+        },
+        "hair_dryer_diffusers": {
+          "display_name": "Hair Dryer Diffusers",
+          "formula": ["Brand", "Product Line", "Size Descriptor", "Professional", "Hair Dryer Diffuser Type", "Hair Dryer Diffuser", "Features", "Color"],
+          "attributes": ["Brand", "Hair Type", "Hair Dryer Diffuser Type"],
+          "aliases": ["hair dryer diffuser", "hair dryer diffusers", "blow dryer diffuser", "diffuser attachment", "dryer diffuser"],
+          "title_keywords": ["hair dryer diffuser", "blow dryer diffuser", "diffuser attachment", "dryer diffuser", "universal diffuser"],
+          "context_keywords": ["diffuser", "hair dryer", "blow dryer", "attachment", "curly hair", "professional", "hair type"],
+          "negative_keywords": ["hair dryer", "blow dryer", "hot air brush", "dryer stand", "curling iron", "air purifier diffuser", "essential oil diffuser"]
+        },
+        "hair_dryers": {
+          "display_name": "Hair Dryers",
+          "formula": ["Brand", "Product Line", "Age Group", "Character", "Size Descriptor", "Professional", "Hair Dryer Type", "Features", "Volts \"Volts\"", "Color", "Model"],
+          "attributes": ["Brand", "Hair Dryer Type", "Hair Type"],
+          "aliases": ["hair dryer", "hair dryers", "blow dryer", "blow dryers", "ionic hair dryer"],
+          "title_keywords": ["hair dryer", "blow dryer", "ionic hair dryer", "professional hair dryer", "travel hair dryer"],
+          "context_keywords": ["dryer", "blow dryer", "volts", "ionic", "professional", "model", "hair dryer type"],
+          "negative_keywords": ["hair dryer diffuser", "diffuser attachment", "hair dryer stand", "hot air brush", "dry shampoo", "clothes dryer"]
+        },
+        "hair_flat_irons": {
+          "display_name": "Hair Flat Irons",
+          "formula": ["Brand", "Product Line", "Size Descriptor", "Professional", "Plate Width", "Material", "Flat Iron Hair Straightener", "Features", "Color"],
+          "attributes": ["Brand", "Size Descriptor", "Features"],
+          "aliases": ["hair flat iron", "hair flat irons", "flat iron", "hair straightener", "flat iron straightener"],
+          "title_keywords": ["flat iron", "hair straightener", "flat iron hair straightener", "ceramic flat iron", "professional flat iron"],
+          "context_keywords": ["flat iron", "straightener", "plate width", "plates", "ceramic", "straighten", "professional"],
+          "negative_keywords": ["straightening brush", "hot air brush", "curling iron", "curling wand", "crimping iron", "clothing iron", "facial iron"]
+        },
+        "hair_rollers": {
+          "display_name": "Hair Rollers",
+          "formula": ["Brand", "Product Line", "Size Descriptor", "Professional", "Size", "Material", "Hair Roller Type", "Piece Count \"Piece Set\"", "Features", "Color"],
+          "attributes": ["Brand", "Hair Roller Type", "Hair Type"],
+          "aliases": ["hair roller", "hair rollers", "hot rollers", "velcro rollers", "curlers"],
+          "title_keywords": ["hair rollers", "hair roller", "hot rollers", "velcro rollers", "foam rollers", "curlers"],
+          "context_keywords": ["roller", "rollers", "curlers", "piece set", "hot rollers", "velcro", "curls", "size"],
+          "negative_keywords": ["paint roller", "derma roller", "curling iron", "curling wand", "curling machine", "hair extension", "eyelash curler"]
+        },
+        "hair_straightening_brushes": {
+          "display_name": "Hair Straightening Brushes",
+          "formula": ["Brand", "Product Line", "Size Descriptor", "Professional", "Size", "Material", "Heated Hair Straightening Brush", "Features", "Color"],
+          "attributes": ["Brand", "Hair Type", "Power Type"],
+          "aliases": ["hair straightening brush", "hair straightening brushes", "heated straightening brush", "straightener brush", "hot straightening brush"],
+          "title_keywords": ["hair straightening brush", "heated hair straightening brush", "straightener brush", "hot straightening brush", "electric straightening brush"],
+          "context_keywords": ["straightening brush", "heated", "brush", "straighten", "power type", "professional", "hair type"],
+          "negative_keywords": ["hair brush", "flat iron", "hot air brush", "hair dryer brush", "curling brush", "makeup brush", "facial cleansing brush"]
+        },
+        "hot_air_brushes": {
+          "display_name": "Hot-Air Brushes",
+          "formula": ["Brand", "Product Line", "Size Descriptor", "Professional", "Size", "Material", "Hot Air Brush", "Features", "Color"],
+          "attributes": ["Brand", "Hair Type", "Power Type"],
+          "aliases": ["hot air brush", "hot-air brush", "hot air brushes", "dryer brush", "blow dryer brush"],
+          "title_keywords": ["hot air brush", "hot-air brush", "dryer brush", "blow dryer brush", "one step hair dryer brush"],
+          "context_keywords": ["hot air", "dryer brush", "blow dryer brush", "brush", "volume", "styling", "power type"],
+          "negative_keywords": ["hair straightening brush", "hair brush", "hair dryer", "flat iron", "curling iron", "makeup brush", "toothbrush"]
+        }
+      }
+    },
+    "skin_care_tools": {
+      "display_name": "Skin Care Tools",
+      "product_types": {
+        "acne_clearing_devices": {
+          "display_name": "Acne Clearing Devices",
+          "formula": ["Brand", "Product Line", "Product Multifunction Descriptor or Features", "Power Type", "Piece Count \"-Piece\"", "Acne Clearing Device Type", "Retail Packaging", "with", "Accessories Included and/or Items Included", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Body Part", "Skin Care Concern"],
+          "aliases": ["acne clearing device", "acne clearing devices", "acne device", "acne light therapy device", "blemish clearing device"],
+          "title_keywords": ["acne clearing device", "acne device", "acne light therapy", "blemish clearing device", "blue light acne device"],
+          "context_keywords": ["acne", "blemish", "device", "clearing", "light therapy", "power type", "piece", "accessories"],
+          "negative_keywords": ["acne cream", "acne treatment system", "blackhead remover", "facial cleansing brush", "microdermabrasion", "skin toning device", "derma roller"]
+        },
+        "blackhead_whitehead_remover_tools": {
+          "display_name": "Blackhead & Whitehead Remover Tools",
+          "formula": ["Brand", "Product Line", "Product Multifunction Descriptor or Features", "Material", "Piece Count \"-Piece\"", "Blackhead & Whitehead Remover Tool Type", "Retail Packaging", "with", "Accessories Included and/or Items Included", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Blackhead And Whitehead Remover Tool Type", "Material"],
+          "aliases": ["blackhead remover tool", "whitehead remover tool", "blackhead whitehead remover", "comedone extractor", "pimple extractor"],
+          "title_keywords": ["blackhead remover", "whitehead remover", "comedone extractor", "blackhead extractor", "pimple extractor"],
+          "context_keywords": ["blackhead", "whitehead", "comedone", "extractor", "remover", "tool", "material", "piece"],
+          "negative_keywords": ["acne clearing device", "acne cream", "tweezers", "nose shaping clip", "facial cleansing brush", "microdermabrasion device", "derma roller"]
+        },
+        "derma_rollers": {
+          "display_name": "Derma Rollers",
+          "formula": ["Brand", "Product Line or Model", "Product Multifunction Descriptor or Features", "Power Type", "Piece Count \"-Piece\"", "Derma Roller", "Retail Packaging", "with", "Accessories Included and/or Items Included", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Body Part", "Skin Care Key Benefits"],
+          "aliases": ["derma roller", "derma rollers", "dermaroller", "microneedle roller", "micro needle roller"],
+          "title_keywords": ["derma roller", "dermaroller", "microneedle roller", "micro needle roller", "skin roller"],
+          "context_keywords": ["derma", "roller", "microneedle", "micro needle", "skin care", "body part", "piece", "retail packaging"],
+          "negative_keywords": ["hair roller", "jade roller", "facial roller", "microdermabrasion device", "skin toning device", "facial cleansing brush", "blackhead remover"]
+        },
+        "facial_cleansing_brush_heads": {
+          "display_name": "Facial Cleansing Brush Heads",
+          "formula": ["Brand", "Product Line or Model", "Bristle Firmness", "Facial Cleansing Brush Head Replacement", "Retail Packaging", "Count \"Count\"", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Skin Care Concern", "Body Part"],
+          "aliases": ["facial cleansing brush head", "facial cleansing brush heads", "cleansing brush replacement head", "face brush head", "replacement brush head"],
+          "title_keywords": ["facial cleansing brush head", "cleansing brush head replacement", "face brush replacement head", "replacement brush head", "facial brush head"],
+          "context_keywords": ["brush head", "replacement", "facial cleansing brush", "bristle firmness", "count", "compatible", "retail packaging"],
+          "negative_keywords": ["facial cleansing brush", "face brush device", "toothbrush head", "makeup brush", "hair brush", "microdermabrasion", "skin toning device"]
+        },
+        "facial_cleansing_brushes": {
+          "display_name": "Facial Cleansing Brushes",
+          "formula": ["Brand", "Product Line or Model", "Product Multifunction Descriptor or Features", "Power Type", "Piece Count \"-Piece\"", "Facial Cleansing Brush", "Retail Packaging", "with", "Accessories Included or Items Included", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Power Type", "Body Part"],
+          "aliases": ["facial cleansing brush", "facial cleansing brushes", "face cleansing brush", "face brush", "electric face brush"],
+          "title_keywords": ["facial cleansing brush", "face cleansing brush", "electric face brush", "sonic facial brush", "facial brush"],
+          "context_keywords": ["facial", "cleansing", "brush", "face brush", "power type", "sonic", "piece", "accessories"],
+          "negative_keywords": ["facial cleansing brush head", "replacement brush head", "makeup brush", "hair brush", "microdermabrasion device", "skin toning device", "acne device"]
+        },
+        "microdermabrasion_devices": {
+          "display_name": "Microdermabrasion Devices",
+          "formula": ["Brand", "Product Line", "Product Multifunction Descriptor or Features", "Piece Count \"-Piece\"", "Configuration", "Device Type", "Retail Packaging", "with", "Accessories Included and/or Items Included", "Count \"Count\"", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Skin Type", "Power Type"],
+          "aliases": ["microdermabrasion device", "microdermabrasion devices", "microdermabrasion machine", "microderm device", "diamond dermabrasion device"],
+          "title_keywords": ["microdermabrasion device", "microdermabrasion machine", "microderm device", "diamond dermabrasion", "pore vacuum"],
+          "context_keywords": ["microdermabrasion", "dermabrasion", "device", "configuration", "skin type", "suction", "tips", "count"],
+          "negative_keywords": ["derma roller", "facial cleansing brush", "skin toning device", "blackhead remover tool", "acne clearing device", "face scrub", "exfoliant"]
+        },
+        "skin_toning_devices": {
+          "display_name": "Skin Toning Devices",
+          "formula": ["Brand", "Product Line", "Product Multifunction Descriptor or Features", "Piece Count \"-Piece\"", "Configuration", "Device Type", "Retail Packaging", "with", "Accessories Included and/or Items Included", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Device Type", "Body Part"],
+          "aliases": ["skin toning device", "skin toning devices", "facial toning device", "microcurrent device", "face toning device"],
+          "title_keywords": ["skin toning device", "facial toning device", "microcurrent device", "face toning device", "skin firming device"],
+          "context_keywords": ["toning", "microcurrent", "firming", "device", "face", "body part", "configuration", "accessories"],
+          "negative_keywords": ["facial toner", "toner", "microdermabrasion device", "derma roller", "facial cleansing brush", "acne clearing device", "blackhead remover"]
+        }
+      }
+    },
+    "hair_coloring_chemical_treatments": {
+      "display_name": "Hair Coloring & Chemical Treatments",
+      "product_types": {
+        "other_hair_coloring_supplies": {
+          "display_name": "Other Hair Coloring Supplies",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Size", "Number of Pieces", "Count Per Pack"],
+          "attributes": ["Number Of Pieces", "Count Per Pack", "Piece Count"],
+          "aliases": ["other hair coloring supply", "other hair coloring supplies", "hair coloring supplies", "hair dye supplies"],
+          "title_keywords": ["hair coloring supply", "hair dye supply", "coloring supplies", "hair color supplies"],
+          "context_keywords": ["hair color", "hair dye", "coloring", "supplies", "pieces", "count per pack"],
+          "negative_keywords": ["hair bleach", "hair color", "hair color applicator", "hair dye brush", "hair perm", "hair relaxer", "nail polish"]
+        },
+        "hair_bleaches": {
+          "display_name": "Hair Bleaches",
+          "formula": ["Brand", "Product Line", "Features", "Hair Bleach Type", "Hair Product Form", "Size", "Container Type", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Hair Bleach Type", "Hair Product Form"],
+          "aliases": ["hair bleach", "hair bleaches", "hair lightener", "bleach powder", "lightening powder"],
+          "title_keywords": ["hair bleach", "hair lightener", "bleach powder", "lightening powder", "hair bleaching kit"],
+          "context_keywords": ["bleach", "lightener", "lightening", "developer", "powder", "lift", "hair product form"],
+          "negative_keywords": ["skin lightener", "hair color", "root touch up", "stain remover", "stain shield", "nail bleach"]
+        },
+        "hair_color": {
+          "display_name": "Hair Color",
+          "formula": ["Brand", "Product Line", "Feature", "Hair Color Type", "Hair Product Form", "Retail Packaging", "with", "Primary Ingredient", "Hair Color Shade", "Size", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Hair Color Shade", "Hair Color Type"],
+          "aliases": ["hair color", "hair dye", "hair colour", "permanent hair color", "semi permanent hair color"],
+          "title_keywords": ["hair color", "hair dye", "permanent hair color", "semi permanent hair color", "hair color cream"],
+          "context_keywords": ["hair color", "hair dye", "shade", "permanent", "semi permanent", "retail packaging"],
+          "negative_keywords": ["hair bleach", "hair color touch-up stick", "root touch up stick", "hair color applicator", "hair dye brush", "henna body art"]
+        },
+        "hair_color_applicators": {
+          "display_name": "Hair Color Applicators",
+          "formula": ["Brand", "Product Line", "Feature", "Material", "Hair Color Applicator", "Container Type", "with", "Nozzle Type \"Nozzle\"", "Count \"-Piece\"", "Retail Packaging", "Volume Capacity \"Capacity\"", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Applicator Type", "Container Type"],
+          "aliases": ["hair color applicator", "hair color applicators", "hair dye applicator", "color applicator bottle", "dye applicator bottle"],
+          "title_keywords": ["hair color applicator", "hair dye applicator", "applicator bottle", "color applicator bottle", "nozzle applicator"],
+          "context_keywords": ["applicator", "bottle", "nozzle", "capacity", "hair color", "hair dye", "container"],
+          "negative_keywords": ["hair dye applicator brush", "hair coloring tool kit", "hair color", "hair bleach", "nail polish applicator", "false eyelash applicator"]
+        },
+        "hair_color_stain_removers": {
+          "display_name": "Hair Color Stain Removers",
+          "formula": ["Brand", "Product Line", "Feature", "Hair Color Stain Remover", "Hair Product Form", "Size or Count \"Count\"", "Container Type", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Size", "Ib Retail Packaging"],
+          "aliases": ["hair color stain remover", "hair dye stain remover", "color stain remover", "hair color remover wipes"],
+          "title_keywords": ["hair color stain remover", "hair dye stain remover", "color stain remover", "stain remover wipes"],
+          "context_keywords": ["stain remover", "hair color", "hair dye", "remove stains", "wipes", "count", "container"],
+          "negative_keywords": ["hair color stain shield", "barrier cream", "hair color remover", "hair bleach", "nail polish remover", "makeup remover"]
+        },
+        "hair_color_stain_shields": {
+          "display_name": "Hair Color Stain Shields",
+          "formula": ["Brand", "Product Line", "Feature", "Material", "Hair Color Stain Shield Type", "Retail Packaging", "Color", "Count", "Count", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Material", "Stop Use Indications"],
+          "aliases": ["hair color stain shield", "hair dye stain shield", "stain shield", "color barrier", "hair color barrier"],
+          "title_keywords": ["hair color stain shield", "hair dye stain shield", "color barrier", "stain barrier", "protective stain shield"],
+          "context_keywords": ["stain shield", "barrier", "protect", "hair color", "hair dye", "material", "count"],
+          "negative_keywords": ["hair color stain remover", "stain remover", "hair color applicator", "hair bleach", "skin care barrier", "nail shield"]
+        },
+        "hair_color_touch_up_sticks": {
+          "display_name": "Hair Color Touch-Up Sticks",
+          "formula": ["Brand", "Product Line", "Feature", "Hair Color Touch-Up Stick Type", "Retail Packaging", "Hair Color Shade", "Size", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Hair Color Touch Up Stick Type", "Hair Type"],
+          "aliases": ["hair color touch-up stick", "hair color touch up stick", "root touch up stick", "hair touch up stick", "gray touch up stick"],
+          "title_keywords": ["hair color touch-up stick", "root touch up stick", "gray touch up stick", "hair touch up stick", "color touch up stick"],
+          "context_keywords": ["touch up", "root", "gray coverage", "stick", "hair color shade", "temporary color"],
+          "negative_keywords": ["hair color", "hair dye", "hair mascara", "eyebrow color", "concealer stick", "lipstick", "nail polish"]
+        },
+        "hair_coloring_tool_kits": {
+          "display_name": "Hair Coloring Tool Kits",
+          "formula": ["Brand", "Product Line", "Recommended Use", "Hair Coloring Tool Kit", "with", "Accessories Included", "Count \"Pieces\"", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Color", "Product Accessories Included"],
+          "aliases": ["hair coloring tool kit", "hair color tool kit", "hair dye tool kit", "hair coloring kit", "dye tool kit"],
+          "title_keywords": ["hair coloring tool kit", "hair dye tool kit", "hair color kit", "coloring tool kit", "hair dye accessories kit"],
+          "context_keywords": ["kit", "tool kit", "hair coloring", "hair dye", "accessories included", "pieces"],
+          "negative_keywords": ["hair color", "hair bleach", "hair color applicator", "hair dye applicator brush", "manicure set", "skin care set"]
+        },
+        "hair_dye_applicator_brushes": {
+          "display_name": "Hair Dye Applicator Brushes",
+          "formula": ["Brand", "Product Line", "Size Descriptor", "Feature", "Assembled Product Length", "Hair Dye Applicator Brush Type", "Retail Packaging", "with", "Accessories Included", "Color", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Material", "Hair Dye Applicator Brush Type"],
+          "aliases": ["hair dye applicator brush", "hair dye brush", "hair color brush", "tint brush", "color applicator brush"],
+          "title_keywords": ["hair dye applicator brush", "hair dye brush", "tint brush", "hair color brush", "coloring brush"],
+          "context_keywords": ["brush", "applicator brush", "tint", "hair dye", "hair color", "assembled product length"],
+          "negative_keywords": ["makeup brush", "hair color applicator bottle", "hair coloring tool kit", "hair brush", "nail art brush", "paint brush"]
+        },
+        "hair_perming_paper": {
+          "display_name": "Hair Perming Paper",
+          "formula": ["Brand", "Product Line", "Feature", "Size Descriptor", "Hair Perming Paper Type", "Retail Packaging", "with", "Accessories Included", "Count \"Count\"", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Hair Perming Paper Type", "Brand", "Assembled Product Length"],
+          "aliases": ["hair perming paper", "perming paper", "perm paper", "end paper", "perm end paper"],
+          "title_keywords": ["hair perming paper", "perm paper", "perm end paper", "end papers", "perming end papers"],
+          "context_keywords": ["perm", "perming", "paper", "end paper", "count", "accessories included"],
+          "negative_keywords": ["hair perming rods", "hair perms", "blotting paper", "tissue paper", "nail wraps", "hair color supplies"]
+        },
+        "hair_perming_rods": {
+          "display_name": "Hair Perming Rods",
+          "formula": ["Brand", "Product Line", "Feature", "Size Descriptor", "Hair Perming Rod Type", "Retail Packaging", "Color", "Count \"Count\"", "(Multipack Quantity + \"Pack\")"],
+          "attributes": ["Hair Perming Rod Type", "Hair Type", "Brand"],
+          "aliases": ["hair perming rod", "hair perming rods", "perm rods", "perming rods", "cold wave rods"],
+          "title_keywords": ["hair perming rods", "perm rods", "perming rods", "cold wave rods", "perm rollers"],
+          "context_keywords": ["perm", "perming", "rods", "rollers", "cold wave", "count", "color"],
+          "negative_keywords": ["hair perming paper", "hair rollers", "hair perms", "curling rods", "hair color tools", "derma roller"]
+        },
+        "hair_perms_texturizers": {
+          "display_name": "Hair Perms & Texturizers",
+          "formula": ["Brand", "Product Line", "Hair Care Key Benefit and/or Ingredient Preference and/or Ingredient Properties and/or Ingredient Claims and/or Feature", "Hair Perm & Texturizer Type", "with", "Primary Ingredient", "for", "Hair Type \"Hair\"", "Retail Packaging", "(Multiple Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Hair Perm And Texturizer Type", "Hair Type"],
+          "aliases": ["hair perm", "hair perms", "texturizer", "texturizers", "curl texturizer"],
+          "title_keywords": ["hair perm", "hair perms", "texturizer", "curl texturizer", "permanent wave"],
+          "context_keywords": ["perm", "texturizer", "curl", "wave", "hair type", "primary ingredient", "retail packaging"],
+          "negative_keywords": ["hair relaxer", "hair straightener", "hair perming rods", "hair perming paper", "curling iron", "hair color", "nail treatment"]
+        },
+        "hair_relaxers_straighteners": {
+          "display_name": "Hair Relaxers & Straighteners",
+          "formula": ["Brand", "Product Line", "Hair Care Key Benefit and/or Ingredient Preference and/or Ingredient Properties and/or Ingredient Claims and/or Feature", "Hair Relaxer & Straightener Type", "with", "Primary Ingredient", "for", "Hair Type \"Hair\"", "Retail Packaging", "(Multiple Quantity + \"Pack\")"],
+          "attributes": ["Brand", "Hair Type", "Hair Relaxer And Straightener Type"],
+          "aliases": ["hair relaxer", "hair relaxers", "chemical straightener", "hair straightening treatment", "relaxer kit"],
+          "title_keywords": ["hair relaxer", "hair relaxers", "chemical straightener", "relaxer kit", "hair straightening treatment"],
+          "context_keywords": ["relaxer", "straightener", "straightening", "chemical treatment", "hair type", "primary ingredient"],
+          "negative_keywords": ["flat iron", "hair straightening brush", "hair perms", "texturizer", "hair color", "hair bleach", "nail treatment"]
+        }
+      }
+    },
+    "nails": {
+      "display_name": "Nails",
+      "product_types": {
+        "other_nail_care": {
+          "display_name": "Other Nail Care",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Size", "Count/Pack"],
+          "attributes": ["Ib Retail Packaging", "Multipack Quantity", "Art Brush Size"],
+          "aliases": ["other nail care", "nail care", "nail care product", "nail supplies"],
+          "title_keywords": ["nail care", "nail supplies", "nail care product", "nail accessory"],
+          "context_keywords": ["nail", "nails", "care", "size", "count", "retail packaging"],
+          "negative_keywords": ["nail polish", "nail glue", "false nails", "nail clippers", "nail files", "cuticle", "hair color"]
+        },
+        "cuticle_creams_oils": {
+          "display_name": "Cuticle Creams & Oils",
+          "formula": ["Brand", "Product Line", "Feature and/or Ingredient Preference and/or Ingredient Claims and/or Ingredient Properties and/or Skin Care Key Benefit", "Piece Count \"-Piece\"", "Cuticle", "Form", "Retail Packaging", "with", "Primary Ingredient or Items Included", "Size", "Container Type", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Form", "Size"],
+          "aliases": ["cuticle cream", "cuticle oil", "cuticle creams", "cuticle oils", "cuticle conditioner"],
+          "title_keywords": ["cuticle oil", "cuticle cream", "cuticle balm", "nail cuticle oil", "cuticle treatment oil"],
+          "context_keywords": ["cuticle", "oil", "cream", "form", "primary ingredient", "moisturizing", "container"],
+          "negative_keywords": ["cuticle remover", "cuticle pusher", "cuticle nipper", "nail polish", "nail glue", "skin care oil"]
+        },
+        "cuticle_nippers": {
+          "display_name": "Cuticle Nippers",
+          "formula": ["Brand", "Product Line", "Tip Style and/or Hardware Spring Type and/or Feature", "Material", "Piece Count \"-Piece\"", "Cuticle Nipper Type", "Retail Packaging", "with", "Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Cuticle Nipper Type", "Brand", "Material"],
+          "aliases": ["cuticle nipper", "cuticle nippers", "cuticle cutter", "cuticle cutters", "nail nipper"],
+          "title_keywords": ["cuticle nipper", "cuticle nippers", "cuticle cutter", "nail nipper", "professional cuticle nipper"],
+          "context_keywords": ["cuticle", "nipper", "cutter", "tip style", "spring", "material", "items included"],
+          "negative_keywords": ["cuticle pusher", "cuticle remover", "nail clipper", "tweezers", "scissors", "cuticle oil"]
+        },
+        "cuticle_pushers": {
+          "display_name": "Cuticle Pushers",
+          "formula": ["Brand", "Product Line", "Feature", "Assembled Product Length", "Material", "Cuticle Pusher Type", "Retail Packaging", "with", "Items Included", "Color", "Piece Count \"Pieces\"", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Material", "Cuticle Pusher Type"],
+          "aliases": ["cuticle pusher", "cuticle pushers", "nail pusher", "orange stick", "cuticle stick"],
+          "title_keywords": ["cuticle pusher", "cuticle pushers", "orange stick", "wood cuticle pusher", "metal cuticle pusher"],
+          "context_keywords": ["cuticle", "pusher", "stick", "assembled product length", "material", "pieces"],
+          "negative_keywords": ["cuticle nipper", "cuticle remover", "nail file", "nail clipper", "tweezers", "cuticle oil"]
+        },
+        "cuticle_removers": {
+          "display_name": "Cuticle Removers",
+          "formula": ["Brand", "Product Line", "Feature", "Material", "Cuticle Remover Type", "Retail Packaging", "with", "Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Cuticle Remover Type", "Stop Use Indications"],
+          "aliases": ["cuticle remover", "cuticle removers", "cuticle remover gel", "cuticle remover liquid", "nail cuticle remover"],
+          "title_keywords": ["cuticle remover", "cuticle remover gel", "cuticle remover liquid", "nail cuticle remover"],
+          "context_keywords": ["cuticle", "remover", "remove cuticles", "gel", "liquid", "stop use indications"],
+          "negative_keywords": ["cuticle pusher", "cuticle nipper", "cuticle oil", "nail polish remover", "nail treatment", "hair color remover"]
+        },
+        "false_nails": {
+          "display_name": "False Nails",
+          "formula": ["Brand", "Product Line", "Feature", "Size Descriptor", "Nails Shape", "Material", "False Nails Type", "Retail Packaging", "with", "Items Included", "Finish", "Color", "Pattern", "Piece Count \"Pieces\"", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "False Nail Type", "Nails Shape"],
+          "aliases": ["false nails", "fake nails", "press on nails", "artificial nails", "acrylic nails"],
+          "title_keywords": ["false nails", "press on nails", "fake nails", "artificial nails", "acrylic nails", "glue on nails"],
+          "context_keywords": ["false nails", "press on", "nail shape", "finish", "color", "pattern", "pieces"],
+          "negative_keywords": ["nail glue", "nail polish", "nail art", "nail repair kit", "nail training hand", "false eyelashes"]
+        },
+        "manicure_drill_bits": {
+          "display_name": "Manicure Drill Bits",
+          "formula": ["Brand", "Product Line", "Recommended Use or Feature", "Fineness", "Material", "Manicure Drill Bit Type", "Retail Packaging", "with", "Items Included", "Diameter or Thickness", "Piece Count \"Pieces\"", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Material", "Brand", "Fineness"],
+          "aliases": ["manicure drill bit", "manicure drill bits", "nail drill bits", "nail drill bit", "efile bits"],
+          "title_keywords": ["manicure drill bits", "nail drill bits", "e-file bits", "carbide nail bit", "ceramic nail bit"],
+          "context_keywords": ["drill bit", "bits", "fineness", "diameter", "thickness", "manicure drill", "material"],
+          "negative_keywords": ["nail drill", "electric nail drill", "drill tool", "hardware drill bit", "nail file", "nail clippers"]
+        },
+        "manicure_sets": {
+          "display_name": "Manicure Sets",
+          "formula": ["Brand", "Product Line", "Recommended Use or Feature", "Piece Count \"-Piece\"", "Material", "Retail Packaging", "Manicure Set Type", "with", "Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Ib Retail Packaging", "Cleaning Care And Maintenance"],
+          "aliases": ["manicure set", "manicure sets", "nail care set", "manicure kit", "nail kit"],
+          "title_keywords": ["manicure set", "manicure kit", "nail care set", "nail grooming kit", "pedicure manicure set"],
+          "context_keywords": ["manicure", "set", "kit", "piece", "items included", "nail tools", "retail packaging"],
+          "negative_keywords": ["nail repair kit", "hair coloring tool kit", "skin care set", "nail polish set", "single nail clipper", "nail drill"]
+        },
+        "manicure_tables": {
+          "display_name": "Manicure Tables",
+          "formula": ["Brand", "Product Line", "Recommended Use or Feature", "Workstation Type", "with", "Items Included", "Color and Accent Color", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Workstation Type", "Brand", "Material"],
+          "aliases": ["manicure table", "manicure tables", "nail table", "nail workstation", "manicure workstation"],
+          "title_keywords": ["manicure table", "nail table", "manicure workstation", "nail workstation", "salon manicure table"],
+          "context_keywords": ["table", "workstation", "manicure", "nail salon", "items included", "color", "accent color"],
+          "negative_keywords": ["manicure set", "manicure tray", "nail dryer", "nail drill", "makeup vanity", "desk"]
+        },
+        "nail_art": {
+          "display_name": "Nail Art",
+          "formula": ["Brand", "Product Line", "Sports League or Character Group", "Sports Team or Character", "Feature or Finish", "Piece Count \"-Pieces\"", "Nail Art Type", "Form", "Retail Packaging", "for", "Age Group", "with", "Items Included", "Color", "Theme and/or Pattern and/or Shape", "Count \"Count\"", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Nail Art Type", "Material"],
+          "aliases": ["nail art", "nail decorations", "nail charms", "nail stickers", "nail decals"],
+          "title_keywords": ["nail art", "nail stickers", "nail decals", "nail charms", "nail gems", "nail decorations"],
+          "context_keywords": ["nail art", "decorations", "stickers", "decals", "theme", "pattern", "shape", "count"],
+          "negative_keywords": ["nail art brushes", "nail polish", "false nails", "temporary tattoos", "body glitter", "craft stickers"]
+        },
+        "nail_art_brushes_pens": {
+          "display_name": "Nail Art Brushes & Pens",
+          "formula": ["Brand", "Product Line", "Recommended Use or Feature", "Handle Material", "Piece Count \"-Piece\"", "Nail Art Brushes & Pens Type", "Retail Packaging", "with", "Items Included", "Tip Style \"Tip\"", "Color", "Pattern and/or Theme", "Count \"Count\"", "(Multiple Quantity \"Pack\")"],
+          "attributes": ["Brand", "Nail Art Brush And Pen Type", "Cleaning Care And Maintenance"],
+          "aliases": ["nail art brush", "nail art brushes", "nail art pen", "nail art pens", "nail design brush"],
+          "title_keywords": ["nail art brush", "nail art pen", "nail art brushes", "nail design brush", "striping brush"],
+          "context_keywords": ["brush", "pen", "nail art", "tip style", "handle material", "design", "count"],
+          "negative_keywords": ["nail art", "makeup brush", "hair dye brush", "paint brush", "nail polish", "nail file"]
+        },
+        "nail_base_coat": {
+          "display_name": "Nail Base Coat",
+          "formula": ["Brand", "Product Line", "Skin Care Key Benefit and/or Ingredient Preference and/or Ingredient Claims and/or Ingredient Properties and/or Feature", "Nail Polish Type", "Color", "Size", "Container Type", "(Multiple Quantity \"Pack\")"],
+          "attributes": ["Brand", "Nail Polish Type", "Ingredients"],
+          "aliases": ["nail base coat", "base coat", "basecoat", "nail primer coat", "base nail polish"],
+          "title_keywords": ["nail base coat", "base coat", "basecoat", "ridge base coat", "strengthening base coat"],
+          "context_keywords": ["base coat", "nail polish type", "nail primer", "before polish", "ingredients", "container"],
+          "negative_keywords": ["nail top coat", "nail polish", "quick dry lacquer", "nail ridge filler", "nail treatment", "foundation primer"]
+        },
+        "nail_clippers": {
+          "display_name": "Nail Clippers",
+          "formula": ["Brand", "Product Line", "Feature", "Material", "Piece Count \"-Piece\"", "Nail Clipper Type", "Retail Packaging", "for", "Age Group", "with", "Items Included", "Color", "(Multiple Quantity \"Pack\")"],
+          "attributes": ["Brand", "Nail Clipper Type", "Material"],
+          "aliases": ["nail clipper", "nail clippers", "fingernail clipper", "toenail clipper", "nail cutter"],
+          "title_keywords": ["nail clipper", "nail clippers", "toenail clipper", "fingernail clipper", "nail cutter"],
+          "context_keywords": ["clipper", "nail", "toenail", "fingernail", "cutter", "material", "age group"],
+          "negative_keywords": ["cuticle nipper", "nail file", "scissors", "hair clipper", "nail drill", "manicure set"]
+        },
+        "nail_drills": {
+          "display_name": "Nail Drills",
+          "formula": ["Brand", "Product Line", "Feature", "Maximum RPM \"RPM\"", "Power Type", "Piece Count \"-Piece\"", "Hand Drill Type", "Retail Packaging", "with", "Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Power Type", "Material"],
+          "aliases": ["nail drill", "nail drills", "electric nail drill", "manicure drill", "e-file"],
+          "title_keywords": ["nail drill", "electric nail drill", "manicure drill", "e-file", "professional nail drill"],
+          "context_keywords": ["drill", "rpm", "power type", "electric", "manicure", "items included", "hand drill"],
+          "negative_keywords": ["manicure drill bits", "drill bits", "hardware drill", "nail file", "nail dryer", "skin care device"]
+        },
+        "nail_dryers": {
+          "display_name": "Nail Dryers",
+          "formula": ["Brand", "Product Line", "Feature", "Size Descriptor", "Watts or Volts", "Nail Dryer Type", "for", "Recommended Use", "with", "Items Included", "Color", "(Multiple Quantity \"Pack\")"],
+          "attributes": ["Nail Dryer Type", "Brand", "Cleaning Care And Maintenance"],
+          "aliases": ["nail dryer", "nail dryers", "uv nail lamp", "led nail lamp", "nail curing lamp"],
+          "title_keywords": ["nail dryer", "uv nail lamp", "led nail lamp", "nail curing lamp", "gel nail dryer"],
+          "context_keywords": ["dryer", "lamp", "uv", "led", "curing", "watts", "volts", "gel polish"],
+          "negative_keywords": ["hair dryer", "nail tool sterilizer", "nail drill", "quick dry nail lacquer", "dry shampoo", "uv sterilizer"]
+        },
+        "nail_files": {
+          "display_name": "Nail Files",
+          "formula": ["Brand", "Character or Product Line", "Feature", "Fineness or Grit Size \"Grit\"", "Material", "Nail File Type", "Retail Packaging", "with", "Items Included", "Color", "Pattern and/or Theme", "Piece Count \"Pieces\"", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Nail File Type", "Brand", "Material"],
+          "aliases": ["nail file", "nail files", "emery board", "nail buffer", "nail filer"],
+          "title_keywords": ["nail file", "nail files", "emery board", "nail buffer", "glass nail file", "nail file set"],
+          "context_keywords": ["file", "filer", "grit", "fineness", "buffer", "emery", "material", "pieces"],
+          "negative_keywords": ["nail clippers", "nail drill", "manicure drill bits", "metal file tool", "document file", "hair file"]
+        },
+        "nail_glue": {
+          "display_name": "Nail Glue",
+          "formula": ["Brand", "Product Line", "Recommended Use and/or Feature", "Applicator Type", "Nail Glue Type", "Retail Packaging", "with", "Items Included", "Size", "Container Type", "(Multiple Quantity \"Pack\")"],
+          "attributes": ["Brand", "Nail Glue Type", "Form"],
+          "aliases": ["nail glue", "nail glues", "false nail glue", "press on nail glue", "acrylic nail glue"],
+          "title_keywords": ["nail glue", "false nail glue", "press on nail glue", "acrylic nail glue", "brush on nail glue"],
+          "context_keywords": ["glue", "adhesive", "false nails", "applicator", "container", "size", "nail glue type"],
+          "negative_keywords": ["false nails", "eyelash glue", "wig glue", "nail polish", "nail repair kit", "super glue"]
+        },
+        "nail_polish": {
+          "display_name": "Nail Polish",
+          "formula": ["Brand", "Product Line", "Ingredient Preference and/or Ingredient Claims and/or Ingredient Properties and/or Feature", "Piece Count \"-Piece\"", "Finish", "Nail Polish Type", "Retail Packaging", "with", "Items Included", "Color", "Size", "Container Type", "Count \"Count\"", "(Multiple Quantity \"Pack\")"],
+          "attributes": ["Brand", "Nail Polish Type", "Color"],
+          "aliases": ["nail polish", "nail polishes", "nail lacquer", "gel polish", "nail enamel"],
+          "title_keywords": ["nail polish", "nail lacquer", "gel polish", "nail enamel", "polish color"],
+          "context_keywords": ["polish", "lacquer", "finish", "color", "gel", "nail polish type", "bottle"],
+          "negative_keywords": ["quick dry nail lacquer", "nail base coat", "nail top coat", "nail polish remover", "nail polish corrector", "nail glue"]
+        },
+        "nail_polish_corrector_pens": {
+          "display_name": "Nail Polish Corrector Pens",
+          "formula": ["Brand", "Product Line", "Feature", "Piece Count \"-Piece\"", "Nail Polish Correction Pen Type", "Retail Packaging", "with", "Items Included", "Size", "(Multiple Quantity \"Pack\")"],
+          "attributes": ["Brand", "Form", "Nail Polish Remover Type"],
+          "aliases": ["nail polish corrector pen", "nail polish corrector pens", "manicure corrector pen", "polish remover pen", "nail correction pen"],
+          "title_keywords": ["nail polish corrector pen", "manicure corrector pen", "polish remover pen", "nail correction pen"],
+          "context_keywords": ["corrector", "pen", "correction", "polish remover", "manicure cleanup", "size"],
+          "negative_keywords": ["nail polish remover", "nail polish", "nail art pen", "cuticle pen", "marker", "eyeliner pen"]
+        },
+        "nail_polish_removers": {
+          "display_name": "Nail Polish Removers",
+          "formula": ["Brand", "Product Line", "Feature or Ingredient Preference or Ingredient Claims or Ingredient Properties or Skin Care Key Benefit", "Nail Polish Remover Type", "Form", "with", "Primary Ingredient and/or Items Included", "Scent \"Scent\"", "Size", "Count \"Count\"", "Container Type", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Nail Polish Remover Type", "Brand", "Form"],
+          "aliases": ["nail polish remover", "nail polish removers", "polish remover", "acetone remover", "nail remover"],
+          "title_keywords": ["nail polish remover", "polish remover", "acetone nail polish remover", "non acetone remover", "gel polish remover"],
+          "context_keywords": ["remover", "acetone", "polish", "form", "scent", "container", "count"],
+          "negative_keywords": ["nail polish corrector pen", "makeup remover", "hair color stain remover", "nail polish", "cuticle remover", "paint remover"]
+        },
+        "nail_repair_kits": {
+          "display_name": "Nail Repair Kits",
+          "formula": ["Brand", "Product Line", "Skin Care Key Benefit and/or Feature", "Piece Count \"-Piece\"", "Nail Repair Kit Type", "with", "Items Included", "(Multiple Quantity \"Pack\")"],
+          "attributes": ["Brand", "Number Of Pieces", "Nail Repair Kit Type"],
+          "aliases": ["nail repair kit", "nail repair kits", "broken nail repair kit", "nail mending kit", "nail rescue kit"],
+          "title_keywords": ["nail repair kit", "broken nail repair kit", "nail mending kit", "nail rescue kit", "nail repair set"],
+          "context_keywords": ["repair", "kit", "broken nail", "mending", "piece", "items included", "nail care"],
+          "negative_keywords": ["manicure set", "nail treatment", "nail ridge filler", "nail glue", "false nails", "skin repair kit"]
+        },
+        "nail_ridge_filler": {
+          "display_name": "Nail Ridge Filler",
+          "formula": ["Brand", "Product Line", "Feature and/or Ingredient Preference and/or Ingredient Claims and/or Ingredient Properties and/or Skin Care Key Benefit", "Piece Count \"-Piece\"", "Nail Ridge Filler Type", "Retail Packaging", "with", "Primary Ingredient or Items Included", "Color", "Size", "Container Type", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Brand", "Nail Ridge Filler Type", "Size"],
+          "aliases": ["nail ridge filler", "nail ridge fillers", "ridge filler", "ridge filling base", "nail smoothing filler"],
+          "title_keywords": ["nail ridge filler", "ridge filler", "ridge filling base coat", "nail smoothing filler"],
+          "context_keywords": ["ridge", "filler", "smooth", "nail surface", "base", "size", "container"],
+          "negative_keywords": ["nail base coat", "nail top coat", "nail polish", "nail treatment", "nail repair kit", "wall filler"]
+        },
+        "nail_soakers": {
+          "display_name": "Nail Soakers",
+          "formula": ["Brand", "Product Line", "Feature", "Material", "Nail Soaker Type", "Retail Packaging", "with", "Items Included", "Color", "Count \"Count\" or Piece Count \"Pieces\"", "(Multiple Quantity \"Pack\")"],
+          "attributes": ["Brand", "Nail Soaker Type", "Instructions"],
+          "aliases": ["nail soaker", "nail soakers", "nail soak bowl", "finger soaker", "soak off clips"],
+          "title_keywords": ["nail soaker", "nail soakers", "soak off clips", "nail soak bowl", "finger soaker"],
+          "context_keywords": ["soak", "soaker", "soak off", "clips", "bowl", "acetone", "count", "instructions"],
+          "negative_keywords": ["nail polish remover", "nail dryer", "nail tool sterilizer", "cuticle remover", "foot soak", "nail polish"]
+        },
+        "nail_tool_sterilizers": {
+          "display_name": "Nail Tool Sterilizers",
+          "formula": ["Brand", "Product Line", "Feature", "Sanitization Method", "Art Tool Cleaner Type", "Container Type or Form", "Retail Packaging", "with", "Items Included", "Size", "Color", "Count Per Pack \"Count\"", "(Multiple Quantity \"Pack\")"],
+          "attributes": ["Sanitization Method", "Brand", "Art Tool Cleaner Type"],
+          "aliases": ["nail tool sterilizer", "nail tool sterilizers", "manicure sterilizer", "tool sanitizer", "nail tool cleaner"],
+          "title_keywords": ["nail tool sterilizer", "manicure sterilizer", "tool sanitizer", "nail tool cleaner", "uv tool sterilizer"],
+          "context_keywords": ["sterilizer", "sanitization", "tool cleaner", "manicure tools", "container", "size", "count"],
+          "negative_keywords": ["nail dryer", "uv nail lamp", "makeup brush cleanser", "nail polish remover", "disinfecting wipes", "medical sterilizer"]
+        },
+        "nail_top_coat": {
+          "display_name": "Nail Top Coat",
+          "formula": ["Brand", "Product Line", "Skin Care Key Benefit and/or Ingredient Preference and/or Ingredient Claims and/or Ingredient Properties and/or Feature", "Finish", "Nail Polish Type", "Color", "Size", "Container Type", "(Multiple Quantity \"Pack\")"],
+          "attributes": ["Brand", "Nail Polish Type", "Form"],
+          "aliases": ["nail top coat", "top coat", "topcoat", "clear top coat", "gel top coat"],
+          "title_keywords": ["nail top coat", "top coat", "topcoat", "clear top coat", "gel top coat", "matte top coat"],
+          "context_keywords": ["top coat", "finish", "seal", "protect", "shine", "matte", "nail polish type"],
+          "negative_keywords": ["nail base coat", "nail polish", "quick dry lacquer", "nail ridge filler", "clear nail treatment", "car top coat"]
+        },
+        "nail_training_hands": {
+          "display_name": "Nail Training Hands",
+          "formula": ["Brand", "Product Line", "Feature", "Material", "Manicure Practice or Pedicure Practice Body Part", "Retail Packaging", "with", "Mount Type", "Items Included", "Skin Tone \"Tone\"", "Piece Count \"Pieces\"", "(Multipack Quantity \"Pack\")"],
+          "attributes": ["Body Part", "Material", "Brand"],
+          "aliases": ["nail training hand", "nail training hands", "manicure practice hand", "practice hand", "nail practice hand"],
+          "title_keywords": ["nail training hand", "manicure practice hand", "nail practice hand", "practice hand", "silicone practice hand"],
+          "context_keywords": ["training", "practice", "hand", "manicure", "body part", "skin tone", "mount type"],
+          "negative_keywords": ["nail art", "false nails", "manicure set", "prosthetic hand", "training gloves", "nail polish"]
+        },
+        "nail_treatments": {
+          "display_name": "Nail Treatments",
+          "formula": ["Brand", "Product Line", "Product Multifunction Descriptor and/or Ingredient Preference and/or Ingredient Claims and/or Ingredient Properties and/or Skin Care Key Benefit and/or Feature", "Taste", "Piece Count \"-Piece\"", "Nail Treatment Type", "Form", "Retail Packaging", "for", "Age Group", "with", "Primary Ingredient", "Size", "Container Type", "(Multiple Quantity \"Pack\")"],
+          "attributes": ["Brand", "Nail Treatment Type", "Form"],
+          "aliases": ["nail treatment", "nail treatments", "nail strengthener", "nail hardener", "nail growth treatment"],
+          "title_keywords": ["nail treatment", "nail strengthener", "nail hardener", "nail growth treatment", "nail biting treatment"],
+          "context_keywords": ["treatment", "strengthener", "hardener", "growth", "taste", "form", "primary ingredient"],
+          "negative_keywords": ["nail repair kit", "nail ridge filler", "nail polish", "nail base coat", "cuticle treatment", "hair treatment"]
+        },
+        "quick_dry_nail_lacquers": {
+          "display_name": "Quick Dry Nail Lacquers",
+          "formula": ["Brand", "Product Line or Collection", "Ingredient Preference and/or Ingredient Claims and/or Ingredient Properties and/or Skin Care Key Benefit and/or Feature", "Piece Count \"-Piece\"", "Finish", "Quick Dry Nail Lacquer Type", "Retail Packaging", "with", "Items Included", "Color", "Size", "Container Type", "Count \"Count\"", "(Multiple Quantity \"Pack\")"],
+          "attributes": ["Brand", "Dry Time", "Form"],
+          "aliases": ["quick dry nail lacquer", "quick dry nail lacquers", "quick dry nail polish", "fast dry nail polish", "quick drying lacquer"],
+          "title_keywords": ["quick dry nail lacquer", "quick dry nail polish", "fast dry nail polish", "quick drying nail lacquer", "rapid dry polish"],
+          "context_keywords": ["quick dry", "fast dry", "dry time", "lacquer", "polish", "finish", "color"],
+          "negative_keywords": ["nail polish", "nail dryer", "nail top coat", "nail base coat", "quick dry drops", "hair lacquer"]
+        }
+      }
+    }
+  }
+}

@@ -14,6 +14,7 @@ from audit_export import build_audit_export_plan
 from audit_generate import generate_mvp_outputs_for_primary_entry, is_output_shell_empty
 from audit_models import create_audit_result_record
 from audit_powerpoint import generate_audit_powerpoint_from_template, resolve_audit_template_path
+from audit_powerpoint_new import generate_new_audit_powerpoint_from_template
 from audit_style_guides import load_style_guides, match_style_guide_rule
 from audit_helpers import (
     build_competitor_assignments,
@@ -2048,18 +2049,34 @@ def render_audit_powerpoint_export_v2() -> None:
     if included_count <= 0:
         st.info("Include at least one primary product entry to generate the audit PowerPoint.")
         return
+    template_version = st.selectbox(
+        "Template Version",
+        ["Current Audit Template", "New Strategic Template"],
+        key="audit_template_version",
+    )
     try:
-        template_path = resolve_audit_template_path()
+        if template_version == "New Strategic Template":
+            template_path = os.path.join("templates", "Audit_Template_New.pptx")
+            if not os.path.exists(template_path):
+                raise FileNotFoundError(template_path)
+        else:
+            template_path = resolve_audit_template_path()
     except Exception as exc:
         st.error(f"Audit template not found: {exc}")
         return
 
     if st.button("Generate Audit PowerPoint", key="audit_v2_generate_ppt", type="primary"):
         try:
-            ppt_bytes = generate_audit_powerpoint_from_template(
-                export_plan=plan,
-                template_path=template_path,
-            )
+            if template_version == "New Strategic Template":
+                ppt_bytes = generate_new_audit_powerpoint_from_template(
+                    export_plan=plan,
+                    template_path=template_path,
+                )
+            else:
+                ppt_bytes = generate_audit_powerpoint_from_template(
+                    export_plan=plan,
+                    template_path=template_path,
+                )
             st.session_state["audit_ppt_bytes"] = ppt_bytes
             st.session_state["audit_ppt_filename"] = (
                 f"audit_{st.session_state.get('audit_client_name', 'client').strip() or 'client'}"

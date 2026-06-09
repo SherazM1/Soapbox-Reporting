@@ -1,0 +1,787 @@
+{
+  "category": "Everything Else",
+  "status": "complete",
+  "source": "pn-guide-everything-else.pdf",
+  "families": {
+    "collectibles_memorabilia": {
+      "display_name": "Collectibles & Memorabilia",
+      "product_types": {
+        "autographed_collectibles": {
+          "display_name": "Autographed Collectibles",
+          "formula": ["Athlete1", "Character1", "Character Group1", "Sports League1", "Sports Team1", "Edition Year1", "Brand", "Theme", "Subject", "Features2", "-", "Certifying Agent1", "Has Certificate of Authenticity4", "Piece Count3", "Retail Packaging"],
+          "attributes": ["Brand", "Autographed By", "Autographed"],
+          "aliases": ["autographed collectible", "autographed collectibles", "signed collectible", "signed memorabilia", "autographed memorabilia"],
+          "title_keywords": ["autographed collectible", "autographed collectibles", "signed collectible", "signed memorabilia", "autographed memorabilia", "certificate of authenticity"],
+          "context_keywords": ["autographed", "signed", "memorabilia", "athlete", "sports league", "sports team", "certifying agent", "certificate of authenticity"],
+          "negative_keywords": ["trading cards", "trading card", "collectible ephemera", "photo mint", "coins", "precious metals", "gift card", "lottery ticket", "service", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "coins": {
+          "display_name": "Coins",
+          "formula": ["Edition Year1", "Features2", "Subject1", "Metal Purity1", "Metal Type", "Money Denomination1", "Grade", "Piece Count3", "Retail Packaging", "Coins"],
+          "attributes": ["Brand", "Coin Type", "Circulated"],
+          "aliases": ["coin", "coins", "collectible coin", "collectible coins", "numismatic coin"],
+          "title_keywords": ["coin", "coins", "collectible coin", "collectible coins", "numismatic coin", "graded coin"],
+          "context_keywords": ["coin type", "circulated", "denomination", "metal type", "metal purity", "grade", "edition year"],
+          "negative_keywords": ["precious metals", "bullion", "photo mint", "trading cards", "collectible building", "jewelry", "gift card", "lottery ticket", "service", "ticket", "smoking", "vaping", "tattoo"]
+        },
+        "collectible_buildings": {
+          "display_name": "Collectible Buildings",
+          "formula": ["Brand", "Assembled Product Height", "Character1", "Character Group1", "Theme1", "Subject", ",", "Model", "Piece Count3", "Retail Packaging"],
+          "attributes": ["Brand", "Subject", "Condition"],
+          "aliases": ["collectible building", "collectible buildings", "miniature building", "collectible village building", "model building collectible"],
+          "title_keywords": ["collectible building", "collectible buildings", "miniature building", "village building", "model building collectible"],
+          "context_keywords": ["collectible", "building", "model", "subject", "theme", "assembled product height", "condition"],
+          "negative_keywords": ["toy", "model kit", "holiday village decoration", "ornament", "collectible ephemera", "gift card", "lottery ticket", "service", "ticket", "smoking", "vaping", "tattoo"]
+        },
+        "collectible_ephemera": {
+          "display_name": "Collectible Ephemera",
+          "formula": ["Brand1", "Title1", "Features2", "Character1", "Athlete1", "Character Group1", "Sports League1", "Sports Team1", "Edition Year1", "Subject", "Piece Count3", "Retail Packaging"],
+          "attributes": ["Brand", "Number Of Pieces", "Subject"],
+          "aliases": ["collectible ephemera", "ephemera", "collectible paper", "memorabilia ephemera", "paper collectible"],
+          "title_keywords": ["collectible ephemera", "ephemera", "collectible paper", "memorabilia ephemera", "paper collectible"],
+          "context_keywords": ["ephemera", "collectible", "paper", "subject", "number of pieces", "edition year", "memorabilia"],
+          "negative_keywords": ["autographed collectibles", "trading cards", "photo mints", "poster", "book", "document", "coins", "gift card", "lottery ticket", "service", "ticket", "smoking", "vaping", "tattoo"]
+        },
+        "photo_mints": {
+          "display_name": "Photo Mints",
+          "formula": ["Brand", "Features1", "Athlete1", "Character1", "Character Group1", "Sports League1", "Sports Team1", "Edition Year1", "Subject1", "Photo Size", "Metal Type", "Coin", "Piece Count3", "Retail Packaging"],
+          "attributes": ["Brand", "Photo Size", "Multipack Quantity"],
+          "aliases": ["photo mint", "photo mints", "minted photo", "collectible photo mint", "photo and coin collectible"],
+          "title_keywords": ["photo mint", "photo mints", "minted photo", "collectible photo mint", "photo coin collectible"],
+          "context_keywords": ["photo", "mint", "coin", "photo size", "sports team", "athlete", "metal type", "multipack"],
+          "negative_keywords": ["coins", "precious metals", "autographed collectibles", "framed photo", "trading cards", "gift card", "lottery ticket", "service", "ticket", "smoking", "vaping", "tattoo"]
+        },
+        "precious_metals": {
+          "display_name": "Precious Metals",
+          "formula": ["Brand3", "Model2", "Features4", "Weight3", "Metal Stamp1", "Metal Purity1", "Precious Metal Grade1", "Material3", "Precious Metal Form3", "Items Included5", ",", "Count6", "Condition1"],
+          "attributes": ["Precious Metal Form", "Coin Type", "Brand"],
+          "aliases": ["precious metal", "precious metals", "bullion", "silver bullion", "gold bullion", "metal bar"],
+          "title_keywords": ["precious metal", "precious metals", "bullion", "gold bullion", "silver bullion", "precious metal bar"],
+          "context_keywords": ["precious metal form", "metal purity", "metal stamp", "weight", "grade", "material", "items included"],
+          "negative_keywords": ["coins", "jewelry", "metal craft supplies", "collectibles", "photo mint", "trading cards", "gift card", "lottery ticket", "service", "ticket", "smoking", "vaping", "tattoo"]
+        },
+        "trading_card_sleeves_holders": {
+          "display_name": "Trading Card Sleeves & Holders",
+          "formula": ["Brand", "Color1", "Number of Card Slots1", "Features1", "Trading Card Sleeve & Holder Type", ",", "Piece Count4", "Retail Packaging1"],
+          "attributes": ["Brand", "Trading Card Sleeve And Holder Type", "Multipack Quantity"],
+          "aliases": ["trading card sleeve", "trading card sleeves", "trading card holder", "trading card holders", "card sleeves", "card holder"],
+          "title_keywords": ["trading card sleeve", "trading card sleeves", "trading card holder", "trading card holders", "card sleeves"],
+          "context_keywords": ["trading card", "sleeve", "holder", "card slots", "piece count", "retail packaging", "multipack"],
+          "negative_keywords": ["trading cards", "card games", "binders", "photo albums", "collectible cases", "gift card", "prepaid gaming card", "lottery ticket", "service", "ticket", "smoking", "vaping", "tattoo"]
+        },
+        "trading_cards": {
+          "display_name": "Trading Cards",
+          "formula": ["Edition Year1", "Title1", "Brand", "Product Line1", "Global Brand License1", "Sports League1", "Academic Institution", "Sports Team1", "Character1", "Character Group1", "Athlete1", "Sport Type1", "Product Type", ",", "Piece Count4", "Cards"],
+          "attributes": ["Brand", "Piece Count", "Multipack Quantity"],
+          "aliases": ["trading card", "trading cards", "sports trading cards", "collectible cards", "card pack"],
+          "title_keywords": ["trading card", "trading cards", "sports trading cards", "collectible cards", "trading card pack"],
+          "context_keywords": ["cards", "trading", "sports league", "sports team", "athlete", "sport type", "piece count", "multipack"],
+          "negative_keywords": ["trading card sleeves", "trading card holders", "playing cards", "prepaid gaming cards", "gift cards", "collectible ephemera", "gift card", "lottery ticket", "service", "ticket", "smoking", "vaping", "tattoo"]
+        }
+      }
+    },
+    "custom_cake_order": {
+      "display_name": "Custom Cake Order",
+      "product_types": {
+        "customized_cake_order": {
+          "display_name": "Customized Cake Order",
+          "formula": ["Brand", "Product/Type"],
+          "attributes": ["Condition", "Production Method Type", "Brand"],
+          "aliases": ["customized cake order", "custom cake order", "custom cake", "cake order", "personalized cake order"],
+          "title_keywords": ["customized cake order", "custom cake order", "custom cake", "personalized cake order"],
+          "context_keywords": ["cake", "order", "customized", "custom", "production method", "bakery service"],
+          "negative_keywords": ["bakery item", "cake topper", "custom food order", "party supplies", "gift card", "lottery ticket", "collectible", "photo service", "ticket", "physical product", "smoking", "vaping", "tattoo"]
+        }
+      }
+    },
+    "gift_cards": {
+      "display_name": "Gift Cards",
+      "product_types": {
+        "gift_card_holders": {
+          "display_name": "Gift Card Holders",
+          "formula": ["Brand", "Features1", "Occasion2", "Gift Card Holder", "OR", "Money Holder", "OR", "Gift Card & Money Holder3", "Retail Packaging4", ",", "Pattern", "AND/OR", "Theme", "AND/OR", "Shape5", ",", "Total Count", "Count6", "Multipack Quantity7", "Pack"],
+          "attributes": ["Material", "Count Per Pack", "Size Descriptor"],
+          "aliases": ["gift card holder", "gift card holders", "money holder", "money holders", "gift card and money holder"],
+          "title_keywords": ["gift card holder", "gift card holders", "money holder", "gift card and money holder", "gift card sleeve"],
+          "context_keywords": ["gift card", "holder", "money", "occasion", "pattern", "theme", "shape", "count per pack"],
+          "negative_keywords": ["gift cards", "gift certificate", "gift bag", "greeting card", "envelope", "gift wrap", "prepaid gaming card", "lottery ticket", "entertainment ticket", "collectible", "service", "default"]
+        },
+        "gift_cards_certificates": {
+          "display_name": "Gift Cards & Certificates",
+          "formula": ["Brand", "Gift Card Amount1", "Features2", "Occasion", "OR", "Pattern", "OR", "Theme3", "Gift Card & Certificate Type4", "Retail Packaging5", "Gift Card Format6", "[Delivery Method7]", "Multipack Quantity8", "Pack"],
+          "attributes": ["Brand", "Gift Card Format", "Gift Card Amount"],
+          "aliases": ["gift card", "gift cards", "gift certificate", "gift certificates", "egift card", "e-gift card"],
+          "title_keywords": ["gift card", "gift cards", "gift certificate", "gift certificates", "egift card", "eGift Card"],
+          "context_keywords": ["gift card amount", "gift card format", "delivery method", "digital download", "email delivery", "physical", "multipack"],
+          "negative_keywords": ["prepaid gaming cards", "gift card holder", "lottery ticket", "membership card", "entertainment ticket", "trading card", "collectible", "service", "default", "video game accessory"]
+        },
+        "prepaid_gaming_cards": {
+          "display_name": "Prepaid Gaming Cards",
+          "formula": ["Brand", ":", "Title2", "Gift Card Amount3", "Prepaid Gaming", "Gift Card Format4", ",", "Video Game Platform5", "[Delivery Method6]", "Multipack Quantity7", "Pack"],
+          "attributes": ["Brand", "Video Game Platform", "Delivery Method"],
+          "aliases": ["prepaid gaming card", "prepaid gaming cards", "gaming gift card", "game card", "video game prepaid card"],
+          "title_keywords": ["prepaid gaming card", "prepaid gaming cards", "gaming gift card", "game card", "video game prepaid card"],
+          "context_keywords": ["prepaid gaming", "video game platform", "delivery method", "digital download", "email delivery", "gift card amount"],
+          "negative_keywords": ["trading cards", "gift cards", "gift certificate", "video game", "video game accessory", "digital content access", "lottery ticket", "entertainment ticket", "collectible", "service", "default"]
+        }
+      }
+    },
+    "retail_services": {
+      "display_name": "Retail Services",
+      "product_types": {
+        "adult_care_services": {
+          "display_name": "Adult Care Services",
+          "formula": ["Brand", "Adult Care Service"],
+          "attributes": ["Condition", "Has Written Warranty", "Multipack Quantity"],
+          "aliases": ["adult care service", "adult care services", "senior care service", "elder care service", "adult support service"],
+          "title_keywords": ["adult care service", "adult care services", "senior care service", "elder care service"],
+          "context_keywords": ["adult care", "service", "senior", "elder care", "warranty", "multipack"],
+          "negative_keywords": ["infant child services", "home cleaning services", "medical products", "adult care products", "warranties", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "money services", "optical services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "assembly_services": {
+          "display_name": "Assembly Services",
+          "formula": ["Brand", "Assembly Service Product Category"],
+          "attributes": ["Brand", "Warranty Url", "Warranty Information"],
+          "aliases": ["assembly service", "assembly services", "product assembly service", "furniture assembly service", "installation assembly service"],
+          "title_keywords": ["assembly service", "assembly services", "product assembly", "furniture assembly service"],
+          "context_keywords": ["assembly", "service", "product category", "warranty url", "warranty information"],
+          "negative_keywords": ["tech setup installation services", "moving services", "priced home services", "quotable home services", "delivery services", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "delivery_services_white_glove": {
+          "display_name": "Delivery Services (white glove)",
+          "formula": ["Brand", "Delivery Service Product Category"],
+          "attributes": ["Condition", "Multipack Quantity", "Has Written Warranty"],
+          "aliases": ["white glove delivery", "white glove delivery service", "delivery services white glove", "premium delivery service", "room of choice delivery"],
+          "title_keywords": ["white glove delivery", "white glove delivery service", "delivery services white glove", "premium delivery"],
+          "context_keywords": ["delivery", "white glove", "service", "product category", "warranty", "multipack"],
+          "negative_keywords": ["moving services", "assembly services", "standard shipping", "delivery products", "shipping supplies", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "digital_content_access": {
+          "display_name": "Digital Content Access",
+          "formula": ["Access Time", "Brand", "Digital Content Access"],
+          "attributes": ["Condition", "Has Written Warranty", "Multipack Quantity"],
+          "aliases": ["digital content access", "digital access", "content access", "online content access", "digital subscription access"],
+          "title_keywords": ["digital content access", "digital access", "online content access", "content access"],
+          "context_keywords": ["digital", "content", "access", "access time", "online", "subscription", "warranty"],
+          "negative_keywords": ["gift cards", "prepaid gaming cards", "entertainment tickets", "subscriptions", "free trial subscription", "digital download gift card", "collectible", "lottery ticket", "service plan", "physical product", "smoking", "vaping", "tattoo", "default"]
+        },
+        "home_cleaning_services": {
+          "display_name": "Home Cleaning Services",
+          "formula": ["Brand", "Cleaning Service"],
+          "attributes": ["Brand", "Condition", "Warranty Information"],
+          "aliases": ["home cleaning service", "home cleaning services", "cleaning service", "house cleaning service", "residential cleaning service"],
+          "title_keywords": ["home cleaning service", "home cleaning services", "house cleaning service", "cleaning service"],
+          "context_keywords": ["home cleaning", "cleaning", "service", "house", "warranty information", "condition"],
+          "negative_keywords": ["cleaning products", "pest control services", "priced home services", "quotable home services", "adult care services", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "infant_child_services": {
+          "display_name": "Infant & Child Services",
+          "formula": ["Brand", "Child Service"],
+          "attributes": ["Warranty Url", "Has Written Warranty", "Warranty Information"],
+          "aliases": ["infant child service", "infant child services", "infant service", "child service", "child care service"],
+          "title_keywords": ["infant child service", "infant child services", "infant service", "child service", "child care service"],
+          "context_keywords": ["infant", "child", "service", "child care", "warranty url", "warranty information"],
+          "negative_keywords": ["adult care services", "baby products", "child care products", "warranties", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "moving_services": {
+          "display_name": "Moving Services",
+          "formula": ["Brand", "Moving Service"],
+          "attributes": ["Brand", "Has Written Warranty", "Warranty Information"],
+          "aliases": ["moving service", "moving services", "home moving service", "relocation service", "mover service"],
+          "title_keywords": ["moving service", "moving services", "home moving service", "relocation service"],
+          "context_keywords": ["moving", "service", "relocation", "mover", "warranty", "warranty information"],
+          "negative_keywords": ["delivery services white glove", "assembly services", "home services", "standard shipping", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "off_site_automotive_service": {
+          "display_name": "Off-site Automotive Service",
+          "formula": ["Brand", "Automotive Service"],
+          "attributes": ["Condition", "Multipack Quantity", "Has Written Warranty"],
+          "aliases": ["off-site automotive service", "off site automotive service", "offsite automotive service", "automotive service", "auto service"],
+          "title_keywords": ["off-site automotive service", "off site automotive service", "offsite automotive service", "automotive service"],
+          "context_keywords": ["automotive", "service", "off-site", "offsite", "auto", "warranty", "multipack"],
+          "negative_keywords": ["on-site automotive services", "onsite automotive service", "automotive parts", "automotive accessories", "auto parts", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "pest_control_services": {
+          "display_name": "Pest Control Services",
+          "formula": ["Brand", "Recommended Location1", "Pest Type1", "Pest Control Service"],
+          "attributes": ["Brand", "Condition", "Has Written Warranty"],
+          "aliases": ["pest control service", "pest control services", "exterminator service", "pest treatment service", "bug control service"],
+          "title_keywords": ["pest control service", "pest control services", "exterminator service", "pest treatment service"],
+          "context_keywords": ["pest control", "service", "pest type", "recommended location", "exterminator", "warranty"],
+          "negative_keywords": ["pest control products", "traps", "sprays", "home cleaning services", "priced home services", "insecticide", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "priced_home_services": {
+          "display_name": "Priced Home Services",
+          "formula": ["Brand", "Fixed Priced Home Installation Service"],
+          "attributes": ["Brand", "Warranty Url", "Warranty Information"],
+          "aliases": ["priced home service", "priced home services", "fixed priced home service", "fixed price home installation", "home installation service"],
+          "title_keywords": ["priced home service", "priced home services", "fixed priced home installation", "home installation service"],
+          "context_keywords": ["home", "installation", "fixed price", "priced", "service", "warranty url"],
+          "negative_keywords": ["quotable home services", "assembly services", "home cleaning services", "seasonal services", "moving services", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "protection_plans_one_time": {
+          "display_name": "Protection Plans (one-time)",
+          "formula": ["Protection Plan Term", "Brand", "Protection Plan Type"],
+          "attributes": ["Brand", "Condition", "Has Written Warranty"],
+          "aliases": ["protection plan", "one-time protection plan", "one time protection plan", "product protection plan", "protection plans"],
+          "title_keywords": ["protection plan", "one-time protection plan", "one time protection plan", "product protection plan"],
+          "context_keywords": ["protection", "plan", "term", "one-time", "warranty", "protection plan type"],
+          "negative_keywords": ["service plans", "subscription protection plans", "warranties", "free trial subscription", "services", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "quotable_home_services": {
+          "display_name": "Quotable Home Services",
+          "formula": ["Brand", "Quotable Service Category"],
+          "attributes": ["Warranty Information", "Number Of Rooms", "Warranty Url"],
+          "aliases": ["quotable home service", "quotable home services", "quote home service", "home service quote", "custom quote home service"],
+          "title_keywords": ["quotable home service", "quotable home services", "home service quote", "custom quote home service"],
+          "context_keywords": ["quotable", "home", "service", "quote", "number of rooms", "warranty url"],
+          "negative_keywords": ["priced home services", "assembly services", "moving services", "home cleaning services", "fixed price", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "seasonal_services": {
+          "display_name": "Seasonal Services",
+          "formula": ["Brand", "Seasonal Service"],
+          "attributes": ["Brand", "Condition", "Warranty Information"],
+          "aliases": ["seasonal service", "seasonal services", "holiday service", "seasonal home service", "seasonal retail service"],
+          "title_keywords": ["seasonal service", "seasonal services", "holiday service", "seasonal home service"],
+          "context_keywords": ["seasonal", "service", "holiday", "warranty information", "condition"],
+          "negative_keywords": ["seasonal products", "holiday decorations", "home services", "priced home services", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "service_plans": {
+          "display_name": "Service Plans",
+          "formula": ["Protection Plan Term", "Brand", "Protection Plan Type"],
+          "attributes": ["Brand", "Multipack Quantity", "Has Written Warranty"],
+          "aliases": ["service plan", "service plans", "product service plan", "extended service plan", "repair service plan"],
+          "title_keywords": ["service plan", "service plans", "product service plan", "extended service plan"],
+          "context_keywords": ["service", "plan", "protection plan term", "protection plan type", "warranty", "multipack"],
+          "negative_keywords": ["protection plans one-time", "subscription protection plans", "warranties", "free trial subscription", "services", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "subscription_protection_plans": {
+          "display_name": "Subscription Protection Plans",
+          "formula": ["Protection Plan Term", "Brand", "Protection Plan Type"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["subscription protection plan", "subscription protection plans", "monthly protection plan", "recurring protection plan", "subscription plan protection"],
+          "title_keywords": ["subscription protection plan", "subscription protection plans", "monthly protection plan", "recurring protection plan"],
+          "context_keywords": ["subscription", "protection", "plan", "term", "recurring", "multipack"],
+          "negative_keywords": ["protection plans one-time", "service plans", "warranties", "subscriptions", "free trial subscription", "services", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "tech_repair_services": {
+          "display_name": "Tech Repair Services",
+          "formula": ["Brand", "Tech Repair Services"],
+          "attributes": ["Warranty Information", "Brand", "Condition"],
+          "aliases": ["tech repair service", "tech repair services", "technology repair service", "device repair service", "electronics repair service"],
+          "title_keywords": ["tech repair service", "tech repair services", "device repair service", "electronics repair service"],
+          "context_keywords": ["tech", "repair", "service", "device", "electronics", "warranty information"],
+          "negative_keywords": ["tech setup installation services", "protection plans", "warranties", "electronics accessories", "physical product", "gift card", "lottery ticket", "collectible", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "tech_setup_installation_services": {
+          "display_name": "Tech Setup & Installation Services",
+          "formula": ["Brand", "Tech Setup and Installation Services"],
+          "attributes": ["Brand", "Warranty Information", "Multipack Quantity"],
+          "aliases": ["tech setup service", "tech installation service", "tech setup and installation services", "technology setup service", "device installation service"],
+          "title_keywords": ["tech setup service", "tech installation service", "tech setup and installation services", "device installation service"],
+          "context_keywords": ["tech", "setup", "installation", "service", "device", "warranty information"],
+          "negative_keywords": ["tech repair services", "assembly services", "electronics products", "electronics accessories", "protection plans", "warranties", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "warranties": {
+          "display_name": "Warranties",
+          "formula": ["Brand", "Product/Type", "Warranty", "Warranty Info"],
+          "attributes": ["Brand", "Has Written Warranty", "Warranty Information"],
+          "aliases": ["warranty", "warranties", "product warranty", "extended warranty", "written warranty"],
+          "title_keywords": ["warranty", "warranties", "product warranty", "extended warranty", "written warranty"],
+          "context_keywords": ["warranty", "warranty info", "written warranty", "coverage", "service"],
+          "negative_keywords": ["protection plans one-time", "service plans", "subscription protection plans", "services", "free trial subscription", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "services": {
+          "display_name": "Services",
+          "formula": ["Brand", "Condition", "Product/Type", "Multipack Quantity"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["service", "services", "retail service", "retail services", "general service"],
+          "title_keywords": ["service", "services", "retail service", "general service"],
+          "context_keywords": ["service", "retail", "condition", "multipack", "generic service"],
+          "negative_keywords": ["adult care services", "assembly services", "delivery services white glove", "digital content access", "home cleaning services", "infant child services", "moving services", "off-site automotive service", "pest control services", "priced home services", "protection plans", "quotable home services", "seasonal services", "service plans", "subscription protection plans", "tech repair services", "tech setup installation services", "warranties", "free trial subscription", "gift card", "lottery ticket", "collectible", "photo services", "ticket", "default"]
+        },
+        "free_trial_subscription": {
+          "display_name": "Free Trial Subscription",
+          "formula": ["Brand", "Condition", "Product/Type", "Warranty Info"],
+          "attributes": ["Condition", "Warranty Information", "Brand"],
+          "aliases": ["free trial subscription", "free trial", "trial subscription", "subscription trial", "free subscription trial"],
+          "title_keywords": ["free trial subscription", "free trial", "trial subscription", "subscription trial"],
+          "context_keywords": ["free trial", "subscription", "trial", "warranty info", "service"],
+          "negative_keywords": ["subscription protection plans", "digital content access", "service plans", "warranties", "services", "gift card", "lottery ticket", "collectible", "physical product", "photo services", "ticket", "smoking", "vaping", "tattoo", "default"]
+        }
+      }
+    },
+    "smoking_vaping_electronic_cigarettes": {
+      "display_name": "Smoking, Vaping & Electronics Cigarettes",
+      "product_types": {
+        "electronic_cigarette_cartridges": {
+          "display_name": "Electronic Cigarette Cartridges",
+          "formula": ["Brand", "Product Line", "Flavor", "Electronic Cigarette Cartridge Type", ",", "Count", "Pack"],
+          "attributes": ["Condition", "Multipack Quantity", "Age Group"],
+          "aliases": ["electronic cigarette cartridge", "electronic cigarette cartridges", "e-cigarette cartridge", "ecig cartridge", "vape cartridge"],
+          "title_keywords": ["electronic cigarette cartridge", "electronic cigarette cartridges", "e-cigarette cartridge", "vape cartridge"],
+          "context_keywords": ["electronic cigarette", "cartridge", "flavor", "multipack", "age group", "vape"],
+          "negative_keywords": ["electronic cigarettes", "electronic cigarette starter kits", "electronic cigarette batteries", "vape pens", "loose tobacco", "gift card", "lottery ticket", "collectible", "service", "tattoo", "default"]
+        },
+        "electronic_cigarette_starter_kits": {
+          "display_name": "Electronic Cigarette Starter Kits",
+          "formula": ["Brand", "Product Type", "Model", "Electronic Cigarette Type", "Starter Kit"],
+          "attributes": ["Condition", "Multipack Quantity", "Age Group"],
+          "aliases": ["electronic cigarette starter kit", "electronic cigarette starter kits", "e-cigarette starter kit", "vape starter kit", "ecig starter kit"],
+          "title_keywords": ["electronic cigarette starter kit", "electronic cigarette starter kits", "e-cigarette starter kit", "vape starter kit"],
+          "context_keywords": ["electronic cigarette", "starter kit", "model", "vape", "multipack", "age group"],
+          "negative_keywords": ["electronic cigarettes", "cartridges", "electronic cigarette batteries", "skins for vape pens", "general kits", "gift card", "lottery ticket", "collectible", "service", "tattoo", "default"]
+        },
+        "electronic_cigarettes": {
+          "display_name": "Electronic Cigarettes",
+          "formula": ["Brand", "Product Line", "Model", "Features", "Electronic Cigarette Type", "Retail Packaging", ",", "Color", "Pattern"],
+          "attributes": ["Condition", "Multipack Quantity", "Age Group"],
+          "aliases": ["electronic cigarette", "electronic cigarettes", "e-cigarette", "e-cigarettes", "ecig", "vape pen"],
+          "title_keywords": ["electronic cigarette", "electronic cigarettes", "e-cigarette", "e-cigarettes", "vape pen"],
+          "context_keywords": ["electronic cigarette", "vape", "model", "features", "retail packaging", "color"],
+          "negative_keywords": ["herbal cigarettes", "cigarettes", "electronic cigarette starter kits", "electronic cigarette cartridges", "vape pen skins", "batteries", "gift card", "service", "tattoo", "default"]
+        },
+        "herbal_cigarettes": {
+          "display_name": "Herbal Cigarettes",
+          "formula": ["Brand", "Product Line", "Flavor", "Product Type", ",", "Ingredient Claim", "-", "Piece Count", "Sticks", "Count", "Packs"],
+          "attributes": ["Brand", "Number Of Pieces", "Condition"],
+          "aliases": ["herbal cigarette", "herbal cigarettes", "herbal smokes", "non tobacco cigarette", "nicotine free cigarette"],
+          "title_keywords": ["herbal cigarette", "herbal cigarettes", "herbal smokes", "nicotine free cigarette"],
+          "context_keywords": ["herbal", "cigarette", "flavor", "ingredient claim", "sticks", "number of pieces"],
+          "negative_keywords": ["cigarettes", "loose tobacco", "chewing tobacco", "cigars", "electronic cigarettes", "rolling papers", "gift card", "service", "tattoo", "default"]
+        },
+        "hookah_charcoal": {
+          "display_name": "Hookah Charcoal",
+          "formula": ["Brand", "Product Line", "Hookah Charcoal Type", "Product Type", ",", "Shape", "Count", "Pieces"],
+          "attributes": ["Number Of Pieces", "Shape", "Condition"],
+          "aliases": ["hookah charcoal", "hookah coals", "shisha charcoal", "hookah coal", "charcoal for hookah"],
+          "title_keywords": ["hookah charcoal", "hookah coals", "shisha charcoal", "hookah coal"],
+          "context_keywords": ["hookah", "charcoal", "coal", "shape", "pieces", "shisha"],
+          "negative_keywords": ["hookahs", "hookah hoses", "loose tobacco", "lighters", "charcoal grilling products", "grilling charcoal", "gift card", "service", "tattoo", "default"]
+        },
+        "hookah_hoses": {
+          "display_name": "Hookah Hoses",
+          "formula": ["Brand", "Product Line", "Hose Length", "Hookah Hose Type", ",", "Color", "Pattern", "Count", "Pack"],
+          "attributes": ["Condition", "Multipack Quantity", "Age Group"],
+          "aliases": ["hookah hose", "hookah hoses", "shisha hose", "hookah pipe hose", "hookah tubing"],
+          "title_keywords": ["hookah hose", "hookah hoses", "shisha hose", "hookah pipe hose"],
+          "context_keywords": ["hookah", "hose", "hose length", "color", "pattern", "multipack"],
+          "negative_keywords": ["hookahs", "tobacco pipe accessories", "hoses", "garden hose", "air hose", "gift card", "service", "tattoo", "default"]
+        },
+        "hookahs": {
+          "display_name": "Hookahs",
+          "formula": ["Brand", "Number of Hoses", "Size", "Product Line", "Model", "Hookah Type", "Product Type", "Retail Packaging", ",", "Assembled Product Length", "Color", "Pattern"],
+          "attributes": ["Condition", "Size", "Multipack Quantity"],
+          "aliases": ["hookah", "hookahs", "shisha hookah", "water pipe hookah", "hookah pipe"],
+          "title_keywords": ["hookah", "hookahs", "shisha hookah", "water pipe hookah", "hookah pipe"],
+          "context_keywords": ["hookah", "number of hoses", "size", "model", "retail packaging", "assembled product length"],
+          "negative_keywords": ["hookah hoses", "hookah charcoal", "tobacco pipes", "water pipes", "home decor", "gift card", "service", "tattoo", "default"]
+        },
+        "lighters": {
+          "display_name": "Lighters",
+          "formula": ["Brand", "Product Line", "Features", "Power Type", "Lighter Type", "Retail Packaging", ",", "Color", "Pattern", "Piece Count", "Pack"],
+          "attributes": ["Brand", "Count Per Pack", "Lighter Type"],
+          "aliases": ["lighter", "lighters", "cigarette lighter", "utility lighter", "electric lighter"],
+          "title_keywords": ["lighter", "lighters", "cigarette lighter", "utility lighter", "electric lighter"],
+          "context_keywords": ["lighter", "power type", "lighter type", "retail packaging", "count per pack", "smoking"],
+          "negative_keywords": ["electronic cigarettes", "matches", "candles", "torch tools", "lighter accessories", "gift card", "service", "tattoo", "default"]
+        },
+        "loose_tobacco": {
+          "display_name": "Loose Tobacco",
+          "formula": ["Brand", "Product Line", "Flavor", "Pipe Tobacco", "Size"],
+          "attributes": ["Brand", "Condition", "Size"],
+          "aliases": ["loose tobacco", "pipe tobacco", "rolling tobacco", "tobacco pouch", "bagged tobacco"],
+          "title_keywords": ["loose tobacco", "pipe tobacco", "rolling tobacco", "tobacco pouch"],
+          "context_keywords": ["tobacco", "pipe tobacco", "flavor", "size", "loose", "condition"],
+          "negative_keywords": ["chewing tobacco", "herbal cigarettes", "cigarettes", "cigars", "rolling papers", "tobacco pouches", "gift card", "service", "tattoo", "default"]
+        },
+        "rolling_papers": {
+          "display_name": "Rolling Papers",
+          "formula": ["Brand", "Product Line", "Size", "Finish", "Material", "Flavor", "Product Type", ",", "Count", "Count"],
+          "attributes": ["Age Group", "Condition", "Size"],
+          "aliases": ["rolling paper", "rolling papers", "cigarette rolling papers", "tobacco rolling papers", "smoking papers"],
+          "title_keywords": ["rolling paper", "rolling papers", "cigarette rolling papers", "smoking papers"],
+          "context_keywords": ["rolling", "paper", "size", "finish", "material", "flavor"],
+          "negative_keywords": ["cigarette tubes", "cigarette filters", "loose tobacco", "craft paper", "gift wrap paper", "gift card", "service", "tattoo", "default"]
+        },
+        "skins_for_vape_pens": {
+          "display_name": "Skins for Vape Pens",
+          "formula": ["Brand", "Product Line", "Color", "Pattern", "Theme", "Skin", "for", "Compatible Device", ",", "Finish"],
+          "attributes": ["Brand", "Count Per Pack", "Condition"],
+          "aliases": ["vape pen skin", "skins for vape pens", "vape skin", "vape pen wrap", "electronic cigarette skin"],
+          "title_keywords": ["vape pen skin", "skins for vape pens", "vape skin", "vape pen wrap"],
+          "context_keywords": ["vape", "skin", "compatible device", "finish", "theme", "pattern"],
+          "negative_keywords": ["electronic cigarettes", "vape pens", "phone skins", "laptop skins", "tablet skins", "electronic cigarette cartridges", "gift card", "service", "tattoo", "default"]
+        },
+        "tobacco_pipe_pouches_jars": {
+          "display_name": "Tobacco & Pipe Pouches & Jars",
+          "formula": ["Recommended Use = Tobacco Pipe OR Tobacco & Pipe:", "Brand", "Product Line", "Features", "Material", "Recommended Use", "Tobacco & Pipe Pouch & Jar Type", "with", "Accessories Included", ",", "Holding Capacity", "Pipes", "Color"],
+          "attributes": ["Brand", "Tobacco And Pipe Pouch And Jar Type", "Age Group"],
+          "aliases": ["tobacco pipe pouch", "tobacco pipe pouches", "tobacco jar", "pipe jar", "tobacco and pipe pouch"],
+          "title_keywords": ["tobacco pipe pouch", "tobacco pipe pouches", "tobacco jar", "pipe jar", "tobacco and pipe pouch"],
+          "context_keywords": ["tobacco", "pipe", "pouch", "jar", "holding capacity", "recommended use"],
+          "negative_keywords": ["cigarette cases", "cigar cases", "tobacco pipes", "storage jars", "gift boxes", "home decor", "gift card", "service", "tattoo", "default"]
+        },
+        "tobacco_pipe_cleaners": {
+          "display_name": "Tobacco Pipe Cleaners",
+          "formula": ["Brand", "Product Line", "Assembled Product Length", "Bristle Type", "Product Type", "Retail Packaging", "Piece Count", "Piece"],
+          "attributes": ["Number Of Pieces", "Color Category", "Age Group"],
+          "aliases": ["tobacco pipe cleaner", "tobacco pipe cleaners", "pipe cleaner", "smoking pipe cleaner", "bristle pipe cleaner"],
+          "title_keywords": ["tobacco pipe cleaner", "tobacco pipe cleaners", "smoking pipe cleaner", "pipe cleaner"],
+          "context_keywords": ["tobacco pipe", "cleaner", "bristle type", "assembled product length", "number of pieces"],
+          "negative_keywords": ["household pipe cleaners", "craft supplies", "tobacco pipe tools", "cleaning products", "gift card", "service", "tattoo", "default"]
+        },
+        "tobacco_pipe_stands_racks": {
+          "display_name": "Tobacco Pipe Stands & Racks",
+          "formula": ["Brand", "Product Line", "Holding Capacity", "-Pipe", "Features", "Material", "Stand", ",", "Color"],
+          "attributes": ["Holding Capacity", "Age Restriction", "Condition"],
+          "aliases": ["tobacco pipe stand", "tobacco pipe stands", "pipe rack", "pipe stands and racks", "tobacco pipe rack"],
+          "title_keywords": ["tobacco pipe stand", "tobacco pipe stands", "pipe rack", "tobacco pipe rack"],
+          "context_keywords": ["tobacco pipe", "stand", "rack", "holding capacity", "material", "age restriction"],
+          "negative_keywords": ["cigarette holders", "cigar cases", "tobacco pipes", "general racks", "home decor", "gift card", "service", "tattoo", "default"]
+        },
+        "tobacco_pipe_tools": {
+          "display_name": "Tobacco Pipe Tools",
+          "formula": ["Brand", "Product Line", "Material", "Tobacco Pipe Tool Type", ",", "Count", "Piece"],
+          "attributes": ["Brand", "Age Group", "Tobacco Pipe Tool Type"],
+          "aliases": ["tobacco pipe tool", "tobacco pipe tools", "pipe tool", "pipe tamper", "smoking pipe tool"],
+          "title_keywords": ["tobacco pipe tool", "tobacco pipe tools", "pipe tool", "pipe tamper"],
+          "context_keywords": ["tobacco pipe", "tool", "pipe tool type", "material", "count", "piece"],
+          "negative_keywords": ["cigar cutters", "cigarette rolling machines", "tobacco pipe cleaners", "hardware tools", "general tools", "gift card", "service", "tattoo", "default"]
+        },
+        "tobacco_pipes": {
+          "display_name": "Tobacco Pipes",
+          "formula": ["Brand", "Product Line", "Features", "Finish", "Product Type", "Retail Packaging", "with", "Accessory Included", ",", "Tip Style", "Bit"],
+          "attributes": ["Condition", "Count Per Pack", "Brand"],
+          "aliases": ["tobacco pipe", "tobacco pipes", "smoking pipe", "pipe tobacco pipe", "wood tobacco pipe"],
+          "title_keywords": ["tobacco pipe", "tobacco pipes", "smoking pipe", "wood tobacco pipe"],
+          "context_keywords": ["tobacco pipe", "finish", "tip style", "bit", "retail packaging", "accessory included"],
+          "negative_keywords": ["hookahs", "tobacco pipe tools", "cigarette holders", "cigars", "loose tobacco", "water pipes", "gift card", "service", "tattoo", "default"]
+        },
+        "rosin_presses": {
+          "display_name": "Rosin Presses",
+          "formula": ["Brand", "Product Line1", "Features2", "Maximum Pressure", "Product Type", "Retail Packaging1", ",", "Base Plate Dimensions", "Heated Plates"],
+          "attributes": ["Brand", "Age Group", "Condition"],
+          "aliases": ["rosin press", "rosin presses", "rosin heat press", "dab press", "extract press"],
+          "title_keywords": ["rosin press", "rosin presses", "rosin heat press", "dab press", "extract press"],
+          "context_keywords": ["rosin", "press", "maximum pressure", "heated plates", "base plate dimensions", "retail packaging"],
+          "negative_keywords": ["tattoo press", "heat press", "kitchen press", "hydraulic press", "general tools", "gift card", "lottery ticket", "collectible", "service", "retail services", "tattooing supplies", "default"]
+        },
+        "ashtrays": {
+          "display_name": "Ashtrays",
+          "formula": ["Brand", "Product Line", "Features", "Material", "Theme", "Product Type", "Retail Packaging", "with", "Accessories Included", ",", "Color", "Pattern", "Piece Count", "Pack"],
+          "attributes": ["Brand", "Condition", "Age Restriction"],
+          "aliases": ["ashtray", "ashtrays", "cigarette ashtray", "cigar ashtray", "smoking ashtray"],
+          "title_keywords": ["ashtray", "ashtrays", "cigarette ashtray", "cigar ashtray", "smoking ashtray"],
+          "context_keywords": ["ashtray", "smoking", "cigarette", "cigar", "material", "theme", "age restriction"],
+          "negative_keywords": ["cigarette cases", "cigarette holders", "cigar cases", "hookah trays", "home decor trays", "dishes", "gift card", "lottery ticket", "collectible", "service", "tattooing supplies", "default"]
+        },
+        "chewing_tobacco": {
+          "display_name": "Chewing Tobacco",
+          "formula": ["Brand", "Product Line", "Size", "Flavor", "Chewing Tobacco Type", "Product Type", ",", "Ingredient Claim", "Count", "Retail Packaging"],
+          "attributes": ["Brand", "Form", "Multipack Quantity"],
+          "aliases": ["chewing tobacco", "chew tobacco", "smokeless tobacco", "loose chew", "tobacco chew"],
+          "title_keywords": ["chewing tobacco", "chew tobacco", "smokeless tobacco", "tobacco chew", "loose chew"],
+          "context_keywords": ["chewing tobacco", "tobacco", "flavor", "form", "ingredient claim", "multipack"],
+          "negative_keywords": ["loose tobacco", "cigarettes", "cigars", "herbal cigarettes", "rolling papers", "nicotine-free accessories", "gift card", "lottery ticket", "collectible", "service", "tattooing supplies", "default"]
+        },
+        "cigar_cases": {
+          "display_name": "Cigar Cases",
+          "formula": ["Brand", "Product Line", "Features", "Material", "Product Type", "with", "Accessory Included", ",", "Holding Capacity", "Cigars", "Color"],
+          "attributes": ["Number Of Pieces", "Holding Capacity", "Age Restriction"],
+          "aliases": ["cigar case", "cigar cases", "travel cigar case", "cigar holder case", "cigar carrying case"],
+          "title_keywords": ["cigar case", "cigar cases", "travel cigar case", "cigar carrying case"],
+          "context_keywords": ["cigar", "case", "holding capacity", "cigars", "accessory included", "age restriction"],
+          "negative_keywords": ["cigarette cases", "cigar humidors", "tobacco pipe pouches", "tobacco pipe jars", "collectible cases", "gift boxes", "cigarette holders", "service", "gift card", "tattooing supplies", "default"]
+        },
+        "cigar_cutters": {
+          "display_name": "Cigar Cutters",
+          "formula": ["Brand", "Product Line", "Material", "Cigar Cutter Type", "Product Type", "with", "Accessory Included", ",", "Finish", "Color", "Count", "Pack"],
+          "attributes": ["Brand", "Cigar Cutter Type", "Number Of Blades"],
+          "aliases": ["cigar cutter", "cigar cutters", "cigar punch cutter", "guillotine cigar cutter", "v cutter"],
+          "title_keywords": ["cigar cutter", "cigar cutters", "cigar punch cutter", "guillotine cigar cutter", "v cutter"],
+          "context_keywords": ["cigar", "cutter", "cigar cutter type", "number of blades", "finish", "accessory included"],
+          "negative_keywords": ["tobacco pipe tools", "scissors", "knives", "craft cutters", "cigar cases", "general tools", "tattooing supplies", "gift card", "service", "default"]
+        },
+        "cigar_humidor_accessories": {
+          "display_name": "Cigar Humidor Accessories",
+          "formula": ["Brand", "Product Line", "Model", "Features", "Shape", "Cigar Humidor Accessory Type", ",", "Size", "Count", "Retail Packaging"],
+          "attributes": ["Brand", "Count Per Pack", "Cigar Humidor Accessory Type"],
+          "aliases": ["cigar humidor accessory", "cigar humidor accessories", "humidor accessory", "cigar humidifier accessory", "humidor hygrometer"],
+          "title_keywords": ["cigar humidor accessory", "cigar humidor accessories", "humidor accessory", "humidor hygrometer"],
+          "context_keywords": ["cigar", "humidor", "accessory", "model", "shape", "count per pack"],
+          "negative_keywords": ["cigar humidors", "electronic cigar humidifiers", "humidifiers", "hygrometers", "cigar cases", "storage boxes", "gift card", "service", "tattooing supplies", "default"]
+        },
+        "cigar_humidors": {
+          "display_name": "Cigar Humidors",
+          "formula": ["Brand", "Product Line", "Features", "Volume Capacity", "Cigar Humidor Type", ",", "Holding Capacity", "Cigars"],
+          "attributes": ["Cigar Humidor Type", "Power Type", "Brand"],
+          "aliases": ["cigar humidor", "cigar humidors", "humidor", "desktop humidor", "cigar storage humidor"],
+          "title_keywords": ["cigar humidor", "cigar humidors", "humidor", "desktop humidor", "cigar storage humidor"],
+          "context_keywords": ["cigar", "humidor", "volume capacity", "holding capacity", "cigars", "power type"],
+          "negative_keywords": ["electronic cigar humidifiers", "cigar humidor accessories", "cigar cases", "storage boxes", "cabinets", "humidifier", "gift card", "service", "tattooing supplies", "default"]
+        },
+        "cigarette_cases": {
+          "display_name": "Cigarette Cases",
+          "formula": ["Brand", "Product Line", "Features", "Product Type", "with", "Accessories Included", ",", "Color", "Pattern", "Holds", "Holding Capacity"],
+          "attributes": ["Count Per Pack", "Brand", "Holding Capacity"],
+          "aliases": ["cigarette case", "cigarette cases", "cigarette holder case", "smoking case", "cigarette carrying case"],
+          "title_keywords": ["cigarette case", "cigarette cases", "cigarette holder case", "cigarette carrying case"],
+          "context_keywords": ["cigarette", "case", "holding capacity", "holds", "accessories included", "count per pack"],
+          "negative_keywords": ["cigar cases", "cigarette holders", "tobacco pipe pouches", "tobacco pipe jars", "wallet cases", "gift boxes", "ashtray", "gift card", "service", "tattooing supplies", "default"]
+        },
+        "cigarette_filters": {
+          "display_name": "Cigarette Filters",
+          "formula": ["Brand", "Product Line", "Assembled Product Length", "Material", "Cigarette Filter Type", "Product Type", "Retail Packaging", ",", "Piece Count", "Count"],
+          "attributes": ["Condition", "Multipack Quantity", "Age Group"],
+          "aliases": ["cigarette filter", "cigarette filters", "smoking filter", "cigarette filter tips", "filter tips"],
+          "title_keywords": ["cigarette filter", "cigarette filters", "cigarette filter tips", "filter tips"],
+          "context_keywords": ["cigarette", "filter", "filter type", "piece count", "assembled product length", "material"],
+          "negative_keywords": ["cigarette tubes", "rolling papers", "cigarettes", "air filters", "water filters", "loose tobacco", "gift card", "service", "tattooing supplies", "default"]
+        },
+        "cigarette_holders": {
+          "display_name": "Cigarette Holders",
+          "formula": ["Brand", "Product Line", "Features", "Material", "Shape", "Cigarette Holder Type", "with", "Accessory Included", ",", "Color", "Count", "Retail Packaging"],
+          "attributes": ["Cigarette Holder Type", "Age Group", "Count Per Pack"],
+          "aliases": ["cigarette holder", "cigarette holders", "smoking holder", "cigarette mouthpiece", "cigarette extender"],
+          "title_keywords": ["cigarette holder", "cigarette holders", "cigarette mouthpiece", "smoking holder"],
+          "context_keywords": ["cigarette", "holder", "holder type", "shape", "accessory included", "count per pack"],
+          "negative_keywords": ["cigarette cases", "cigar cases", "tobacco pipe stands", "tobacco pipe racks", "tobacco pipes", "ashtray", "gift card", "service", "tattooing supplies", "default"]
+        },
+        "cigarette_rolling_machines_injectors": {
+          "display_name": "Cigarette Rolling Machines & Injectors",
+          "formula": ["Brand", "Product Line", "Power Type", "Cigarette Rolling Machine & Injector Type", ",", "Cigarette Size"],
+          "attributes": ["Brand", "Count Per Pack", "Condition"],
+          "aliases": ["cigarette rolling machine", "cigarette rolling machines", "cigarette injector", "cigarette injectors", "rolling machine"],
+          "title_keywords": ["cigarette rolling machine", "cigarette rolling machines", "cigarette injector", "cigarette injectors"],
+          "context_keywords": ["cigarette", "rolling machine", "injector", "power type", "electric", "cigarette size"],
+          "negative_keywords": ["rolling papers", "cigarette tubes", "cigarettes", "loose tobacco", "tobacco pipe tools", "general tools", "gift card", "service", "tattooing supplies", "default"]
+        },
+        "cigarette_tubes": {
+          "display_name": "Cigarette Tubes",
+          "formula": ["Brand", "Product Line", "Cigarette Tube Type", "Cigarette Size", "Size", "Product Type", ",", "Piece Count", "Count", "Count", "Boxes"],
+          "attributes": ["Condition", "Multipack Quantity", "Age Group"],
+          "aliases": ["cigarette tube", "cigarette tubes", "filter cigarette tubes", "empty cigarette tubes", "tobacco tubes"],
+          "title_keywords": ["cigarette tube", "cigarette tubes", "filter cigarette tubes", "empty cigarette tubes"],
+          "context_keywords": ["cigarette", "tube", "cigarette tube type", "cigarette size", "piece count", "boxes"],
+          "negative_keywords": ["cigarette filters", "rolling papers", "cigarettes", "loose tobacco", "cigarette rolling machines", "gift card", "service", "tattooing supplies", "default"]
+        },
+        "cigarettes": {
+          "display_name": "Cigarettes",
+          "formula": ["Brand", "Cigarette Size", "Product Line", "Case Style", "Retail Packaging"],
+          "attributes": ["Multipack Quantity", "Condition", "Age Group"],
+          "aliases": ["cigarette", "cigarettes", "tobacco cigarettes", "cigarette pack", "cigarette carton"],
+          "title_keywords": ["cigarette", "cigarettes", "tobacco cigarettes", "cigarette pack", "cigarette carton"],
+          "context_keywords": ["cigarette", "cigarette size", "case style", "retail packaging", "multipack", "age group"],
+          "negative_keywords": ["herbal cigarettes", "electronic cigarettes", "cigars", "chewing tobacco", "loose tobacco", "cigarette accessories", "cigarette tubes", "cigarette filters", "gift card", "service", "tattooing supplies", "default"]
+        },
+        "cigars": {
+          "display_name": "Cigars",
+          "formula": ["Brand", "Product Line", "Assembled Product Length", "x", "Thickness", "Shape", "Retail Packaging"],
+          "attributes": ["Shape", "Condition", "Multipack Quantity"],
+          "aliases": ["cigar", "cigars", "tobacco cigar", "cigar pack", "cigar bundle"],
+          "title_keywords": ["cigar", "cigars", "tobacco cigar", "cigar pack", "cigar bundle"],
+          "context_keywords": ["cigar", "shape", "thickness", "assembled product length", "retail packaging", "multipack"],
+          "negative_keywords": ["cigarettes", "herbal cigarettes", "chewing tobacco", "loose tobacco", "cigar cases", "cigar humidors", "cigar cutters", "gift card", "service", "tattooing supplies", "default"]
+        },
+        "electronic_cigar_humidifiers": {
+          "display_name": "Electronic Cigar Humidifiers",
+          "formula": ["Brand", "Product Line", "Model", "Product Type", ",", "Capacity"],
+          "attributes": ["Brand", "Volume Capacity", "Capacity"],
+          "aliases": ["electronic cigar humidifier", "electronic cigar humidifiers", "electric cigar humidifier", "cigar humidifier", "humidor humidifier"],
+          "title_keywords": ["electronic cigar humidifier", "electronic cigar humidifiers", "electric cigar humidifier", "cigar humidifier"],
+          "context_keywords": ["electronic", "cigar", "humidifier", "humidor", "capacity", "volume capacity", "model"],
+          "negative_keywords": ["cigar humidors", "cigar humidor accessories", "electronic cigarettes", "general humidifiers", "home humidifier", "gift card", "service", "tattooing supplies", "default"]
+        },
+        "electronic_cigarette_batteries": {
+          "display_name": "Electronic Cigarette Batteries",
+          "formula": ["Brand", "Product Line", "Model", "Size", "Capacity", "Battery", ",", "Amps", "Count", "Pack"],
+          "attributes": ["Electronic Cigarette Battery Type", "Condition", "Battery Size"],
+          "aliases": ["electronic cigarette battery", "electronic cigarette batteries", "e-cigarette battery", "ecig battery", "vape battery"],
+          "title_keywords": ["electronic cigarette battery", "electronic cigarette batteries", "e-cigarette battery", "ecig battery", "vape battery"],
+          "context_keywords": ["electronic cigarette", "battery", "battery size", "capacity", "amps", "vape", "model"],
+          "negative_keywords": ["electronic cigarettes", "electronic cigarette starter kits", "electronic cigarette cartridges", "general batteries", "chargers", "vape pen skins", "cigar humidifier", "gift card", "service", "tattooing supplies", "default"]
+        }
+      }
+    },
+    "tattooing_supplies": {
+      "display_name": "Tattooing Supplies",
+      "product_types": {
+        "tattoo_ink": {
+          "display_name": "Tattoo Ink",
+          "formula": ["Brand", "Product Line1", "Recommended Use2", "Body Part3", "Tattoo Ink Type4", "Retail Packaging5", "with", "Accessories Included6", ",", "Color7", ",", "Product Volume8", ",", "Condition9", "Total Count10", "Count", ",", "MultiPack Quantity11", "Pack"],
+          "attributes": ["Tattoo Ink Type", "Color", "Brand"],
+          "aliases": ["tattoo ink", "tattoo inks", "tattoo pigment", "professional tattoo ink", "tattoo ink bottle"],
+          "title_keywords": ["tattoo ink", "tattoo inks", "tattoo pigment", "professional tattoo ink"],
+          "context_keywords": ["tattoo", "ink", "color", "product volume", "recommended use", "body part"],
+          "negative_keywords": ["tattoo ink cups", "tattoo guns kits", "tattoo needles", "temporary tattoos", "markers", "craft ink", "paint", "skincare", "medical supplies", "gift card", "service", "smoking", "vaping", "default"]
+        },
+        "tattoo_guns_kits": {
+          "display_name": "Tattoo Guns & Kits",
+          "formula": ["Brand", "Product Line1", "Features2", "Stroke Length3", "Stroke", "Number of Coils4", "Wrap Coil", "Recommended Use2", "Wireless5", "Tattoo Gun & Kit Type6", "Retail Packaging7", "with", "Accessories Included8", ",", "Color9", ",", "Condition10", "Total Count11", "Count", ",", "MultiPack Quantity12", "Pack"],
+          "attributes": ["Tattoo Gun And Kit Type", "Wireless", "Condition"],
+          "aliases": ["tattoo gun", "tattoo guns", "tattoo kit", "tattoo machine kit", "tattoo guns and kits"],
+          "title_keywords": ["tattoo gun", "tattoo guns", "tattoo kit", "tattoo machine kit", "tattoo guns and kits"],
+          "context_keywords": ["tattoo", "gun", "kit", "machine", "stroke", "wrap coil", "wireless"],
+          "negative_keywords": ["tattoo needles", "tattoo ink", "tattoo practice skins", "tattoo ink cups", "tattoo machine parts", "craft tools", "medical supplies", "gift card", "service", "smoking", "vaping", "default"]
+        },
+        "tattoo_needles": {
+          "display_name": "Tattoo Needles",
+          "formula": ["Brand", "Product Line1", "Needle Size2", "Diameter2", "Tattoo Needle Type3", "Retail Packaging4", "with", "Accessories Included5", ",", "Condition6", "Total Count7", "Count", ",", "MultiPack Quantity8", "Pack"],
+          "attributes": ["Tattoo Needle Type", "Brand", "Size"],
+          "aliases": ["tattoo needle", "tattoo needles", "tattoo cartridge needle", "tattoo needle cartridges", "tattoo machine needles"],
+          "title_keywords": ["tattoo needle", "tattoo needles", "tattoo cartridge needle", "tattoo needle cartridges"],
+          "context_keywords": ["tattoo", "needle", "needle size", "diameter", "tattoo needle type", "count"],
+          "negative_keywords": ["tattoo guns kits", "sewing needles", "craft needles", "medical needles", "tattoo ink", "tattoo ink cups", "gift card", "service", "smoking", "vaping", "default"]
+        },
+        "tattoo_practice_skins": {
+          "display_name": "Tattoo Practice Skins",
+          "formula": ["Brand", "Product Line1", "Features2", "Material3", "Body Part4", "Tattoo Practice Skin", "Retail Packaging5", "with", "Accessories Included6", ",", "Skin Tone7", "Skin Tone", ",", "Condition8", "Total Count9", "Count", ",", "MultiPack Quantity10", "Pack"],
+          "attributes": ["Brand", "Material", "Number Of Pieces"],
+          "aliases": ["tattoo practice skin", "tattoo practice skins", "practice tattoo skin", "fake tattoo skin", "tattoo training skin"],
+          "title_keywords": ["tattoo practice skin", "tattoo practice skins", "practice tattoo skin", "fake tattoo skin"],
+          "context_keywords": ["tattoo", "practice skin", "skin tone", "material", "body part", "training"],
+          "negative_keywords": ["tattoo ink", "tattoo guns kits", "tattoo needles", "artificial skin products", "skincare products", "medical supplies", "craft supplies", "gift card", "service", "smoking", "vaping", "default"]
+        },
+        "tattoo_ink_cups": {
+          "display_name": "Tattoo Ink Cups",
+          "formula": ["Brand", "Product Line1", "Tattoo Ink Cup/Tattoo Ink Cups2", "Retail Packaging3", "with", "Accessories Included4", ",", "Size5", ",", "Condition6", "Total Count7", "Count", ",", "MultiPack Quantity8", "Pack"],
+          "attributes": ["Size", "Count Per Pack", "Brand"],
+          "aliases": ["tattoo ink cup", "tattoo ink cups", "ink cup", "tattoo pigment cup", "disposable tattoo ink cups"],
+          "title_keywords": ["tattoo ink cup", "tattoo ink cups", "tattoo pigment cup", "disposable tattoo ink cups"],
+          "context_keywords": ["tattoo", "ink cup", "size", "count per pack", "retail packaging", "accessories included"],
+          "negative_keywords": ["tattoo ink", "cups drinkware", "drinkware", "tattoo kits", "disposable cups", "medical cups", "craft cups", "gift card", "service", "smoking", "vaping", "default"]
+        }
+      }
+    },
+    "in_store_signing": {
+      "display_name": "In-Store Signing",
+      "product_types": {
+        "in_store_signage": {
+          "display_name": "In-Store Signage",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Count Per Pack", "Multipack Quantity", "Brand"],
+          "aliases": ["in-store signage", "in store signage", "store signage", "retail signage", "in-store sign"],
+          "title_keywords": ["in-store signage", "in store signage", "store signage", "retail signage", "in-store sign"],
+          "context_keywords": ["signage", "in-store", "store", "retail", "count per pack", "multipack"],
+          "negative_keywords": ["signs", "banners", "printed materials", "party banners", "gift card", "lottery ticket", "collectible", "service", "ticket", "smoking", "vaping", "tattoo"]
+        }
+      }
+    },
+    "lottery_tickets": {
+      "display_name": "Lottery Tickets",
+      "product_types": {
+        "instant_lottery_tickets": {
+          "display_name": "Instant Lottery Tickets",
+          "formula": ["Brand", "Condition", "Product/Type", "Warranty URL", "Net Content UOM", "Warranty Info", "Net Content"],
+          "attributes": ["Warranty Url", "Condition", "Product Net Content Uom"],
+          "aliases": ["instant lottery ticket", "instant lottery tickets", "scratch ticket", "scratch tickets", "scratch-off lottery ticket"],
+          "title_keywords": ["instant lottery ticket", "instant lottery tickets", "scratch ticket", "scratch-off lottery ticket", "scratch off ticket"],
+          "context_keywords": ["lottery", "instant", "scratch", "ticket", "warranty url", "net content uom", "condition"],
+          "negative_keywords": ["draw lottery tickets", "lottery redemption", "gift card", "entertainment ticket", "money services", "service", "collectible", "default", "smoking", "vaping", "tattoo"]
+        },
+        "draw_lottery_tickets": {
+          "display_name": "Draw Lottery Tickets",
+          "formula": ["Brand", "Condition", "Product/Type", "Net Content", "Net Content UOM"],
+          "attributes": ["Product Net Content Quantity", "Product Net Content Uom", "Condition"],
+          "aliases": ["draw lottery ticket", "draw lottery tickets", "lottery draw ticket", "draw game ticket", "lotto ticket"],
+          "title_keywords": ["draw lottery ticket", "draw lottery tickets", "lottery draw ticket", "lotto ticket", "draw game ticket"],
+          "context_keywords": ["lottery", "draw", "ticket", "lotto", "net content", "net content uom", "condition"],
+          "negative_keywords": ["instant lottery tickets", "scratch ticket", "lottery redemption", "gift card", "entertainment ticket", "service", "collectible", "default", "smoking", "vaping", "tattoo"]
+        },
+        "lottery_ticket_redemptions": {
+          "display_name": "Lottery Ticket Redemptions",
+          "formula": ["Brand", "Condition", "Product/Type", "Net Content", "Net Content UOM", "Warranty Info", "Warranty"],
+          "attributes": ["Product Net Content Quantity", "Product Net Content Uom", "Warranty Information"],
+          "aliases": ["lottery ticket redemption", "lottery ticket redemptions", "lottery redemption", "ticket redemption", "lottery payout"],
+          "title_keywords": ["lottery ticket redemption", "lottery ticket redemptions", "lottery redemption", "ticket redemption", "lottery payout"],
+          "context_keywords": ["lottery", "redemption", "ticket", "payout", "warranty information", "net content"],
+          "negative_keywords": ["instant lottery tickets", "draw lottery tickets", "gift card", "entertainment ticket", "money services", "service", "collectible", "default", "smoking", "vaping", "tattoo"]
+        }
+      }
+    },
+    "other_services": {
+      "display_name": "Other Services",
+      "product_types": {
+        "money_services": {
+          "display_name": "Money Services",
+          "formula": ["Brand", "Product/Type"],
+          "attributes": ["Brand", "Multipack Quantity", "Warranty"],
+          "aliases": ["money service", "money services", "money transfer service", "financial service", "bill pay service"],
+          "title_keywords": ["money service", "money services", "money transfer", "bill pay", "financial service"],
+          "context_keywords": ["service", "money", "transfer", "bill pay", "warranty", "multipack"],
+          "negative_keywords": ["gift card", "lottery ticket", "wireless service income", "retail services", "collectible", "physical product", "ticket", "smoking", "vaping", "tattoo", "default"]
+        },
+        "optical_services": {
+          "display_name": "Optical Services",
+          "formula": ["Brand", "Product/Type", "Net Content", "Net Content UOM", "Multipack Quantity", "Count Per Pack", "Number of Pieces"],
+          "attributes": ["Product Net Content Quantity", "Product Net Content Uom", "Multipack Quantity"],
+          "aliases": ["optical service", "optical services", "vision service", "eye exam service", "optical retail service"],
+          "title_keywords": ["optical service", "optical services", "vision service", "eye exam service", "optical retail service"],
+          "context_keywords": ["optical", "vision", "service", "net content", "multipack", "count per pack"],
+          "negative_keywords": ["eyewear", "contact lenses", "optical accessories", "retail services", "gift card", "lottery ticket", "collectible", "physical product", "ticket", "smoking", "vaping", "tattoo"]
+        },
+        "on_site_automotive_services": {
+          "display_name": "On-site Automotive Services",
+          "formula": ["Brand", "Product/Type", "Count Per Pack", "Net Content", "Net Content UOM", "Warranty Info", "Multipack Quantity"],
+          "attributes": ["Count Per Pack", "Product Net Content Quantity", "Product Net Content Uom"],
+          "aliases": ["on-site automotive service", "on-site automotive services", "onsite automotive service", "auto service", "automotive service"],
+          "title_keywords": ["on-site automotive service", "on-site automotive services", "onsite automotive service", "automotive service"],
+          "context_keywords": ["automotive", "service", "on-site", "onsite", "warranty info", "net content", "count per pack"],
+          "negative_keywords": ["off-site automotive service", "auto parts", "retail services", "gift card", "lottery ticket", "collectible", "physical product", "ticket", "smoking", "vaping", "tattoo"]
+        },
+        "wireless_service_income": {
+          "display_name": "Wireless Service Income",
+          "formula": ["Brand", "Product/Type", "Warranty", "Net Content UOM", "Net Content", "Count Per Pack", "Number of Pieces"],
+          "attributes": ["Has Written Warranty", "Product Net Content Uom", "Product Net Content Quantity"],
+          "aliases": ["wireless service income", "wireless service", "mobile service income", "cellular service income", "phone service income"],
+          "title_keywords": ["wireless service income", "wireless service", "mobile service income", "cellular service income"],
+          "context_keywords": ["wireless", "service", "income", "warranty", "net content", "count per pack"],
+          "negative_keywords": ["wireless plan", "phone", "prepaid refill", "retail services", "gift card", "lottery ticket", "collectible", "physical product", "ticket", "smoking", "vaping", "tattoo"]
+        }
+      }
+    },
+    "photography_services": {
+      "display_name": "Photography Services",
+      "product_types": {
+        "photo_services": {
+          "display_name": "Photo Services",
+          "formula": ["Brand", "Product/Type", "Count Per Pack", "Number of Pieces", "Warranty Info"],
+          "attributes": ["Brand", "Count Per Pack", "Number Of Pieces"],
+          "aliases": ["photo service", "photo services", "photography service", "photo processing service", "photo print service"],
+          "title_keywords": ["photo service", "photo services", "photography service", "photo processing service", "photo print service"],
+          "context_keywords": ["photo", "photography", "service", "count per pack", "number of pieces", "warranty info"],
+          "negative_keywords": ["photography equipment", "photo prints", "photo mints", "retail services", "gift card", "lottery ticket", "collectible", "physical product", "ticket", "smoking", "vaping", "tattoo"]
+        }
+      }
+    },
+    "tickets": {
+      "display_name": "Tickets",
+      "product_types": {
+        "entertainment_tickets": {
+          "display_name": "Entertainment Tickets",
+          "formula": ["Entertainment Ticket Type"],
+          "attributes": ["Count Per Pack", "Entertainment Ticket Type", "Condition"],
+          "aliases": ["entertainment ticket", "entertainment tickets", "event ticket", "event tickets", "admission ticket"],
+          "title_keywords": ["entertainment ticket", "entertainment tickets", "event ticket", "admission ticket", "show ticket"],
+          "context_keywords": ["entertainment", "ticket", "event", "admission", "count per pack", "condition"],
+          "negative_keywords": ["lottery ticket", "gift card", "event merchandise", "digital content access", "collectible", "service", "prepaid gaming card", "default", "smoking", "vaping", "tattoo"]
+        }
+      }
+    },
+    "default_ptg": {
+      "display_name": "default ptg",
+      "product_types": {
+        "default": {
+          "display_name": "default",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Count Per Pack", "Condition"],
+          "aliases": ["default", "default ptg", "everything else default", "uncategorized", "fallback"],
+          "title_keywords": ["default ptg", "everything else default", "uncategorized default", "fallback product"],
+          "context_keywords": ["default", "fallback", "uncategorized", "everything else", "generic"],
+          "negative_keywords": ["autographed collectibles", "coins", "collectible buildings", "collectible ephemera", "photo mints", "precious metals", "trading cards", "gift card", "prepaid gaming card", "lottery ticket", "money services", "optical services", "automotive services", "wireless service", "photo services", "entertainment tickets", "customized cake order", "in-store signage", "smoking", "vaping", "tattoo"]
+        }
+      }
+    }
+  }
+}

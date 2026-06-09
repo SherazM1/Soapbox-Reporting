@@ -1,0 +1,810 @@
+{
+  "category": "Occasion & Seasonal",
+  "status": "complete",
+  "source": "pn-guide-occasion-seasonal.pdf",
+  "families": {
+    "decorations_favors": {
+      "display_name": "Decorations & Favors",
+      "product_types": {
+        "gift_wrap_paper": {
+          "display_name": "Gift Wrap Paper",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Gift Wrap Paper Type"],
+          "attributes": ["Gift Wrap Paper Type", "Brand", "Material"],
+          "aliases": ["gift wrap paper", "wrapping paper", "gift wrapping paper", "holiday wrapping paper", "birthday wrapping paper"],
+          "title_keywords": ["gift wrap paper", "wrapping paper", "gift wrapping paper", "holiday wrapping paper", "christmas wrapping paper"],
+          "context_keywords": ["gift wrap", "wrapping", "paper", "roll", "sheet", "holiday", "birthday", "material"],
+          "negative_keywords": ["gift wrap tissue", "tissue paper", "gift tag", "gift tags", "gift bag", "gift box", "ribbons and bows", "cellophane", "other gift wrapping supplies", "party supplies", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "photo_props": {
+          "display_name": "Photo Props",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Assembled Product Length", "Condition"],
+          "aliases": ["photo prop", "photo props", "photo booth props", "party photo props", "selfie props"],
+          "title_keywords": ["photo prop", "photo props", "photo booth props", "party photo props", "selfie props"],
+          "context_keywords": ["photo", "props", "photo booth", "party", "selfie", "birthday", "wedding", "assembled product length"],
+          "negative_keywords": ["cardboard stand-up", "cardboard standup", "scene setter", "party favors", "costume", "costume accessories", "party banner", "wall decor", "toy", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "head_boppers": {
+          "display_name": "Head Boppers",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Material", "Assembled Product Width", "Brand"],
+          "aliases": ["head bopper", "head boppers", "party head bopper", "headband bopper", "novelty head bopper"],
+          "title_keywords": ["head bopper", "head boppers", "party head bopper", "headband bopper", "novelty head bopper"],
+          "context_keywords": ["head", "bopper", "headband", "party", "novelty", "birthday", "material", "assembled product width"],
+          "negative_keywords": ["party hat", "party hats", "costume accessories", "costume", "headband", "birthday sash", "birthday sashes", "apparel", "party favors", "toy", "funeral", "trophy", "award certificate"]
+        },
+        "easter_eggs": {
+          "display_name": "Easter Eggs",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Material", "Easter Egg Type"],
+          "aliases": ["easter egg", "easter eggs", "plastic easter eggs", "fill eggs", "easter egg set"],
+          "title_keywords": ["easter egg", "easter eggs", "plastic easter eggs", "fillable easter eggs", "easter egg set"],
+          "context_keywords": ["easter", "egg", "fill", "hunt", "basket", "spring", "material", "easter egg type"],
+          "negative_keywords": ["party favors", "easter decoration", "toy", "toys", "basket", "candy", "gift basket", "ornament", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "party_noisemakers": {
+          "display_name": "Party Noisemakers",
+          "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Party Noisemaker Type"],
+          "attributes": ["Brand", "Condition", "Party Noisemaker Type"],
+          "aliases": ["party noisemaker", "party noisemakers", "party horn", "party horns", "noise maker", "noisemaker"],
+          "title_keywords": ["party noisemaker", "party noisemakers", "party horn", "party horns", "noise maker", "noisemaker"],
+          "context_keywords": ["party", "noise", "horn", "celebration", "new year", "birthday", "party noisemaker type"],
+          "negative_keywords": ["confetti popper", "confetti poppers", "party favors", "musical instrument", "horn instrument", "fireworks", "firecracker", "glow sticks", "toy", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "cellophane": {
+          "display_name": "Cellophane",
+          "formula": ["Brand", "Product Line", "Form", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Assembled Product Length", "Form", "Count Per Pack"],
+          "aliases": ["cellophane", "cellophane wrap", "cellophane roll", "cello wrap", "clear cellophane"],
+          "title_keywords": ["cellophane", "cellophane wrap", "cellophane roll", "cello wrap", "clear cellophane"],
+          "context_keywords": ["cellophane", "wrap", "gift", "basket", "clear", "form", "assembled product length"],
+          "negative_keywords": ["gift wrap paper", "gift wrap tissue", "plastic wrap", "food wrap", "other gift wrapping supplies", "wrapping paper", "tissue paper", "gift bag", "gift box", "kitchenware", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "party_lanterns_hanging_pom_poms": {
+          "display_name": "Party Lanterns & Hanging Pom Poms",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Party Lanterns And Hanging Pom Pom Type"],
+          "attributes": ["Material", "Brand", "Party Lanterns And Hanging Pom Pom Type"],
+          "aliases": ["party lantern", "party lanterns", "hanging pom pom", "hanging pom poms", "paper lantern", "tissue pom pom"],
+          "title_keywords": ["party lantern", "party lanterns", "hanging pom pom", "hanging pom poms", "paper lantern", "tissue pom poms"],
+          "context_keywords": ["party", "lantern", "pom pom", "hanging", "paper", "decoration", "material"],
+          "negative_keywords": ["holiday lighting", "garland", "party banner", "scene setter", "hanging decoration", "mirror ball", "light bulb", "party decoration kit", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "mirror_balls": {
+          "display_name": "Mirror Balls",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Weight"],
+          "attributes": ["Color Category", "Assembled Product Weight", "Power Type"],
+          "aliases": ["mirror ball", "mirror balls", "disco ball", "disco balls", "party mirror ball"],
+          "title_keywords": ["mirror ball", "mirror balls", "disco ball", "disco balls", "party mirror ball"],
+          "context_keywords": ["mirror", "disco", "ball", "party", "dance", "power type", "assembled product weight"],
+          "negative_keywords": ["holiday lighting", "party lantern", "disco light", "ornament", "decorative ball", "christmas ornament", "party decoration kit", "toy", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "decorative_nutcrackers": {
+          "display_name": "Decorative Nutcrackers",
+          "formula": ["Brand", "Condition", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Material", "Condition"],
+          "aliases": ["decorative nutcracker", "decorative nutcrackers", "christmas nutcracker", "holiday nutcracker", "nutcracker figure"],
+          "title_keywords": ["decorative nutcracker", "decorative nutcrackers", "christmas nutcracker", "holiday nutcracker", "nutcracker figure"],
+          "context_keywords": ["nutcracker", "christmas", "holiday", "decorative", "figure", "material", "condition"],
+          "negative_keywords": ["ornament", "ornaments", "figurine", "christmas decoration", "toy", "snow globe", "nativity scene", "home decor", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "christmas_tree_stands": {
+          "display_name": "Christmas Tree Stands",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Christmas Tree Stand Type"],
+          "attributes": ["Christmas Tree Stand Type", "Material", "Brand"],
+          "aliases": ["christmas tree stand", "christmas tree stands", "tree stand", "tree stands", "artificial tree stand"],
+          "title_keywords": ["christmas tree stand", "christmas tree stands", "tree stand", "tree stands", "artificial tree stand"],
+          "context_keywords": ["christmas", "tree", "stand", "base", "holder", "material", "christmas tree stand type"],
+          "negative_keywords": ["christmas tree", "christmas trees", "christmas tree skirt", "tree skirt", "christmas tree topper", "tree topper", "tree accessories", "wreath", "ornament", "holiday lighting", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "pinatas": {
+          "display_name": "Pinatas",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Pinata Type"],
+          "attributes": ["Pinata Type", "Brand", "Material"],
+          "aliases": ["pinata", "pinatas", "party pinata", "birthday pinata", "pull string pinata"],
+          "title_keywords": ["pinata", "pinatas", "party pinata", "birthday pinata", "pull string pinata"],
+          "context_keywords": ["pinata", "party", "birthday", "candy", "pull string", "material", "pinata type"],
+          "negative_keywords": ["party favors", "party decorations", "candy", "game", "games", "toy", "gift bag", "party supply set", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "holiday_lighting": {
+          "display_name": "Holiday Lighting",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Holiday Lighting Style"],
+          "attributes": ["Holiday Lighting Style", "Light Bulb Color", "Brand"],
+          "aliases": ["holiday lighting", "holiday lights", "christmas lights", "string lights", "seasonal lights"],
+          "title_keywords": ["holiday lighting", "holiday lights", "christmas lights", "string lights", "seasonal lights", "light set"],
+          "context_keywords": ["holiday", "lighting", "lights", "christmas", "light bulb color", "string", "holiday lighting style"],
+          "negative_keywords": ["christmas tree", "wreath", "party lantern", "mirror ball", "light bulb", "lamp", "outdoor lighting", "tree topper", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "christmas_stocking_holders": {
+          "display_name": "Christmas Stocking Holders",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Christmas Stocking Holder Type"],
+          "attributes": ["Christmas Stocking Holder Type", "Material", "Count Per Pack"],
+          "aliases": ["christmas stocking holder", "christmas stocking holders", "stocking holder", "stocking holders", "mantel stocking holder"],
+          "title_keywords": ["christmas stocking holder", "christmas stocking holders", "stocking holder", "stocking holders", "mantel stocking holder"],
+          "context_keywords": ["christmas", "stocking", "holder", "mantel", "hook", "material", "count per pack"],
+          "negative_keywords": ["christmas stocking", "christmas stockings", "stocking hook", "mantel decor", "christmas tree accessories", "tree topper", "ornament", "holiday lighting", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "cardboard_stand_ups": {
+          "display_name": "Cardboard Stand-Ups",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Cardboard Stand Up Type"],
+          "attributes": ["Brand", "Material", "Cardboard Stand Up Type"],
+          "aliases": ["cardboard stand-up", "cardboard stand-ups", "cardboard standup", "cardboard standups", "life size cutout", "standee"],
+          "title_keywords": ["cardboard stand-up", "cardboard stand-ups", "cardboard standup", "life size cutout", "standee"],
+          "context_keywords": ["cardboard", "stand up", "standup", "cutout", "party", "photo", "material"],
+          "negative_keywords": ["scene setter", "party banner", "photo props", "wall decor", "backdrop", "party decoration kit", "yard inflatable", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "mezuzahs": {
+          "display_name": "Mezuzahs",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Material", "Assembled Product Length", "Brand"],
+          "aliases": ["mezuzah", "mezuzahs", "mezuzah case", "mezuzah cases", "judaica mezuzah"],
+          "title_keywords": ["mezuzah", "mezuzahs", "mezuzah case", "mezuzah cases", "judaica mezuzah"],
+          "context_keywords": ["mezuzah", "judaica", "religious", "doorpost", "case", "material", "assembled product length"],
+          "negative_keywords": ["megillah case", "menorah", "religious decor", "home hardware", "door hardware", "wall decor", "gift box", "home decor", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "gift_wrap_tissue": {
+          "display_name": "Gift Wrap Tissue",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Gift Wrap Tissue Type"],
+          "attributes": ["Gift Wrap Tissue Type", "Brand", "Material"],
+          "aliases": ["gift wrap tissue", "tissue paper", "gift tissue", "wrapping tissue", "gift tissue paper"],
+          "title_keywords": ["gift wrap tissue", "tissue paper", "gift tissue", "wrapping tissue", "gift tissue paper"],
+          "context_keywords": ["gift", "wrap", "tissue", "paper", "packaging", "gift bag filler", "material"],
+          "negative_keywords": ["gift wrap paper", "wrapping paper", "cellophane", "gift bag", "gift box", "gift tag", "other gift wrapping supplies", "ribbons and bows", "party supplies", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "helium_tanks": {
+          "display_name": "Helium Tanks",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Count Per Pack", "Brand", "Volume Capacity"],
+          "aliases": ["helium tank", "helium tanks", "balloon helium tank", "portable helium tank", "helium cylinder"],
+          "title_keywords": ["helium tank", "helium tanks", "balloon helium tank", "portable helium tank", "helium cylinder"],
+          "context_keywords": ["helium", "tank", "balloon", "inflate", "volume capacity", "party", "count per pack"],
+          "negative_keywords": ["balloons", "balloon pump", "balloon pumps", "balloon accessories", "compressed gas", "propane tank", "air tank", "balloon holder", "balloon weight", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "party_glasses": {
+          "display_name": "Party Glasses",
+          "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Condition", "Brand", "Assembled Product Width"],
+          "aliases": ["party glasses", "novelty party glasses", "birthday glasses", "new years glasses", "party eyeglasses"],
+          "title_keywords": ["party glasses", "novelty party glasses", "birthday glasses", "new years glasses", "party eyeglasses"],
+          "context_keywords": ["party", "glasses", "novelty", "celebration", "birthday", "new year", "assembled product width"],
+          "negative_keywords": ["costume glasses", "drinking glasses", "sunglasses", "reading glasses", "party favors", "eyeglasses", "goggles", "costume accessories", "costume", "kitchenware", "funeral", "trophy", "award certificate"]
+        },
+        "gift_tags": {
+          "display_name": "Gift Tags",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Gift Tag Type"],
+          "attributes": ["Gift Tag Type", "Brand", "Material"],
+          "aliases": ["gift tag", "gift tags", "present tag", "present tags", "gift label", "gift labels"],
+          "title_keywords": ["gift tag", "gift tags", "present tag", "gift label", "holiday gift tag"],
+          "context_keywords": ["gift", "tag", "label", "wrapping", "holiday", "material", "gift tag type"],
+          "negative_keywords": ["gift bag", "gift box", "gift wrap paper", "gift wrap tissue", "table place card", "greeting card", "other gift wrapping supplies", "printed invitation", "ribbons and bows", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "party_bags": {
+          "display_name": "Party Bags",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Material", "Brand", "Multipack Quantity"],
+          "aliases": ["party bag", "party bags", "favor bag", "favor bags", "treat bag", "loot bag"],
+          "title_keywords": ["party bag", "party bags", "favor bag", "favor bags", "treat bag", "loot bag"],
+          "context_keywords": ["party", "bag", "favor", "treat", "birthday", "multipack", "material"],
+          "negative_keywords": ["gift bag", "gift bags", "party favor cup", "party favors", "treat bags", "gift wrap", "gift box", "party supply set", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "balloon_tie_tools": {
+          "display_name": "Balloon Tie Tools",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Weight"],
+          "attributes": ["Assembled Product Weight", "Material", "Assembled Product Width"],
+          "aliases": ["balloon tie tool", "balloon tie tools", "balloon tying tool", "balloon knot tool", "balloon tying device"],
+          "title_keywords": ["balloon tie tool", "balloon tie tools", "balloon tying tool", "balloon knot tool", "balloon tying device"],
+          "context_keywords": ["balloon", "tie", "tool", "tying", "knot", "party", "assembled product weight"],
+          "negative_keywords": ["balloon ribbons", "balloon holders", "balloon weights", "balloon pumps", "helium tanks", "balloons", "party supplies", "tool kit", "costume", "funeral", "trophy", "award certificate", "hardware"]
+        },
+        "nativity_scenes": {
+          "display_name": "Nativity Scenes",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Nativity Scene Type"],
+          "attributes": ["Nativity Scene Type", "Assembled Product Length", "Material"],
+          "aliases": ["nativity scene", "nativity scenes", "christmas nativity", "nativity set", "manger scene"],
+          "title_keywords": ["nativity scene", "nativity scenes", "christmas nativity", "nativity set", "manger scene"],
+          "context_keywords": ["nativity", "christmas", "manger", "religious", "holiday", "material", "nativity scene type"],
+          "negative_keywords": ["decorative nutcracker", "snow globe", "ornament", "menorah", "religious decor", "figurine", "christmas tree", "home decor", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "confetti": {
+          "display_name": "Confetti",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Confetti Type"],
+          "attributes": ["Confetti Type", "Brand", "Material"],
+          "aliases": ["confetti", "party confetti", "table confetti", "foil confetti", "paper confetti"],
+          "title_keywords": ["confetti", "party confetti", "table confetti", "foil confetti", "paper confetti"],
+          "context_keywords": ["confetti", "party", "table", "celebration", "birthday", "wedding", "material"],
+          "negative_keywords": ["confetti popper", "confetti poppers", "party streamer", "party favors", "table decor", "glitter", "craft supplies", "party noisemaker", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "snow_globes": {
+          "display_name": "Snow Globes",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Snow Globe Type"],
+          "attributes": ["Snow Globe Type", "Material", "Brand"],
+          "aliases": ["snow globe", "snow globes", "christmas snow globe", "holiday snow globe", "water globe"],
+          "title_keywords": ["snow globe", "snow globes", "christmas snow globe", "holiday snow globe", "water globe"],
+          "context_keywords": ["snow", "globe", "christmas", "holiday", "water globe", "material", "snow globe type"],
+          "negative_keywords": ["ornament", "decorative nutcracker", "nativity scene", "figurine", "decorative ball", "home decor", "toy", "holiday lighting", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "christmas_stockings": {
+          "display_name": "Christmas Stockings",
+          "formula": ["Brand", "Product Line", "Age Group", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Christmas Stocking Type"],
+          "attributes": ["Brand", "Christmas Stocking Type", "Age Group"],
+          "aliases": ["christmas stocking", "christmas stockings", "holiday stocking", "santa stocking", "xmas stocking"],
+          "title_keywords": ["christmas stocking", "christmas stockings", "holiday stocking", "santa stocking", "xmas stocking"],
+          "context_keywords": ["christmas", "stocking", "holiday", "mantel", "age group", "christmas stocking type"],
+          "negative_keywords": ["christmas stocking holder", "stocking holder", "gift bag", "stockings apparel", "socks", "christmas decoration", "tree skirt", "ornament", "costume", "funeral", "trophy", "award certificate", "apparel"]
+        },
+        "other_gift_wrapping_supplies": {
+          "display_name": "Other Gift Wrapping Supplies",
+          "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Net Content UOM"],
+          "attributes": ["Product Net Content Uom", "Product Net Content Quantity", "Condition"],
+          "aliases": ["other gift wrapping supplies", "gift wrapping supplies", "gift wrap supplies", "gift wrapping accessory", "wrapping supplies"],
+          "title_keywords": ["other gift wrapping supplies", "gift wrapping supplies", "gift wrap supplies", "wrapping supplies", "gift wrapping accessory"],
+          "context_keywords": ["gift", "wrapping", "supplies", "accessory", "net content", "condition", "packaging"],
+          "negative_keywords": ["gift wrap paper", "gift wrap tissue", "gift tags", "gift bags", "gift boxes", "ribbons and bows", "cellophane", "wrapping paper", "tissue paper", "party supplies", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "birthday_candles": {
+          "display_name": "Birthday Candles",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Birthday Candle Type"],
+          "attributes": ["Brand", "Birthday Candle Type", "Count Per Pack"],
+          "aliases": ["birthday candle", "birthday candles", "cake candle", "cake candles", "number candle", "birthday cake candle"],
+          "title_keywords": ["birthday candle", "birthday candles", "cake candle", "cake candles", "number candle", "birthday cake candle"],
+          "context_keywords": ["birthday", "candle", "cake", "number", "party", "count per pack", "birthday candle type"],
+          "negative_keywords": ["candles", "cake topper", "party favors", "holiday lighting", "menorah candles", "home fragrance", "kitchenware", "toy", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "christmas_tree_skirts": {
+          "display_name": "Christmas Tree Skirts",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Christmas Tree Skirt Type"],
+          "attributes": ["Christmas Tree Skirt Type", "Material", "Assembled Product Length"],
+          "aliases": ["christmas tree skirt", "christmas tree skirts", "tree skirt", "tree skirts", "holiday tree skirt"],
+          "title_keywords": ["christmas tree skirt", "christmas tree skirts", "tree skirt", "tree skirts", "holiday tree skirt"],
+          "context_keywords": ["christmas", "tree", "skirt", "holiday", "material", "assembled product length", "christmas tree skirt type"],
+          "negative_keywords": ["christmas tree", "christmas trees", "christmas tree stand", "tree stand", "christmas tree topper", "tree topper", "rug", "rugs", "stocking", "wreath", "ornament", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "balloon_pumps": {
+          "display_name": "Balloon Pumps",
+          "formula": ["Brand", "Product Line", "Power Type", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Power Type", "Material", "Condition"],
+          "aliases": ["balloon pump", "balloon pumps", "balloon air pump", "electric balloon pump", "manual balloon pump"],
+          "title_keywords": ["balloon pump", "balloon pumps", "balloon air pump", "electric balloon pump", "manual balloon pump"],
+          "context_keywords": ["balloon", "pump", "air", "inflate", "electric", "manual", "power type"],
+          "negative_keywords": ["helium tank", "helium tanks", "balloon tie tool", "balloons", "air pump", "bike pump", "balloon holder", "balloon weight", "party supplies", "costume", "funeral", "trophy", "award certificate", "hardware"]
+        },
+        "firecrackers_fireworks": {
+          "display_name": "Firecrackers & Fireworks",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Firecracker And Firework Type"],
+          "attributes": ["Brand", "Firecracker And Firework Type", "Condition"],
+          "aliases": ["firecracker", "firecrackers", "firework", "fireworks", "consumer fireworks", "party fireworks"],
+          "title_keywords": ["firecracker", "firecrackers", "firework", "fireworks", "fireworks pack", "firecracker pack"],
+          "context_keywords": ["firecracker and firework type", "celebration", "new year", "fourth of july", "patriotic", "outdoor", "count pack"],
+          "negative_keywords": ["glow sticks", "sparkler", "sparklers", "party popper", "confetti popper", "party favors", "general party supplies", "other party supplies", "costume", "funeral", "casket", "urn", "trophy", "award certificate", "apparel", "toy", "jewelry", "home decor", "holiday lighting"]
+        },
+        "party_streamers": {
+          "display_name": "Party Streamers",
+          "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Count Per Pack"],
+          "aliases": ["party streamer", "party streamers", "crepe streamer", "crepe streamers", "streamer roll", "streamers"],
+          "title_keywords": ["party streamer", "party streamers", "crepe streamer", "crepe paper streamer", "streamer roll", "streamers"],
+          "context_keywords": ["party", "streamer", "crepe", "decoration", "birthday", "celebration", "count per pack"],
+          "negative_keywords": ["party banner", "party banners", "garland", "garlands", "ribbon", "ribbons", "bows", "scene setter", "party decoration kit", "party supplies", "balloon ribbon", "gift wrap", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "menorahs": {
+          "display_name": "Menorahs",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Material", "Brand", "Condition"],
+          "aliases": ["menorah", "menorahs", "hanukkah menorah", "chanukah menorah", "hanukkiah"],
+          "title_keywords": ["menorah", "menorahs", "hanukkah menorah", "chanukah menorah", "hanukkiah"],
+          "context_keywords": ["hanukkah", "chanukah", "judaica", "candle", "holiday", "material", "religious"],
+          "negative_keywords": ["candle holder", "candle holders", "holiday lighting", "nativity scene", "mezuzah", "megillah case", "general decor", "home decor", "wreath", "ornament", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "balloon_ribbons": {
+          "display_name": "Balloon Ribbons",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Assembled Product Length", "Material"],
+          "aliases": ["balloon ribbon", "balloon ribbons", "balloon curling ribbon", "balloon string", "balloon strings"],
+          "title_keywords": ["balloon ribbon", "balloon ribbons", "balloon curling ribbon", "balloon string", "balloon strings"],
+          "context_keywords": ["balloon", "ribbon", "curling", "string", "party", "assembled product length", "material"],
+          "negative_keywords": ["ribbons and bows", "gift ribbon", "balloon holder", "balloon weight", "balloon tie tool", "gift wrap ribbon", "balloons", "party streamers", "gift wrap", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "wreath_hangers": {
+          "display_name": "Wreath Hangers",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Mount Type"],
+          "attributes": ["Mount Type", "Brand", "Material"],
+          "aliases": ["wreath hanger", "wreath hangers", "door wreath hanger", "over door wreath hanger", "wreath hook"],
+          "title_keywords": ["wreath hanger", "wreath hangers", "door wreath hanger", "over door wreath hanger", "wreath hook"],
+          "context_keywords": ["wreath", "hanger", "hook", "mount type", "door", "over the door", "holiday"],
+          "negative_keywords": ["wreath", "wreaths", "garland", "christmas tree hook", "wall hook", "general hanger", "ornament hook", "home decor", "party supplies", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "glow_sticks": {
+          "display_name": "Glow Sticks",
+          "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Count Per Pack", "Condition", "Multipack Quantity"],
+          "aliases": ["glow stick", "glow sticks", "light stick", "light sticks", "glow wand", "glow wands"],
+          "title_keywords": ["glow stick", "glow sticks", "light stick", "light sticks", "glow wand", "party glow sticks"],
+          "context_keywords": ["glow", "stick", "light up", "party", "halloween", "concert", "count per pack", "multipack"],
+          "negative_keywords": ["glow bracelet", "glow bracelets", "glow necklace", "glow necklaces", "glow ring", "glow rings", "party favors", "flashlight", "flashlights", "holiday lighting", "fireworks", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "party_hats": {
+          "display_name": "Party Hats",
+          "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Party Hat Type"],
+          "attributes": ["Brand", "Party Hat Type", "Count Per Pack"],
+          "aliases": ["party hat", "party hats", "birthday hat", "birthday hats", "cone party hat", "party crown"],
+          "title_keywords": ["party hat", "party hats", "birthday hat", "birthday hats", "cone party hat", "party crown"],
+          "context_keywords": ["party", "birthday", "hat", "headwear", "count per pack", "party hat type", "celebration"],
+          "negative_keywords": ["head bopper", "head boppers", "costume", "costume accessories", "birthday sash", "birthday sashes", "apparel", "party favors", "party supply set", "funeral", "trophy", "award certificate"]
+        },
+        "gift_boxes": {
+          "display_name": "Gift Boxes",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Gift Box Type"],
+          "attributes": ["Gift Box Type", "Brand", "Material"],
+          "aliases": ["gift box", "gift boxes", "present box", "present boxes", "decorative gift box", "gift packaging box"],
+          "title_keywords": ["gift box", "gift boxes", "present box", "decorative gift box", "gift packaging box"],
+          "context_keywords": ["gift", "box", "gift box type", "packaging", "holiday", "birthday", "material"],
+          "negative_keywords": ["gift bag", "gift bags", "gift wrap paper", "wrapping paper", "gift wrap tissue", "tissue paper", "gift tag", "gift tags", "gift basket", "party supplies", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "printed_invitations": {
+          "display_name": "Printed Invitations",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Printed Invitation Type"],
+          "attributes": ["Brand", "Printed Invitation Type", "Material"],
+          "aliases": ["printed invitation", "printed invitations", "party invitation", "party invitations", "birthday invitation", "invitation cards"],
+          "title_keywords": ["printed invitation", "printed invitations", "party invitation", "birthday invitation", "wedding invitation", "invitation cards"],
+          "context_keywords": ["invitation", "printed", "party", "birthday", "occasion", "rsvp", "material", "count pack"],
+          "negative_keywords": ["greeting card", "greeting cards", "table place card", "award certificate", "stationery", "blank card", "thank you card", "gift tag", "party favors", "costume", "funeral", "trophy", "home decor"]
+        },
+        "confetti_poppers": {
+          "display_name": "Confetti Poppers",
+          "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Color Category"],
+          "aliases": ["confetti popper", "confetti poppers", "party popper", "party poppers", "confetti cannon", "confetti cannons"],
+          "title_keywords": ["confetti popper", "confetti poppers", "party popper", "confetti cannon", "party confetti popper"],
+          "context_keywords": ["confetti", "popper", "party", "celebration", "birthday", "cannon", "color category"],
+          "negative_keywords": ["confetti", "loose confetti", "party noisemaker", "firecracker", "fireworks", "party favors", "glow sticks", "other party supplies", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "table_place_cards": {
+          "display_name": "Table Place Cards",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Table Place Card Type"],
+          "attributes": ["Table Place Card Type", "Brand", "Material"],
+          "aliases": ["table place card", "table place cards", "place card", "place cards", "seating card", "name place card"],
+          "title_keywords": ["table place card", "table place cards", "place card", "place cards", "seating card", "name place card"],
+          "context_keywords": ["table", "place card", "seating", "wedding", "party", "event", "table setting", "material"],
+          "negative_keywords": ["table place card holder", "place card holder", "printed invitation", "greeting card", "gift tag", "stationery", "award certificate", "party favors", "costume", "funeral", "trophy", "home decor"]
+        },
+        "party_decoration_kits": {
+          "display_name": "Party Decoration Kits",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Material", "Party Supply Set Type"],
+          "aliases": ["party decoration kit", "party decoration kits", "party decor kit", "decoration kit", "party decorating kit"],
+          "title_keywords": ["party decoration kit", "party decoration kits", "party decor kit", "decoration kit", "party decorating kit"],
+          "context_keywords": ["party", "decoration", "kit", "decor", "birthday", "occasion", "party supply set type"],
+          "negative_keywords": ["party supply set", "party supplies", "party favors", "scene setter", "garland", "party banner", "party streamer", "balloon", "gift wrap", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "balloon_weights": {
+          "display_name": "Balloon Weights",
+          "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Condition", "Brand", "Material"],
+          "aliases": ["balloon weight", "balloon weights", "helium balloon weight", "foil balloon weight", "balloon anchor"],
+          "title_keywords": ["balloon weight", "balloon weights", "helium balloon weight", "balloon anchor"],
+          "context_keywords": ["balloon", "weight", "anchor", "helium", "party", "material", "condition"],
+          "negative_keywords": ["balloon holder", "balloon holders", "balloon ribbon", "balloon pump", "helium tank", "balloons", "party favors", "party supplies", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "balloon_holders": {
+          "display_name": "Balloon Holders",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Material", "Assembled Product Width", "Condition"],
+          "aliases": ["balloon holder", "balloon holders", "balloon stand", "balloon stands", "balloon column stand", "balloon stick holder"],
+          "title_keywords": ["balloon holder", "balloon holders", "balloon stand", "balloon stands", "balloon column stand", "balloon stick holder"],
+          "context_keywords": ["balloon", "holder", "stand", "column", "arch", "party", "assembled product width"],
+          "negative_keywords": ["balloon weight", "balloon weights", "balloon tie tool", "balloon pump", "helium tank", "balloons", "balloon ribbon", "party supplies", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "party_supply_sets": {
+          "display_name": "Party Supply Sets",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Material", "Brand", "Color Category"],
+          "aliases": ["party supply set", "party supply sets", "party supplies set", "party kit", "birthday party supply set"],
+          "title_keywords": ["party supply set", "party supply sets", "party supplies set", "party kit", "birthday party supply set"],
+          "context_keywords": ["party", "supplies", "set", "kit", "birthday", "plates napkins cups", "color category"],
+          "negative_keywords": ["party decoration kit", "party favors", "party favor cups", "party bag", "other party supplies", "balloons", "gift bags", "party banners", "streamers", "costume", "funeral", "trophy", "award certificate", "kitchenware", "home decor"]
+        },
+        "pumpkin_carving_tools_kits": {
+          "display_name": "Pumpkin Carving Tools & Kits",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Pumpkin Carving Tool And Kit Type"],
+          "attributes": ["Pumpkin Carving Tool And Kit Type", "Material", "Brand"],
+          "aliases": ["pumpkin carving tool", "pumpkin carving tools", "pumpkin carving kit", "pumpkin carving kits", "jack o lantern carving kit"],
+          "title_keywords": ["pumpkin carving tool", "pumpkin carving tools", "pumpkin carving kit", "pumpkin carving kits", "jack o lantern kit"],
+          "context_keywords": ["pumpkin", "carving", "halloween", "jack o lantern", "tool kit", "material"],
+          "negative_keywords": ["halloween decoration", "costume", "costumes", "knife", "knives", "tools", "craft kit", "craft tools", "party supplies", "toy", "kitchenware", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "advent_calendars": {
+          "display_name": "Advent Calendars",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Advent Calendar Type"],
+          "attributes": ["Brand", "Advent Calendar Type", "Age Group"],
+          "aliases": ["advent calendar", "advent calendars", "christmas advent calendar", "holiday advent calendar", "countdown calendar"],
+          "title_keywords": ["advent calendar", "advent calendars", "christmas advent calendar", "holiday advent calendar", "countdown calendar"],
+          "context_keywords": ["advent", "calendar", "christmas", "countdown", "holiday", "age group", "advent calendar type"],
+          "negative_keywords": ["greeting card", "christmas countdown", "gift box", "toy", "toys", "candy", "ornament", "christmas tree", "party supplies", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "yard_inflatables": {
+          "display_name": "Yard Inflatables",
+          "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Material"],
+          "aliases": ["yard inflatable", "yard inflatables", "outdoor inflatable", "outdoor inflatables", "holiday inflatable", "lawn inflatable"],
+          "title_keywords": ["yard inflatable", "yard inflatables", "outdoor inflatable", "holiday inflatable", "lawn inflatable", "christmas inflatable"],
+          "context_keywords": ["yard", "outdoor", "inflatable", "holiday", "lawn", "airblown", "material"],
+          "negative_keywords": ["balloon", "balloons", "outdoor decoration", "christmas tree", "scene setter", "party supplies", "bounce house", "costume", "funeral", "trophy", "award certificate", "home decor", "toy"]
+        },
+        "christmas_tree_toppers": {
+          "display_name": "Christmas Tree Toppers",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Christmas Tree Topper Type"],
+          "attributes": ["Christmas Tree Topper Type", "Material", "Multipack Quantity"],
+          "aliases": ["christmas tree topper", "christmas tree toppers", "tree topper", "tree toppers", "star tree topper", "angel tree topper"],
+          "title_keywords": ["christmas tree topper", "christmas tree toppers", "tree topper", "star tree topper", "angel tree topper"],
+          "context_keywords": ["christmas", "tree", "topper", "holiday", "star", "angel", "material", "multipack"],
+          "negative_keywords": ["christmas tree", "christmas trees", "ornament", "ornaments", "christmas tree stand", "tree skirt", "stocking holder", "wreath", "garland", "holiday lighting", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "birthday_sashes": {
+          "display_name": "Birthday Sashes",
+          "formula": ["Brand", "Product Line", "Age Group", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Age Group", "Assembled Product Length", "Condition"],
+          "aliases": ["birthday sash", "birthday sashes", "party sash", "birthday girl sash", "birthday boy sash"],
+          "title_keywords": ["birthday sash", "birthday sashes", "birthday girl sash", "birthday boy sash", "party sash"],
+          "context_keywords": ["birthday", "sash", "party", "age group", "wearable", "assembled product length", "celebration"],
+          "negative_keywords": ["costume", "costumes", "apparel", "party hat", "party hats", "head bopper", "party favors", "chair sash", "ribbon", "bow", "funeral", "trophy", "award certificate", "jewelry"]
+        },
+        "garlands": {
+          "display_name": "Garlands",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Garland Type"],
+          "attributes": ["Garland Type", "Brand", "Material"],
+          "aliases": ["garland", "garlands", "party garland", "christmas garland", "holiday garland", "decorative garland"],
+          "title_keywords": ["garland", "garlands", "party garland", "christmas garland", "holiday garland", "decorative garland"],
+          "context_keywords": ["garland type", "holiday", "party", "decoration", "hanging", "christmas", "material"],
+          "negative_keywords": ["wreath", "wreaths", "party streamer", "party banner", "ribbon", "ribbons", "christmas tree", "ornament", "scene setter", "party decoration kit", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "fog_machines": {
+          "display_name": "Fog Machines",
+          "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Condition", "Power Type", "Material"],
+          "aliases": ["fog machine", "fog machines", "smoke machine", "smoke machines", "halloween fog machine", "party fog machine"],
+          "title_keywords": ["fog machine", "fog machines", "smoke machine", "halloween fog machine", "party fog machine"],
+          "context_keywords": ["fog", "smoke", "machine", "halloween", "party", "power type", "effects"],
+          "negative_keywords": ["bubble machine", "lighting", "holiday lighting", "decoration", "party supply set", "fog fluid", "costume", "funeral", "trophy", "award certificate", "home decor", "toy"]
+        },
+        "other_party_supplies": {
+          "display_name": "Other Party Supplies",
+          "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Net Content UOM"],
+          "attributes": ["Condition", "Color Category", "Product Net Content Uom"],
+          "aliases": ["other party supplies", "party supplies", "party supply", "miscellaneous party supplies", "party accessory"],
+          "title_keywords": ["other party supplies", "miscellaneous party supplies", "party supplies", "party supply accessory"],
+          "context_keywords": ["party", "supplies", "miscellaneous", "celebration", "occasion", "net content", "color category"],
+          "negative_keywords": ["balloon", "balloons", "party streamer", "party banner", "party favors", "party hat", "party supply set", "party decoration kit", "confetti popper", "printed invitation", "table place card", "gift bag", "gift box", "ribbons and bows", "wreath", "ornament", "christmas tree", "costume", "funeral", "casket", "urn", "trophy", "award certificate", "apparel", "toy", "jewelry", "home decor", "kitchenware"]
+        },
+        "scene_setters": {
+          "display_name": "Scene Setters",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Material", "Assembled Product Length"],
+          "aliases": ["scene setter", "scene setters", "party scene setter", "wall scene setter", "party backdrop", "scene setter backdrop"],
+          "title_keywords": ["scene setter", "scene setters", "party scene setter", "wall scene setter", "party backdrop", "photo backdrop"],
+          "context_keywords": ["scene", "setter", "backdrop", "wall decoration", "party", "photo", "assembled product length"],
+          "negative_keywords": ["party banner", "cardboard stand-up", "cardboard standup", "backdrop stand", "party decoration kit", "wall decor", "garland", "streamer", "yard inflatable", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "gift_baskets_sets": {
+          "display_name": "Gift Baskets & Sets",
+          "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Color Category"],
+          "aliases": ["gift basket", "gift baskets", "gift basket set", "gift baskets and sets", "gift set", "gift sets"],
+          "title_keywords": ["gift basket", "gift baskets", "gift basket set", "gift baskets and sets", "gift set", "holiday gift basket"],
+          "context_keywords": ["gift", "basket", "set", "holiday", "seasonal", "color category", "condition"],
+          "negative_keywords": ["gift box", "gift boxes", "gift bag", "party supply set", "food gift basket", "gourmet food", "snack basket", "party favors", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "table_place_card_holders": {
+          "display_name": "Table Place Card Holders",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Table Place Card Holder Type"],
+          "attributes": ["Table Place Card Holder Type", "Material", "Condition"],
+          "aliases": ["table place card holder", "table place card holders", "place card holder", "place card holders", "table card holder"],
+          "title_keywords": ["table place card holder", "table place card holders", "place card holder", "place card holders", "table card holder"],
+          "context_keywords": ["place card", "holder", "table", "seating", "wedding", "event", "material"],
+          "negative_keywords": ["table place card", "table place cards", "card holder", "gift tag", "printed invitation", "greeting card", "photo holder", "home decor", "party favors", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "megillah_cases": {
+          "display_name": "Megillah Cases",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Material", "Condition", "Multipack Quantity"],
+          "aliases": ["megillah case", "megillah cases", "megillah holder", "megillah holders", "purim megillah case"],
+          "title_keywords": ["megillah case", "megillah cases", "megillah holder", "purim megillah case"],
+          "context_keywords": ["megillah", "purim", "judaica", "case", "holder", "material", "religious"],
+          "negative_keywords": ["mezuzah", "mezuzahs", "gift box", "document case", "religious decor", "menorah", "home decor", "storage case", "party supplies", "costume", "funeral", "trophy", "award certificate"]
+        },
+        "chair_sashes": {
+          "display_name": "Chair Sashes",
+          "formula": ["Brand", "Product Line", "Material", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Material", "Assembled Product Length", "Multipack Quantity"],
+          "aliases": ["chair sash", "chair sashes", "wedding chair sash", "chair bow sash", "chair tie sash"],
+          "title_keywords": ["chair sash", "chair sashes", "wedding chair sash", "chair bow sash", "chair tie sash"],
+          "context_keywords": ["chair", "sash", "wedding", "event", "party", "material", "assembled product length"],
+          "negative_keywords": ["birthday sash", "birthday sashes", "ribbon", "bow", "chair cover", "chair covers", "apparel", "costume", "party favors", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "party_favor_cups": {
+          "display_name": "Party Favor Cups",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+          "attributes": ["Brand", "Count Per Pack", "Volume Capacity"],
+          "aliases": ["party favor cup", "party favor cups", "favor cup", "favor cups", "party treat cup", "party cups favors"],
+          "title_keywords": ["party favor cup", "party favor cups", "favor cup", "favor cups", "party treat cup"],
+          "context_keywords": ["party", "favor", "cup", "treat", "birthday", "count per pack", "volume capacity"],
+          "negative_keywords": ["party favors", "party supply set", "cups", "drinkware", "party bag", "favor bag", "tableware", "kitchenware", "gift bag", "costume", "funeral", "trophy", "award certificate", "home decor"]
+        },
+        "balloons": {
+          "display_name": "Balloons",
+          "formula": ["Title", "Product Line", "Character", "Assembled Product Height", "Color", "Color Category", "Pattern", "Occasion", "Sports League", "Sports Team", "Animal Type", "Balloon Type", ",", "with", "Features", "Multipack Quantity", "Total Count", "Piece Count", ",", "by", "Brand"],
+          "attributes": ["Balloon Type", "Brand", "Material"],
+          "aliases": ["balloon", "balloons", "party balloon", "party balloons", "latex balloon", "foil balloon", "mylar balloon"],
+          "title_keywords": ["balloon", "balloons", "party balloon", "latex balloon", "foil balloon", "mylar balloon", "helium balloon"],
+          "context_keywords": ["balloon type", "party", "birthday", "occasion", "celebration", "latex", "foil", "mylar", "inflatable decoration"],
+          "negative_keywords": ["balloon ribbon", "balloon ribbons", "balloon weight", "balloon holder", "balloon tie tool", "balloon pump", "helium tank", "party favors", "yard inflatable", "costume", "funeral", "casket", "urn", "trophy", "award certificate", "apparel", "toy", "jewelry", "home decor"]
+        },
+        "christmas_trees": {
+          "display_name": "Christmas Trees",
+          "formula": ["Assembled Product Height", "Title", "Product Line", "Prelit", "Character", "Pattern", "Sports League", "Sports Team", "Color", "Color Category", "Christmas Tree Shape", "Tree Type", "Christmas Tree Type", "Light Bulb Color", "Light Bulb Type", ",", "with", "Features", ",", "by", "Brand", "Multipack Quantity", "Total Count", "Piece Count"],
+          "attributes": ["Assembled Product Height", "Christmas Tree Type", "Christmas Tree Shape"],
+          "aliases": ["christmas tree", "christmas trees", "artificial christmas tree", "prelit christmas tree", "holiday tree", "xmas tree"],
+          "title_keywords": ["christmas tree", "christmas trees", "artificial christmas tree", "prelit christmas tree", "pre-lit christmas tree", "holiday tree"],
+          "context_keywords": ["christmas", "tree type", "tree shape", "prelit", "pre-lit", "light bulb", "holiday decor", "assembled product height"],
+          "negative_keywords": ["christmas tree stand", "tree stand", "christmas tree topper", "tree topper", "christmas tree skirt", "tree skirt", "wreath", "garland", "ornament", "yard inflatable", "holiday lighting", "costume", "funeral", "casket", "urn", "trophy", "award certificate", "apparel", "toy", "jewelry", "home decor"]
+        },
+        "gift_bags": {
+          "display_name": "Gift Bags",
+          "formula": ["Title", "Product Line", "Character", "Color", "Color Category", "Pattern", "OR", "Occasion", "Sports League", "Sports Team", "Animal Type", "Gift Bag Type", ",", "with", "Features", "Multipack Quantity", "Total Count", "Piece Count", ",", "by", "Brand"],
+          "attributes": ["Gift Bag Type", "Brand", "Assembled Product Length"],
+          "aliases": ["gift bag", "gift bags", "present bag", "present bags", "gift sack", "gift sacks"],
+          "title_keywords": ["gift bag", "gift bags", "present bag", "gift sack", "gift tote", "paper gift bag"],
+          "context_keywords": ["gift", "gift bag type", "occasion", "birthday", "holiday", "celebration", "handles", "multipack"],
+          "negative_keywords": ["party bag", "party bags", "favor bag", "gift box", "gift boxes", "gift wrap paper", "wrapping paper", "tissue paper", "gift wrap tissue", "gift tag", "gift tags", "ribbon", "bow", "party supplies", "costume", "funeral", "casket", "urn", "trophy", "award certificate", "apparel", "toy", "jewelry", "home decor"]
+        },
+        "greeting_cards": {
+          "display_name": "Greeting Cards",
+          "formula": ["Title", "Product Line", "Character", "Pattern", "Occasion", "Sports League", "Sports Team", "Animal Type", "Greeting Card Type", ",", "with", "Features", "Assembled Product Width", "x", "Assembled Product Height", "by", "Brand", "Piece Count"],
+          "attributes": ["Brand", "Greeting Card Type", "Material"],
+          "aliases": ["greeting card", "greeting cards", "birthday card", "holiday card", "blank greeting card", "all occasion card"],
+          "title_keywords": ["greeting card", "greeting cards", "birthday card", "holiday card", "thank you card", "sympathy card", "blank greeting card"],
+          "context_keywords": ["card", "greeting", "occasion", "envelope", "all occasion", "birthday", "holiday", "congratulations", "sympathy"],
+          "negative_keywords": ["printed invitation", "invitation", "table place card", "place card", "award certificate", "certificate", "gift tag", "gift tags", "stationery", "notecard", "postcard", "party favors", "gift wrap", "costume", "funeral", "casket", "urn", "trophy", "apparel", "toy", "jewelry", "home decor"]
+        },
+        "ornaments": {
+          "display_name": "Ornaments",
+          "formula": ["Product Line", "Character", "Actual Color", "Color Category", "Pattern", "Material", "Occasion", "Sports League", "Sports Team", "Ornament Style", "Product Type", "with", "Additional Features", "Multipack Quantity", "Total Count", "Piece Count", ",", "Assembled Product Height", ",", "by", "Brand"],
+          "attributes": ["Brand", "Material", "Condition"],
+          "aliases": ["ornament", "ornaments", "christmas ornament", "christmas ornaments", "holiday ornament", "tree ornament"],
+          "title_keywords": ["ornament", "ornaments", "christmas ornament", "christmas ornaments", "holiday ornament", "tree ornament"],
+          "context_keywords": ["ornament style", "christmas", "holiday", "tree decoration", "hanging ornament", "material", "occasion"],
+          "negative_keywords": ["decorative nutcracker", "nutcracker", "snow globe", "nativity scene", "party favors", "christmas tree topper", "tree topper", "wreath", "garland", "christmas tree", "holiday lighting", "costume", "funeral", "casket", "urn", "trophy", "award certificate", "apparel", "toy", "jewelry", "home decor"]
+        },
+        "party_banners": {
+          "display_name": "Party Banners",
+          "formula": ["Title", "Product Line", "Character", "Color", "Color Category", "Pattern", "Occasion", "Sports League", "Sports Team", "Animal Type", "Party Banner Type", ",", "with", "Features", "Multipack Quantity", "Total Count", "Piece Count", "Assembled Product Width", "x", "Assembled Product Height", ",", "by", "Brand"],
+          "attributes": ["Party Banner Type", "Brand", "Material"],
+          "aliases": ["party banner", "party banners", "birthday banner", "celebration banner", "hanging banner", "party sign banner"],
+          "title_keywords": ["party banner", "party banners", "birthday banner", "happy birthday banner", "celebration banner", "congratulations banner"],
+          "context_keywords": ["banner", "party", "birthday", "occasion", "message", "number", "letter", "hanging decoration"],
+          "negative_keywords": ["garland", "garlands", "party streamer", "streamers", "scene setter", "cardboard stand-up", "standup", "party decoration kit", "party supply set", "party favors", "gift wrap", "balloon", "costume", "funeral", "casket", "urn", "trophy", "award certificate", "apparel", "toy", "jewelry", "home decor"]
+        },
+        "party_favors": {
+          "display_name": "Party Favors",
+          "formula": ["Title", "Product Line", "Character", "Color", "Color Category", "Pattern", "Occasion", "Sports League", "Sports Team", "Animal Type", "Party Favor Type", ",", "with", "Features", "Multipack Quantity", "Total Count", "Piece Count", "by", "Brand"],
+          "attributes": ["Brand", "Material", "Party Favor Type"],
+          "aliases": ["party favor", "party favors", "party giveaway", "party giveaways", "favor toys", "birthday party favors"],
+          "title_keywords": ["party favor", "party favors", "birthday party favors", "party giveaways", "favor toys", "party favor pack"],
+          "context_keywords": ["party", "favor", "birthday", "occasion", "giveaway", "treat bag filler", "multipack", "kids party"],
+          "negative_keywords": ["party supply set", "party supplies", "party favor cup", "favor cup", "party bag", "favor bag", "party hat", "party noisemaker", "noisemaker", "glow bracelet", "glow necklace", "glow ring", "glow sticks", "balloon", "gift bag", "costume", "funeral", "casket", "urn", "trophy", "award certificate", "apparel", "toy", "jewelry", "home decor"]
+        },
+        "ribbons_bows": {
+          "display_name": "Ribbons & Bows",
+          "formula": ["Product Line", "Character", "Occasion", "Actual Color", "Color Category", "Sports League", "Sports Team", "Fabric Material Name", "Product Type", ",", "with", "Additional Features", "Multipack Quantity", "Total Count", "Piece Count", ",", "by", "Brand"],
+          "attributes": ["Ribbon And Bow Type", "Brand", "Material"],
+          "aliases": ["ribbon", "ribbons", "bow", "bows", "ribbons and bows", "gift ribbon", "decorative bow"],
+          "title_keywords": ["ribbon", "ribbons", "bow", "bows", "ribbons and bows", "gift ribbon", "gift bow", "decorative bow"],
+          "context_keywords": ["ribbon and bow type", "gift", "occasion", "fabric material", "decorative", "wrapping", "craft"],
+          "negative_keywords": ["balloon ribbon", "balloon ribbons", "gift wrap paper", "wrapping paper", "gift wrap tissue", "tissue paper", "gift tag", "gift tags", "party streamer", "streamers", "party supplies", "balloon", "costume", "funeral", "casket", "urn", "trophy", "award certificate", "apparel", "toy", "jewelry", "home decor"]
+        },
+        "wreaths": {
+          "display_name": "Wreaths",
+          "formula": ["If Wreath = Christmas Wreath: Title + Product Line + Character + Pattern + Sports League + Sports Team + Material + Fabric Material + Animal Type + Christmas Tree Style + Christmas Tree Shape + Light Bulb Color + Prelit + Light Bulb Type + Power Type + Wreath Type + , + with + Features + Diameter + , + by + Brand + Multipack Quantity + Count + Piece Count + (Color + Color Category)", "If Wreath = Non-Christmas Wreath: Title + Product Line + Character + Pattern + Sports League + Sports Team + Material + Fabric Material + Animal Type + Light Bulb Color + Prelit + Light Bulb Type + Power Type + Occasion + Wreath Type + , + with + Features + Diameter + , + by + Brand + Multipack Quantity + Total Count + Piece Count + (Color + Color Category)"],
+          "attributes": ["Wreath Type", "Brand", "Prelit"],
+          "aliases": ["wreath", "wreaths", "christmas wreath", "holiday wreath", "decorative wreath", "door wreath"],
+          "title_keywords": ["wreath", "wreaths", "christmas wreath", "holiday wreath", "decorative wreath", "front door wreath", "prelit wreath"],
+          "context_keywords": ["wreath type", "christmas", "holiday", "door decor", "prelit", "diameter", "light bulb", "power type", "seasonal"],
+          "negative_keywords": ["garland", "garlands", "christmas tree", "christmas trees", "tree skirt", "wreath hanger", "wreath hangers", "ornament", "ornaments", "nativity scene", "holiday lighting", "yard inflatable", "party supplies", "costume", "funeral", "casket", "urn", "trophy", "award certificate", "apparel", "toy", "jewelry", "home decor"]
+        }
+      }
+    },
+    "costumes": {
+      "display_name": "Costumes",
+      "product_types": {
+        "boas_leis": {
+          "display_name": "Boas & Leis",
+          "formula": ["Brand", "Product Line", "Actual Color", "Color Category", "Occasion", "Sports League", "Sports Team", "Product Type", ",", "with", "Features", "Assembled Product Length", "Retail Packaging Type", "Piece Count"],
+          "attributes": ["Boa And Lei Type", "Color", "Material"],
+          "aliases": ["boa", "boas", "lei", "leis", "feather boa", "costume boa", "party lei", "flower lei"],
+          "title_keywords": ["boa", "boas", "lei", "leis", "feather boa", "costume boa", "hawaiian lei", "flower lei"],
+          "context_keywords": ["costume", "dress up", "halloween", "luau", "mardi gras", "party wear", "neck lei", "feather accessory"],
+          "negative_keywords": ["necklace", "jewelry", "garland", "ribbon", "streamer", "decoration", "party decoration", "costume accessories", "mask", "wig", "gift wrap", "balloon", "greeting card", "wreath", "ornament", "casket", "urn", "trophy", "award"]
+        },
+        "costume_accessories": {
+          "display_name": "Costume Accessories",
+          "formula": ["Brand", "Character", "Product Line", "Occasion", "Product Type", ",", "with", "Additional Features", "Piece Count", "Retail Packaging"],
+          "attributes": ["Age Group", "Color", "Brand"],
+          "aliases": ["costume accessory", "costume accessories", "dress up accessory", "halloween accessory", "cosplay accessory"],
+          "title_keywords": ["costume accessory", "costume accessories", "dress up accessory", "halloween accessory", "cosplay accessory"],
+          "context_keywords": ["costume", "dress up", "halloween", "cosplay", "character", "role play", "party costume"],
+          "negative_keywords": ["full costume", "costume set", "mask", "wig", "wings", "tail", "prosthetic", "cape", "cloak", "glasses", "boa", "lei", "jewelry", "toy", "apparel", "decoration", "party supplies", "gift wrap", "balloon", "greeting card", "casket", "urn", "trophy", "award"]
+        },
+        "costume_capes_cloaks": {
+          "display_name": "Costume Capes & Cloaks",
+          "formula": ["Brand", "Character", "Product Line", "Assembled Product Length", "Actual Color", "Color Category", "Occasion", "Sports League", "Sports Team", "Product Type", ",", "with", "Additional Features", "for", "Age Group", "Piece Count", "Retail Packaging"],
+          "attributes": ["Brand", "Color", "Costume Cape And Cloak Type"],
+          "aliases": ["costume cape", "costume capes", "costume cloak", "costume cloaks", "halloween cape", "dress up cape"],
+          "title_keywords": ["costume cape", "costume cloak", "cape costume", "cloak costume", "vampire cape", "superhero cape"],
+          "context_keywords": ["costume", "dress up", "halloween", "cosplay", "character", "cloak", "cape", "for kids", "for adults"],
+          "negative_keywords": ["full costume", "jacket", "robe", "blanket", "throw", "costume accessories", "mask", "wig", "wings", "tail", "apparel", "decoration", "party supplies", "gift wrap", "balloon", "greeting card", "casket", "urn", "trophy", "award"]
+        },
+        "costume_facial_hair": {
+          "display_name": "Costume Facial Hair",
+          "formula": ["Brand", "Product Line", "Actual Color", "Color Category", "Occasion", "Sports League", "Sports Team", "Product Type", ",", "with", "Features", "Assembled Product Width", "Retail Packaging Type", "Piece Count"],
+          "attributes": ["Costume Facial Hair Type", "Age Group", "Brand"],
+          "aliases": ["costume facial hair", "fake beard", "fake mustache", "costume beard", "costume moustache", "false beard", "false mustache"],
+          "title_keywords": ["costume facial hair", "fake beard", "fake mustache", "costume beard", "costume mustache", "false beard", "false mustache"],
+          "context_keywords": ["costume", "dress up", "halloween", "cosplay", "disguise", "stick on", "self adhesive", "beard and mustache"],
+          "negative_keywords": ["costume wig", "wig", "mask", "makeup", "face paint", "beard oil", "beard care", "grooming", "razor", "hair extensions", "prosthetic", "decoration", "party supplies", "gift wrap", "casket", "urn", "trophy", "award"]
+        },
+        "costume_glasses": {
+          "display_name": "Costume Glasses",
+          "formula": ["Brand", "Character", "Product Line", "Actual Color", "Color Category", "Occasion", "Sports League", "Sports Team", "Product Type", ",", "with", "Additional Features", "for", "Age Group", "Count"],
+          "attributes": ["Age Group", "Costume Glasses Type", "Brand"],
+          "aliases": ["costume glasses", "novelty glasses", "dress up glasses", "halloween glasses", "disguise glasses"],
+          "title_keywords": ["costume glasses", "novelty glasses", "dress up glasses", "disguise glasses", "character glasses"],
+          "context_keywords": ["costume", "dress up", "halloween", "cosplay", "party costume", "disguise", "pretend play"],
+          "negative_keywords": ["sunglasses", "reading glasses", "eyeglasses", "safety glasses", "blue light glasses", "party glasses", "drinking glasses", "goggles", "mask", "wig", "decoration", "party supplies", "casket", "urn", "trophy", "award"]
+        },
+        "costume_masks": {
+          "display_name": "Costume Masks",
+          "formula": ["Brand", "Character", "Product Line", "Actual Color", "Color Category", "Material", "Animal Type", "Occasion", "Sports League", "Sports Team", "Product Type", ",", "with", "Additional Features", "for", "Age Group", "Count"],
+          "attributes": ["Costume Mask Type", "Age Group", "Brand"],
+          "aliases": ["costume mask", "costume masks", "halloween mask", "character mask", "dress up mask", "masquerade mask"],
+          "title_keywords": ["costume mask", "halloween mask", "character mask", "dress up mask", "masquerade mask", "animal mask"],
+          "context_keywords": ["costume", "dress up", "halloween", "cosplay", "disguise", "party costume", "face mask costume"],
+          "negative_keywords": ["face covering", "cloth mask", "skincare mask", "face mask skin care", "respirator", "helmet", "medical mask", "sleep mask", "costume prosthetic", "prosthetics", "makeup", "wig", "facial hair", "decoration", "party supplies", "casket", "urn", "trophy", "award"]
+        },
+        "costume_prosthetics": {
+          "display_name": "Costume Prosthetics",
+          "formula": ["Brand", "Character", "Product Line", "Material", "Costume Prosthetic", "Animal Type", "Occasion", "Sports League", "Sports Team", "Product Type", ",", "with", "Additional Features", "Count"],
+          "attributes": ["Age Group", "Brand", "Color"],
+          "aliases": ["costume prosthetic", "costume prosthetics", "special effects prosthetic", "latex prosthetic", "halloween prosthetic"],
+          "title_keywords": ["costume prosthetic", "costume prosthetics", "latex prosthetic", "sfx prosthetic", "special effects prosthetic"],
+          "context_keywords": ["costume", "halloween", "cosplay", "special effects", "sfx", "latex", "disguise", "dress up"],
+          "negative_keywords": ["costume mask", "mask", "makeup", "face paint", "facial hair", "fake beard", "medical prosthetic", "orthopedic", "prosthetic limb", "wig", "decoration", "party supplies", "casket", "urn", "trophy", "award"]
+        },
+        "costume_tails": {
+          "display_name": "Costume Tails",
+          "formula": ["Brand", "Character", "Product Line", "Assembled Product Length", "Occasion", "Sports League", "Sports Team", "Costume", "Product Type", "Actual Color", "Color Category", "Animal Type", "Tail,", "with", "Additional Features", "for", "Age Group", "Count"],
+          "attributes": ["Age Group", "Brand", "Color"],
+          "aliases": ["costume tail", "costume tails", "animal tail costume", "dress up tail", "halloween tail"],
+          "title_keywords": ["costume tail", "costume tails", "animal tail", "fox tail", "cat tail", "devil tail", "dress up tail"],
+          "context_keywords": ["costume", "dress up", "halloween", "cosplay", "animal costume", "character", "wearable tail"],
+          "negative_keywords": ["full costume", "costume accessories", "animal toy", "pet costume", "pet tail", "plush toy", "keychain", "wings", "mask", "wig", "decoration", "party supplies", "casket", "urn", "trophy", "award"]
+        },
+        "costume_wigs": {
+          "display_name": "Costume Wigs",
+          "formula": ["Brand", "Product Line", "Hair Color", "Occasion", "Sports League", "Sports Team", "Costume", "Product Type", ",", "with", "Features", "for", "Age Group", "Count"],
+          "attributes": ["Age Group", "Color", "Brand"],
+          "aliases": ["costume wig", "costume wigs", "halloween wig", "cosplay wig", "character wig", "dress up wig"],
+          "title_keywords": ["costume wig", "costume wigs", "halloween wig", "cosplay wig", "character wig", "dress up wig"],
+          "context_keywords": ["costume", "dress up", "halloween", "cosplay", "character", "party costume", "hair color"],
+          "negative_keywords": ["hair extensions", "hair extension", "hair piece", "hairpiece", "regular wig", "lace front wig", "human hair wig", "costume facial hair", "fake beard", "mustache", "mask", "decoration", "party supplies", "casket", "urn", "trophy", "award"]
+        },
+        "costume_wings": {
+          "display_name": "Costume Wings",
+          "formula": ["Brand", "Product Line", "Actual Color", "Color Category", "Material", "Occasion", "Sports League", "Sports Team", "Costume", "Product Type", ",", "with", "Features", "for", "Age Group", "Count"],
+          "attributes": ["Age Group", "Costume Wing Type", "Brand"],
+          "aliases": ["costume wings", "costume wing", "fairy wings", "angel wings", "dress up wings", "halloween wings"],
+          "title_keywords": ["costume wings", "costume wing", "fairy wings", "angel wings", "butterfly wings", "dress up wings"],
+          "context_keywords": ["costume", "dress up", "halloween", "cosplay", "wearable wings", "fairy costume", "angel costume"],
+          "negative_keywords": ["full costume", "decorations", "wall decor", "costume accessories", "toy wings", "party decoration", "ornament", "wreath", "mask", "wig", "tail", "party supplies", "casket", "urn", "trophy", "award"]
+        },
+        "fancy_dress_costumes": {
+          "display_name": "Fancy-Dress Costumes",
+          "formula": ["Brand", "Character", "Product Line", "Gender", "Occasion", "Sports League", "Sports Team", "Sports League", "Sports Team", "Product Type", "with", "Additional Features", "for", "Age Group", ",", "Clothing Size Group", "Clothing Size", "Count"],
+          "attributes": ["Age Group", "Fancy Dress Costume Type", "Brand"],
+          "aliases": ["fancy dress costume", "fancy dress costumes", "halloween costume", "costume outfit", "dress up costume", "cosplay costume"],
+          "title_keywords": ["fancy dress costume", "fancy dress costumes", "halloween costume", "costume outfit", "dress up costume", "character costume"],
+          "context_keywords": ["costume", "dress up", "halloween", "cosplay", "character", "clothing size", "age group", "gender"],
+          "negative_keywords": ["costume accessories", "costume accessory", "mask", "wig", "cape", "cloak", "tail", "wings", "prosthetic", "historical reenactment apparel", "uniform", "regular apparel", "decoration", "party supplies", "gift wrap", "casket", "urn", "trophy", "award"]
+        },
+        "glow_bracelets": {
+          "display_name": "Glow Bracelets",
+          "formula": ["Brand", "Product Line", "Occasion", "Sports League", "Sports Team", "Features", "Product Type", "Count"],
+          "attributes": ["Color", "Age Group", "Material"],
+          "aliases": ["glow bracelet", "glow bracelets", "light up bracelet", "glow wristband", "glow wristbands"],
+          "title_keywords": ["glow bracelet", "glow bracelets", "light up bracelet", "glow wristband", "glow wristbands"],
+          "context_keywords": ["glow", "bracelet", "wristband", "light up", "party", "halloween", "event", "concert"],
+          "negative_keywords": ["jewelry", "bracelet jewelry", "party favors", "glow sticks", "glow necklace", "glow ring", "general party supplies", "costume jewelry", "decoration", "gift wrap", "balloon", "greeting card", "casket", "urn", "trophy", "award"]
+        },
+        "glow_necklaces": {
+          "display_name": "Glow Necklaces",
+          "formula": ["Brand", "Product Line", "Occasion", "Sports League", "Sports Team", "Features", "Product Type", "Count"],
+          "attributes": ["Color", "Count Per Pack", "Age Group"],
+          "aliases": ["glow necklace", "glow necklaces", "light up necklace", "glow party necklace"],
+          "title_keywords": ["glow necklace", "glow necklaces", "light up necklace", "glow party necklace"],
+          "context_keywords": ["glow", "necklace", "light up", "party", "halloween", "event", "concert", "wearable glow"],
+          "negative_keywords": ["jewelry", "necklace jewelry", "party favors", "glow sticks", "glow bracelet", "glow ring", "lei", "general party supplies", "decoration", "gift wrap", "balloon", "greeting card", "casket", "urn", "trophy", "award"]
+        },
+        "glow_rings": {
+          "display_name": "Glow Rings",
+          "formula": ["Brand", "Product Line", "Occasion", "Sports League", "Sports Team", "Features", "Product Type", "Count"],
+          "attributes": ["Number Of Pieces", "Brand", "Material"],
+          "aliases": ["glow ring", "glow rings", "light up ring", "glowing ring", "led ring"],
+          "title_keywords": ["glow ring", "glow rings", "light up ring", "glowing ring", "led ring"],
+          "context_keywords": ["glow", "ring", "light up", "party", "halloween", "event", "wearable glow"],
+          "negative_keywords": ["jewelry", "ring jewelry", "party favors", "glow sticks", "glow bracelet", "glow necklace", "general party supplies", "decoration", "gift wrap", "balloon", "greeting card", "casket", "urn", "trophy", "award"]
+        },
+        "historical_reenactment_apparel": {
+          "display_name": "Historical Reenactment Apparel",
+          "formula": ["Brand", "Character", "Product Line", "Gender", "Occasion", "Sports League", "Sports Team", "Product Type", "with", "Additional Features", "for", "Age Group", ",", "Clothing Size Group", "Clothing Size", "Count"],
+          "attributes": ["Age Group", "Color", "Brand"],
+          "aliases": ["historical reenactment apparel", "reenactment apparel", "historical costume apparel", "period reenactment clothing"],
+          "title_keywords": ["historical reenactment apparel", "reenactment apparel", "historical clothing", "period clothing", "reenactment clothing"],
+          "context_keywords": ["reenactment", "historical", "period", "civil war", "colonial", "medieval", "apparel", "clothing size"],
+          "negative_keywords": ["fancy dress costume", "halloween costume", "cosplay accessory", "costume accessories", "uniform", "regular apparel", "fashion apparel", "mask", "wig", "toy", "decoration", "party supplies", "gift wrap", "casket", "urn", "trophy", "award"]
+        }
+      }
+    },
+    "funeral": {
+      "display_name": "Funeral",
+      "product_types": {
+        "caskets": {
+          "display_name": "Caskets",
+          "formula": ["Brand", "Product Line", "Character", "Sports League", "Sports Team", "Actual Color", "Color Category", "Material", "Size", "Product Type", ",", "Shape", "Additional Features", "Total Count"],
+          "attributes": ["Condition", "Brand", "Size"],
+          "aliases": ["casket", "caskets", "burial casket", "funeral casket", "coffin", "coffins"],
+          "title_keywords": ["casket", "caskets", "burial casket", "funeral casket", "coffin", "coffins"],
+          "context_keywords": ["funeral", "burial", "memorial", "interment", "mortuary", "material", "size", "shape"],
+          "negative_keywords": ["cremation urn", "urn", "pet memorial", "keepsake urn", "vase", "storage box", "decorative box", "home decor", "party supplies", "decoration", "trophy", "award", "certificate", "costume", "gift wrap", "balloon"]
+        },
+        "cremation_urns": {
+          "display_name": "Cremation Urns",
+          "formula": ["Brand", "Product Line", "Character", "Sports League", "Sports Team", "Actual Color", "Color Category", "Material", "Size", "Product Type", ",", "with", "Interior Color", "Casket Interior", "Fabric Material", "Interior"],
+          "attributes": ["Material", "Cremation Urn Type", "Age Group"],
+          "aliases": ["cremation urn", "cremation urns", "funeral urn", "memorial urn", "keepsake urn", "ashes urn"],
+          "title_keywords": ["cremation urn", "cremation urns", "funeral urn", "memorial urn", "keepsake urn", "ashes urn"],
+          "context_keywords": ["cremation", "ashes", "funeral", "memorial", "burial", "urn type", "interior", "material"],
+          "negative_keywords": ["casket", "coffin", "vase", "decorative container", "storage container", "jar", "pet memorial", "pet toy", "home decor", "party supplies", "decoration", "trophy", "award", "certificate", "costume", "gift wrap"]
+        },
+        "pet_memorials": {
+          "display_name": "Pet Memorials",
+          "formula": ["Brand", "Product Line", "Character", "Sports League", "Sports Team", "Actual Color", "Color Category", "Material", "Product Type", ",", "Shape", "Additional Features", "Total Count", "Assembled Product Length"],
+          "attributes": ["Pet Memorial Type", "Animal Type", "Material"],
+          "aliases": ["pet memorial", "pet memorials", "pet remembrance", "pet memorial stone", "pet memorial plaque"],
+          "title_keywords": ["pet memorial", "pet memorials", "pet remembrance", "pet memorial stone", "pet memorial plaque"],
+          "context_keywords": ["pet loss", "memorial", "remembrance", "dog memorial", "cat memorial", "animal type", "sympathy", "keepsake"],
+          "negative_keywords": ["cremation urn", "urn", "casket", "coffin", "pet toy", "pet accessories", "pet collar", "grave marker", "garden decor", "home decor", "storage box", "party supplies", "decoration", "trophy", "award", "certificate", "costume"]
+        }
+      }
+    },
+    "trophies_awards": {
+      "display_name": "Trophies & Awards",
+      "product_types": {
+        "award_certificates": {
+          "display_name": "Award Certificates",
+          "formula": ["Brand", "Actual Color", "Color Category", "Material", "Product Line", "Character", "Sports League", "Sports Team", "Sports Type", "Activity", "Product Type", ",", "with", "Additional Features", "Assembled Product Width", "x", "Assembled Product Length", "Count"],
+          "attributes": ["Count Per Pack", "Material", "Brand"],
+          "aliases": ["award certificate", "award certificates", "certificate award", "recognition certificate", "achievement certificate"],
+          "title_keywords": ["award certificate", "award certificates", "recognition certificate", "achievement certificate", "certificate of award"],
+          "context_keywords": ["award", "certificate", "recognition", "achievement", "sports", "activity", "certificate pack", "printable certificate"],
+          "negative_keywords": ["trophy", "trophies", "plaque", "medal", "certificate paper", "cardstock", "greeting card", "printed invitation", "invitation", "party favors", "decorations", "gift wrap", "funeral", "casket", "urn", "costume"]
+        },
+        "trophies_awards": {
+          "display_name": "Trophies & Awards",
+          "formula": ["Brand", "Actual Color", "Color Category", "Material", "Product Line", "Character", "Sports League", "Sports Team", "Sports Type", "Activity", "Product Type", ",", "with", "Additional Features", "Assembled Product Length", "Count"],
+          "attributes": ["Trophy And Award Type", "Material", "Brand"],
+          "aliases": ["trophy", "trophies", "award", "awards", "trophies and awards", "award plaque", "recognition award"],
+          "title_keywords": ["trophy", "trophies", "award", "awards", "trophies and awards", "award plaque", "recognition award"],
+          "context_keywords": ["award", "trophy", "recognition", "achievement", "sports", "activity", "competition", "winner", "engraved"],
+          "negative_keywords": ["award certificate", "certificate", "certificates", "medal", "party favors", "decorations", "gift wrap", "greeting card", "printed invitation", "balloon", "funeral", "casket", "urn", "pet memorial", "costume", "ornament"]
+        }
+      }
+    }
+  }
+}
