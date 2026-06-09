@@ -7,7 +7,6 @@ from urllib.request import urlopen
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.enum.shapes import MSO_SHAPE
-from pptx.dml.color import RGBColor
 
 from audit_powerpoint import _format_cover_date
 
@@ -16,77 +15,80 @@ def _safe_text(value: Any) -> str:
     return str(value or "").strip()
 
 
-def _replace_runs_preserve_style(paragraph: Any, replacements: dict[str, str]) -> None:
-    """Replace placeholders while keeping existing run formatting when possible."""
-    if not getattr(paragraph, "runs", None):
+def _shape_text(shape: Any) -> str:
+    """Get text from a shape, handling text frames."""
+    if not getattr(shape, "has_text_frame", False):
+        return ""
+    return _safe_text(getattr(shape, "text", ""))
+
+
+def _find_shape_contains(slide: Any, token: str) -> Any:
+    """Find a shape by searching for token text (case-insensitive)."""
+    token_l = token.lower()
+    for shape in slide.shapes:
+        text = _shape_text(shape).lower()
+        if token_l in text:
+            return shape
+    return None
+
+
+def _replace_shape_text_preserve_style(shape: Any, text: str) -> None:
+    """Replace text in a shape while preserving existing run styling."""
+    if not shape or not getattr(shape, "has_text_frame", False):
         return
-    
-    # Get the full paragraph text
-    paragraph_text = "".join(run.text for run in paragraph.runs)
-    
-    # Check if any placeholder exists in the paragraph
-    matched_token = None
-    for token in replacements.keys():
-        if token in paragraph_text:
-            matched_token = token
-            break
-    
-    if matched_token is None:
+    tf = shape.text_frame
+    if not tf.paragraphs:
+        shape.text = _safe_text(text)
         return
-    
-    # Replace the placeholder in the paragraph text
-    new_text = paragraph_text.replace(matched_token, replacements[matched_token])
-    
-    # Clear all runs and set the new text in the first run with original styling
+    first_para = tf.paragraphs[0]
+    if first_para.runs:
+        first_para.runs[0].text = _safe_text(text)
+        for run in first_para.runs[1:]:
+            run.text = ""
+        for para in tf.paragraphs[1:]:
+            for run in para.runs:
+                run.text = ""
+        return
+    shape.text = _safe_text(text)
+
+
+def _replace_paragraph_text_preserve_style(paragraph: Any, text: str) -> None:
+    """Replace text in a paragraph while preserving styling."""
     if paragraph.runs:
-        first_run = paragraph.runs[0]
-        first_run.text = new_text
-        # Clear all other runs
+        paragraph.runs[0].text = _safe_text(text)
         for run in paragraph.runs[1:]:
             run.text = ""
+    else:
+        paragraph.text = _safe_text(text)
 
 
-def _replace_text(text: str, replacements: dict[str, str]) -> str:
-    result = text
-    for token, value in replacements.items():
-        result = result.replace(token, value)
-    return result
-
-
-def _contains_placeholder(text: str, replacements: dict[str, str]) -> bool:
-    return any(token in text for token in replacements)
-
-
-def replace_text_frame_placeholders(text_frame: Any, replacements: dict[str, str]) -> None:
-    """Safely replace placeholders inside a text frame without clearing it."""
-    if not text_frame:
-        return
-    for paragraph in text_frame.paragraphs:
-        _replace_runs_preserve_style(paragraph, replacements)
-
-
-def _iter_text_frames_from_shapes(shapes: Any):
-    for shape in shapes:
-        if getattr(shape, "has_text_frame", False):
-            yield shape.text_frame
-        if getattr(shape, "has_table", False):
-            for row in shape.table.rows:
-                for cell in row.cells:
-                    yield cell.text_frame
-        if hasattr(shape, "shapes"):
-            yield from _iter_text_frames_from_shapes(shape.shapes)
-
-
-def _find_slide_by_title(prs: Any, title_text: str) -> int | None:
+def _replace_placeholder_in_shape(shape: Any, placeholder: str, replacement: str) -> bool:
     """
-    Find a slide by searching for the title text in its shapes.
-    Returns the slide index (0-based) if found, otherwise None.
+    Replace a placeholder string in a shape with a replacement value.
+    Only replaces if the placeholder actually exists in the shape.
+    Returns True if replacement was made.
     """
-    for idx, slide in enumerate(prs.slides):
+    if not shape or not getattr(shape, "has_text_frame", False):
+        return False
+    
+    tf = shape.text_frame
+    for paragraph in tf.paragraphs:
+        if placeholder in paragraph.text:
+            new_text = paragraph.text.replace(placeholder, replacement)
+            _replace_paragraph_text_preserve_style(paragraph, new_text)
+            return True
+    
+    return False
+
+
+def _find_slide_by_title(prs: Any, title_text: str) -> Any:
+    """Find a slide by searching for title text in any shape."""
+    title_l = title_text.lower()
+    for slide in prs.slides:
         for shape in slide.shapes:
-            if getattr(shape, "has_text_frame", False):
-                if title_text in shape.text_frame.text:
-                    return idx
+            text = _shape_text(shape).lower()
+            if title_l in text:
+                return slide
     return None
 
 
@@ -95,7 +97,17 @@ def _remove_slide_by_title(prs: Any, title_text: str) -> bool:
     Remove a slide by its title text.
     Returns True if a slide was removed, False otherwise.
     """
-    slide_idx = _find_slide_by_title(prs, title_text)
+    title_l = title_text.lower()
+    slide_idx = None
+    for idx, slide in enumerate(prs.slides):
+        for shape in slide.shapes:
+            text = _shape_text(shape).lower()
+            if title_l in text:
+                slide_idx = idx
+                break
+        if slide_idx is not None:
+            break
+    
     if slide_idx is not None:
         # Remove the slide via the slide layout's id
         rId = prs.slides._sldIdLst[slide_idx].rId
@@ -103,6 +115,37 @@ def _remove_slide_by_title(prs: Any, title_text: str) -> bool:
         del prs.slides._sldIdLst[slide_idx]
         return True
     return False
+
+
+def _apply_all_replacements_to_slide(slide: Any, replacements: dict[str, str]) -> None:
+    """Apply all placeholder replacements to all shapes in a slide."""
+    for shape in slide.shapes:
+        if getattr(shape, "has_text_frame", False):
+            for placeholder, replacement in replacements.items():
+                _replace_placeholder_in_shape(shape, placeholder, replacement)
+        # Also handle text in tables
+        if getattr(shape, "has_table", False):
+            for row in shape.table.rows:
+                for cell in row.cells:
+                    for placeholder, replacement in replacements.items():
+                        for paragraph in cell.text_frame.paragraphs:
+                            if placeholder in paragraph.text:
+                                new_text = paragraph.text.replace(placeholder, replacement)
+                                _replace_paragraph_text_preserve_style(paragraph, new_text)
+
+
+def _find_pictures_in_region(slide: Any, region_left: float, region_top: float, region_right: float, region_bottom: float) -> list[Any]:
+    """Find all picture shapes within a region."""
+    pictures = []
+    for shape in slide.shapes:
+        if hasattr(shape, "image") or "picture" in str(shape.shape_type).lower():
+            if hasattr(shape, "left") and hasattr(shape, "top"):
+                shape_left = shape.left.inches if hasattr(shape.left, "inches") else shape.left
+                shape_top = shape.top.inches if hasattr(shape.top, "inches") else shape.top
+                if (shape_left >= region_left and shape_left <= region_right and
+                    shape_top >= region_top and shape_top <= region_bottom):
+                    pictures.append(shape)
+    return pictures
 
 
 def _get_image_urls_from_record(record: dict[str, Any]) -> list[str]:
@@ -210,121 +253,78 @@ def _find_or_create_picture(slide: Any, left: float, top: float, width: float, h
         pass
 
 
-def _find_slide_by_title_text(prs: Any, title_text: str) -> Any:
-    """Find and return a slide object by its title text."""
-    for slide in prs.slides:
-        for shape in slide.shapes:
-            if getattr(shape, "has_text_frame", False):
-                if title_text in shape.text_frame.text:
-                    return slide
-    return None
 
 
-def _find_shape_by_name(slide: Any, shape_name: str) -> Any:
-    """Find a shape by its name."""
+
+def _clear_pictures_from_slide(slide: Any) -> None:
+    """Remove all picture shapes from a slide."""
+    shapes_to_remove = []
     for shape in slide.shapes:
-        if hasattr(shape, "name") and shape_name in shape.name:
-            return shape
-    return None
+        if hasattr(shape, "image") or "picture" in str(shape.shape_type).lower():
+            shapes_to_remove.append(shape)
+    
+    for shape in shapes_to_remove:
+        sp = shape.element
+        sp.getparent().remove(sp)
 
 
-def _find_grid_areas_on_slide4(slide: Any) -> tuple[Any, Any, Any]:
+def _populate_slide4_images(slide: Any, payload: dict[str, Any]) -> None:
     """
-    Find the three image grid areas on Slide 4.
-    
-    Tries to find named shapes first:
-    - slide4_client_image_grid
-    - slide4_competitor_1_image_grid
-    - slide4_competitor_2_image_grid
-    
-    Falls back to finding placeholder rectangles by position/size heuristics.
-    Returns: (client_grid, competitor1_grid, competitor2_grid) or (None, None, None)
+    Populate Slide 4 images by placing them in a simple 3x4 grid layout.
+    Uses hard-coded positions for the three grid areas.
     """
-    client_grid = _find_shape_by_name(slide, "slide4_client_image_grid")
-    comp1_grid = _find_shape_by_name(slide, "slide4_competitor_1_image_grid")
-    comp2_grid = _find_shape_by_name(slide, "slide4_competitor_2_image_grid")
+    # Define approximate grid areas for the three competitors
+    # Format: (left_inches, top_inches, width_inches, height_inches)
+    grid_areas = {
+        "client": (0.5, 2.0, 2.2, 3.0),
+        "competitor1": (2.9, 2.0, 2.2, 3.0),
+        "competitor2": (5.3, 2.0, 2.2, 3.0),
+    }
     
-    if client_grid and comp1_grid and comp2_grid:
-        return client_grid, comp1_grid, comp2_grid
+    # Get image lists
+    client_images = payload.get("slide4_client_images", []) or []
+    comp1_images = payload.get("slide4_competitor_1_images", []) or []
+    comp2_images = payload.get("slide4_competitor_2_images", []) or []
     
-    # Fallback: find rectangles that are likely image grids
-    # Typical layout: 3 grids side-by-side, each about same size
-    rectangles = []
-    for shape in slide.shapes:
-        if shape.shape_type == MSO_SHAPE.RECTANGLE or (hasattr(shape, "shape_type") and "RECTANGLE" in str(shape.shape_type)):
-            # Only consider shapes that are likely image grids (reasonable size)
-            if hasattr(shape, "left") and hasattr(shape, "top"):
-                rectangles.append(shape)
+    all_image_lists = [
+        ("client", client_images),
+        ("competitor1", comp1_images),
+        ("competitor2", comp2_images),
+    ]
     
-    # Sort by left position to find 3 columns
-    rectangles.sort(key=lambda s: s.left if hasattr(s, "left") else 0)
-    
-    if len(rectangles) >= 3:
-        return rectangles[0], rectangles[1], rectangles[2]
-    
-    return None, None, None
-
-
-def _clear_pictures_in_shape(shape: Any) -> None:
-    """Remove all picture shapes from within a shape or near its bounds."""
-    if not shape or not hasattr(shape, "left") or not hasattr(shape, "top"):
-        return
-    
-    # Get the shape's bounding box
-    shape_left = shape.left
-    shape_top = shape.top
-    shape_right = shape.left + shape.width if hasattr(shape, "width") else shape_left + Inches(2)
-    shape_bottom = shape.top + shape.height if hasattr(shape, "height") else shape_top + Inches(3)
-    
-    # Find and remove pictures within this area
-    parent = shape.parent if hasattr(shape, "parent") else None
-    if parent and hasattr(parent, "shapes"):
-        shapes_to_remove = []
-        for s in parent.shapes:
-            # Check if this is a picture
-            if hasattr(s, "image") or "picture" in str(s.shape_type).lower():
-                # Check if it's within or overlaps the grid bounds
-                if hasattr(s, "left") and hasattr(s, "top"):
-                    if (s.left >= shape_left - Inches(0.1) and 
-                        s.left <= shape_right + Inches(0.1) and
-                        s.top >= shape_top - Inches(0.1) and
-                        s.top <= shape_bottom + Inches(0.1)):
-                        shapes_to_remove.append(s)
+    # For each grid area, place images
+    for grid_name, image_urls in all_image_lists:
+        grid_left, grid_top, grid_width, grid_height = grid_areas[grid_name]
         
-        # Remove marked pictures
-        for s in shapes_to_remove:
-            sp = s.element
-            sp.getparent().remove(sp)
-
-
-def _populate_slide4_image_grid_in_bounds(slide: Any, grid_shape: Any, image_urls: list[str]) -> None:
-    """
-    Populate image grid on slide with images from URLs, respecting the grid shape bounds.
-    """
-    if not grid_shape or not hasattr(grid_shape, "left") or not hasattr(grid_shape, "top"):
-        return
-    
-    # Get grid bounds
-    grid_left = grid_shape.left.inches if hasattr(grid_shape.left, "inches") else grid_shape.left
-    grid_top = grid_shape.top.inches if hasattr(grid_shape.top, "inches") else grid_shape.top
-    grid_width = grid_shape.width.inches if hasattr(grid_shape.width, "inches") else grid_shape.width
-    grid_height = grid_shape.height.inches if hasattr(grid_shape.height, "inches") else grid_shape.height
-    
-    # Calculate grid positions (3 cols x 4 rows)
-    positions = _calculate_grid_positions(grid_left, grid_top, grid_width, grid_height, cols=3, rows=4, gutter=0.1)
-    
-    # Add images
-    for grid_idx, (left, top, width, height) in enumerate(positions[:12]):
-        if grid_idx >= len(image_urls):
-            break
+        # Calculate 3x4 grid positions
+        cell_width = grid_width / 3
+        cell_height = grid_height / 4
         
-        url = image_urls[grid_idx]
-        if not url:
-            continue
-        
-        image_bytes = _load_image_from_url(url)
-        if image_bytes:
-            _find_or_create_picture(slide, left, top, width, height, image_bytes)
+        image_idx = 0
+        for row in range(4):
+            for col in range(3):
+                if image_idx >= len(image_urls):
+                    break
+                
+                url = image_urls[image_idx]
+                if not url:
+                    image_idx += 1
+                    continue
+                
+                left = grid_left + (col * cell_width) + 0.05
+                top = grid_top + (row * cell_height) + 0.05
+                width = cell_width - 0.1
+                height = cell_height - 0.1
+                
+                image_bytes = _load_image_from_url(url)
+                if image_bytes:
+                    _find_or_create_picture(slide, left, top, width, height, image_bytes)
+                
+                image_idx += 1
+            
+            if image_idx >= len(image_urls):
+                break
+
 
 
 def build_slide4_pdp_benchmark_payload(export_plan: dict, competitor_records: list[dict[str, Any]] | None = None) -> dict[str, Any]:
@@ -378,46 +378,21 @@ def build_slide4_pdp_benchmark_payload(export_plan: dict, competitor_records: li
 
 
 def _apply_slide4_placeholders(slide: Any, payload: dict[str, Any]) -> None:
-    """Replace text placeholders on Slide 4 with label values."""
+    """Replace Slide 4 label placeholders in existing shapes."""
     replacements = {
         "{{slide4_client_label}}": payload.get("slide4_client_label", ""),
         "{{slide4_competitor_1_label}}": payload.get("slide4_competitor_1_label", ""),
         "{{slide4_competitor_2_label}}": payload.get("slide4_competitor_2_label", ""),
     }
     
-    for shape in slide.shapes:
-        if getattr(shape, "has_text_frame", False):
-            for paragraph in shape.text_frame.paragraphs:
-                _replace_runs_preserve_style(paragraph, replacements)
+    _apply_all_replacements_to_slide(slide, replacements)
 
 
 def _apply_slide4_images(slide: Any, payload: dict[str, Any]) -> None:
-    """
-    Populate Slide 4 image grids using existing grid areas.
-    
-    Finds existing grid shapes/areas and populates them with images.
-    Clears existing sample images first.
-    """
-    # Find the three image grid areas
-    client_grid, comp1_grid, comp2_grid = _find_grid_areas_on_slide4(slide)
-    
-    # Clear existing pictures in each grid area
-    for grid in [client_grid, comp1_grid, comp2_grid]:
-        if grid:
-            _clear_pictures_in_shape(grid)
-    
-    # Populate each grid with images
-    if client_grid:
-        client_images = payload.get("slide4_client_images", []) or []
-        _populate_slide4_image_grid_in_bounds(slide, client_grid, client_images)
-    
-    if comp1_grid:
-        comp1_images = payload.get("slide4_competitor_1_images", []) or []
-        _populate_slide4_image_grid_in_bounds(slide, comp1_grid, comp1_images)
-    
-    if comp2_grid:
-        comp2_images = payload.get("slide4_competitor_2_images", []) or []
-        _populate_slide4_image_grid_in_bounds(slide, comp2_grid, comp2_images)
+    """Populate Slide 4 image grids."""
+    # Clear existing pictures and add new ones
+    _clear_pictures_from_slide(slide)
+    _populate_slide4_images(slide, payload)
 
 
 
@@ -636,7 +611,7 @@ def generate_new_audit_powerpoint_from_template(
         _remove_slide_by_title(prs, "Walmart Cash Program Visibility")
     
     # Global replacements
-    replacements = {
+    global_replacements = {
         "{{client_name}}": client_name,
         "{{client_company_name}}": client_company_name,
         "{{audit_date}}": audit_date,
@@ -645,22 +620,21 @@ def generate_new_audit_powerpoint_from_template(
     
     # Add Slide 2 placeholders
     slide2_payload = build_slide2_summary_payload(export_plan)
-    replacements.update(slide2_payload)
-
-    # Process all slides for placeholder replacement
-    for slide in prs.slides:
-        for text_frame in _iter_text_frames_from_shapes(slide.shapes):
-            replace_text_frame_placeholders(text_frame, replacements)
+    global_replacements.update(slide2_payload)
     
-    # Populate Slide 4 with images and labels
-    slide4 = _find_slide_by_title_text(prs, "PDP Content Benchmarking")
+    # Process all slides for placeholder replacement (text only)
+    for slide in prs.slides:
+        _apply_all_replacements_to_slide(slide, global_replacements)
+    
+    # Populate Slide 4 with labels (text replacement)
+    slide4 = _find_slide_by_title(prs, "PDP Content Benchmarking")
     if slide4:
         slide4_payload = build_slide4_pdp_benchmark_payload(
             export_plan, competitor_records=competitor_records or []
         )
         _apply_slide4_placeholders(slide4, slide4_payload)
         _apply_slide4_images(slide4, slide4_payload)
-
+    
     out = io.BytesIO()
     prs.save(out)
     out.seek(0)
