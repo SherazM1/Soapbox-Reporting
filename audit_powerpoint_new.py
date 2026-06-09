@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import re
 from typing import Any
 from urllib.request import urlopen
 
@@ -8,6 +9,10 @@ from pptx import Presentation
 from pptx.util import Inches, Pt
 
 from audit_powerpoint import _format_cover_date
+
+
+PLACEHOLDER_RE = re.compile(r"\{\{[^{}]+\}\}")
+ONLY_PLACEHOLDERS_RE = re.compile(r"^(?:\s*\{\{[^{}]+\}\}\s*)+$")
 
 
 def _safe_text(value: Any) -> str:
@@ -166,6 +171,84 @@ def replace_existing_template_text(prs: Any, replacements: dict[str, str]) -> di
             print(f"[audit_powerpoint_new] Replaced '{target}' {counts[target]} time(s).")
         else:
             print(f"[audit_powerpoint_new] Template text '{target}' was not found.")
+    return counts
+
+
+def _contains_unresolved_placeholder(text: str) -> bool:
+    return bool(PLACEHOLDER_RE.search(text or ""))
+
+
+def _only_unresolved_placeholders(text: str) -> bool:
+    return bool(ONLY_PLACEHOLDERS_RE.fullmatch(text or ""))
+
+
+def _remove_shape(shape: Any) -> bool:
+    element = getattr(shape, "element", None)
+    parent = element.getparent() if element is not None else None
+    if parent is None:
+        return False
+    parent.remove(element)
+    return True
+
+
+def _clear_unresolved_placeholders_in_paragraph(paragraph: Any) -> int:
+    text = paragraph.text or ""
+    if not _contains_unresolved_placeholder(text):
+        return 0
+
+    if _only_unresolved_placeholders(text):
+        _replace_paragraph_text_preserve_style(paragraph, "")
+        return len(PLACEHOLDER_RE.findall(text))
+
+    count = 0
+    for run in getattr(paragraph, "runs", []) or []:
+        run_text = run.text or ""
+        if not _contains_unresolved_placeholder(run_text):
+            continue
+        if _only_unresolved_placeholders(run_text):
+            count += len(PLACEHOLDER_RE.findall(run_text))
+            run.text = ""
+        else:
+            cleaned = PLACEHOLDER_RE.sub("", run_text)
+            count += len(PLACEHOLDER_RE.findall(run_text))
+            run.text = cleaned
+
+    # Fallback for placeholders split across runs.
+    remaining = paragraph.text or ""
+    if _contains_unresolved_placeholder(remaining):
+        count += len(PLACEHOLDER_RE.findall(remaining))
+        _replace_paragraph_text_preserve_style(paragraph, PLACEHOLDER_RE.sub("", remaining))
+    return count
+
+
+def clear_unresolved_placeholder_text(prs: Any) -> dict[str, int]:
+    """Remove placeholder-only shapes and clear any remaining {{...}} text."""
+    counts = {"removed_shapes": 0, "cleared_placeholders": 0}
+    for slide in prs.slides:
+        for shape in list(_walk_shapes(slide.shapes)):
+            if getattr(shape, "has_table", False):
+                for row in shape.table.rows:
+                    for cell in row.cells:
+                        for paragraph in cell.text_frame.paragraphs:
+                            counts["cleared_placeholders"] += _clear_unresolved_placeholders_in_paragraph(paragraph)
+
+            if not getattr(shape, "has_text_frame", False):
+                continue
+
+            shape_text = getattr(shape, "text", "") or ""
+            if _only_unresolved_placeholders(shape_text):
+                if _remove_shape(shape):
+                    counts["removed_shapes"] += 1
+                continue
+
+            for paragraph in shape.text_frame.paragraphs:
+                counts["cleared_placeholders"] += _clear_unresolved_placeholders_in_paragraph(paragraph)
+
+    print(
+        "[audit_powerpoint_new] Removed "
+        f"{counts['removed_shapes']} unresolved placeholder shape(s); cleared "
+        f"{counts['cleared_placeholders']} unresolved placeholder token(s)."
+    )
     return counts
 
 
@@ -659,6 +742,7 @@ def generate_new_audit_powerpoint_from_template(
         "Honest": client_name,
     }
     replace_existing_template_text(prs, template_replacements)
+    clear_unresolved_placeholder_text(prs)
     
     out = io.BytesIO()
     prs.save(out)
