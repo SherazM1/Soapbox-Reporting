@@ -853,11 +853,14 @@ def generate_new_audit_powerpoint_from_template(
 
     slide4 = _find_slide_by_title(prs, "PDP Content Benchmarking")
     if slide4 is None:
-        print("[audit_powerpoint_new] Slide 4 'PDP Content Benchmarking' was not found.")
+        print(
+            "[audit_powerpoint_new] Slide 4 title was not found; "
+            "PDP benchmarking was skipped."
+        )
     else:
         slide4_payload = build_slide4_pdp_benchmark_payload(
             export_plan,
-            competitor_records=competitor_records,
+            competitor_records,
         )
         _apply_slide4_content(prs, slide4, slide4_payload)
 
