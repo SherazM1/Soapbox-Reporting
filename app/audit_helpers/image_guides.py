@@ -24,7 +24,7 @@ _FOOD_BEVERAGE_ALIASES = {
     "food beverage",
     "food and beverage",
     "food_beverageimg",
-    "food beverageimg",
+    "food beverageimg",  
 }
 
 _BEAUTY_ALIASES = {

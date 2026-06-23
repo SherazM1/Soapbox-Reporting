@@ -134,8 +134,12 @@ def _walk_shapes(shapes: Any) -> list[Any]:
 
 
 def _find_slide_by_title(prs: Any, title_text: str) -> Any:
-    """Find a slide by searching for title text in any shape."""
-    title_l = title_text.lower()
+    """Find a slide by exact title text first, then fall back to containment."""
+    title_l = title_text.strip().lower()
+    for slide in prs.slides:
+        for shape in _walk_shapes(slide.shapes):
+            if _shape_text(shape).strip().lower() == title_l:
+                return slide
     for slide in prs.slides:
         for shape in _walk_shapes(slide.shapes):
             text = _shape_text(shape).lower()
@@ -748,6 +752,140 @@ def _apply_slide2_summary(slide: Any, payload: dict[str, Any]) -> None:
         _replace_bullet_shape_text(bullet_shapes[index], bullets[:4])
 
 
+def _replace_cell_text_preserve_style(cell: Any, text: str) -> None:
+    text_frame = getattr(cell, "text_frame", None)
+    if text_frame is None or not text_frame.paragraphs:
+        cell.text = _safe_text(text)
+        return
+    _replace_paragraph_text_preserve_style(text_frame.paragraphs[0], text)
+    for paragraph in text_frame.paragraphs[1:]:
+        _replace_paragraph_text_preserve_style(paragraph, "")
+
+
+def _slide6_display_label(payload: dict[str, Any], value: Any, context: str) -> str:
+    label = _safe_text(value)
+    if label in {"Strong", "Moderate", "Partial", "Limited"}:
+        return label
+    warning = (
+        f"{context} produced invalid visibility '{label or '<empty>'}'; "
+        "replaced with Limited."
+    )
+    payload.setdefault("warnings", []).append(warning)
+    print(f"[audit_powerpoint_new] Slide 6 warning: {warning}")
+    return "Limited"
+
+
+def _fit_slide6_client_header(cell: Any, client_label: str) -> None:
+    if len(client_label) <= 18:
+        return
+    text_frame = cell.text_frame
+    text_frame.word_wrap = True
+    text_frame.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
+    font_size = 12 if len(client_label) <= 28 else 10 if len(client_label) <= 40 else 8
+    for paragraph in text_frame.paragraphs:
+        for run in paragraph.runs:
+            run.font.size = Pt(font_size)
+
+
+def _apply_slide6_visibility(slide: Any, payload: dict[str, Any]) -> None:
+    if not payload:
+        return
+    segments = list(payload.get("segments", []) or [])
+    if len(segments) != 6:
+        print(
+            "[audit_powerpoint_new] Slide 6 visibility payload did not contain "
+            "exactly six segments; table replacement was skipped."
+        )
+        return
+
+    table_shape = next(
+        (
+            shape
+            for shape in _walk_shapes(slide.shapes)
+            if getattr(shape, "has_table", False)
+            and len(shape.table.rows) >= 7
+            and len(shape.table.columns) >= 3
+            and "search segment" in _safe_text(shape.table.cell(0, 0).text).lower()
+        ),
+        None,
+    )
+    if table_shape is None:
+        print(
+            "[audit_powerpoint_new] Slide 6 search-segment table was not found; "
+            "visibility rows were skipped."
+        )
+    else:
+        table = table_shape.table
+        client_label = _safe_text(payload.get("client_label")) or "Client"
+        _replace_cell_text_preserve_style(
+            table.cell(0, 2),
+            client_label,
+        )
+        _fit_slide6_client_header(table.cell(0, 2), client_label)
+        for row_index, segment in enumerate(segments, start=1):
+            _replace_cell_text_preserve_style(table.cell(row_index, 0), segment.get("segment", ""))
+            _replace_cell_text_preserve_style(
+                table.cell(row_index, 1),
+                _slide6_display_label(
+                    payload,
+                    segment.get("competitor_visibility"),
+                    f"row {row_index} competitor",
+                ),
+            )
+            _replace_cell_text_preserve_style(
+                table.cell(row_index, 2),
+                _slide6_display_label(
+                    payload,
+                    segment.get("client_visibility"),
+                    f"row {row_index} client",
+                ),
+            )
+
+    text_shapes = [
+        shape
+        for shape in _walk_shapes(slide.shapes)
+        if getattr(shape, "has_text_frame", False)
+        and _shape_text(shape).strip().lower() != "digital shelf ownership"
+    ]
+    intro_shape = next(
+        (
+            shape
+            for shape in text_shapes
+            if "competitors currently own more walmart search paths" in _shape_text(shape).lower()
+        ),
+        None,
+    )
+    if intro_shape is None:
+        intro_shape = min(
+            (shape for shape in text_shapes if int(getattr(shape, "top", 0) or 0) < Inches(2.5)),
+            key=lambda shape: int(getattr(shape, "top", 0) or 0),
+            default=None,
+        )
+    if intro_shape is not None:
+        _replace_shape_text_preserve_style(intro_shape, payload.get("intro", ""))
+    else:
+        print("[audit_powerpoint_new] Slide 6 intro shape was not found.")
+
+    takeaway_shape = next(
+        (
+            shape
+            for shape in text_shapes
+            if "walmart shoppers are highly search-driven" in _shape_text(shape).lower()
+        ),
+        None,
+    )
+    if takeaway_shape is None:
+        takeaway_shape = max(
+            text_shapes,
+            key=lambda shape: int(getattr(shape, "top", 0) or 0),
+            default=None,
+        )
+    if takeaway_shape is not None:
+        _replace_shape_text_preserve_style(takeaway_shape, payload.get("takeaway", ""))
+    else:
+        print("[audit_powerpoint_new] Slide 6 takeaway shape was not found.")
+
+
 def generate_new_audit_powerpoint_from_template(
     *, export_plan: dict, template_path: str, include_slide_9: bool = False, competitor_records: list[dict[str, Any]] | None = None
 ) -> bytes:
@@ -790,6 +928,18 @@ def generate_new_audit_powerpoint_from_template(
             competitor_records,
         )
         _apply_slide4_content(prs, slide4, slide4_payload)
+
+    slide6 = _find_slide_by_title(prs, "Digital Shelf Ownership")
+    if slide6 is None:
+        print(
+            "[audit_powerpoint_new] Slide 6 title was not found; "
+            "digital shelf alignment was skipped."
+        )
+    else:
+        _apply_slide6_visibility(
+            slide6,
+            export_plan.get("slide6_visibility", {}) or {},
+        )
 
     clear_unresolved_placeholder_text(prs)
     

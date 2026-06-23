@@ -751,6 +751,56 @@ def _render_slide2_summary_preview_v2(plan: dict[str, Any]) -> None:
                 st.caption("No Slide 2 bullet debug metadata available.")
 
 
+def _render_slide6_visibility_preview_v2(plan: dict[str, Any]) -> None:
+    visibility = (plan or {}).get("slide6_visibility", {}) or {}
+    if not visibility:
+        return
+    with st.expander("Slide 6 Visibility Preview", expanded=False):
+        st.caption(
+            f"Pack: {visibility.get('pack_id') or '-'} | "
+            f"Category phrase: {visibility.get('category_phrase') or '-'} | "
+            f"Client: {visibility.get('client_label') or 'Client'}"
+        )
+        st.write(visibility.get("intro", ""))
+        rows = []
+        for item in visibility.get("segments", []) or []:
+            debug = item.get("debug", {}) or {}
+            fields = debug.get("matched_fields", {}) or {}
+            terms = debug.get("matched_terms", {}) or {}
+            rows.append(
+                {
+                    "Search Segment": item.get("segment", ""),
+                    "Competitor": item.get("competitor_visibility", ""),
+                    "Competitor Support": (
+                        f"{item.get('competitor_fraction', '0/0')} "
+                        f"({item.get('competitor_percentage', 0)}%)"
+                    ),
+                    "Client": item.get("client_visibility", ""),
+                    "Client Support": (
+                        f"{item.get('client_fraction', '0/0')} "
+                        f"({item.get('client_percentage', 0)}%)"
+                    ),
+                    "Segment ID": debug.get("segment_id", ""),
+                    "Selected Pack": debug.get("selected_pack", visibility.get("pack_id", "")),
+                    "Matched Fields": (
+                        f"Competitor: {', '.join(fields.get('competitor', []) or [])}; "
+                        f"Client: {', '.join(fields.get('client', []) or [])}"
+                    ),
+                    "Matched Terms": (
+                        f"Competitor: {', '.join(terms.get('competitor', []) or [])}; "
+                        f"Client: {', '.join(terms.get('client', []) or [])}"
+                    ),
+                }
+            )
+            for warning in item.get("warnings", []) or []:
+                st.warning(f"{item.get('segment', 'Segment')}: {warning}")
+        if rows:
+            st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
+        for warning in visibility.get("warnings", []) or []:
+            st.warning(warning)
+        st.write(visibility.get("takeaway", ""))
+
+
 def render_primary_pdp_upload_v2() -> None:
     with st.container(border=True):
         st.markdown("### Primary Audit Extract Upload")
@@ -2135,6 +2185,7 @@ def render_audit_powerpoint_export_v2() -> None:
 
     _render_slide2_summary_preview_v2(plan)
     _render_slide4_finding_preview_v2(plan)
+    _render_slide6_visibility_preview_v2(plan)
 
     included_count = int((plan.get("summary", {}) or {}).get("included_primary_entry_count", 0))
     if included_count <= 0:

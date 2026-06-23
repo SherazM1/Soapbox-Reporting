@@ -5,6 +5,7 @@ from typing import Any
 
 from app.audit_helpers.slide2_summary import build_slide2_summary_payload
 from app.audit_helpers.slide4_findings import build_slide4_group_findings
+from app.audit_helpers.slide6_visibility import build_slide6_visibility
 
 
 def _text_has_value(value: Any) -> bool:
@@ -515,11 +516,18 @@ def build_audit_export_plan(
     audit_metadata = {
         "audit_id": metadata_src.get("audit_id", ""),
         "client_name": metadata_src.get("client_name", ""),
+        "client_company_name": metadata_src.get("client_company_name", ""),
         "retailer": metadata_src.get("retailer", ""),
         "audit_date": metadata_src.get("audit_date", ""),
         "status": metadata_src.get("status", ""),
     }
     slide2_summary = build_slide2_summary_payload(
+        primary_records=primary_records_for_summary,
+        competitor_records=competitor_records,
+        slide4_findings=slide4_findings,
+        audit_metadata=audit_metadata,
+    )
+    slide6_visibility = build_slide6_visibility(
         primary_records=primary_records_for_summary,
         competitor_records=competitor_records,
         slide4_findings=slide4_findings,
@@ -537,4 +545,5 @@ def build_audit_export_plan(
         "competitor_graphics_payload": competitor_payload,
         "slide2_summary": slide2_summary,
         "slide4_findings": slide4_findings,
+        "slide6_visibility": slide6_visibility,
     }
