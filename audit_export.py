@@ -175,6 +175,25 @@ def resolve_primary_images_payload(entry: dict[str, Any]) -> list[dict[str, Any]
     return ordered[:6]
 
 
+def _ordered_image_payload(record: dict[str, Any]) -> list[dict[str, Any]]:
+    ordered: list[dict[str, Any]] = []
+    for position, image in enumerate(record.get("images", []) or []):
+        if not isinstance(image, dict):
+            continue
+        ordered.append(
+            {
+                "index": image.get("index", position),
+                "url": image.get("url", ""),
+                "is_hero": bool(image.get("is_hero", position == 0)),
+                "width": image.get("width"),
+                "height": image.get("height"),
+                "dimensions": image.get("dimensions", ""),
+                "dimensions_text": image.get("dimensions_text", ""),
+            }
+        )
+    return ordered
+
+
 def build_product_slide_pair(entry: dict[str, Any], pair_order: int) -> dict[str, Any]:
     record = entry.get("cached_record", {}) or {}
     outputs = resolve_effective_outputs(entry)
@@ -188,9 +207,15 @@ def build_product_slide_pair(entry: dict[str, Any], pair_order: int) -> dict[str
         "product_title": entry.get("product_title", ""),
         "item_id": entry.get("item_id", ""),
         "source_url": record.get("source_url", ""),
+        "brand": record.get("brand", ""),
+        "category": record.get("category", ""),
+        "product_type": record.get("product_type") or record.get("subcategory", ""),
+        "ordered_images": _ordered_image_payload(record),
         "selected_primary_image": primary_image,
         "selected_primary_images": primary_images,
         "image_count": int(record.get("image_count", 0) or 0),
+        "style_guide_match": dict(entry.get("style_guide_match", {}) or {}),
+        "ingest_metadata": dict(record.get("ingest_metadata", {}) or {}),
         "extraction_status": record.get("extraction_status", ""),
         "reviews_summary": record.get("reviews_summary", {}),
     }

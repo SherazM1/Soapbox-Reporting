@@ -1,18 +1,36 @@
 from __future__ import annotations
 
 import io
+import math
 import re
 from typing import Any
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
+from PIL import Image
 from pptx import Presentation
+from pptx.enum.text import MSO_AUTO_SIZE
 from pptx.util import Inches, Pt
 
+from app.audit_helpers.image_guides import (
+    get_image_guide_page,
+    load_image_guide,
+    resolve_image_guide_category,
+)
 from audit_powerpoint import _format_cover_date
 
 
 PLACEHOLDER_RE = re.compile(r"\{\{[^{}]+\}\}")
 ONLY_PLACEHOLDERS_RE = re.compile(r"^(?:\s*\{\{[^{}]+\}\}\s*)+$")
+SLIDE4_SLOT_LABELS = {
+    "silo_front": "Front Silo",
+    "graphic_ingredients": "Ingredients",
+    "silo_alt_in_pack": "Alt In-Pack",
+    "lifestyle_in_use": "Lifestyle",
+    "graphic_guarantee": "Guarantee",
+    "feature_graphic": "Features",
+    "dimensions": "Dimensions",
+    "graphic_nutrition": "Nutrition",
+}
 
 
 def _safe_text(value: Any) -> str:
@@ -266,259 +284,349 @@ def _find_pictures_in_region(slide: Any, region_left: float, region_top: float, 
     return pictures
 
 
-def _get_image_urls_from_record(record: dict[str, Any]) -> list[str]:
-    """Extract up to 12 image URLs from a cached record."""
-    images = record.get("images", []) or []
-    urls = []
-    for img in images:
-        url = img.get("url", "").strip()
-        if url and len(urls) < 12:
-            urls.append(url)
-    return urls
-
-
-def _get_competitor_brand_images(
-    competitor_payload: dict[str, Any], competitor_records: list[dict[str, Any]]
-) -> tuple[str, list[str], str, list[str]]:
-    """
-    Extract brand names and image lists for up to 2 competitors.
-    Returns: (brand1, images1, brand2, images2)
-    """
-    # Build a map of record_id to record for quick lookup
-    record_map = {r.get("record_id", ""): r for r in competitor_records if r.get("record_id")}
-    
-    # Group images by record_id to identify unique competitors
-    competitor_groups: dict[str, list[str]] = {}
-    
-    ordered_assignments = competitor_payload.get("ordered_assignments", []) or []
-    for assignment in ordered_assignments:
-        record_id = assignment.get("record_id", "")
-        url = assignment.get("url", "").strip()
-        if url and len(competitor_groups.get(record_id, [])) < 12:
-            if record_id not in competitor_groups:
-                competitor_groups[record_id] = []
-            competitor_groups[record_id].append(url)
-    
-    # Extract brand names and images for first two competitors
-    brand1, images1 = "", []
-    brand2, images2 = "", []
-    
-    for idx, record_id in enumerate(competitor_groups.keys()):
-        if idx >= 2:
-            break
-        record = record_map.get(record_id, {})
-        brand = _safe_text(record.get("brand", ""))
-        images = competitor_groups[record_id]
-        
-        if idx == 0:
-            brand1 = brand or "Competitor 1"
-            images1 = images
-        else:
-            brand2 = brand or "Competitor 2"
-            images2 = images
-    
-    # If only one competitor, ensure brand2 is fallback label
-    if brand1 and not brand2:
-        brand2 = "Competitor 2"
-    
-    return brand1, images1, brand2, images2
-
-
-def _calculate_grid_positions(container_left: float, container_top: float, container_width: float, container_height: float, cols: int = 3, rows: int = 4, gutter: float = 0.15) -> list[tuple[float, float, float, float]]:
-    """
-    Calculate positions for a grid of images inside a container.
-    Returns list of (left, top, width, height) for each grid cell in column-major order.
-    gutter is in inches.
-    """
-    # Account for gutters in available space
-    available_width = container_width - (gutter * (cols - 1))
-    available_height = container_height - (gutter * (rows - 1))
-    
-    cell_width = available_width / cols
-    cell_height = available_height / rows
-    
-    positions = []
-    for row in range(rows):
-        for col in range(cols):
-            left = container_left + (col * (cell_width + gutter))
-            top = container_top + (row * (cell_height + gutter))
-            positions.append((left, top, cell_width, cell_height))
-    
-    return positions
-
-
 def _load_image_from_url(url: str) -> bytes | None:
     """Download image from URL and return bytes. Returns None on failure."""
     try:
-        with urlopen(url, timeout=5) as response:
+        request = Request(
+            url,
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/126.0.0.0 Safari/537.36"
+                )
+            },
+        )
+        with urlopen(request, timeout=10) as response:
             return response.read()
-    except Exception:
+    except Exception as exc:
+        print(f"[audit_powerpoint_new] Slide 4 image download failed: {url} ({exc})")
         return None
 
 
-def _find_or_create_picture(slide: Any, left: float, top: float, width: float, height: float, image_bytes: bytes) -> None:
-    """Add a picture to a slide at the specified position."""
+def _add_contained_picture(
+    slide: Any,
+    *,
+    left: int,
+    top: int,
+    width: int,
+    height: int,
+    image_bytes: bytes,
+) -> None:
+    """Add an uncropped picture contained and centered within an EMU cell."""
     try:
-        import io as io_module
-        pic = slide.shapes.add_picture(
-            io_module.BytesIO(image_bytes),
-            left=Inches(left),
-            top=Inches(top),
-            width=Inches(width),
-            height=Inches(height),
+        with Image.open(io.BytesIO(image_bytes)) as image:
+            image_width, image_height = image.size
+        if image_width <= 0 or image_height <= 0:
+            return
+        scale = min(width / image_width, height / image_height)
+        rendered_width = max(1, int(image_width * scale))
+        rendered_height = max(1, int(image_height * scale))
+        rendered_left = left + (width - rendered_width) // 2
+        rendered_top = top + (height - rendered_height) // 2
+        slide.shapes.add_picture(
+            io.BytesIO(image_bytes),
+            left=rendered_left,
+            top=rendered_top,
+            width=rendered_width,
+            height=rendered_height,
         )
-    except Exception:
-        pass
+    except Exception as exc:
+        print(f"[audit_powerpoint_new] Slide 4 image placement failed: {exc}")
 
 
+def _normalize_ordered_images(record: dict[str, Any]) -> list[dict[str, Any]]:
+    images = record.get("ordered_images")
+    if not isinstance(images, list):
+        images = record.get("images", []) or []
+    normalized: list[dict[str, Any]] = []
+    for position, image in enumerate(images):
+        if not isinstance(image, dict):
+            continue
+        normalized.append(
+            {
+                "index": image.get("index", position),
+                "url": _safe_text(image.get("url", "")),
+                "is_hero": bool(image.get("is_hero", position == 0)),
+                "width": image.get("width"),
+                "height": image.get("height"),
+                "dimensions": image.get("dimensions", ""),
+                "dimensions_text": image.get("dimensions_text", ""),
+            }
+        )
+    return normalized[:12]
 
 
-
-def _clear_pictures_from_slide(slide: Any) -> None:
-    """Remove all picture shapes from a slide."""
-    shapes_to_remove = []
-    for shape in slide.shapes:
-        if hasattr(shape, "image") or "picture" in str(shape.shape_type).lower():
-            shapes_to_remove.append(shape)
-    
-    for shape in shapes_to_remove:
-        sp = shape.element
-        sp.getparent().remove(sp)
-
-
-def _populate_slide4_images(slide: Any, payload: dict[str, Any]) -> None:
-    """
-    Populate Slide 4 images by placing them in a simple 3x4 grid layout.
-    Uses hard-coded positions for the three grid areas.
-    """
-    # Define approximate grid areas for the three competitors
-    # Format: (left_inches, top_inches, width_inches, height_inches)
-    grid_areas = {
-        "client": (0.5, 2.0, 2.2, 3.0),
-        "competitor1": (2.9, 2.0, 2.2, 3.0),
-        "competitor2": (5.3, 2.0, 2.2, 3.0),
+def _build_image_guide_match(category: str, product_type: str) -> dict[str, Any]:
+    category_key = resolve_image_guide_category(category)
+    page = get_image_guide_page(category_key, product_type)
+    if not page:
+        return {
+            "matched": False,
+            "category_key": category_key,
+            "product_type": product_type,
+        }
+    guide = load_image_guide(category_key)
+    slot_definitions = guide.get("slot_definitions", {}) or {}
+    required_slots = list(page.get("required_slots", []) or [])
+    return {
+        "matched": True,
+        "category_key": category_key,
+        "product_type": product_type,
+        "page_key": page.get("page_key"),
+        "page_display_name": page.get("display_name", ""),
+        "required_slots": required_slots,
+        "required_slot_labels": [
+            SLIDE4_SLOT_LABELS.get(slot)
+            or _safe_text((slot_definitions.get(slot, {}) or {}).get("label"))
+            or str(slot).replace("_", " ").title()
+            for slot in required_slots
+        ],
+        "additional_recommendations": list(page.get("additional_recommendations", []) or []),
     }
-    
-    # Get image lists
-    client_images = payload.get("slide4_client_images", []) or []
-    comp1_images = payload.get("slide4_competitor_1_images", []) or []
-    comp2_images = payload.get("slide4_competitor_2_images", []) or []
-    
-    all_image_lists = [
-        ("client", client_images),
-        ("competitor1", comp1_images),
-        ("competitor2", comp2_images),
-    ]
-    
-    # For each grid area, place images
-    for grid_name, image_urls in all_image_lists:
-        grid_left, grid_top, grid_width, grid_height = grid_areas[grid_name]
-        
-        # Calculate 3x4 grid positions
-        cell_width = grid_width / 3
-        cell_height = grid_height / 4
-        
-        image_idx = 0
-        for row in range(4):
-            for col in range(3):
-                if image_idx >= len(image_urls):
-                    break
-                
-                url = image_urls[image_idx]
-                if not url:
-                    image_idx += 1
-                    continue
-                
-                left = grid_left + (col * cell_width) + 0.05
-                top = grid_top + (row * cell_height) + 0.05
-                width = cell_width - 0.1
-                height = cell_height - 0.1
-                
-                image_bytes = _load_image_from_url(url)
-                if image_bytes:
-                    _find_or_create_picture(slide, left, top, width, height, image_bytes)
-                
-                image_idx += 1
-            
-            if image_idx >= len(image_urls):
-                break
 
 
+def _parse_image_dimensions(image: dict[str, Any]) -> tuple[int, int] | None:
+    try:
+        width = int(float(str(image.get("width", "")).replace(",", "").strip()))
+        height = int(float(str(image.get("height", "")).replace(",", "").strip()))
+        if width > 0 and height > 0:
+            return width, height
+    except (TypeError, ValueError):
+        pass
+    raw = _safe_text(image.get("dimensions_text") or image.get("dimensions"))
+    match = re.search(r"(\d{2,5})\s*(?:x|×)\s*(\d{2,5})", raw, flags=re.IGNORECASE)
+    if match:
+        return int(match.group(1)), int(match.group(2))
+    return None
 
-def build_slide4_pdp_benchmark_payload(export_plan: dict, competitor_records: list[dict[str, Any]] | None = None) -> dict[str, Any]:
-    """
-    Build Slide 4 content: labels and image lists for client and competitors.
-    
-    Returns a dictionary with:
-    - slide4_client_label: Client/company name
-    - slide4_competitor_1_label: First competitor brand or fallback
-    - slide4_competitor_2_label: Second competitor brand or fallback
-    - slide4_client_images: List of image URLs (up to 12)
-    - slide4_competitor_1_images: List of image URLs (up to 12)
-    - slide4_competitor_2_images: List of image URLs (up to 12)
-    """
+
+def _build_slide4_bullets(images: list[dict[str, Any]], guide_match: dict[str, Any]) -> list[str]:
+    bullets = [f"Carousel: {len(images)} ordered images"]
+    dimensions = [dims for image in images if (dims := _parse_image_dimensions(image))]
+    unique_dimensions = list(dict.fromkeys(dimensions))
+    if len(unique_dimensions) == 1:
+        width, height = unique_dimensions[0]
+        suffix = " throughout" if len(dimensions) == len(images) else " detected"
+        bullets.append(f"Dimensions: {width} x {height}{suffix}")
+    elif len(unique_dimensions) > 1:
+        bullets.append(f"Dimensions: {len(unique_dimensions)} detected asset sizes")
+
+    if guide_match.get("matched"):
+        labels = list(guide_match.get("required_slot_labels", []) or [])
+        if labels:
+            bullets.append("Recommended opening: " + " / ".join(labels[:3]))
+        if len(labels) > 3:
+            bullets.append("Recommended support: " + " / ".join(labels[3:6]))
+        additional = list(guide_match.get("additional_recommendations", []) or [])
+        if additional:
+            opportunity = _safe_text(additional[0]).split(":", 1)[0]
+            if opportunity:
+                bullets.append(f"Guide opportunity: {opportunity}")
+    return bullets[:5]
+
+
+def _build_slide4_column(record: dict[str, Any], fallback_label: str) -> dict[str, Any]:
+    if not record:
+        return {
+            "label": fallback_label,
+            "brand": "",
+            "category": "",
+            "product_type": "",
+            "ordered_images": [],
+            "image_count": 0,
+            "image_guide_match": {"matched": False},
+            "bullets": [],
+        }
+    images = _normalize_ordered_images(record)
+    product_type = _safe_text(record.get("product_type") or record.get("subcategory"))
+    category = _safe_text(record.get("category"))
+    guide_match = _build_image_guide_match(category, product_type)
+    return {
+        "label": _safe_text(record.get("brand")) or fallback_label,
+        "brand": _safe_text(record.get("brand")),
+        "category": category,
+        "product_type": product_type,
+        "ordered_images": images,
+        "image_count": int(record.get("image_count", len(images)) or len(images)),
+        "image_guide_match": guide_match,
+        "bullets": _build_slide4_bullets(images, guide_match),
+    }
+
+
+def build_slide4_pdp_benchmark_payload(
+    export_plan: dict, competitor_records: list[dict[str, Any]] | None = None
+) -> dict[str, Any]:
+    """Build deterministic Slide 4 content from one client and two competitor PDPs."""
     metadata = export_plan.get("audit_metadata", {}) or {}
     product_pairs = export_plan.get("product_slide_pairs", []) or []
-    competitor_payload = export_plan.get("competitor_graphics_payload", {}) or {}
-    
     client_company_name = _safe_text(metadata.get("client_company_name", ""))
     client_name = _safe_text(metadata.get("client_name", ""))
-    company = client_company_name or client_name
-    
-    # Extract client images from first product
-    client_images = []
-    if product_pairs:
-        first_pair = product_pairs[0]
-        pdp_slide = first_pair.get("pdp_slide", {}) or {}
-        record_id = pdp_slide.get("record_id", "")
-        
-        # Try to get images from selected_primary_images first
-        primary_images = pdp_slide.get("selected_primary_images", []) or []
-        if primary_images:
-            client_images = [img.get("url", "") for img in primary_images if img.get("url")]
-    
-    # Extract competitor images and brands
-    competitor_records = competitor_records or []
-    brand1, images1, brand2, images2 = _get_competitor_brand_images(competitor_payload, competitor_records)
-    
-    # Ensure fallback labels
-    label1 = brand1 or "Competitor 1"
-    label2 = brand2 or "Competitor 2"
-    
-    return {
-        "slide4_client_label": company,
-        "slide4_competitor_1_label": label1,
-        "slide4_competitor_2_label": label2,
-        "slide4_client_images": client_images,
-        "slide4_competitor_1_images": images1,
-        "slide4_competitor_2_images": images2,
-    }
+    client_record = (
+        dict((product_pairs[0].get("pdp_slide", {}) or {}))
+        if product_pairs
+        else {}
+    )
+    client_fallback = (
+        client_company_name
+        or client_name
+        or _safe_text(client_record.get("brand"))
+        or "Client"
+    )
+    client_column = _build_slide4_column(client_record, client_fallback)
+    client_column["label"] = client_company_name or client_name or client_column["label"]
+
+    competitor_records = list(competitor_records or [])
+    competitor_columns = [
+        _build_slide4_column(
+            competitor_records[index] if index < len(competitor_records) else {},
+            f"Competitor {index + 1}",
+        )
+        for index in range(2)
+    ]
+    return {"columns": [client_column, *competitor_columns]}
 
 
-def _apply_slide4_placeholders(slide: Any, payload: dict[str, Any]) -> None:
-    """Replace Slide 4 label placeholders in existing shapes."""
-    replacements = {
-        "{{slide4_client_label}}": payload.get("slide4_client_label", ""),
-        "{{slide4_competitor_1_label}}": payload.get("slide4_competitor_1_label", ""),
-        "{{slide4_competitor_2_label}}": payload.get("slide4_competitor_2_label", ""),
-    }
-
+def _slide4_label_shapes(slide: Any) -> list[Any]:
+    candidates = []
     for shape in _walk_shapes(slide.shapes):
-        if getattr(shape, "has_text_frame", False):
-            for paragraph in shape.text_frame.paragraphs:
-                _replace_text_in_paragraph(paragraph, replacements)
-        if getattr(shape, "has_table", False):
-            for row in shape.table.rows:
-                for cell in row.cells:
-                    for paragraph in cell.text_frame.paragraphs:
-                        _replace_text_in_paragraph(paragraph, replacements)
+        if not getattr(shape, "has_text_frame", False):
+            continue
+        text = _shape_text(shape)
+        if not text or len(text) > 80:
+            continue
+        top = int(getattr(shape, "top", 0) or 0)
+        if Inches(2.1) <= top <= Inches(2.8):
+            candidates.append(shape)
+    return sorted(candidates, key=lambda shape: int(getattr(shape, "left", 0) or 0))[:3]
 
 
-def _apply_slide4_images(slide: Any, payload: dict[str, Any]) -> None:
-    """Populate Slide 4 image grids."""
-    # Clear existing pictures and add new ones
-    _clear_pictures_from_slide(slide)
-    _populate_slide4_images(slide, payload)
+def _slide4_bullet_shapes(slide: Any) -> list[Any]:
+    candidates = [
+        shape
+        for shape in slide.shapes
+        if getattr(shape, "has_text_frame", False)
+        and int(getattr(shape, "top", 0) or 0) >= Inches(5.4)
+        and int(getattr(shape, "height", 0) or 0) >= Inches(0.8)
+    ]
+    return sorted(candidates, key=lambda shape: int(getattr(shape, "left", 0) or 0))[:3]
+
+
+def _replace_bullet_shape_text(shape: Any, bullets: list[str]) -> None:
+    paragraphs = list(shape.text_frame.paragraphs)
+    for index, paragraph in enumerate(paragraphs):
+        _replace_paragraph_text_preserve_style(
+            paragraph, bullets[index] if index < len(bullets) else ""
+        )
+
+
+def _fit_slide4_label(shape: Any) -> None:
+    text_frame = shape.text_frame
+    text_frame.word_wrap = False
+    text_frame.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
+    label_text = _shape_text(shape)
+    if len(label_text) > 12:
+        font_size = Pt(10 if len(label_text) > 20 else 12)
+        for paragraph in text_frame.paragraphs:
+            for run in paragraph.runs:
+                run.font.size = font_size
+
+
+def _slide4_picture_containers(prs: Any, slide: Any) -> list[Any]:
+    slide_width = int(prs.slide_width)
+    slide_height = int(prs.slide_height)
+    pictures = [
+        shape
+        for shape in slide.shapes
+        if hasattr(shape, "image") or "picture" in str(shape.shape_type).lower()
+    ]
+    on_slide = [
+        shape
+        for shape in pictures
+        if int(shape.left) < slide_width
+        and int(shape.top) < slide_height
+        and int(shape.left + shape.width) > 0
+        and int(shape.top + shape.height) > 0
+    ]
+    return sorted(on_slide, key=lambda shape: int(shape.left))[:3]
+
+
+def _populate_slide4_carousel(
+    slide: Any,
+    *,
+    container: tuple[int, int, int, int],
+    images: list[dict[str, Any]],
+) -> None:
+    usable_images = [image for image in images[:12] if _safe_text(image.get("url"))]
+    if not usable_images:
+        return
+    left, top, width, height = container
+    columns = 3
+    rows = max(1, math.ceil(len(usable_images) / columns))
+    gutter = Inches(0.06)
+    cell_width = int((width - gutter * (columns - 1)) / columns)
+    cell_height = int((height - gutter * (rows - 1)) / rows)
+    for position, image in enumerate(usable_images):
+        row, column = divmod(position, columns)
+        cell_left = int(left + column * (cell_width + gutter))
+        cell_top = int(top + row * (cell_height + gutter))
+        image_bytes = _load_image_from_url(_safe_text(image.get("url")))
+        if image_bytes is None:
+            continue
+        _add_contained_picture(
+            slide,
+            left=cell_left,
+            top=cell_top,
+            width=cell_width,
+            height=cell_height,
+            image_bytes=image_bytes,
+        )
+
+
+def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None:
+    columns = list(payload.get("columns", []) or [])[:3]
+    while len(columns) < 3:
+        columns.append({"label": f"Competitor {len(columns)}", "ordered_images": [], "bullets": []})
+
+    labels = _slide4_label_shapes(slide)
+    bullets = _slide4_bullet_shapes(slide)
+    containers = _slide4_picture_containers(prs, slide)
+    if len(labels) < 3 or len(bullets) < 3 or len(containers) < 3:
+        print(
+            "[audit_powerpoint_new] Slide 4 template shapes incomplete; "
+            "leaving the slide without floating replacement content."
+        )
+        return
+
+    container_bounds = [
+        (int(shape.left), int(shape.top), int(shape.width), int(shape.height))
+        for shape in containers
+    ]
+    for shape in containers:
+        _remove_shape(shape)
+    for shape in list(slide.shapes):
+        if not (hasattr(shape, "image") or "picture" in str(shape.shape_type).lower()):
+            continue
+        if (
+            int(shape.left) < 0
+            or int(shape.top) < 0
+            or int(shape.left + shape.width) > int(prs.slide_width)
+            or int(shape.top + shape.height) > int(prs.slide_height)
+        ):
+            _remove_shape(shape)
+
+    for index, column in enumerate(columns):
+        _replace_shape_text_preserve_style(labels[index], column.get("label", ""))
+        _fit_slide4_label(labels[index])
+        _replace_bullet_shape_text(bullets[index], list(column.get("bullets", []) or []))
+        left, top, width, height = container_bounds[index]
+        bullet_top = int(bullets[index].top)
+        height = max(1, min(height, bullet_top - Inches(0.05) - top))
+        _populate_slide4_carousel(
+            slide,
+            container=(left, top, width, height),
+            images=list(column.get("ordered_images", []) or []),
+        )
 
 
 
@@ -742,6 +850,17 @@ def generate_new_audit_powerpoint_from_template(
         "Honest": client_name,
     }
     replace_existing_template_text(prs, template_replacements)
+
+    slide4 = _find_slide_by_title(prs, "PDP Content Benchmarking")
+    if slide4 is None:
+        print("[audit_powerpoint_new] Slide 4 'PDP Content Benchmarking' was not found.")
+    else:
+        slide4_payload = build_slide4_pdp_benchmark_payload(
+            export_plan,
+            competitor_records=competitor_records,
+        )
+        _apply_slide4_content(prs, slide4, slide4_payload)
+
     clear_unresolved_placeholder_text(prs)
     
     out = io.BytesIO()

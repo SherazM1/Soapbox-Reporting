@@ -2105,17 +2105,20 @@ def render_content_auditing() -> None:
     render_audit_setup()
     st.divider()
 
-    st.header("Primary Products")
-    render_primary_pdp_upload_v2()
+    primary_upload_col, competitor_upload_col = st.columns(2)
+    with primary_upload_col:
+        st.header("Primary Products")
+        render_primary_pdp_upload_v2()
+    with competitor_upload_col:
+        st.header("Competitor Graphics")
+        render_competitor_pdp_upload_v2()
+
     render_extracted_primary_product_entries_v2()
     st.divider()
 
-    st.header("Competitor Graphics")
-    render_competitor_pdp_upload_v2()
     render_extracted_competitor_entries_v2()
     st.divider()
 
-    st.header("Audit Outputs / Recommendations")
     render_generate_audit_v2()
     render_mocked_audit_results_v2()
     st.divider()

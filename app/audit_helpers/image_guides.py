@@ -767,8 +767,46 @@ def _normalize_category_key(value: str) -> str:
     return normalized.replace(" ", "_")
 
 
-def _guide_path_for_category(category_key: str) -> Path | None:
+def resolve_image_guide_category(category_key: str) -> str:
+    """Resolve a sheet category/path to the canonical image-guide category key."""
     normalized = _normalize_category_key(category_key)
+    alias = normalized.replace("_", " ")
+    candidates = [normalized, alias]
+    if normalized:
+        candidates.extend(part for part in re.split(r"[_/\\]+", normalized) if part)
+
+    candidate_set = set(candidates)
+    if candidate_set & (_FOOD_BEVERAGE_ALIASES | {"food", "grocery", "pantry", "beverage", "beverages"}):
+        return "food_beverage"
+    if candidate_set & (_BEAUTY_ALIASES | {"beauty"}):
+        return "beauty"
+    if candidate_set & (_HEALTH_PERSONAL_CARE_ALIASES | {"health", "personal", "personal_care"}):
+        return "health_personal_care"
+    if candidate_set & (_TOYS_ALIASES | {"toy", "toys"}):
+        return "toys"
+    if candidate_set & (_HOUSEHOLD_CLEAN_ALIASES | {"household", "cleaning"}):
+        return "household_clean"
+    if candidate_set & (_FURNITURE_ALIASES | {"furniture"}):
+        return "furniture"
+    if candidate_set & (_BABY_ALIASES | {"baby"}):
+        return "baby"
+    if candidate_set & (_ARTS_CRAFTS_ALIASES | {"arts", "crafts"}):
+        return "arts_crafts"
+    if candidate_set & (_ANIMALS_ALIASES | {"animals", "pets", "pet"}):
+        return "animals"
+    if candidate_set & (_ELECTRONICS_ALIASES | {"electronics"}):
+        return "electronics"
+    if candidate_set & (_MEDIA_ALIASES | {"media"}):
+        return "media"
+    if candidate_set & (_SEASONAL_ALIASES | {"seasonal"}):
+        return "seasonal"
+    if candidate_set & (_SPORTS_OUTDOORS_ALIASES | {"sports", "outdoors"}):
+        return "sports_outdoors"
+    return normalized
+
+
+def _guide_path_for_category(category_key: str) -> Path | None:
+    normalized = resolve_image_guide_category(category_key)
     alias = normalized.replace("_", " ")
     if normalized in _FOOD_BEVERAGE_ALIASES or alias in _FOOD_BEVERAGE_ALIASES:
         return _repo_root() / "config" / "image_guides" / "food_beverageimg.json"
