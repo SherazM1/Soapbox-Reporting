@@ -707,6 +707,50 @@ def _render_slide4_finding_preview_v2(plan: dict[str, Any]) -> None:
                 st.caption("No local image-analysis majority findings yet. Slide 4 will use fallback bullets.")
 
 
+def _render_slide2_summary_preview_v2(plan: dict[str, Any]) -> None:
+    summary = (plan or {}).get("slide2_summary", {}) or {}
+    if not summary:
+        return
+    phrases = summary.get("phrases", {}) or {}
+    sections = summary.get("sections", {}) or {}
+    with st.expander("Slide 2 Summary Preview", expanded=False):
+        st.caption(
+            f"Category: {phrases.get('category_phrase') or '-'} | "
+            f"Benefit: {phrases.get('benefit_phrase') or '-'} | "
+            f"Visual: {phrases.get('visual_phrase') or '-'}"
+        )
+        for key in ("consumer_demand", "walmart_opportunity", "competitive_benchmark"):
+            section = sections.get(key, {}) or {}
+            st.markdown(f"##### {section.get('label', key.replace('_', ' ').title())}")
+            st.caption(
+                f"Selected rating: {section.get('rating', '')} | "
+                f"Allowed scale: {', '.join(section.get('allowed_ratings', []) or [])} | "
+                f"Signals: {', '.join(section.get('signals', []) or [])}"
+            )
+            warnings = section.get("debug_warnings", []) or []
+            for warning in warnings:
+                st.warning(warning)
+            rows = []
+            for item in section.get("bullet_debug", []) or []:
+                rows.append(
+                    {
+                        "Bullet": item.get("text", ""),
+                        "Template ID": item.get("template_id", ""),
+                        "Reason": item.get("reason", ""),
+                        "Signals": ", ".join(item.get("signals", []) or []),
+                        "Support": (
+                            f"{item.get('supporting_count', 0)}/{item.get('analyzed_count', 0)}"
+                            if item.get("analyzed_count", 0)
+                            else ""
+                        ),
+                    }
+                )
+            if rows:
+                st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
+            else:
+                st.caption("No Slide 2 bullet debug metadata available.")
+
+
 def render_primary_pdp_upload_v2() -> None:
     with st.container(border=True):
         st.markdown("### Primary Audit Extract Upload")
@@ -2089,6 +2133,7 @@ def render_audit_powerpoint_export_v2() -> None:
             }
             st.json(compact)
 
+    _render_slide2_summary_preview_v2(plan)
     _render_slide4_finding_preview_v2(plan)
 
     included_count = int((plan.get("summary", {}) or {}).get("included_primary_entry_count", 0))

@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from app.audit_helpers.slide2_summary import build_slide2_summary_payload
 from app.audit_helpers.slide4_findings import build_slide4_group_findings
 
 
@@ -476,9 +477,30 @@ def build_audit_export_plan(
     )
     competitor_records = list(competitor_records or [])
     client_label = metadata_src.get("client_name", "") or "Client"
+    primary_records_for_summary = []
+    for entry, pair in zip(included_entries, product_pairs):
+        record = dict(entry.get("cached_record", {}) or {})
+        content_slide = pair.get("content_optimization_slide", {}) or {}
+        gap_types = []
+        if content_slide.get("recommended_title"):
+            gap_types.append("title")
+        if content_slide.get("image_recommendations"):
+            gap_types.append("images")
+        if content_slide.get("description_recommendations"):
+            gap_types.append("description")
+        if content_slide.get("key_features_recommendations"):
+            gap_types.append("key_features")
+        gap_count = 0
+        if content_slide.get("recommended_title"):
+            gap_count += 1
+        for key in ("image_recommendations", "description_recommendations", "key_features_recommendations"):
+            gap_count += len(content_slide.get(key, []) or [])
+        record["_slide2_gap_count"] = gap_count
+        record["_slide2_gap_types"] = gap_types
+        primary_records_for_summary.append(record)
     slide4_findings = {
         "client": build_slide4_group_findings(
-            [entry.get("cached_record", {}) for entry in included_entries],
+            primary_records_for_summary,
             str(client_label),
         ),
         "competitor_1": build_slide4_group_findings(
@@ -490,14 +512,21 @@ def build_audit_export_plan(
             "Competitor 2",
         ),
     }
+    audit_metadata = {
+        "audit_id": metadata_src.get("audit_id", ""),
+        "client_name": metadata_src.get("client_name", ""),
+        "retailer": metadata_src.get("retailer", ""),
+        "audit_date": metadata_src.get("audit_date", ""),
+        "status": metadata_src.get("status", ""),
+    }
+    slide2_summary = build_slide2_summary_payload(
+        primary_records=primary_records_for_summary,
+        competitor_records=competitor_records,
+        slide4_findings=slide4_findings,
+        audit_metadata=audit_metadata,
+    )
     return {
-        "audit_metadata": {
-            "audit_id": metadata_src.get("audit_id", ""),
-            "client_name": metadata_src.get("client_name", ""),
-            "retailer": metadata_src.get("retailer", ""),
-            "audit_date": metadata_src.get("audit_date", ""),
-            "status": metadata_src.get("status", ""),
-        },
+        "audit_metadata": audit_metadata,
         "summary": {
             "included_primary_entry_count": len(included_entries),
             "product_slide_pair_count": len(product_pairs),
@@ -506,5 +535,6 @@ def build_audit_export_plan(
         },
         "product_slide_pairs": product_pairs,
         "competitor_graphics_payload": competitor_payload,
+        "slide2_summary": slide2_summary,
         "slide4_findings": slide4_findings,
     }
