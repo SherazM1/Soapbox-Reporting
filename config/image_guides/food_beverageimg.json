@@ -1,0 +1,2284 @@
+{
+  "category": "Food & Beverage",
+  "category_key": "food_beverage",
+  "guide_key": "food_beverageimg",
+  "source": "FY27_Category_StyleGuide_Food-Beverage.pdf",
+  "last_updated": "Apr 21, 2026",
+  "status": "complete",
+  "global_guidance": {
+    "rules": [
+      "imagery should have high appetite appeal",
+      "silo images should be photographed consistently according to packaging or product type",
+      "minimize reflections on plastic, foil, and shiny packaging, especially when covering important product information",
+      "remove unnecessary stickers not part of package design, such as promotional stickers or sample-specific labels",
+      "packaging and labels should be presented straight, not angled or crooked",
+      "photograph each unique and meaningful side of the product package",
+      "front view means the side with predominant brand and labeling, format, variant, and size/quantity",
+      "products should be evenly lit from side to side and top to bottom",
+      "exposure and color should correctly represent the item",
+      "maintain separation between product and background",
+      "clip products onto pure white background, RGB 255/255/255",
+      "retouch dirt, dust, fingerprints, damage, blemishes, expiration dates, lot numbers, and sample-only information",
+      "lifestyle images should show the product in a realistic, professionally lit and styled setting",
+      "the product being sold should remain the hero of the lifestyle image",
+      "packaging should be incorporated into lifestyle images when practical to connect lifestyle to silo shots"
+    ]
+  },
+  "slot_definitions": {
+    "main_image": {
+      "label": "Main Image",
+      "description": "Primary carousel image/hero image for the PDP.",
+      "detection_hints": [
+        "main",
+        "hero",
+        "primary",
+        "front",
+        "image 1",
+        "carousel 1"
+      ]
+    },
+    "silo_front": {
+      "label": "Silo, Front",
+      "guidance": "Show the product straight-on or top down when applicable on a pure white background.",
+      "recommendation": "Add a straight-on front silo image on a pure white background with the label fully legible.",
+      "detection_hints": [
+        "front",
+        "silo",
+        "main",
+        "hero",
+        "white background",
+        "primary"
+      ]
+    },
+    "silo_alternate": {
+      "label": "Silo, Alternate",
+      "guidance": "Show the side or back of the product straight-on with all label information clearly legible.",
+      "recommendation": "Add a side or back silo image with label information straight, clear, and legible.",
+      "detection_hints": [
+        "back",
+        "side",
+        "alternate",
+        "rear",
+        "nutrition side",
+        "side panel"
+      ]
+    },
+    "silo_single": {
+      "label": "Silo, Single",
+      "guidance": "Show a single can, bottle, or item from a multipack straight-on on a pure white background with the label fully legible.",
+      "recommendation": "Add an individual item image from the multipack to clarify the single-unit packaging.",
+      "detection_hints": [
+        "single",
+        "individual",
+        "one can",
+        "one bottle",
+        "single unit"
+      ]
+    },
+    "dimensions": {
+      "label": "Dimensions",
+      "guidance": "Use a scale avatar or apply product dimensions to the image to communicate size and scale.",
+      "recommendation": "Add a dimensions or scale image to communicate product size clearly.",
+      "detection_hints": [
+        "dimensions",
+        "height",
+        "width",
+        "depth",
+        "scale",
+        "size",
+        "inches",
+        "in."
+      ]
+    },
+    "lifestyle_in_use": {
+      "label": "Lifestyle, In-Use",
+      "guidance": "Show the product in use in a realistic setting that reflects everyday use.",
+      "recommendation": "Add a lifestyle image showing the product in use in a realistic everyday setting.",
+      "detection_hints": [
+        "lifestyle",
+        "in-use",
+        "in use",
+        "recipe",
+        "serving suggestion",
+        "prepared",
+        "plated",
+        "meal",
+        "kitchen",
+        "table"
+      ]
+    },
+    "feature_graphic": {
+      "label": "Feature Graphic",
+      "guidance": "Highlight key product features or benefits using clean, legible graphic callouts.",
+      "recommendation": "Add a clean feature graphic highlighting key product benefits or attributes.",
+      "detection_hints": [
+        "feature",
+        "callout",
+        "benefit",
+        "gluten free",
+        "organic",
+        "protein",
+        "calories",
+        "no artificial",
+        "non-gmo",
+        "whole grain"
+      ]
+    },
+    "graphic_nutrition": {
+      "label": "Graphic, Nutrition",
+      "guidance": "Pull from packaging flat for legibility and clarity.",
+      "recommendation": "Add a flat nutrition graphic so key nutrition information is clear and legible.",
+      "detection_hints": [
+        "nutrition facts",
+        "nutrition",
+        "calories",
+        "serving size",
+        "daily value"
+      ]
+    },
+    "graphic_ingredients": {
+      "label": "Graphic, Ingredients",
+      "guidance": "Pull from packaging flat for legibility and clarity.",
+      "recommendation": "Add a flat ingredients graphic so ingredient information is clear and legible.",
+      "detection_hints": [
+        "ingredients",
+        "ingredient",
+        "contains",
+        "allergen"
+      ]
+    },
+    "graphic_guarantee": {
+      "label": "Graphic, Guarantee",
+      "guidance": "Display the Private Brand Guarantee graphic as a clean, centered digital asset when applicable.",
+      "recommendation": "Add a clean guarantee graphic when applicable for private brand products.",
+      "detection_hints": [
+        "guarantee",
+        "satisfaction guaranteed",
+        "private brand guarantee",
+        "money back"
+      ]
+    },
+    "graphic_instructions": {
+      "label": "Graphic, Instructions",
+      "guidance": "Display instructions using step-by-step graphics or diagrams to clearly communicate preparation or usage.",
+      "recommendation": "Add a clear preparation or instruction graphic when the product requires prep or usage steps.",
+      "detection_hints": [
+        "instructions",
+        "directions",
+        "preparation",
+        "cook",
+        "microwave",
+        "oven",
+        "step"
+      ]
+    },
+    "silo_alt_in_pack": {
+      "label": "Silo, Alt, In Pack",
+      "guidance": "Show the side or back of the product in pack straight-on with all label information clearly legible.",
+      "recommendation": "Add an in-pack alternate silo image showing side or back label details clearly.",
+      "detection_hints": [
+        "alt in pack",
+        "in pack",
+        "in-pack",
+        "side in pack",
+        "back in pack",
+        "alternate in pack",
+        "pack side",
+        "pack back"
+      ]
+    },
+    "silo_detail": {
+      "label": "Silo, Detail",
+      "guidance": "Show the product sliced, halved, opened, or detailed to reveal interior color, texture, and structure.",
+      "recommendation": "Add a product detail image showing interior texture, color, or structure.",
+      "detection_hints": [
+        "detail",
+        "sliced",
+        "halved",
+        "cut open",
+        "inside",
+        "interior",
+        "texture",
+        "cross section"
+      ]
+    },
+    "graphic_certification": {
+      "label": "Graphic, Certification",
+      "guidance": "Display all certifications present on packaging as clean digital badges, ensuring they are validated and clearly visible in the image set.",
+      "recommendation": "Add a clean certification badge graphic when certifications are present on packaging.",
+      "detection_hints": [
+        "certification",
+        "certified",
+        "badge",
+        "badges",
+        "organic",
+        "non-gmo",
+        "gluten free",
+        "kosher",
+        "usda",
+        "fair trade"
+      ]
+    }
+  },
+  "pages": {
+    "added_baking_ingredients_single": {
+      "display_name": "Added Baking Ingredients",
+      "format": "Single",
+      "product_types": [
+        "Baking Powder",
+        "Baking Soda",
+        "Cornstarch & Cooking Thickeners",
+        "Powdered Baking Cocoa",
+        "Powdered Eggs",
+        "Yeasts & Leaveners",
+        "Sugars",
+        "Sugar Substitutes- Photo Direction",
+        "Cocktail Rimming Salts & Sugars",
+        "All-Purpose, Self-Rising & Unbleached Flour",
+        "Coconut & Almond Flour",
+        "Baking Chips",
+        "Solid Baking Chocolate",
+        "Carob",
+        "Marshmallows",
+        "Dessert Sprinkles & Decorations",
+        "Marzipan & Almond Pastes",
+        "Breadcrumbs",
+        "Coatings & Batters",
+        "Coconut Flakes",
+        "Baking Mixes",
+        "Gingerbread Kits",
+        "Doughs",
+        "Pie Crust",
+        "Cocktail Mixers",
+        "Coconut Milks",
+        "Condensed Milks",
+        "Evaporated Milks",
+        "Food Coloring",
+        "Baking Extracts",
+        "Frosting & Icing",
+        "Pie & Pastry Fillings",
+        "Shortening & Lard"
+      ],
+      "required_slots": [
+        "silo_front",
+        "lifestyle_in_use",
+        "graphic_nutrition",
+        "graphic_ingredients",
+        "silo_alternate",
+        "dimensions",
+        "graphic_guarantee"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "alcoholic_beverages_multipack": {
+      "display_name": "Alcoholic Beverages",
+      "format": "Multipack",
+      "product_types": [
+        "Beer Coolers & Flavored Alcoholic Beverages",
+        "Hard Ciders"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_single",
+        "lifestyle_in_use",
+        "graphic_nutrition",
+        "feature_graphic",
+        "silo_alternate",
+        "feature_graphic"
+      ],
+      "additional_recommendations": [
+        "Feature Graphic Additional Feature Callout Optional: Highlight a secondary product attribute such as taste profile, calories, brewing style, ingredients, or benefits using clean, legible graphics aligned to packaging.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": []
+    },
+    "alcoholic_beverages_single": {
+      "display_name": "Alcoholic Beverages",
+      "format": "Single",
+      "product_types": [
+        "Beer Coolers & Flavored Alcoholic Beverages",
+        "Hard Ciders"
+      ],
+      "required_slots": [
+        "silo_front",
+        "feature_graphic",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "silo_alternate"
+      ],
+      "additional_recommendations": [
+        "Feature Graphic Additional Feature Callout Optional: Highlight a secondary product attribute such as taste profile, calories, brewing style, ingredients, or benefits using clean, legible graphics aligned to packaging.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": []
+    },
+    "bakery_multipack_cookies_shelf_stable_assorted": {
+      "display_name": "Bakery",
+      "format": "Multipack",
+      "product_types": [
+        "Cookies - Shelf Stable - Multipack Assorted"
+      ],
+      "required_slots": [
+        "silo_front",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Product Detail Stack or Texture: Show included cookie varieties arranged on a clean surface to highlight shape, texture, and inclusions with each type clearly identifiable.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": []
+    },
+    "bakery_single_fresh_shelf_stable_frozen": {
+      "display_name": "Bakery",
+      "format": "Single - Fresh, shelf-stable, and frozen bakery items",
+      "product_types": [
+        "Bagels - Fresh",
+        "Breads & Buns - Fresh",
+        "Rolls - Fresh",
+        "Sandwich Bread - Fresh",
+        "Breadsticks - Fresh",
+        "English Muffins - Fresh",
+        "Cookies - Fresh",
+        "Pastries - Fresh",
+        "Pies - Fresh",
+        "Cookies - Shelf Stable",
+        "Cakes - Shelf Stable",
+        "Crepes - Shelf Stable",
+        "Croutons - Shelf Stable",
+        "Cupcakes - Shelf Stable",
+        "Pastries - Shelf Stable",
+        "Sweet Pies, Tarts & Prepared Desserts - Shelf Stable",
+        "Taco Shells - Shelf Stable",
+        "Tortillas & Wraps - Shelf Stable",
+        "Pastries - Frozen",
+        "Breads & Buns - Frozen",
+        "Breadsticks - Frozen",
+        "Cakes - Frozen",
+        "Sweet Pies, Tarts & Prepared Desserts - Frozen"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "silo_alternate",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "feature_graphic",
+        "dimensions",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Recycling Logo Optional: Display recycling or sustainability icons when present on packaging using clean, legible graphics.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": []
+    },
+    "beverages_multipack": {
+      "display_name": "Beverages",
+      "format": "Multipack",
+      "product_types": [
+        "Bottled Drinking Water - Multipack",
+        "Sparkling Water - Multipack",
+        "Tonic Water - Multipack",
+        "Coconut Water - Multipack"
+      ],
+      "required_slots": [
+        "silo_front",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "graphic_nutrition",
+        "graphic_ingredients",
+        "dimensions",
+        "graphic_guarantee"
+      ],
+      "additional_recommendations": [
+        "Collection Image: Show assortment flavors or scents together in a clean group arrangement.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Feature Graphic Additional Feature Callout Optional: Highlight a secondary product attribute such as taste profile, calories, brewing style, ingredients, or benefits using clean, legible graphics aligned to packaging.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": []
+    },
+    "beverages_single": {
+      "display_name": "Beverages",
+      "format": "Single",
+      "product_types": [
+        "Bottled Drinking Water",
+        "Sparkling Water",
+        "Tonic Water",
+        "Coconut Water- Single",
+        "Juices",
+        "Energy Drinks",
+        "Sports Drink- Photo Direction",
+        "Soda Pop"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "dimensions",
+        "lifestyle_in_use",
+        "silo_alternate",
+        "graphic_guarantee",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Feature Graphic Additional Feature Callout Optional: Highlight a secondary product attribute such as taste profile, calories, brewing style, ingredients, or benefits using clean, legible graphics aligned to packaging.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show assortment flavors or scents together in a clean group arrangement.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": []
+    },
+    "breakfast_dry_ready_to_eat_single": {
+      "display_name": "Breakfast - Dry & Ready-to-Eat",
+      "format": "Single",
+      "product_types": [
+        "Breakfast Bars & Cereal Bars",
+        "Packaged Breakfast Cereals",
+        "Snack Bars",
+        "Toaster Pastries",
+        "Granola",
+        "Muesli"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "silo_alternate",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "feature_graphic",
+        "dimensions",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Flavor Range Graphic: Show full flavor assortment in a clean lineup grouped by product line or format where applicable.",
+        "Certifications Badges: Display third-party certifications as clean badge lockups on a pure white background with all badges legible.",
+        "Size / Count Options: Show available package sizes or counts side-by-side on a pure white background with unit or per-serving cost where applicable.",
+        "Lifestyle - Active Use: Show the product in an active setting such as hiking, gym, or commuting to convey on-the-go use.",
+        "Brand Story / Heritage Graphic: Highlight brand story or heritage using a clean graphic with founding details where applicable."
+      ],
+      "notes": []
+    },
+    "breakfast_hot_cereals_grain_mixes_single": {
+      "display_name": "Breakfast - Hot Cereals & Grain Mixes",
+      "format": "Single",
+      "product_types": [
+        "Grits",
+        "Hot Cereal",
+        "Oatmeal",
+        "Grains"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "silo_alternate",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "graphic_instructions",
+        "dimensions",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Flavor Range Graphic: Show full flavor or variety lineup on a pure white background grouped by format where applicable.",
+        "Certifications Badges: Display third-party certifications as clean badge lockups on a pure white background with all badges legible.",
+        "Preparation Comparison: Display preparation methods such as microwave, stovetop, or overnight using a clean comparison graphic with time and water ratios.",
+        "Topping Inspiration Grid: Show topping combinations in a grid to inspire usage variety.",
+        "Size / Format Options: Show available sizes or formats side-by-side on a pure white background with serving count or net weight callouts."
+      ],
+      "notes": []
+    },
+    "breakfast_frozen_single": {
+      "display_name": "Breakfast - Frozen",
+      "format": "Single",
+      "product_types": [
+        "Pancakes",
+        "Waffles",
+        "French Toast",
+        "French Toast Sticks",
+        "Breakfast Sandwiches (egg, sausage, bacon, cheese)",
+        "Breakfast Wraps & Burritos",
+        "Biscuit Sandwiches",
+        "Croissant Sandwiches"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "silo_alternate",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "feature_graphic",
+        "dimensions",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Flavor / Protein Variety Grid: Show protein or flavor variants in a clean grid or lineup with each option clearly distinguishable.",
+        "Heat Method Icons: Display compatible heating appliances such as microwave, toaster, oven, toaster oven, or air fryer with icons and estimated cook times in a clean graphic.",
+        "Certifications Badges: Display third-party certifications as clean badge lockups on a pure white background with all badges legible.",
+        "Meal Pairing Suggestion: Show the product paired with complementary breakfast items in a realistic setting and include a serving suggestion disclaimer.",
+        "Count / Value Callout: Highlight pack count and per-unit value using bold callouts with cost-per-serving or cost-per-item clearly shown."
+      ],
+      "notes": []
+    },
+    "butter_margarine_spreadable_single": {
+      "display_name": "Butter, Margarine, & Spreadable",
+      "format": "Single",
+      "product_types": [
+        "Butter & Margarine - Flavored Butter",
+        "Butter & Margarine - Sticks & Tubs"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_alternate",
+        "dimensions",
+        "lifestyle_in_use",
+        "graphic_nutrition",
+        "graphic_guarantee",
+        "graphic_ingredients"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": []
+    },
+    "canned_jarred_meats_seafood_single": {
+      "display_name": "Canned & Jarred Meats & Seafood",
+      "format": "Single",
+      "product_types": [
+        "Canned & Jarred Meats",
+        "Canned & Jarred Poultry",
+        "Canned & Jarred Seafood",
+        "Canned & Packaged Meat Substitutes"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "silo_alternate",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "feature_graphic",
+        "dimensions",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "canned_jarred_vegetables_fruits_legumes_single": {
+      "display_name": "Canned & Jarred Vegetables, Fruits, & Legumes (Whole or Cut)",
+      "format": "Single",
+      "product_types": [
+        "Canned & Jarred Beans & Legumes",
+        "Canned & Jarred Vegetables",
+        "Canned, Jarred & Cup Fruits"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_alternate",
+        "dimensions",
+        "lifestyle_in_use",
+        "graphic_nutrition",
+        "graphic_guarantee",
+        "graphic_ingredients"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "cheeses_shredded_sliced_single": {
+      "display_name": "Cheeses - Shredded & Sliced",
+      "format": "Single",
+      "product_types": [
+        "Cheeses (Sliced)",
+        "Deli Cheese"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "silo_alternate",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "feature_graphic",
+        "dimensions",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "cheeses_block_single": {
+      "display_name": "Cheeses - Block",
+      "format": "Single",
+      "product_types": [
+        "Cheeses",
+        "Cream Cheese",
+        "Deli Cheese"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "silo_alternate",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "feature_graphic",
+        "dimensions",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "chewy_soft_caramel_based_candy_single": {
+      "display_name": "Chewy, Soft & Caramel-Based Candy",
+      "format": "Single",
+      "product_types": [
+        "Chewing Candy",
+        "Gummy Candy",
+        "Fruit Flavored Candy",
+        "Sour Candy",
+        "Taffy Candy",
+        "Jelly Beans",
+        "Licorice Candy",
+        "Caramel Candy",
+        "Toffee Candy",
+        "Fudge",
+        "Candy Brittle",
+        "Halva",
+        "Marzipan Candy",
+        "Nut Cluster Candy"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "silo_alternate",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "feature_graphic",
+        "dimensions",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "chips_puffs_crackers_crunchy_fruity_shelf_pudding_multipack": {
+      "display_name": "Chips, Puffs, Crackers, Crunchy Snacks, Fruity Snacks, Shelf Pudding",
+      "format": "Multipack",
+      "product_types": [
+        "Popcorns",
+        "Pork Rinds",
+        "Pretzels",
+        "Puffed Snacks",
+        "Rice Cakes",
+        "Snack Chips",
+        "Snack Crackers",
+        "Fruit Leathers",
+        "Fruit Snacks",
+        "Food Gift Assortments",
+        "Party Mixes",
+        "Snack Boxes",
+        "Snack Pudding & Gelatin"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_alternate",
+        "dimensions",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "graphic_guarantee",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "chips_puffs_crackers_crunchy_fruity_shelf_pudding_single": {
+      "display_name": "Chips, Puffs, Crackers, Crunchy Snacks, Fruity Snacks, Shelf Pudding",
+      "format": "Single",
+      "product_types": [
+        "Popcorns",
+        "Pork Rinds",
+        "Pretzels",
+        "Puffed Snacks",
+        "Rice Cakes",
+        "Snack Chips",
+        "Snack Crackers",
+        "Fruit Leathers",
+        "Fruit Snacks"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "silo_alternate",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "feature_graphic",
+        "dimensions",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "chocolate_chocolate_based_candy_single": {
+      "display_name": "Chocolate & Chocolate-Based Candy",
+      "format": "Single",
+      "product_types": [
+        "Candy Bars & Miniatures",
+        "Chocolate Candy",
+        "Chocolate Truffles",
+        "Chocolate Covered Fruits",
+        "Chocolate Covered Nuts",
+        "Chocolate Covered Snacks",
+        "Chocolate Covered Fruits, Nuts & Snacks"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "silo_alternate",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "feature_graphic",
+        "dimensions",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "coffee_whole_ground_instant_single": {
+      "display_name": "Coffee (Whole, Ground, & Instant)",
+      "format": "Single",
+      "product_types": [
+        "Ground Coffee",
+        "Instant Coffee",
+        "Whole Bean Coffee"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_alternate",
+        "dimensions",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "graphic_guarantee",
+        "graphic_ingredients"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "condiments_sauces_single": {
+      "display_name": "Condiments & Sauces",
+      "format": "Single",
+      "product_types": [
+        "Salad Dressings",
+        "Vinegars",
+        "Worcestershire Sauce",
+        "Barbecue Sauces",
+        "Cocktail Sauces",
+        "Ketchup",
+        "Mayonnaise",
+        "Mustards",
+        "Steak Sauces",
+        "Tartar Sauces",
+        "Horseradish",
+        "Hot Sauces",
+        "Dessert Syrups & Sauces",
+        "Flavored Syrups",
+        "Honey",
+        "Maple Syrups",
+        "Pancake Syrups",
+        "Applesauce & Fruit Sauces",
+        "Bean Pastes",
+        "Capers"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_alternate",
+        "dimensions",
+        "lifestyle_in_use",
+        "graphic_nutrition",
+        "graphic_guarantee",
+        "graphic_ingredients"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "cooking_oils_wines_sprays_single": {
+      "display_name": "Cooking Oils, Wines, & Sprays",
+      "format": "Single",
+      "product_types": [
+        "Cooking Oils",
+        "Cooking Wines",
+        "Cooking Sprays"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "dimensions",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "graphic_guarantee",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "cooking_sauces_marinades_global_sauces_single": {
+      "display_name": "Cooking Sauces, Marinades, Global Sauces",
+      "format": "Single",
+      "product_types": [
+        "Chutneys",
+        "Cooking Sauces & Marinades",
+        "Fish Sauces",
+        "Gravies",
+        "Other Condiments & Sauces",
+        "Pasta Sauces",
+        "Pizza Sauces",
+        "Satay Sauces",
+        "Soy Sauces",
+        "Tahini",
+        "Wasabi"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_alternate",
+        "dimensions",
+        "lifestyle_in_use",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "graphic_ingredients"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "dairy_multipack": {
+      "display_name": "Dairy - Multipack",
+      "format": "Multipack",
+      "product_types": [
+        "Yogurts - Multipack",
+        "Milk - Multipack"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_alternate",
+        "silo_alternate",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "lifestyle_in_use",
+        "graphic_ingredients",
+        "graphic_ingredients"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "dairy_tubs_single_serve_squeezeable_single": {
+      "display_name": "Dairy - Tubs, Single Serve, Squeezeable",
+      "format": "Single",
+      "product_types": [
+        "Cottage Cheese",
+        "Whipped Cream",
+        "Yogurts",
+        "Sour Cream - Squeezeable"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_alternate",
+        "dimensions",
+        "lifestyle_in_use",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "graphic_ingredients"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "drink_mixes_pods_concentrates_single": {
+      "display_name": "Drink Mixes, Pods, Concentrates",
+      "format": "Single",
+      "product_types": [
+        "Chocolate Drink Mixes",
+        "Cocktail Mixers",
+        "Coffee Substitutes",
+        "Drink Mixes",
+        "Hot Cocoa Pods",
+        "Instant Breakfast Drinks",
+        "Soda Syrups"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_nutrition",
+        "graphic_ingredients",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "graphic_guarantee",
+        "silo_alternate"
+      ],
+      "additional_recommendations": [
+        "Feature Graphic Additional Feature Callout Optional: Highlight a secondary product attribute such as taste profile, calories, brewing style, ingredients, or benefits using clean, legible graphics aligned to packaging.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "dried_beans_meats_single": {
+      "display_name": "Dried Beans & Meats",
+      "format": "Single",
+      "product_types": [
+        "Dry Beans & Legumes",
+        "Jerky & Dried Meats"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "dimensions",
+        "lifestyle_in_use",
+        "silo_alternate",
+        "graphic_guarantee",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "eggs_carton_single": {
+      "display_name": "Eggs - Carton",
+      "format": "Single",
+      "product_types": [
+        "Beeswax Food Wraps",
+        "Disposable Storage Bags",
+        "Facial Tissue",
+        "Flushable Cleansing Cloths",
+        "Food Wraps",
+        "Garbage Bags",
+        "Paper Towels",
+        "Parchment Paper",
+        "Toilet Paper"
+      ],
+      "required_slots": [
+        "silo_front",
+        "dimensions",
+        "graphic_guarantee",
+        "lifestyle_in_use",
+        "silo_alternate",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Source guide labels this page as Eggs - Carton, but the listed product types are paper/storage/wrap product types. Preserve the source values exactly and do not reinterpret them."
+      ]
+    },
+    "emergency_food_kits_single": {
+      "display_name": "Emergency Food & Kits",
+      "format": "Single",
+      "product_types": [
+        "Emergency Food"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_alternate",
+        "lifestyle_in_use",
+        "lifestyle_in_use",
+        "feature_graphic"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "freeze_dried_dried_fruits_vegetables_single": {
+      "display_name": "Freeze Dried/ Dried Fruits & Vegetables",
+      "format": "Single",
+      "product_types": [
+        "Dried Fruits",
+        "Dried Vegetables",
+        "Freeze Dried Fruits",
+        "Raisins & Dried Fruits",
+        "Seaweed & Sea Vegetables",
+        "Small Boxed Raisin",
+        "Single Herbs & Spices (Freeze Dried)",
+        "Fresh Herbs (Freeze Dried)"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_nutrition",
+        "graphic_ingredients",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "lifestyle_in_use",
+        "dimensions",
+        "silo_alternate"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "fresh_seafood_single": {
+      "display_name": "Fresh Seafood",
+      "format": "Single",
+      "product_types": [
+        "Clams",
+        "Crab",
+        "Dried Fish",
+        "Fish",
+        "Lobster",
+        "Mussels",
+        "Oysters",
+        "Scallops"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_certification",
+        "graphic_nutrition",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "silo_alternate",
+        "graphic_ingredients",
+        "lifestyle_in_use"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "The second lifestyle_in_use slot is specifically for showing seafood being prepared in a real cooking setting."
+      ]
+    },
+    "fresh_meat_in_tray_single": {
+      "display_name": "Fresh Meat - In Tray",
+      "format": "Single",
+      "product_types": [
+        "Beef",
+        "Bison",
+        "Chicken",
+        "Lamb",
+        "Meatballs",
+        "Pork",
+        "Turkey"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "graphic_certification",
+        "lifestyle_in_use",
+        "lifestyle_in_use",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "fresh_produce_multipack": {
+      "display_name": "Fresh Produce",
+      "format": "Multipack",
+      "product_types": [
+        "Avocados: Bagged",
+        "Bananas: Organic",
+        "Beans & Legumes: Bagged",
+        "Beans & Legumes: Bulk",
+        "Pell Peppers: Organic",
+        "Blueberries: Fresh",
+        "Broccoli, Cauliflower & Cabbage: Organic",
+        "Broccoli, Cauliflower: Bagged & Precut",
+        "Carrots: Bagged",
+        "Carrots Bagged Organic",
+        "Celery: Bagged",
+        "Celery: Bagged Organic",
+        "Cucumbers: Bagged",
+        "Cut Fruit: Packaged & Processed",
+        "Garlic: Packaged",
+        "Grapes",
+        "Greens",
+        "Kiwi: Clamshell",
+        "Lemons: Bagged",
+        "Lemons Organic Bagged",
+        "Lettuces: Organic",
+        "Limes: Organic",
+        "Mushrooms",
+        "Onions & Ethnic Roots: Bagged",
+        "Oranges: Bagged Organic",
+        "Packaged Salads",
+        "Packaged Salads: Ready to Eat",
+        "Peaches: Bagged",
+        "Pears: Bagged",
+        "Potatoes: Bagged",
+        "Squash & Zucchini: Organic",
+        "Strawberries: Fresh",
+        "Sweet Potatoes: Organic",
+        "Tomatoes: Packaged",
+        "Watermelon: Quarter"
+      ],
+      "required_slots": [
+        "silo_front",
+        "lifestyle_in_use",
+        "silo_alternate",
+        "graphic_guarantee"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "fresh_produce_single": {
+      "display_name": "Fresh Produce",
+      "format": "Single",
+      "product_types": [
+        "Apples: Each",
+        "Bananas",
+        "Bell Peppers: Each",
+        "Cucumbers: Each",
+        "Garlic: Each",
+        "Lettuces: Bulk",
+        "Limes: Each",
+        "Mushrooms",
+        "Onions & Ethnic Roots: Each",
+        "Pears: Each",
+        "Potatoes: Each",
+        "Squash & Zucchini: Each",
+        "Sweet Potatoes: Each",
+        "Tomatoes: Bulk",
+        "Tomatoes: Multipack",
+        "Avocados: Each",
+        "Avocados: Tropical",
+        "Kiwi: Bulk",
+        "Lemons: Each",
+        "Oranges: Each",
+        "Peaches & Plums: Each",
+        "Watermelon: Each"
+      ],
+      "required_slots": [
+        "silo_front",
+        "dimensions",
+        "graphic_guarantee",
+        "lifestyle_in_use",
+        "silo_detail",
+        "feature_graphic"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "frozen_desserts_multipack": {
+      "display_name": "Frozen Desserts",
+      "format": "Multipack",
+      "product_types": [
+        "Ice Cream Bars, Pops, Cones & Novelties - Boxed",
+        "Ice Cream Wafers & Cones",
+        "Ice Cream, Sorbet & Frozen Yogurt - Tub"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_alt_in_pack",
+        "dimensions",
+        "lifestyle_in_use",
+        "graphic_nutrition",
+        "graphic_guarantee",
+        "graphic_ingredients"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "frozen_desserts_single": {
+      "display_name": "Frozen Desserts",
+      "format": "Single",
+      "product_types": [
+        "Ice Cream Bars, Pops, Cones & Novelties - Boxed",
+        "Ice Cream Wafers & Cones",
+        "Ice Cream, Sorbet & Frozen Yogurt - Tub"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_alt_in_pack",
+        "dimensions",
+        "lifestyle_in_use",
+        "graphic_nutrition",
+        "graphic_guarantee",
+        "graphic_ingredients"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "hard_candy_sugar_confections_single": {
+      "display_name": "Hard Candy & Sugar Confections",
+      "format": "Single",
+      "product_types": [
+        "Hard Candy",
+        "Jawbreakers",
+        "Lollipops & Suckers",
+        "Mint Candy",
+        "Rock Candy",
+        "Candy Canes",
+        "Candy Corn",
+        "Powder Candy",
+        "Cotton Candy",
+        "Chewing Gum"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_alt_in_pack",
+        "dimensions",
+        "lifestyle_in_use",
+        "graphic_nutrition",
+        "graphic_guarantee",
+        "graphic_ingredients"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "lunch_deli_meats_sliced_prepacked_single": {
+      "display_name": "Lunch & Deli Meats (Sliced & Pre-Packed)",
+      "format": "Single",
+      "product_types": [
+        "Lunch & Deli Meats",
+        "Bacon",
+        "Sausages & Hot Dogs",
+        "Imitation Crab",
+        "Smoked Fish"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "graphic_guarantee",
+        "lifestyle_in_use",
+        "dimensions",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Preserve the repeated lifestyle_in_use and graphic_guarantee slots because the source page shows those slots twice."
+      ]
+    },
+    "milk_drinkable_liquid_dairy_nondairy_single": {
+      "display_name": "Milk, Drinkable, & Liquid Dairy/Non-Dairy",
+      "format": "Single",
+      "product_types": [
+        "Coffee Creamer",
+        "Eggnogs",
+        "Heavy Cream",
+        "Kefir & Yogurt Drinks",
+        "Liquid Eggs",
+        "Milks",
+        "Non-Dairy Creamers",
+        "Plant-Based Milk"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "silo_alt_in_pack",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "lifestyle_in_use",
+        "dimensions",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "The second lifestyle_in_use slot is specifically for showing the drink poured into a glass to highlight color and clarity."
+      ]
+    },
+    "packaged_meals_kits_side_dishes_fresh_frozen_single": {
+      "display_name": "Packaged Meals, Kits, Side Dishes (Fresh & Frozen)",
+      "format": "Single",
+      "product_types": [
+        "Sandwiches, Filled Rolls & Wraps",
+        "Sushi",
+        "Meal Kits",
+        "Packaged Meals",
+        "Packaged Side Dishes",
+        "Pizza",
+        "Savory Pies & Quiches",
+        "Ice"
+      ],
+      "required_slots": [
+        "silo_front",
+        "feature_graphic",
+        "dimensions",
+        "lifestyle_in_use",
+        "graphic_ingredients",
+        "graphic_nutrition",
+        "graphic_guarantee",
+        "graphic_ingredients"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "The first graphic_ingredients slot is for showing back or side panels straight-on on a pure white background with ingredient, cooking, and allergen details legible.",
+        "The second graphic_ingredients slot is the regular flat packaging ingredient graphic.",
+        "Preserve the repeated graphic_ingredients slot."
+      ]
+    },
+    "pasta_noodles_rice_single": {
+      "display_name": "Pasta, Noodles, & Rice",
+      "format": "Single",
+      "product_types": [
+        "Pasta - Dry",
+        "Noodles",
+        "Rice (Bagged or Box)"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "dimensions",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "graphic_guarantee",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "prepared_frozen_foods_single": {
+      "display_name": "Prepared & Frozen Foods",
+      "format": "Single",
+      "product_types": [
+        "Corn Dogs",
+        "Packaged Appetizers",
+        "Pizza Bites",
+        "Fresh & Frozen Beans & Legumes",
+        "Fresh & Frozen Fruits",
+        "Fresh & Frozen Vegetables",
+        "Frozen Fruits",
+        "Frozen Vegetables",
+        "Bread Stuffing",
+        "Shrimp & Prawns",
+        "Meal Kits",
+        "Packaged Meals",
+        "Packaged Side Dishes",
+        "Pizza",
+        "Savory Pies & Quiches"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_alt_in_pack",
+        "dimensions",
+        "lifestyle_in_use",
+        "graphic_nutrition",
+        "graphic_guarantee",
+        "graphic_ingredients"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Source page lists Bread Stuffing twice. Keep one product_type entry for Bread Stuffing and map it to this page.",
+        "Several product types overlap with packaged_meals_kits_side_dishes_fresh_frozen_single. Use array mappings in product_type_index for overlaps."
+      ]
+    },
+    "prepared_packaged_soups_fresh_single": {
+      "display_name": "Prepared & Packaged Soups",
+      "format": "Single",
+      "product_types": [
+        "Prepared & Packaged Soups - Fresh"
+      ],
+      "required_slots": [
+        "silo_front",
+        "dimensions",
+        "dimensions",
+        "lifestyle_in_use",
+        "graphic_nutrition",
+        "graphic_ingredients"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Preserve the repeated dimensions slot because the source page shows Dimensions twice."
+      ]
+    },
+    "prepared_packaged_soups_shelf_stable_single": {
+      "display_name": "Prepared & Packaged Soups - Shelf Stable",
+      "format": "Single",
+      "product_types": [
+        "Bouillon, Broths & Stocks"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_alt_in_pack",
+        "dimensions",
+        "lifestyle_in_use",
+        "graphic_nutrition",
+        "graphic_guarantee",
+        "graphic_ingredients"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "protein_snacks_single": {
+      "display_name": "Protein Snacks",
+      "format": "Single",
+      "product_types": [
+        "Edible Nuts",
+        "Edible Seeds",
+        "Trail Mixes",
+        "Protein Chips"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "silo_alt_in_pack",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "feature_graphic",
+        "dimensions",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "savory_dips_spreads_plastic_packaging_single": {
+      "display_name": "Savory Dips & Spreads - Plastic Packaging",
+      "format": "Single",
+      "product_types": [
+        "Bean Dips & Spreads",
+        "Guacamole",
+        "Hummus",
+        "Meat Dips & Spreads",
+        "Seafood Dips & Spreads",
+        "Vegetable Dips"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_alt_in_pack",
+        "dimensions",
+        "lifestyle_in_use",
+        "graphic_nutrition",
+        "graphic_guarantee",
+        "graphic_ingredients"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "savory_dips_spreads_nut_butters_jarred_single": {
+      "display_name": "Savory Dips, Spreads, Nut Butters - Jarred",
+      "format": "Single",
+      "product_types": [
+        "Cheese Dips & Spreads",
+        "Nut Butters & Spreads",
+        "Olive Dips & Spreads",
+        "Pates",
+        "Salsas",
+        "Sandwich Spreads"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "silo_alt_in_pack",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "feature_graphic",
+        "dimensions",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    },
+    "spices_seasonings_substitutes_single": {
+      "display_name": "Spices, Seasonings, Substitutes",
+      "format": "Single",
+      "product_types": [
+        "MSG",
+        "Mixed Spices & Seasonings",
+        "Pepper & Peppercorns",
+        "Salt",
+        "Salt Substitutes",
+        "Single Herbs & Spices",
+        "Breadcrumbs",
+        "Cheese Wax",
+        "Coatings & Batters",
+        "Coconut Flakes",
+        "Gravies",
+        "Salad Dressings",
+        "Salad Toppings"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_ingredients",
+        "silo_alt_in_pack",
+        "lifestyle_in_use",
+        "graphic_guarantee",
+        "silo_detail",
+        "dimensions",
+        "graphic_nutrition"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Source page lists Mixed Spices & Seasonings twice. Keep one product_type entry for Mixed Spices & Seasonings and map it to this page.",
+        "Some product types, like Breadcrumbs, Coatings & Batters, Coconut Flakes, Gravies, and Salad Dressings, may already exist in earlier pages. Preserve existing mappings and convert to array mappings where needed."
+      ]
+    },
+    "sweet_spreads_dips_fruit_preserves_single": {
+      "display_name": "Sweet Spreads, Dips, & Fruit Preserves",
+      "format": "Single",
+      "product_types": [
+        "Dessert Dips",
+        "Jams, Jellies & Preserves",
+        "Marmalades"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_alt_in_pack",
+        "dimensions",
+        "lifestyle_in_use",
+        "graphic_nutrition",
+        "graphic_guarantee",
+        "graphic_ingredients"
+      ],
+      "additional_recommendations": [
+        "Solutions Graphic: Highlight routines or preparation solutions using clean graphic treatment.",
+        "Size Chart: Display available size variants.",
+        "Flavor/Scent Graphic: Highlight the product's flavor or scent.",
+        "Collection Image: Show a group image of other flavors/scents included in the assortment.",
+        "Brand Guarantee: Include the brand guarantee graphic if applicable."
+      ],
+      "notes": [
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation."
+      ]
+    }
+  },
+  "product_type_index": {
+    "Baking Powder": "added_baking_ingredients_single",
+    "Baking Soda": "added_baking_ingredients_single",
+    "Cornstarch & Cooking Thickeners": "added_baking_ingredients_single",
+    "Powdered Baking Cocoa": "added_baking_ingredients_single",
+    "Powdered Eggs": "added_baking_ingredients_single",
+    "Yeasts & Leaveners": "added_baking_ingredients_single",
+    "Sugars": "added_baking_ingredients_single",
+    "Sugar Substitutes- Photo Direction": "added_baking_ingredients_single",
+    "Cocktail Rimming Salts & Sugars": "added_baking_ingredients_single",
+    "All-Purpose, Self-Rising & Unbleached Flour": "added_baking_ingredients_single",
+    "Coconut & Almond Flour": "added_baking_ingredients_single",
+    "Baking Chips": "added_baking_ingredients_single",
+    "Solid Baking Chocolate": "added_baking_ingredients_single",
+    "Carob": "added_baking_ingredients_single",
+    "Marshmallows": "added_baking_ingredients_single",
+    "Dessert Sprinkles & Decorations": "added_baking_ingredients_single",
+    "Marzipan & Almond Pastes": "added_baking_ingredients_single",
+    "Breadcrumbs": [
+      "added_baking_ingredients_single",
+      "spices_seasonings_substitutes_single"
+    ],
+    "Coatings & Batters": [
+      "added_baking_ingredients_single",
+      "spices_seasonings_substitutes_single"
+    ],
+    "Coconut Flakes": [
+      "added_baking_ingredients_single",
+      "spices_seasonings_substitutes_single"
+    ],
+    "Baking Mixes": "added_baking_ingredients_single",
+    "Gingerbread Kits": "added_baking_ingredients_single",
+    "Doughs": "added_baking_ingredients_single",
+    "Pie Crust": "added_baking_ingredients_single",
+    "Cocktail Mixers": [
+      "added_baking_ingredients_single",
+      "drink_mixes_pods_concentrates_single"
+    ],
+    "Coconut Milks": "added_baking_ingredients_single",
+    "Condensed Milks": "added_baking_ingredients_single",
+    "Evaporated Milks": "added_baking_ingredients_single",
+    "Food Coloring": "added_baking_ingredients_single",
+    "Baking Extracts": "added_baking_ingredients_single",
+    "Frosting & Icing": "added_baking_ingredients_single",
+    "Pie & Pastry Fillings": "added_baking_ingredients_single",
+    "Shortening & Lard": "added_baking_ingredients_single",
+    "Beer Coolers & Flavored Alcoholic Beverages": [
+      "alcoholic_beverages_multipack",
+      "alcoholic_beverages_single"
+    ],
+    "Hard Ciders": [
+      "alcoholic_beverages_multipack",
+      "alcoholic_beverages_single"
+    ],
+    "Cookies - Shelf Stable - Multipack Assorted": "bakery_multipack_cookies_shelf_stable_assorted",
+    "Bagels - Fresh": "bakery_single_fresh_shelf_stable_frozen",
+    "Breads & Buns - Fresh": "bakery_single_fresh_shelf_stable_frozen",
+    "Rolls - Fresh": "bakery_single_fresh_shelf_stable_frozen",
+    "Sandwich Bread - Fresh": "bakery_single_fresh_shelf_stable_frozen",
+    "Breadsticks - Fresh": "bakery_single_fresh_shelf_stable_frozen",
+    "English Muffins - Fresh": "bakery_single_fresh_shelf_stable_frozen",
+    "Cookies - Fresh": "bakery_single_fresh_shelf_stable_frozen",
+    "Pastries - Fresh": "bakery_single_fresh_shelf_stable_frozen",
+    "Pies - Fresh": "bakery_single_fresh_shelf_stable_frozen",
+    "Cookies - Shelf Stable": "bakery_single_fresh_shelf_stable_frozen",
+    "Cakes - Shelf Stable": "bakery_single_fresh_shelf_stable_frozen",
+    "Crepes - Shelf Stable": "bakery_single_fresh_shelf_stable_frozen",
+    "Croutons - Shelf Stable": "bakery_single_fresh_shelf_stable_frozen",
+    "Cupcakes - Shelf Stable": "bakery_single_fresh_shelf_stable_frozen",
+    "Pastries - Shelf Stable": "bakery_single_fresh_shelf_stable_frozen",
+    "Sweet Pies, Tarts & Prepared Desserts - Shelf Stable": "bakery_single_fresh_shelf_stable_frozen",
+    "Taco Shells - Shelf Stable": "bakery_single_fresh_shelf_stable_frozen",
+    "Tortillas & Wraps - Shelf Stable": "bakery_single_fresh_shelf_stable_frozen",
+    "Pastries - Frozen": "bakery_single_fresh_shelf_stable_frozen",
+    "Breads & Buns - Frozen": "bakery_single_fresh_shelf_stable_frozen",
+    "Breadsticks - Frozen": "bakery_single_fresh_shelf_stable_frozen",
+    "Cakes - Frozen": "bakery_single_fresh_shelf_stable_frozen",
+    "Sweet Pies, Tarts & Prepared Desserts - Frozen": "bakery_single_fresh_shelf_stable_frozen",
+    "Bottled Drinking Water - Multipack": "beverages_multipack",
+    "Sparkling Water - Multipack": "beverages_multipack",
+    "Tonic Water - Multipack": "beverages_multipack",
+    "Coconut Water - Multipack": "beverages_multipack",
+    "Bottled Drinking Water": "beverages_single",
+    "Sparkling Water": "beverages_single",
+    "Tonic Water": "beverages_single",
+    "Coconut Water- Single": "beverages_single",
+    "Juices": "beverages_single",
+    "Energy Drinks": "beverages_single",
+    "Sports Drink- Photo Direction": "beverages_single",
+    "Soda Pop": "beverages_single",
+    "Breakfast Bars & Cereal Bars": "breakfast_dry_ready_to_eat_single",
+    "Packaged Breakfast Cereals": "breakfast_dry_ready_to_eat_single",
+    "Snack Bars": "breakfast_dry_ready_to_eat_single",
+    "Toaster Pastries": "breakfast_dry_ready_to_eat_single",
+    "Granola": "breakfast_dry_ready_to_eat_single",
+    "Muesli": "breakfast_dry_ready_to_eat_single",
+    "Grits": "breakfast_hot_cereals_grain_mixes_single",
+    "Hot Cereal": "breakfast_hot_cereals_grain_mixes_single",
+    "Oatmeal": "breakfast_hot_cereals_grain_mixes_single",
+    "Grains": "breakfast_hot_cereals_grain_mixes_single",
+    "Pancakes": "breakfast_frozen_single",
+    "Waffles": "breakfast_frozen_single",
+    "French Toast": "breakfast_frozen_single",
+    "French Toast Sticks": "breakfast_frozen_single",
+    "Breakfast Sandwiches (egg, sausage, bacon, cheese)": "breakfast_frozen_single",
+    "Breakfast Wraps & Burritos": "breakfast_frozen_single",
+    "Biscuit Sandwiches": "breakfast_frozen_single",
+    "Croissant Sandwiches": "breakfast_frozen_single",
+    "Butter & Margarine - Flavored Butter": "butter_margarine_spreadable_single",
+    "Butter & Margarine - Sticks & Tubs": "butter_margarine_spreadable_single",
+    "Deli Cheese": [
+      "cheeses_shredded_sliced_single",
+      "cheeses_block_single"
+    ],
+    "Canned & Jarred Meats": "canned_jarred_meats_seafood_single",
+    "Canned & Jarred Poultry": "canned_jarred_meats_seafood_single",
+    "Canned & Jarred Seafood": "canned_jarred_meats_seafood_single",
+    "Canned & Packaged Meat Substitutes": "canned_jarred_meats_seafood_single",
+    "Canned & Jarred Beans & Legumes": "canned_jarred_vegetables_fruits_legumes_single",
+    "Canned & Jarred Vegetables": "canned_jarred_vegetables_fruits_legumes_single",
+    "Canned, Jarred & Cup Fruits": "canned_jarred_vegetables_fruits_legumes_single",
+    "Cheeses (Sliced)": "cheeses_shredded_sliced_single",
+    "Cheeses": "cheeses_block_single",
+    "Cream Cheese": "cheeses_block_single",
+    "Chewing Candy": "chewy_soft_caramel_based_candy_single",
+    "Gummy Candy": "chewy_soft_caramel_based_candy_single",
+    "Fruit Flavored Candy": "chewy_soft_caramel_based_candy_single",
+    "Sour Candy": "chewy_soft_caramel_based_candy_single",
+    "Taffy Candy": "chewy_soft_caramel_based_candy_single",
+    "Jelly Beans": "chewy_soft_caramel_based_candy_single",
+    "Licorice Candy": "chewy_soft_caramel_based_candy_single",
+    "Caramel Candy": "chewy_soft_caramel_based_candy_single",
+    "Toffee Candy": "chewy_soft_caramel_based_candy_single",
+    "Fudge": "chewy_soft_caramel_based_candy_single",
+    "Candy Brittle": "chewy_soft_caramel_based_candy_single",
+    "Halva": "chewy_soft_caramel_based_candy_single",
+    "Marzipan Candy": "chewy_soft_caramel_based_candy_single",
+    "Nut Cluster Candy": "chewy_soft_caramel_based_candy_single",
+    "Food Gift Assortments": "chips_puffs_crackers_crunchy_fruity_shelf_pudding_multipack",
+    "Party Mixes": "chips_puffs_crackers_crunchy_fruity_shelf_pudding_multipack",
+    "Snack Boxes": "chips_puffs_crackers_crunchy_fruity_shelf_pudding_multipack",
+    "Snack Pudding & Gelatin": "chips_puffs_crackers_crunchy_fruity_shelf_pudding_multipack",
+    "Candy Bars & Miniatures": "chocolate_chocolate_based_candy_single",
+    "Chocolate Candy": "chocolate_chocolate_based_candy_single",
+    "Chocolate Truffles": "chocolate_chocolate_based_candy_single",
+    "Chocolate Covered Fruits": "chocolate_chocolate_based_candy_single",
+    "Chocolate Covered Nuts": "chocolate_chocolate_based_candy_single",
+    "Chocolate Covered Snacks": "chocolate_chocolate_based_candy_single",
+    "Chocolate Covered Fruits, Nuts & Snacks": "chocolate_chocolate_based_candy_single",
+    "Ground Coffee": "coffee_whole_ground_instant_single",
+    "Instant Coffee": "coffee_whole_ground_instant_single",
+    "Whole Bean Coffee": "coffee_whole_ground_instant_single",
+    "Salad Dressings": [
+      "condiments_sauces_single",
+      "spices_seasonings_substitutes_single"
+    ],
+    "Vinegars": "condiments_sauces_single",
+    "Worcestershire Sauce": "condiments_sauces_single",
+    "Barbecue Sauces": "condiments_sauces_single",
+    "Cocktail Sauces": "condiments_sauces_single",
+    "Ketchup": "condiments_sauces_single",
+    "Mayonnaise": "condiments_sauces_single",
+    "Mustards": "condiments_sauces_single",
+    "Steak Sauces": "condiments_sauces_single",
+    "Tartar Sauces": "condiments_sauces_single",
+    "Horseradish": "condiments_sauces_single",
+    "Hot Sauces": "condiments_sauces_single",
+    "Dessert Syrups & Sauces": "condiments_sauces_single",
+    "Flavored Syrups": "condiments_sauces_single",
+    "Honey": "condiments_sauces_single",
+    "Maple Syrups": "condiments_sauces_single",
+    "Pancake Syrups": "condiments_sauces_single",
+    "Applesauce & Fruit Sauces": "condiments_sauces_single",
+    "Bean Pastes": "condiments_sauces_single",
+    "Capers": "condiments_sauces_single",
+    "Cooking Oils": "cooking_oils_wines_sprays_single",
+    "Cooking Wines": "cooking_oils_wines_sprays_single",
+    "Cooking Sprays": "cooking_oils_wines_sprays_single",
+    "Chutneys": "cooking_sauces_marinades_global_sauces_single",
+    "Cooking Sauces & Marinades": "cooking_sauces_marinades_global_sauces_single",
+    "Fish Sauces": "cooking_sauces_marinades_global_sauces_single",
+    "Gravies": [
+      "cooking_sauces_marinades_global_sauces_single",
+      "spices_seasonings_substitutes_single"
+    ],
+    "Other Condiments & Sauces": "cooking_sauces_marinades_global_sauces_single",
+    "Pasta Sauces": "cooking_sauces_marinades_global_sauces_single",
+    "Pizza Sauces": "cooking_sauces_marinades_global_sauces_single",
+    "Satay Sauces": "cooking_sauces_marinades_global_sauces_single",
+    "Soy Sauces": "cooking_sauces_marinades_global_sauces_single",
+    "Tahini": "cooking_sauces_marinades_global_sauces_single",
+    "Wasabi": "cooking_sauces_marinades_global_sauces_single",
+    "Popcorns": [
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_multipack",
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_single"
+    ],
+    "Pork Rinds": [
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_multipack",
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_single"
+    ],
+    "Pretzels": [
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_multipack",
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_single"
+    ],
+    "Puffed Snacks": [
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_multipack",
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_single"
+    ],
+    "Rice Cakes": [
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_multipack",
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_single"
+    ],
+    "Snack Chips": [
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_multipack",
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_single"
+    ],
+    "Snack Crackers": [
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_multipack",
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_single"
+    ],
+    "Fruit Leathers": [
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_multipack",
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_single"
+    ],
+    "Fruit Snacks": [
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_multipack",
+      "chips_puffs_crackers_crunchy_fruity_shelf_pudding_single"
+    ],
+    "Yogurts - Multipack": "dairy_multipack",
+    "Milk - Multipack": "dairy_multipack",
+    "Cottage Cheese": "dairy_tubs_single_serve_squeezeable_single",
+    "Whipped Cream": "dairy_tubs_single_serve_squeezeable_single",
+    "Yogurts": "dairy_tubs_single_serve_squeezeable_single",
+    "Sour Cream - Squeezeable": "dairy_tubs_single_serve_squeezeable_single",
+    "Chocolate Drink Mixes": "drink_mixes_pods_concentrates_single",
+    "Coffee Substitutes": "drink_mixes_pods_concentrates_single",
+    "Drink Mixes": "drink_mixes_pods_concentrates_single",
+    "Hot Cocoa Pods": "drink_mixes_pods_concentrates_single",
+    "Instant Breakfast Drinks": "drink_mixes_pods_concentrates_single",
+    "Soda Syrups": "drink_mixes_pods_concentrates_single",
+    "Dry Beans & Legumes": "dried_beans_meats_single",
+    "Jerky & Dried Meats": "dried_beans_meats_single",
+    "Beeswax Food Wraps": "eggs_carton_single",
+    "Disposable Storage Bags": "eggs_carton_single",
+    "Facial Tissue": "eggs_carton_single",
+    "Flushable Cleansing Cloths": "eggs_carton_single",
+    "Food Wraps": "eggs_carton_single",
+    "Garbage Bags": "eggs_carton_single",
+    "Paper Towels": "eggs_carton_single",
+    "Parchment Paper": "eggs_carton_single",
+    "Toilet Paper": "eggs_carton_single",
+    "Emergency Food": "emergency_food_kits_single",
+    "Dried Fruits": "freeze_dried_dried_fruits_vegetables_single",
+    "Dried Vegetables": "freeze_dried_dried_fruits_vegetables_single",
+    "Freeze Dried Fruits": "freeze_dried_dried_fruits_vegetables_single",
+    "Raisins & Dried Fruits": "freeze_dried_dried_fruits_vegetables_single",
+    "Seaweed & Sea Vegetables": "freeze_dried_dried_fruits_vegetables_single",
+    "Small Boxed Raisin": "freeze_dried_dried_fruits_vegetables_single",
+    "Single Herbs & Spices (Freeze Dried)": "freeze_dried_dried_fruits_vegetables_single",
+    "Fresh Herbs (Freeze Dried)": "freeze_dried_dried_fruits_vegetables_single",
+    "Clams": "fresh_seafood_single",
+    "Crab": "fresh_seafood_single",
+    "Dried Fish": "fresh_seafood_single",
+    "Fish": "fresh_seafood_single",
+    "Lobster": "fresh_seafood_single",
+    "Mussels": "fresh_seafood_single",
+    "Oysters": "fresh_seafood_single",
+    "Scallops": "fresh_seafood_single",
+    "Beef": "fresh_meat_in_tray_single",
+    "Bison": "fresh_meat_in_tray_single",
+    "Chicken": "fresh_meat_in_tray_single",
+    "Lamb": "fresh_meat_in_tray_single",
+    "Meatballs": "fresh_meat_in_tray_single",
+    "Pork": "fresh_meat_in_tray_single",
+    "Turkey": "fresh_meat_in_tray_single",
+    "Avocados: Bagged": "fresh_produce_multipack",
+    "Bananas: Organic": "fresh_produce_multipack",
+    "Beans & Legumes: Bagged": "fresh_produce_multipack",
+    "Beans & Legumes: Bulk": "fresh_produce_multipack",
+    "Pell Peppers: Organic": "fresh_produce_multipack",
+    "Blueberries: Fresh": "fresh_produce_multipack",
+    "Broccoli, Cauliflower & Cabbage: Organic": "fresh_produce_multipack",
+    "Broccoli, Cauliflower: Bagged & Precut": "fresh_produce_multipack",
+    "Carrots: Bagged": "fresh_produce_multipack",
+    "Carrots Bagged Organic": "fresh_produce_multipack",
+    "Celery: Bagged": "fresh_produce_multipack",
+    "Celery: Bagged Organic": "fresh_produce_multipack",
+    "Cucumbers: Bagged": "fresh_produce_multipack",
+    "Cut Fruit: Packaged & Processed": "fresh_produce_multipack",
+    "Garlic: Packaged": "fresh_produce_multipack",
+    "Grapes": "fresh_produce_multipack",
+    "Greens": "fresh_produce_multipack",
+    "Kiwi: Clamshell": "fresh_produce_multipack",
+    "Lemons: Bagged": "fresh_produce_multipack",
+    "Lemons Organic Bagged": "fresh_produce_multipack",
+    "Lettuces: Organic": "fresh_produce_multipack",
+    "Limes: Organic": "fresh_produce_multipack",
+    "Mushrooms": [
+      "fresh_produce_multipack",
+      "fresh_produce_single"
+    ],
+    "Onions & Ethnic Roots: Bagged": "fresh_produce_multipack",
+    "Oranges: Bagged Organic": "fresh_produce_multipack",
+    "Packaged Salads": "fresh_produce_multipack",
+    "Packaged Salads: Ready to Eat": "fresh_produce_multipack",
+    "Peaches: Bagged": "fresh_produce_multipack",
+    "Pears: Bagged": "fresh_produce_multipack",
+    "Potatoes: Bagged": "fresh_produce_multipack",
+    "Squash & Zucchini: Organic": "fresh_produce_multipack",
+    "Strawberries: Fresh": "fresh_produce_multipack",
+    "Sweet Potatoes: Organic": "fresh_produce_multipack",
+    "Tomatoes: Packaged": "fresh_produce_multipack",
+    "Watermelon: Quarter": "fresh_produce_multipack",
+    "Apples: Each": "fresh_produce_single",
+    "Bananas": "fresh_produce_single",
+    "Bell Peppers: Each": "fresh_produce_single",
+    "Cucumbers: Each": "fresh_produce_single",
+    "Garlic: Each": "fresh_produce_single",
+    "Lettuces: Bulk": "fresh_produce_single",
+    "Limes: Each": "fresh_produce_single",
+    "Onions & Ethnic Roots: Each": "fresh_produce_single",
+    "Pears: Each": "fresh_produce_single",
+    "Potatoes: Each": "fresh_produce_single",
+    "Squash & Zucchini: Each": "fresh_produce_single",
+    "Sweet Potatoes: Each": "fresh_produce_single",
+    "Tomatoes: Bulk": "fresh_produce_single",
+    "Tomatoes: Multipack": "fresh_produce_single",
+    "Avocados: Each": "fresh_produce_single",
+    "Avocados: Tropical": "fresh_produce_single",
+    "Kiwi: Bulk": "fresh_produce_single",
+    "Lemons: Each": "fresh_produce_single",
+    "Oranges: Each": "fresh_produce_single",
+    "Peaches & Plums: Each": "fresh_produce_single",
+    "Watermelon: Each": "fresh_produce_single",
+    "Ice Cream Bars, Pops, Cones & Novelties - Boxed": [
+      "frozen_desserts_multipack",
+      "frozen_desserts_single"
+    ],
+    "Ice Cream Wafers & Cones": [
+      "frozen_desserts_multipack",
+      "frozen_desserts_single"
+    ],
+    "Ice Cream, Sorbet & Frozen Yogurt - Tub": [
+      "frozen_desserts_multipack",
+      "frozen_desserts_single"
+    ],
+    "Hard Candy": "hard_candy_sugar_confections_single",
+    "Jawbreakers": "hard_candy_sugar_confections_single",
+    "Lollipops & Suckers": "hard_candy_sugar_confections_single",
+    "Mint Candy": "hard_candy_sugar_confections_single",
+    "Rock Candy": "hard_candy_sugar_confections_single",
+    "Candy Canes": "hard_candy_sugar_confections_single",
+    "Candy Corn": "hard_candy_sugar_confections_single",
+    "Powder Candy": "hard_candy_sugar_confections_single",
+    "Cotton Candy": "hard_candy_sugar_confections_single",
+    "Chewing Gum": "hard_candy_sugar_confections_single",
+    "Lunch & Deli Meats": "lunch_deli_meats_sliced_prepacked_single",
+    "Bacon": "lunch_deli_meats_sliced_prepacked_single",
+    "Sausages & Hot Dogs": "lunch_deli_meats_sliced_prepacked_single",
+    "Imitation Crab": "lunch_deli_meats_sliced_prepacked_single",
+    "Smoked Fish": "lunch_deli_meats_sliced_prepacked_single",
+    "Coffee Creamer": "milk_drinkable_liquid_dairy_nondairy_single",
+    "Eggnogs": "milk_drinkable_liquid_dairy_nondairy_single",
+    "Heavy Cream": "milk_drinkable_liquid_dairy_nondairy_single",
+    "Kefir & Yogurt Drinks": "milk_drinkable_liquid_dairy_nondairy_single",
+    "Liquid Eggs": "milk_drinkable_liquid_dairy_nondairy_single",
+    "Milks": "milk_drinkable_liquid_dairy_nondairy_single",
+    "Non-Dairy Creamers": "milk_drinkable_liquid_dairy_nondairy_single",
+    "Plant-Based Milk": "milk_drinkable_liquid_dairy_nondairy_single",
+    "Sandwiches, Filled Rolls & Wraps": "packaged_meals_kits_side_dishes_fresh_frozen_single",
+    "Sushi": "packaged_meals_kits_side_dishes_fresh_frozen_single",
+    "Meal Kits": [
+      "packaged_meals_kits_side_dishes_fresh_frozen_single",
+      "prepared_frozen_foods_single"
+    ],
+    "Packaged Meals": [
+      "packaged_meals_kits_side_dishes_fresh_frozen_single",
+      "prepared_frozen_foods_single"
+    ],
+    "Packaged Side Dishes": [
+      "packaged_meals_kits_side_dishes_fresh_frozen_single",
+      "prepared_frozen_foods_single"
+    ],
+    "Pizza": [
+      "packaged_meals_kits_side_dishes_fresh_frozen_single",
+      "prepared_frozen_foods_single"
+    ],
+    "Savory Pies & Quiches": [
+      "packaged_meals_kits_side_dishes_fresh_frozen_single",
+      "prepared_frozen_foods_single"
+    ],
+    "Ice": "packaged_meals_kits_side_dishes_fresh_frozen_single",
+    "Pasta - Dry": "pasta_noodles_rice_single",
+    "Noodles": "pasta_noodles_rice_single",
+    "Rice (Bagged or Box)": "pasta_noodles_rice_single",
+    "Corn Dogs": "prepared_frozen_foods_single",
+    "Packaged Appetizers": "prepared_frozen_foods_single",
+    "Pizza Bites": "prepared_frozen_foods_single",
+    "Fresh & Frozen Beans & Legumes": "prepared_frozen_foods_single",
+    "Fresh & Frozen Fruits": "prepared_frozen_foods_single",
+    "Fresh & Frozen Vegetables": "prepared_frozen_foods_single",
+    "Frozen Fruits": "prepared_frozen_foods_single",
+    "Frozen Vegetables": "prepared_frozen_foods_single",
+    "Bread Stuffing": "prepared_frozen_foods_single",
+    "Shrimp & Prawns": "prepared_frozen_foods_single",
+    "Prepared & Packaged Soups - Fresh": "prepared_packaged_soups_fresh_single",
+    "Bouillon, Broths & Stocks": "prepared_packaged_soups_shelf_stable_single",
+    "Edible Nuts": "protein_snacks_single",
+    "Edible Seeds": "protein_snacks_single",
+    "Trail Mixes": "protein_snacks_single",
+    "Protein Chips": "protein_snacks_single",
+    "Bean Dips & Spreads": "savory_dips_spreads_plastic_packaging_single",
+    "Guacamole": "savory_dips_spreads_plastic_packaging_single",
+    "Hummus": "savory_dips_spreads_plastic_packaging_single",
+    "Meat Dips & Spreads": "savory_dips_spreads_plastic_packaging_single",
+    "Seafood Dips & Spreads": "savory_dips_spreads_plastic_packaging_single",
+    "Vegetable Dips": "savory_dips_spreads_plastic_packaging_single",
+    "Cheese Dips & Spreads": "savory_dips_spreads_nut_butters_jarred_single",
+    "Nut Butters & Spreads": "savory_dips_spreads_nut_butters_jarred_single",
+    "Olive Dips & Spreads": "savory_dips_spreads_nut_butters_jarred_single",
+    "Pates": "savory_dips_spreads_nut_butters_jarred_single",
+    "Salsas": "savory_dips_spreads_nut_butters_jarred_single",
+    "Sandwich Spreads": "savory_dips_spreads_nut_butters_jarred_single",
+    "MSG": "spices_seasonings_substitutes_single",
+    "Mixed Spices & Seasonings": "spices_seasonings_substitutes_single",
+    "Pepper & Peppercorns": "spices_seasonings_substitutes_single",
+    "Salt": "spices_seasonings_substitutes_single",
+    "Salt Substitutes": "spices_seasonings_substitutes_single",
+    "Single Herbs & Spices": "spices_seasonings_substitutes_single",
+    "Cheese Wax": "spices_seasonings_substitutes_single",
+    "Salad Toppings": "spices_seasonings_substitutes_single",
+    "Dessert Dips": "sweet_spreads_dips_fruit_preserves_single",
+    "Jams, Jellies & Preserves": "sweet_spreads_dips_fruit_preserves_single",
+    "Marmalades": "sweet_spreads_dips_fruit_preserves_single"
+  }
+}

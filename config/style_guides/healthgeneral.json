@@ -1,0 +1,357 @@
+{
+  "category": "Health",
+  "status": "complete",
+  "source": "pn-guide-health.pdf",
+  "families": {
+    "bath_body": {
+      "display_name": "Bath & Body",
+      "product_types": {
+        "other_bathing_accessories": {
+          "display_name": "Other Bathing Accessories",
+          "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Size", "Count/Pack", "Net Content UOM", "Skin Type"],
+          "attributes": ["Product Net Content Uom", "Product Net Content Quantity", "Skin Type"],
+          "aliases": ["bathing accessory", "bathing accessories", "bath accessory", "bath accessories"],
+          "title_keywords": ["bathing accessory", "bath accessory", "bath accessories"],
+          "context_keywords": ["skin type", "count", "pack", "net content", "uom"],
+          "negative_keywords": ["mobility walker accessory", "eating aid", "dressing aid", "diabetes supply", "ear care", "foot care"]
+        }
+      }
+    },
+    "daily_living_aids": {
+  "display_name": "Daily Living Aids",
+  "product_types": {
+    "other_mobility_walker_accessories": {
+      "display_name": "Other Mobility Walker Accessories",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Count/Pack", "Net Content", "Net Content UOM"],
+      "attributes": ["Product Net Content Quantity", "Product Net Content Uom", "Condition"],
+      "aliases": ["mobility walker accessory", "mobility walker accessories", "walker accessory", "walker accessories"],
+      "title_keywords": ["mobility walker accessory", "walker accessory", "walker accessories"],
+      "context_keywords": ["mobility", "walker", "accessory", "count", "net content"],
+      "negative_keywords": ["mobility aid", "eating aid", "drinking aid", "dressing aid", "button hook dressing aid", "health monitor accessory"]
+    },
+    "other_eating_drinking_aids": {
+      "display_name": "Other Eating & Drinking Aids",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Count/Pack"],
+      "attributes": ["Multipack Quantity", "Material Ib", "Retail Packaging"],
+      "aliases": ["eating aid", "drinking aid", "eating and drinking aid", "feeding aid"],
+      "title_keywords": ["eating aid", "drinking aid", "eating and drinking aid"],
+      "context_keywords": ["adaptive", "count", "pack", "aid", "drinking"],
+      "negative_keywords": ["dressing aid", "button hook dressing aid", "mobility walker accessory", "mobility aid", "bathing accessory", "orthodontic supply"]
+    },
+    "other_dressing_aids": {
+      "display_name": "Other Dressing Aids",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Count/Pack"],
+      "attributes": ["Color", "Material Ib", "Retail Packaging"],
+      "aliases": ["dressing aid", "dressing aids", "adaptive dressing aid"],
+      "title_keywords": ["dressing aid", "dressing aids", "adaptive dressing aid"],
+      "context_keywords": ["adaptive", "count", "pack", "aid", "dressing"],
+      "negative_keywords": ["button hook dressing aid", "eating aid", "drinking aid", "mobility walker accessory", "mobility aid", "physical therapy aid"]
+    },
+    "button_hook_dressing_aids": {
+      "display_name": "Button Hook Dressing Aids",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Count/Pack"],
+      "attributes": ["Brand", "Condition", "Button Hook Dressing Aid Type"],
+      "aliases": ["button hook dressing aid", "button hook dressing aids", "button hook", "buttoning aid"],
+      "title_keywords": ["button hook dressing aid", "button hook", "buttoning aid"],
+      "context_keywords": ["dressing", "adaptive", "button", "count", "pack"],
+      "negative_keywords": ["other dressing aid", "eating aid", "drinking aid", "mobility walker accessory", "mobility aid", "physical therapy aid"]
+    },
+    "other_mobility_aids_equipment": {
+      "display_name": "Other Mobility Aids & Equipment",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Count/Pack", "Net Content", "Net Content UOM"],
+      "attributes": ["Product Net Content Quantity", "Condition", "Product Net Content Uom"],
+      "aliases": ["mobility aid", "mobility aids", "mobility equipment", "mobility aid and equipment"],
+      "title_keywords": ["mobility aid", "mobility aids", "mobility equipment"],
+      "context_keywords": ["equipment", "count", "pack", "net content", "uom"],
+      "negative_keywords": ["mobility walker accessory", "walker accessory", "eating aid", "drinking aid", "dressing aid", "physical therapy aid"]
+    }
+  }
+},
+"diabetes_management": {
+  "display_name": "Diabetes Management",
+  "product_types": {
+    "other_diabetes_supplies": {
+      "display_name": "Other Diabetes Supplies",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Count/Pack"],
+      "attributes": ["Condition", "Number Of Pieces", "Multipack Quantity"],
+      "aliases": ["diabetes supply", "diabetes supplies", "diabetic supply", "diabetic supplies"],
+      "title_keywords": ["diabetes supply", "diabetes supplies", "diabetic supply", "diabetic supplies"],
+      "context_keywords": ["count", "pack", "condition", "product line", "key feature"],
+      "negative_keywords": ["health monitor", "health monitor accessory", "hormone test", "general health test", "infectious disease test", "prescription medicine"]
+    }
+  }
+},"ear_care": {
+  "display_name": "Ear Care",
+  "product_types": {
+    "other_ear_care": {
+      "display_name": "Other Ear Care",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Size", "Count/Pack", "Net Content UOM"],
+      "attributes": ["Condition", "Product Net Content Quantity", "Product Net Content Uom"],
+      "aliases": ["ear care", "ear care supply", "ear care supplies"],
+      "title_keywords": ["ear care", "ear care supply", "ear care supplies"],
+      "context_keywords": ["size", "count", "pack", "net content", "uom"],
+      "negative_keywords": ["foot care", "denture care", "shaving supply", "hair removal supply", "sleep aid", "first aid supply"]
+    }
+  }
+},"foot_care": {
+  "display_name": "Foot Care",
+  "product_types": {
+    "other_foot_care": {
+      "display_name": "Other Foot Care",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Material", "Size", "Count/Pack", "Net Content UOM", "Warranty"],
+      "attributes": ["Condition", "Product Net Content Uom", "Product Net Content Quantity"],
+      "aliases": ["foot care", "foot care supply", "foot care supplies"],
+      "title_keywords": ["foot care", "foot care supply", "foot care supplies"],
+      "context_keywords": ["material", "size", "count", "pack", "warranty"],
+      "negative_keywords": ["ear care", "denture care", "orthodontic supply", "shaving supply", "hair removal supply", "physical therapy aid"]
+    }
+  }
+},"prescription_medicine": {
+  "display_name": "Prescription Medicine",
+  "product_types": {
+    "prescription_medicines": {
+      "display_name": "Prescription Medicines",
+      "formula": ["Brand", "Condition", "Product/Type", "Approved For Animals"],
+      "attributes": ["Condition", "Approved For Animals", "Animal Health Concern"],
+      "aliases": ["prescription medicine", "prescription medicines", "prescription drug", "prescription drugs"],
+      "title_keywords": ["prescription medicine", "prescription medicines", "prescription drug", "prescription drugs"],
+      "context_keywords": ["approved for animals", "condition", "product type"],
+      "negative_keywords": ["diabetes supply", "hormone test", "general health test", "infectious disease test", "sleep aid", "weight loss supply"]
+    }
+  }
+},"sleep_aids_cpap": {
+  "display_name": "Sleep Aids & CPAP",
+  "product_types": {
+    "other_sleep_aids": {
+      "display_name": "Other Sleep Aids",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Material", "Size", "Count/Pack", "Net Content UOM"],
+      "attributes": ["Condition", "Product Net Content Uom", "Product Net Content Quantity"],
+      "aliases": ["sleep aid", "sleep aids", "cpap supply", "cpap supplies"],
+      "title_keywords": ["sleep aid", "sleep aids", "cpap supply", "cpap supplies"],
+      "context_keywords": ["material", "size", "count", "pack", "net content uom"],
+      "negative_keywords": ["prescription medicine", "weight loss supply", "physical therapy aid", "ear care", "foot care", "shaving supply"]
+    }
+  }
+},"shaving_hair_cutting": {
+  "display_name": "Shaving & Hair Cutting",
+  "product_types": {
+    "other_shaving_supplies": {
+      "display_name": "Other Shaving Supplies",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Size", "Count/Pack"],
+      "attributes": ["Brand", "Condition", "Gender"],
+      "aliases": ["shaving supply", "shaving supplies", "hair cutting supply", "hair cutting supplies"],
+      "title_keywords": ["shaving supply", "shaving supplies", "hair cutting supply", "hair cutting supplies"],
+      "context_keywords": ["size", "count", "pack", "gender", "key feature"],
+      "negative_keywords": ["hair removal supply", "foot care", "denture care", "orthodontic supply", "sleep aid", "first aid supply"]
+    }
+  }
+},"waxing_hair_removal": {
+  "display_name": "Waxing & Hair Removal",
+  "product_types": {
+    "other_hair_removal_supplies": {
+      "display_name": "Other Hair Removal Supplies",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Size", "Net Content UOM", "Count Per Pack", "Number of Pieces"],
+      "attributes": ["Product Net Content Uom", "Product Net Content Quantity", "Count Per Pack"],
+      "aliases": ["hair removal supply", "hair removal supplies", "waxing supply", "waxing supplies"],
+      "title_keywords": ["hair removal supply", "hair removal supplies", "waxing supply", "waxing supplies"],
+      "context_keywords": ["size", "net content uom", "count per pack", "number of pieces", "extra strength"],
+      "negative_keywords": ["shaving supply", "foot care", "first aid supply", "ear care", "sleep aid", "physical therapy aid"]
+    }
+  }
+},"nutrition_weight_management": {
+  "display_name": "Nutrition & Weight Management",
+  "product_types": {
+    "other_weight_loss_supplies": {
+      "display_name": "Other Weight Loss Supplies",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Count/Pack", "Warranty"],
+      "attributes": ["Has Written Warranty", "Number Of Pieces", "Multipack Quantity"],
+      "aliases": ["weight loss supply", "weight loss supplies", "nutrition supply", "weight management supply"],
+      "title_keywords": ["weight loss supply", "weight loss supplies", "weight management supply", "weight management supplies"],
+      "context_keywords": ["count", "pack", "warranty", "signature", "fast-acting"],
+      "negative_keywords": ["prescription medicine", "sleep aid", "diabetes supply", "general health test", "physical therapy aid", "first aid supply"]
+    }
+  }
+},"physical_therapy_aids": {
+  "display_name": "Physical Therapy Aids",
+  "product_types": {
+    "other_physical_therapy_aids": {
+      "display_name": "Other Physical Therapy Aids",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Material", "Color", "Count/Pack", "Warranty Info"],
+      "attributes": ["Condition", "Count Per Pack", "Number Of Pieces"],
+      "aliases": ["physical therapy aid", "physical therapy aids", "therapy aid", "rehab aid"],
+      "title_keywords": ["physical therapy aid", "physical therapy aids", "therapy aid", "rehab aid"],
+      "context_keywords": ["material", "color", "count", "pack", "warranty info"],
+      "negative_keywords": ["mobility aid", "foot care", "sleep aid", "weight loss supply", "shaving supply", "first aid supply"]
+    }
+  }
+},"hearing_vision_aids": {
+  "display_name": "Hearing & Vision Aids",
+  "product_types": {
+    "eyeglass_lenses": {
+      "display_name": "Eyeglass Lenses",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Material", "Color", "Count/Pack"],
+      "attributes": ["Brand", "Condition", "Eyewear Lens Material"],
+      "aliases": ["eyeglass lens", "eyeglass lenses", "eyewear lens", "replacement lens"],
+      "title_keywords": ["eyeglass lens", "eyeglass lenses", "eyewear lens", "replacement lens"],
+      "context_keywords": ["ceramic", "silver", "count", "pack", "lens material"],
+      "negative_keywords": ["health monitor", "health monitor accessory", "ear care", "denture care", "orthodontic supply", "first aid supply"]
+    }
+  }
+},"health_monitors_thermometers": {
+  "display_name": "Health Monitors & Thermometers",
+  "product_types": {
+    "other_health_monitors": {
+      "display_name": "Other Health Monitors",
+      "formula": ["Brand", "Condition", "Model", "Product Line", "Product/Type", "Key Feature", "Count/Pack", "Net Content", "Net Content UOM"],
+      "attributes": ["Product Net Content Quantity", "Product Net Content Uom", "Condition"],
+      "aliases": ["health monitor", "health monitors", "medical monitor", "wellness monitor"],
+      "title_keywords": ["health monitor", "health monitors", "medical monitor", "wellness monitor"],
+      "context_keywords": ["model", "count", "pack", "net content", "uom"],
+      "negative_keywords": ["health monitor accessory", "diabetes supply", "general health test", "infectious disease test", "eyeglass lens", "prescription medicine"]
+    },
+    "health_monitor_accessories": {
+      "display_name": "Health Monitor Accessories",
+      "formula": ["Brand", "Condition", "Model", "Product Line", "Product/Type", "Key Feature", "Count/Pack", "Net Content UOM", "Net Content"],
+      "attributes": ["Condition", "Number Of Pieces", "Multipack Quantity"],
+      "aliases": ["health monitor accessory", "health monitor accessories", "monitor accessory", "medical monitor accessory"],
+      "title_keywords": ["health monitor accessory", "health monitor accessories", "monitor accessory", "medical monitor accessory"],
+      "context_keywords": ["model", "count", "pack", "net content", "uom"],
+      "negative_keywords": ["health monitor", "diabetes supply", "general health test", "infectious disease test", "eyeglass lens", "prescription medicine"]
+    }
+  }
+},"oral_care": {
+  "display_name": "Oral Care",
+  "product_types": {
+    "other_denture_care": {
+      "display_name": "Other Denture Care",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Size", "Count/Pack", "Net Content UOM"],
+      "attributes": ["Product Net Content Quantity", "Product Net Content Uom", "Condition"],
+      "aliases": ["denture care", "denture care supply", "denture supplies"],
+      "title_keywords": ["denture care", "denture care supply", "denture supplies"],
+      "context_keywords": ["size", "count", "pack", "net content uom", "condition"],
+      "negative_keywords": ["orthodontic supply", "ear care", "foot care", "shaving supply", "first aid supply", "sleep aid"]
+    },
+    "other_orthodontic_supplies": {
+      "display_name": "Other Orthodontic Supplies",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Size", "Count/Pack"],
+      "attributes": ["Condition", "Age Group", "Multipack Quantity"],
+      "aliases": ["orthodontic supply", "orthodontic supplies", "oral appliance supply", "braces supply"],
+      "title_keywords": ["orthodontic supply", "orthodontic supplies", "oral appliance supply", "braces supply"],
+      "context_keywords": ["age group", "size", "count", "pack", "condition"],
+      "negative_keywords": ["denture care", "ear care", "foot care", "shaving supply", "first aid supply", "sleep aid"]
+    }
+  }
+},"first_aid": {
+  "display_name": "First Aid",
+  "product_types": {
+    "other_first_aid_supplies": {
+      "display_name": "Other First Aid Supplies",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Net Content UOM"],
+      "attributes": ["Product Net Content Uom", "Product Net Content Quantity", "Number Of Pieces"],
+      "aliases": ["first aid supply", "first aid supplies", "medical supply", "medical supplies"],
+      "title_keywords": ["first aid supply", "first aid supplies", "medical supply", "medical supplies"],
+      "context_keywords": ["size", "count", "pack", "net content uom", "key feature"],
+      "negative_keywords": ["bandages", "bandaging supply", "ear care", "foot care", "shaving supply", "hair removal supply"]
+    },
+    "other_bandages_bandaging_supplies": {
+      "display_name": "Other Bandages & Bandaging Supplies",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack", "Net Content UOM"],
+      "attributes": ["Condition", "Multipack Quantity", "Number Of Pieces"],
+      "aliases": ["bandage supply", "bandaging supply", "bandages and bandaging supplies", "bandage supplies"],
+      "title_keywords": ["bandage supply", "bandaging supply", "bandages and bandaging supplies", "bandage supplies"],
+      "context_keywords": ["size", "count", "pack", "net content uom", "condition"],
+      "negative_keywords": ["first aid supply", "ear care", "foot care", "orthodontic supply", "shaving supply", "hair removal supply"]
+    }
+  }
+},"feminine_care_incontinence": {
+  "display_name": "Feminine Care & Incontinence",
+  "product_types": {
+    "other_incontinence_aids": {
+      "display_name": "Other Incontinence Aids",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Size", "Count/Pack", "Net Content UOM"],
+      "attributes": ["Product Net Content Quantity", "Product Net Content Uom", "Condition"],
+      "aliases": ["incontinence aid", "incontinence aids", "bladder control aid", "continence aid"],
+      "title_keywords": ["incontinence aid", "incontinence aids", "bladder control aid", "continence aid"],
+      "context_keywords": ["size", "count", "pack", "net content uom", "condition"],
+      "negative_keywords": ["incontinence pad", "incontinence liner", "incontinence guard", "incontinence shield", "first aid supply", "denture care"]
+    },
+    "incontinence_pads_liners": {
+      "display_name": "Incontinence Pads & Liners",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Size", "Count/Pack", "Warranty URL"],
+      "attributes": ["Warranty Url", "Condition", "Multipack Quantity"],
+      "aliases": ["incontinence pad", "incontinence pads", "incontinence liner", "incontinence liners", "bladder control pad"],
+      "title_keywords": ["incontinence pad", "incontinence pads", "incontinence liner", "incontinence liners", "bladder control pad"],
+      "context_keywords": ["size", "count", "pack", "warranty url", "liner"],
+      "negative_keywords": ["other incontinence aid", "incontinence guard", "incontinence shield", "first aid supply", "denture care", "weight loss supply"]
+    },
+    "incontinence_guards_shields": {
+      "display_name": "Incontinence Guards & Shields",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Size", "Count/Pack", "Warranty Info", "Warranty URL"],
+      "attributes": ["Warranty Information", "Warranty Url", "Condition"],
+      "aliases": ["incontinence guard", "incontinence guards", "incontinence shield", "incontinence shields", "bladder control guard"],
+      "title_keywords": ["incontinence guard", "incontinence guards", "incontinence shield", "incontinence shields", "bladder control guard"],
+      "context_keywords": ["size", "count", "pack", "warranty info", "warranty url"],
+      "negative_keywords": ["other incontinence aid", "incontinence pad", "incontinence liner", "first aid supply", "denture care", "weight loss supply"]
+    }
+  }
+},"home_testing_kits": {
+  "display_name": "Home Testing Kits",
+  "product_types": {
+    "hormone_tests": {
+      "display_name": "Hormone Tests",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Count/Pack", "Net Content UOM", "Net Content"],
+      "attributes": ["Product Net Content Uom", "Product Net Content Quantity", "Multipack Quantity"],
+      "aliases": ["hormone test", "hormone tests", "home hormone test", "at-home hormone test"],
+      "title_keywords": ["hormone test", "hormone tests", "home hormone test", "at-home hormone test"],
+      "context_keywords": ["count", "pack", "net content", "net content uom", "test"],
+      "negative_keywords": ["general health test", "infectious disease test", "gut health test", "allergy test", "sexual health test", "diabetes supply"]
+    },
+    "general_health_tests": {
+      "display_name": "General Health Tests",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Count/Pack"],
+      "attributes": ["Ib", "Retail Packaging", "Multipack Quantity", "Power Type"],
+      "aliases": ["general health test", "general health tests", "home health test", "at-home health test"],
+      "title_keywords": ["general health test", "general health tests", "home health test", "at-home health test"],
+      "context_keywords": ["count", "pack", "test", "retail packaging", "power type"],
+      "negative_keywords": ["hormone test", "infectious disease test", "gut health test", "allergy test", "sexual health test", "health monitor"]
+    },
+    "infectious_disease_tests": {
+      "display_name": "Infectious Disease Tests",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Count/Pack"],
+      "attributes": ["Condition", "Test Specimen", "Ib", "Retail Packaging"],
+      "aliases": ["infectious disease test", "infectious disease tests", "disease test", "home infectious disease test"],
+      "title_keywords": ["infectious disease test", "infectious disease tests", "disease test", "home infectious disease test"],
+      "context_keywords": ["test specimen", "count", "pack", "retail packaging", "condition"],
+      "negative_keywords": ["general health test", "hormone test", "gut health test", "allergy test", "sexual health test", "health monitor"]
+    },
+    "gut_health_tests": {
+      "display_name": "Gut Health Tests",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Count/Pack"],
+      "attributes": ["Condition", "Test Specimen", "Ib", "Retail Packaging"],
+      "aliases": ["gut health test", "gut health tests", "digestive health test", "microbiome test"],
+      "title_keywords": ["gut health test", "gut health tests", "digestive health test", "microbiome test"],
+      "context_keywords": ["test specimen", "count", "pack", "retail packaging", "condition"],
+      "negative_keywords": ["general health test", "hormone test", "infectious disease test", "allergy test", "sexual health test", "health monitor"]
+    },
+    "allergy_tests": {
+      "display_name": "Allergy Tests",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Count/Pack"],
+      "attributes": ["Condition", "Test Specimen", "Ib", "Retail Packaging"],
+      "aliases": ["allergy test", "allergy tests", "home allergy test", "at-home allergy test"],
+      "title_keywords": ["allergy test", "allergy tests", "home allergy test", "at-home allergy test"],
+      "context_keywords": ["test specimen", "count", "pack", "retail packaging", "condition"],
+      "negative_keywords": ["general health test", "hormone test", "infectious disease test", "gut health test", "sexual health test", "health monitor"]
+    },
+    "sexual_health_tests": {
+      "display_name": "Sexual Health Tests",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Count/Pack"],
+      "attributes": ["Multipack Quantity", "Condition", "Ib", "Retail Packaging"],
+      "aliases": ["sexual health test", "sexual health tests", "std test", "sti test"],
+      "title_keywords": ["sexual health test", "sexual health tests", "std test", "sti test"],
+      "context_keywords": ["count", "pack", "condition", "retail packaging", "test"],
+      "negative_keywords": ["general health test", "hormone test", "infectious disease test", "gut health test", "allergy test", "prescription medicine"]
+    }
+  }
+}
+  }
+}

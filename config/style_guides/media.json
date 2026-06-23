@@ -1,0 +1,161 @@
+{
+    "category": "Media",
+    "status": "complete",
+    "source": "MediaContentStyleGuide.pdf",
+    "families":{
+        "books_and_magazines":{
+            "display_name": "Books & Magazines",
+            "product_types":{
+            "books":{
+                "display_name": "Books",
+                "formula": ["Series Title (:)", "Title"],
+                "attributes": ["Age Group", "Author", "Bisac Subject Heading"],
+                "aliases": ["book", "books", "text", "novel", "graphic novel", "comic book", "children's book", "picture book"],
+                "title_keywords": ["book", "text", "novel", "graphic novel", "comic book", "children's book", "picture book"],
+                "context_keywords": ["by", "written by", "author", "series"],
+                "negative_keywords": ["magazine", "periodical", "newspaper", "catalog", "pamphlet"]
+            },
+            "catalogs":{
+                "display_name": "Catalogs",
+                "formula": ["Series Title (:)", "Title"],
+                "attributes": ["Current Language", "Count Per Pack", "Catalog Type"],
+                "aliases": ["catalog", "catalogs", "catalogue", "catalogues"],
+                "title_keywords": ["catalog", "catalogs", "catalogue", "catalogues"],
+                "context_keywords": ["brand", "product line", "model"],
+                "negative_keywords": ["book", "magazine", "periodical", "newspaper", "pamphlet"]
+            },
+            "coloring_books":{
+                "display_name": "Coloring Books",
+                "formula": ["Series Title (:)", "Title"],
+                "attributes": ["Age Group", "Count Per Pack", "Condition"],
+                "aliases": ["coloring book", "coloring books", "colouring book", "colouring books"],
+                "title_keywords": ["coloring book", "colouring book"],
+                "context_keywords": ["by", "written by", "author", "series"],
+                "negative_keywords": ["magazine", "periodical", "newspaper", "catalog", "pamphlet"]
+
+            },
+            "comics":{
+                "display_name": "Comics",
+                "formula": ["Series Title (:)", "Title"],
+                "attributes": ["Age Group", "Title", "Author"],
+                "aliases": ["comic book", "comic books", "graphic novel", "graphic novels"],
+                "title_keywords": ["comic book", "graphic novel"],
+                "context_keywords": ["by", "written by", "author", "series", "action", "drawings"],
+                "negative_keywords": ["book", "magazine", "periodical", "newspaper", "catalog", "pamphlet"]
+            },
+            "magazines":{
+                "display_name": "Magazines",
+                "formula": ["Series Title (:)", "Title"],
+                "attributes": ["Publisher", "Current Language", "Issue"],
+                "aliases": ["magazine", "magazines", "periodical", "periodicals"],
+                "title_keywords": ["magazine", "periodical"],
+                "context_keywords": ["brand", "product line", "model", "news", "images"],
+                "negative_keywords": ["book", "catalog", "newspaper", "pamphlet"]
+            },
+            "manuals_and_guides":{
+                "display_name": "Manuals & Guides",
+                "formula": ["Series Title (:)", "Title"],
+                "attributes": ["Manual and Guide Type", "Current Language", "Publisher"],
+                "aliases": ["manual", "manuals", "guide", "guides"],
+                "title_keywords": ["manual", "guide"],
+                "context_keywords": ["brand", "product line", "model", "instructions"],
+                "negative_keywords": ["book", "magazine", "periodical", "newspaper", "catalog", "pamphlet"]
+            },
+            "newspapers":{
+                "display_name": "Newspapers",
+                "formula": ["Series Title (:)", "Title"],
+                "attributes": ["Newspaper Type", "Current Language", "Subscription Period"],
+                "aliases": ["newspaper", "newspapers"],
+                "title_keywords": ["newspaper"],
+                "context_keywords": ["brand", "product line", "model", "news"],
+                "negative_keywords": ["book", "magazine", "periodical", "catalog", "pamphlet"]
+            },
+            "paper_dolls":{
+                "display_name": "Paper Dolls",
+                "formula": ["Series Title (:)", "Title"],
+                "attributes": ["Age Group", "Number of Pieces", "Title"],
+                "aliases": ["paper doll", "paper dolls"],
+                "title_keywords": ["paper doll"],
+                "context_keywords": ["by", "written by", "author", "series", "action", "drawings"],
+                "negative_keywords": ["book", "magazine", "periodical", "newspaper", "catalog", "pamphlet"]
+            },
+            "sheet_music":{
+                "display_name": "Sheet Music",
+                "formula": ["Series Title (:)", "Title"],
+                "attributes": ["Musical Instrument Type", "Current Language", "Musician"],
+                "aliases": ["sheet music", "sheet musics", "sheet musical", "sheet musicals"],
+                "title_keywords": ["sheet music", "sheet musical"],
+                "context_keywords": ["by", "written by", "composer", "series", "notes"],
+                "negative_keywords": ["book", "magazine", "periodical", "newspaper", "catalog", "pamphlet"]
+            }
+        }
+    }, "movies_and_tv":{
+        "display_name": "Movies & TV Shows",
+        "product_types":{
+            "movies":{
+                "display_name": "Movies",
+                "formula": ["Title", "Movie & TV Media Format"],
+                "attributes": ["Movie Genre", "Resolution", "Movie and Tv Media Format"],
+                "aliases": ["movie", "movies", "film", "films", "motion picture", "motion pictures"],
+                "title_keywords": ["movie", "film", "motion picture"],
+                "context_keywords": ["by", "directed by", "director", "series", "genre", "film"],
+                "negative_keywords": ["tv show", "television show", "series"]
+            },
+            "tv_shows":{
+                "display_name": "TV Shows",
+                "formula": ["Title"],
+                "attributes": ["TV Show Genre", "Movie & TV Media Format", "Studio and Production Company"],
+                "aliases": ["tv show", "television show", "series"],
+                "title_keywords": ["tv show", "television show"],
+                "context_keywords": ["by", "directed by", "director", "series", "genre"],
+                "negative_keywords": ["movie", "film", "motion picture"]
+            }
+        }
+    }, "music":{
+        "display_name": "Music",
+        "product_types":{
+            "music":{
+                "display_name": "Music",
+                "formula": ["Performer(s)", "Title", "Media Format"],
+                "attributes": ["Music Genre", "Physical Media Format", "Musician"],
+                "aliases": ["album", "albums", "record", "records", "cd", "cds", "vinyl", "vinyls"],
+                "title_keywords": ["album", "record", "cd", "vinyl"],
+                "context_keywords": ["by", "performed by", "artist", "genre"],
+                "negative_keywords": ["movie", "film", "motion picture", "tv show", "television show"]
+            }
+          
+        }
+
+}, "software":{
+        "display_name": "Software",
+        "product_types":{
+            "software":{
+                "display_name": " Computer Software",
+                "formula": ["Brand", "Manufacturer", "Product Line", "Title", "Media Format", "Number of Users"],
+                "attributes": ["Brand", "Computer Software Type", "Operating System"],
+                "aliases": ["software", "program", "application", "app"],
+                "title_keywords": ["software", "program", "application", "app"],
+                "context_keywords": ["by", "developed by", "publisher", "operating system"],
+                "negative_keywords": ["movie", "film", "motion picture", "tv show", "television show", "album", "record", "cd", "vinyl"]
+            }
+        }
+
+}, "video_game_software":{
+        "display_name": "Video Game Software",
+        "product_types":{
+            "video_games":{
+                "display_name": "Video Games",
+                "formula": ["Title", "Video Game Platform", "Video Game Format"],
+                "attributes": ["Brand", "Video Game Genre", "Video Game Platform"],
+                "aliases": ["video game software", "video game program", "video game application", "video game app"],
+                "title_keywords": ["video game software", "video game program", "video game application", "video game app"],
+                "context_keywords": ["by", "developed by", "publisher", "platform", "game", "gameplay"],
+                "negative_keywords": ["movie", "film", "motion picture", "tv show", "television show", "album", "record", "cd", "vinyl"]
+            }
+        }
+
+    }
+
+}
+
+}

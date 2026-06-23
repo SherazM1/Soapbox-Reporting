@@ -453,8 +453,6 @@ def build_audit_export_plan(
             "retailer": metadata_src.get("retailer", ""),
             "audit_date": metadata_src.get("audit_date", ""),
             "status": metadata_src.get("status", ""),
-            "tone": metadata_src.get("tone", ""),
-            "audit_goal": metadata_src.get("audit_goal", ""),
         },
         "summary": {
             "included_primary_entry_count": len(included_entries),

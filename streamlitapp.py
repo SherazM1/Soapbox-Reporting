@@ -467,21 +467,6 @@ def render_extracted_product_review() -> None:
             )
 
 
-def render_audit_preferences() -> None:
-    with st.container(border=True):
-        st.markdown("### Audit Preferences")
-        p1, p2 = st.columns(2)
-        with p1:
-            st.selectbox("Tone", ["Standard", "Aggressive"], key="audit_tone")
-        with p2:
-            st.selectbox(
-                "Audit Goal",
-                ["SEO", "Conversion", "Compliance", "Image Improvement"],
-                key="audit_goal",
-            )
-        st.text_area("Notes", key="audit_notes", height=80)
-
-
 def _build_mock_audit_payload() -> dict:
     base_title = st.session_state.get("audit_current_title", "").strip() or st.session_state.get("audit_product_title", "").strip() or "Brand Product Name, Key Benefit, Size"
     return {
@@ -592,8 +577,6 @@ def render_content_auditing_legacy_prompt1() -> None:
     render_product_source()
     st.divider()
     render_extracted_product_review()
-    st.divider()
-    render_audit_preferences()
     st.divider()
 
     with st.container(border=True):
@@ -1908,8 +1891,6 @@ def render_generate_audit_v2() -> None:
                 retailer=st.session_state.get("audit_retailer", ""),
                 audit_date=str(st.session_state.get("audit_date", date.today())),
                 status="generated_mvp",
-                tone=st.session_state.get("audit_tone", "Standard"),
-                audit_goal=st.session_state.get("audit_goal", "SEO"),
                 product_audit_entries=entries,
                 competitor_graphics_assignments=st.session_state.get("audit_competitor_assignments", []),
                 competitor_graphics_notes=st.session_state.get("audit_competitor_graphics_notes", ""),
@@ -2135,7 +2116,6 @@ def render_content_auditing() -> None:
     st.divider()
 
     st.header("Audit Outputs / Recommendations")
-    render_audit_preferences()
     render_generate_audit_v2()
     render_mocked_audit_results_v2()
     st.divider()

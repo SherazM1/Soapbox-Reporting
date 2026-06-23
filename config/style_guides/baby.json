@@ -1,0 +1,1242 @@
+{
+  "category": "Baby",
+  "status": "complete",
+  "source": "pn-guide-baby.pdf",
+  "families": {
+    "baby_bath_potty": {
+      "display_name": "Baby Bath & Potty",
+      "product_types": {
+        "baby_bath_seats_rings": {
+          "display_name": "Baby Bath Seats & Rings",
+          "formula": ["Brand/Global Brand License", "Product Line", "Features", "Texture", "\"in\" Recommended Location", "Baby Bath Seat & Ring Type", "Retail Packaging", "\"with\" Item Included", "Color/Character Group/Character/Theme/Pattern", "Count \"Count\" / Piece Count \"Piece\""],
+          "attributes": ["Brand", "Age Group", "Baby Bath Seat And Ring Type"],
+          "aliases": ["baby bath seat", "baby bath seats", "baby bath ring", "baby bath rings", "infant bath seat", "infant bath ring"],
+          "title_keywords": ["baby bath seat", "baby bath ring", "bath seat", "bath ring", "bathtub seat", "bathtub ring"],
+          "context_keywords": ["sink", "bath support", "bath holder", "infant bath", "baby bath"],
+          "negative_keywords": ["baby bathtub", "baby bath thermometer", "bath thermometer", "bath faucet cover", "toilet training potty", "toilet training seat"]
+        },
+        "baby_bath_thermometers": {
+          "display_name": "Baby Bath Thermometers",
+          "formula": ["Brand", "Product Line", "Features", "\"Baby Bath Thermometer\"/\"Bath Thermometer\"", "Retail Packaging", "\"with\" Items Included", "Color/Shape/Character Group/Character", "Count \"Count\" / Piece Count \"Piece\""],
+          "attributes": ["Age Group", "Brand", "Multipack Quantity"],
+          "aliases": ["baby bath thermometer", "baby bath thermometers", "bath thermometer", "bath thermometers", "baby tub thermometer"],
+          "title_keywords": ["baby bath thermometer", "bath thermometer", "bath digital thermometer", "bath temperature thermometer"],
+          "context_keywords": ["digital", "audible alarm", "bath water", "bath time", "temperature"],
+          "negative_keywords": ["baby bathtub", "baby bath seat", "baby bath ring", "bath faucet cover", "toilet training potty", "toilet training seat"]
+        },
+        "baby_bathtubs": {
+          "display_name": "Baby Bathtubs",
+          "formula": ["Brand/Global Brand License", "Product Line", "Age Group", "Character Group/Character/Shape", "Product Multifunction Descriptor", "Features", "Ingredient Properties", "\"Bathtub/Baby Bathtub\"", "Retail Packaging", "\"with\" Items Included", "Color/Pattern/Theme", "Count \"Count\""],
+          "attributes": ["Baby Bathtub Type", "Brand", "Age Group"],
+          "aliases": ["baby bathtub", "baby bathtubs", "infant bathtub", "infant bathtubs", "baby bath tub"],
+          "title_keywords": ["baby bathtub", "infant bathtub", "baby bath tub", "inflatable baby bathtub", "sink baby bathtub"],
+          "context_keywords": ["newborn", "toddler", "sling", "seat", "cushion", "inflatable"],
+          "negative_keywords": ["baby bath seat", "baby bath ring", "baby bath thermometer", "bath thermometer", "bath faucet cover", "toilet training potty", "toilet training seat"]
+        },
+        "bath_faucet_covers": {
+          "display_name": "Bath Faucet Covers",
+          "formula": ["Brand", "Product Line", "Features", "Texture", "Material", "Theme/Character Group/Character/Shape", "\"Bath Faucet Cover\"/\"Bath Spout Cover\"", "Retail Packaging", "\"with\" Items Included", "Color", "Count \"Count\"/Piece Count \"Piece\""],
+          "attributes": ["Age Group", "Material", "Brand"],
+          "aliases": ["bath faucet cover", "bath faucet covers", "bath spout cover", "bath spout covers", "baby faucet cover"],
+          "title_keywords": ["bath faucet cover", "bath spout cover", "faucet cover", "spout cover"],
+          "context_keywords": ["bathtub faucet", "soft cover", "bath safety", "bath spout", "faucet"],
+          "negative_keywords": ["baby bathtub", "baby bath seat", "baby bath ring", "baby bath thermometer", "bath thermometer", "toilet training potty", "toilet training seat"]
+        },
+        "toilet_training_potties": {
+          "display_name": "Toilet Training Potties",
+          "formula": ["Brand/Global Brand License", "Product Line", "Character Group/Character", "Product Multifunction Descriptor", "Features", "Toilet Training Potty Type/\"Potty Chair\"", "Retail Packaging", "\"with\" Items Included", "Age Demographic", "Color", "Count \"Count\""],
+          "attributes": ["Age Group", "Brand", "Toilet Training Potty Type"],
+          "aliases": ["toilet training potty", "toilet training potties", "potty chair", "potty chairs", "training potty"],
+          "title_keywords": ["toilet training potty", "potty chair", "training potty", "potty training toilet"],
+          "context_keywords": ["removable bucket", "2-in-1", "potty training", "toddler potty"],
+          "negative_keywords": ["toilet training seat", "potty seat", "baby bathtub", "baby bath seat", "baby bath ring", "bath faucet cover"]
+        },
+        "toilet_training_seats": {
+          "display_name": "Toilet Training Seats",
+          "formula": ["Brand/Global Brand License", "Product Line", "Character Group/Character", "Features", "Texture", "\"Potty Seat\"/\"Toilet Training Seat\"", "Retail Packaging", "\"with\" Items Included", "\"for\" Age Group/Recommended Use", "Age Demographic", "Color", "Count \"Count\" / Piece Count \"Piece\""],
+          "attributes": ["Age Group", "Brand", "Gender"],
+          "aliases": ["toilet training seat", "toilet training seats", "potty seat", "potty seats", "training seat"],
+          "title_keywords": ["toilet training seat", "potty seat", "foldable potty seat", "soft potty seat"],
+          "context_keywords": ["handles", "splash guard", "for toddler", "for travel", "toilet seat"],
+          "negative_keywords": ["toilet training potty", "potty chair", "baby bathtub", "baby bath seat", "baby bath ring", "bath faucet cover"]
+        }
+      }
+    },
+    "baby_care": {
+      "display_name": "Baby Care",
+      "product_types": {
+        "baby_lotions": {
+          "display_name": "Baby Lotions",
+          "formula": ["Brand", "Product Line", "Ingredient Properties/Ingredient Preference/Ingredient Claims", "Skin Care Key Benefits", "Product Usage Frequency", "\"Baby\"", "Form", "Retail Packaging", "\"for\" Skin Type \"Skin\"", "\"with\" Primary Ingredient", "\"Includes\" Items Included", "Scent", "Size", "Count \"Pack\""],
+          "attributes": ["Brand", "Scent", "Skin Care Concern"],
+          "aliases": ["baby lotion", "baby lotions", "baby moisturizing lotion", "baby body lotion"],
+          "title_keywords": ["baby lotion", "baby lotions", "baby moisturizing lotion", "baby body lotion"],
+          "context_keywords": ["sensitive skin", "moisturizing", "fragrance-free", "with coconut oil", "daily lotion"],
+          "negative_keywords": ["diaper rash", "diaper rash cream", "diaper rash ointment", "baby oil", "baby powder", "baby wash", "baby shampoo"]
+        },
+        "diaper_rash_treatments": {
+          "display_name": "Diaper Rash Treatments",
+          "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Ingredient Properties/Ingredient Preference/Ingredient Claims", "Skin Care Key Benefits / Features", "Age Group", "\"Diaper Rash\"", "Form", "Retail Packaging", "\"with\" Active Ingredients", "Size", "Count \"Pack\" / Piece Count \"Piece\""],
+          "attributes": ["Brand", "Skin Care Concern", "Size"],
+          "aliases": ["diaper rash treatment", "diaper rash treatments", "diaper rash cream", "diaper rash ointment", "diaper rash paste"],
+          "title_keywords": ["diaper rash treatment", "diaper rash cream", "diaper rash ointment", "diaper rash paste"],
+          "context_keywords": ["zinc oxide", "maximum strength", "daily defense", "medicated", "baby diaper rash"],
+          "negative_keywords": ["baby lotion", "baby moisturizer", "baby oil", "baby powder", "baby wipes", "baby wash", "baby shampoo"]
+        }
+      }
+    },
+    "baby_diapering": {
+  "display_name": "Baby Diapering",
+  "product_types": {
+    "baby_diaper_covers": {
+      "display_name": "Baby Diaper Covers",
+      "formula": ["Brand", "Product Line", "Features", "\"Baby Girl\"/\"Baby Boy\"/\"Unisex\"", "Fabric Material Name", "\"Diaper Cover\"", "Underpant/Swim Bottom Style", "\"with\"/\"and\" Items Included", "Retail Packaging", "Diaper Size/Size", "Color/Pattern/Theme", "Count Per Pack \"Count\" or Piece Count \"Piece\"", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Gender", "Age Group", "Brand"],
+      "aliases": ["baby diaper cover", "baby diaper covers", "diaper cover", "diaper covers", "bloomer"],
+      "title_keywords": ["baby diaper cover", "diaper cover", "diaper covers", "bloomer"],
+      "context_keywords": ["baby girl", "baby boy", "unisex", "swim bottom", "underpant"],
+      "negative_keywords": ["cloth baby diaper", "diaper liner", "diaper insert", "disposable baby diapers", "toilet training pants", "diaper changing pad"]
+    },
+    "baby_wipe_holders": {
+      "display_name": "Baby Wipe Holders",
+      "formula": ["Brand", "Product Line", "Features", "\"Baby Wipes Holder\"/\"Baby Wipes Dispenser\"/\"Wipes Dispenser\"", "\"with\"/\"and\" Items Included", "Retail Packaging", "Color/Theme/Pattern", "Count \"Count\""],
+      "attributes": ["Brand", "Age Group", "Color"],
+      "aliases": ["baby wipe holder", "baby wipe holders", "baby wipes holder", "wipes dispenser", "baby wipes dispenser"],
+      "title_keywords": ["baby wipe holder", "baby wipes holder", "baby wipes dispenser", "wipes dispenser"],
+      "context_keywords": ["travel", "on-the-go", "refill", "strap", "starter pack"],
+      "negative_keywords": ["baby wipe warmer", "baby wipes", "diaper bag", "diaper organizer", "diaper pail", "diaper pail liner"]
+    },
+    "baby_wipe_warmers": {
+      "display_name": "Baby Wipe Warmers",
+      "formula": ["Brand", "Product Line", "Features", "\"Baby Wipes Warmer\"/\"Travel Wipes Warmer\"/\"Replacement Tip Top Pillow\"", "Retail Packaging", "\"with\"/\"and\" Items Included", "\"for\" Compatible Devices", "Color", "(Count \"Pack\")"],
+      "attributes": ["Brand", "Age Group", "Condition"],
+      "aliases": ["baby wipe warmer", "baby wipe warmers", "baby wipes warmer", "travel wipes warmer", "wipes warmer"],
+      "title_keywords": ["baby wipe warmer", "baby wipes warmer", "travel wipes warmer", "wipes warmer", "replacement tip top pillow"],
+      "context_keywords": ["compatible devices", "replacement", "travel", "warming", "diaper depot"],
+      "negative_keywords": ["baby wipe holder", "wipes dispenser", "baby wipes", "diaper pail", "diaper pail liner", "diaper organizer"]
+    },
+    "baby_wipes": {
+      "display_name": "Baby Wipes",
+      "formula": ["Brand", "Product line", "Ingredient Preference", "Primary Ingredient", "Body Part", "Recommended Use", "'Baby Wipes'/'Surface Wipes'/'Cleansing Wipes'", "Retail Packaging", "\"with\"/\"and\" Items Included", "Scent", "Multipack Quantity", "Features", "Container Type", "(Count \"Total Wipes\")"],
+      "attributes": ["Brand", "Age Group", "Scent"],
+      "aliases": ["baby wipes", "cleansing wipes", "surface wipes", "baby wet wipes"],
+      "title_keywords": ["baby wipes", "cleansing wipes", "surface wipes", "hand and face wipes"],
+      "context_keywords": ["flip-top", "resealable", "total wipes", "alcohol-free", "unscented"],
+      "negative_keywords": ["baby wipe holder", "baby wipes holder", "baby wipe warmer", "disposable diaper bags", "diaper pail liners", "diaper liners"]
+    },
+    "cloth_baby_diapers": {
+      "display_name": "Cloth Baby Diapers",
+      "formula": ["Brand", "Product Line", "Age Group", "Fabric Material Name", "Ply Rating", "Features", "Cloth Baby Diaper Type", "\"Cloth Diaper\"/\"Diaper\"", "Retail Packaging", "\"with\"/\"and\" Items Included", "Color/Pattern/Theme", "Count \"Pack\""],
+      "attributes": ["Diaper Size", "Cloth Baby Diaper Type", "Age Group"],
+      "aliases": ["cloth baby diaper", "cloth baby diapers", "cloth diaper", "cloth diapers", "reusable diaper"],
+      "title_keywords": ["cloth diaper", "cloth diapers", "reusable cloth diaper", "prefold diaper", "hybrid cloth diaper"],
+      "context_keywords": ["prefold", "birdseye", "bamboo inserts", "all-in-two", "reusable"],
+      "negative_keywords": ["baby diaper cover", "disposable baby diapers", "diaper liners", "diaper inserts", "toilet training pants", "diaper fasteners"]
+    },
+    "diaper_bags": {
+      "display_name": "Diaper Bags",
+      "formula": ["Brand", "Product Line", "Features", "Theme/Pattern/Character", "Product Multifunction Descriptor", "Material/Fabric Material Name", "Size Descriptor", "Diaper Bag Type", "Retail Packaging", "\"with\"/\"and\" Items Included", "Color", "Count \"Count\"/Piece Count \"-Piece\""],
+      "attributes": ["Age Group", "Diaper Bag Type", "Gender"],
+      "aliases": ["diaper bag", "diaper bags", "backpack diaper bag", "baby diaper bag"],
+      "title_keywords": ["diaper bag", "backpack diaper bag", "baby diaper bag", "diaper tote"],
+      "context_keywords": ["changing station", "bassinet", "insulated pocket", "backpack", "portable"],
+      "negative_keywords": ["diaper organizer", "diaper changing pad", "diaper pail", "baby wipe holder", "baby wipe warmer", "wet diaper bag"]
+    },
+
+    "diaper_cakes": {
+      "display_name": "Diaper Cakes",
+      "formula": ["Brand", "Pattern/Theme", "Features", "Number of Tiers", "'Diaper Cake'/'Diaper Cake Kit'", "Retail Packaging", "\"with\"/\"&\" Items Included", "\"for\" Occasion", "Piece Count \"-Piece\"", "Gender"],
+      "attributes": ["Age Group", "Brand", "Color"],
+      "aliases": ["diaper cake", "diaper cakes", "diaper cake kit", "baby diaper cake"],
+      "title_keywords": ["diaper cake", "diaper cake kit"],
+      "context_keywords": ["baby shower", "gift set", "tiers", "baby girl", "baby boy", "unisex"],
+      "negative_keywords": ["diaper bag", "diaper organizer", "diaper pail", "disposable baby diapers", "cloth baby diapers", "diaper changing pad"]
+    },
+    "diaper_changing_pad_covers": {
+      "display_name": "Diaper Changing Pad Covers",
+      "formula": ["Global Brand License \"by\" Brand OR Brand", "Product Line", "Fabric Material Percentage", "Fabric Material Name", "Features", "Theme/Pattern/Character Group", "Character", "\"Changing Pad Cover\"", "Color", "Count \"Count\""],
+      "attributes": ["Age Group", "Brand", "Condition"],
+      "aliases": ["diaper changing pad cover", "diaper changing pad covers", "changing pad cover", "changing table cover"],
+      "title_keywords": ["changing pad cover", "diaper changing pad cover", "changing table cover"],
+      "context_keywords": ["jersey cotton", "organic cotton", "mickey mouse", "aztec", "cover"],
+      "negative_keywords": ["diaper changing pad", "travel diaper changing station", "diaper bag", "diaper organizer", "baby diaper covers", "diaper pail"]
+    },
+    "diaper_changing_pads": {
+      "display_name": "Diaper Changing Pads",
+      "formula": ["Brand/Global Brand License", "Product Line", "Material", "Features", "Theme/Pattern/Character Group", "Character", "Size Descriptor", "\"Diaper Changing Pad\"/\"Diaper Changing Liner\"/\"Travel Diaper Changing Station\"", "Retail Packaging", "\"with\"/\"&\" Items Included", "Color", "Count \"Count\""],
+      "attributes": ["Brand", "Age Group", "Condition"],
+      "aliases": ["diaper changing pad", "diaper changing pads", "changing liner", "travel diaper changing station"],
+      "title_keywords": ["diaper changing pad", "diaper changing liner", "travel diaper changing station", "changing pad"],
+      "context_keywords": ["foam", "contoured", "disposable", "travel", "liner"],
+      "negative_keywords": ["diaper changing pad cover", "changing table cover", "diaper bag", "diaper organizer", "baby wipe holder", "baby wipe warmer"]
+    },
+    "diaper_fasteners": {
+      "display_name": "Diaper Fasteners",
+      "formula": ["Brand", "Product Line", "Features", "Diaper Fastener Type", "\"with\"/\"and\" Items Included", "Color + Pattern/Theme", "Count \"Pack\""],
+      "attributes": ["Age Group", "Diaper Fastener Type", "Brand"],
+      "aliases": ["diaper fastener", "diaper fasteners", "cloth diaper fastener", "diaper pins"],
+      "title_keywords": ["diaper fastener", "cloth diaper fastener", "diaper pins", "snappi", "boingo"],
+      "context_keywords": ["cloth diaper", "buckle fastener", "pins", "fastener"],
+      "negative_keywords": ["cloth baby diapers", "diaper liners", "diaper inserts", "disposable baby diapers", "toilet training pants", "baby diaper covers"]
+    },
+    "diaper_liners_inserts": {
+      "display_name": "Diaper Liners & Inserts",
+      "formula": ["Brand", "Product Line", "Fabric Material Percentage", "Fabric Material Name", "Features", "Ingredient Preference", "\"Diaper Liner\"/\"Diaper Insert\"", "\"with\"/\"and\" Items Included", "Diaper Size", "Count \"Pack\"/Number of Sheets \"Total Sheets\""],
+      "attributes": ["Brand", "Number Of Pieces", "Age Group"],
+      "aliases": ["diaper liner", "diaper liners", "diaper insert", "diaper inserts", "booster pad"],
+      "title_keywords": ["diaper liner", "diaper insert", "diaper liners", "diaper inserts", "diaper booster pads"],
+      "context_keywords": ["bamboo", "biodegradable", "adhesive", "overnight", "total sheets"],
+      "negative_keywords": ["cloth baby diapers", "baby diaper covers", "disposable baby diapers", "diaper fasteners", "diaper pail liners", "disposable diaper bags"]
+    },
+    "diaper_organizers": {
+      "display_name": "Diaper Organizers",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Fabric Material Name/Material", "Recommended Room", "Features", "Diaper Organizer Type (singular) \"Organizer\"", "\"for\" Recommended Use", "\"with\"/\"&\" Items Included", "Color + Pattern/Theme"],
+      "attributes": ["Diaper Organizer Type", "Age Group", "Brand"],
+      "aliases": ["diaper organizer", "diaper organizers", "diaper caddy", "diaper caddy organizer", "diaper stacker"],
+      "title_keywords": ["diaper organizer", "diaper caddy", "diaper caddy organizer", "diaper stacker organizer"],
+      "context_keywords": ["nursery", "trunk", "portable", "caddy", "organizer tote"],
+      "negative_keywords": ["diaper bag", "diaper changing pad", "diaper pail", "baby wipe holder", "baby wipe warmer", "wet diaper bag"]
+    },
+
+    "diaper_pail_liners": {
+      "display_name": "Diaper Pail Liners",
+      "formula": ["Brand", "Product Line", "Features", "'Diaper Pail Refill'/'Diaper Pail Liner'", "\"for\" Compatible Devices", "\"with\"/\"&\" Items Included", "Color", "Count + 'Pack'", "Holding Capacity + 'Count'"],
+      "attributes": ["Brand", "Age Group", "Holding Capacity"],
+      "aliases": ["diaper pail liner", "diaper pail liners", "diaper pail refill", "diaper pail refills"],
+      "title_keywords": ["diaper pail liner", "diaper pail liners", "diaper pail refill", "diaper pail refills"],
+      "context_keywords": ["diaper genie", "refill", "compatible devices", "count", "reusable"],
+      "negative_keywords": ["diaper pail", "disposable diaper bags", "baby wipes", "baby wipe holder", "diaper organizer", "wet diaper bag"]
+    },
+    "diaper_pails": {
+      "display_name": "Diaper Pails",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Material", "Features", "\"Diaper Pail\"", "Retail Packaging", "\"with\"/\"&\" Items Included", "Color", "Count \"Count\""],
+      "attributes": ["Brand", "Age Group", "Color"],
+      "aliases": ["diaper pail", "diaper pails", "baby diaper pail", "odor control diaper pail"],
+      "title_keywords": ["diaper pail", "diaper pails", "baby diaper pail"],
+      "context_keywords": ["odor control", "mini", "portable", "steel", "refill"],
+      "negative_keywords": ["diaper pail liner", "diaper pail refill", "disposable diaper bags", "diaper organizer", "baby wipe holder", "diaper changing pad"]
+    },
+    "diaper_sprayers": {
+      "display_name": "Diaper Sprayers",
+      "formula": ["Brand", "Product Line", "Recommended Room", "Features", "\"Cloth Diaper Sprayer\"", "Retail Packaging", "\"for\" Recommended Use", "\"with\"/\"&\" Items Included", "Color/Finish", "Count \"Count\""],
+      "attributes": ["Brand", "Count Per Pack", "Color"],
+      "aliases": ["diaper sprayer", "diaper sprayers", "cloth diaper sprayer", "handheld diaper sprayer"],
+      "title_keywords": ["diaper sprayer", "cloth diaper sprayer", "handheld diaper sprayer"],
+      "context_keywords": ["toilet", "bathroom", "adjustable pressure", "stainless steel", "sprayer"],
+      "negative_keywords": ["diaper pail", "diaper pail liner", "wet diaper bag", "diaper changing pad", "baby wipe holder", "baby wipes"]
+    },
+    "diaper_wet_bags": {
+      "display_name": "Diaper Wet Bags",
+      "formula": ["Brand", "Product Line", "Fabric Material Name", "Features", "\"Wet Diaper Bag\"/\"Wet or Dry Diaper Bag\"/\"Wet or Dry Bag\"", "\"for\" Recommended Use", "\"with\"/\"&\" Items Included", "Color/Pattern/Theme", "Count \"Count\""],
+      "attributes": ["Age Group", "Count Per Pack", "Brand"],
+      "aliases": ["diaper wet bag", "diaper wet bags", "wet diaper bag", "wet or dry diaper bag", "wet or dry bag"],
+      "title_keywords": ["wet diaper bag", "wet diaper bags", "wet or dry diaper bag", "wet or dry bag"],
+      "context_keywords": ["wet clothes", "diapers", "nylon", "reusable", "travel"],
+      "negative_keywords": ["diaper bag", "diaper organizer", "diaper pail", "diaper pail liner", "baby wipes", "disposable diaper bags"]
+    },
+    "disposable_baby_diapers": {
+      "display_name": "Disposable Baby Diapers",
+      "formula": ["Brand", "Product Line", "Features", "Ingredient Preference", "Fit Type", "Disposable Baby Diaper Type", "'Diapers'/'Baby Diapers'", "Retail Packaging", "\"with\"/\"and\" Items Included", "Pattern/Theme", "Diaper Size", "Count 'Count'"],
+      "attributes": ["Diaper Size", "Brand", "Age Group"],
+      "aliases": ["disposable baby diaper", "disposable baby diapers", "baby diapers", "diapers"],
+      "title_keywords": ["baby diapers", "diapers", "swaddlers", "overnight diapers", "swim diapers"],
+      "context_keywords": ["size", "count", "hypoallergenic", "club box", "jumbo pack"],
+      "negative_keywords": ["cloth baby diapers", "toilet training pants", "diaper liners", "diaper inserts", "baby diaper covers", "disposable diaper bags"]
+    },
+    "disposable_diaper_bags": {
+      "display_name": "Disposable Diaper Bags",
+      "formula": ["Brand", "Product Line", "Features", "\"Disposable Diaper Bags\"/\"Disposable Diaper Bag Dispenser Refill\"", "Scent", "Count \"Count\""],
+      "attributes": ["Brand", "Age Group", "Scent"],
+      "aliases": ["disposable diaper bag", "disposable diaper bags", "diaper bag dispenser refill", "diaper bag refill"],
+      "title_keywords": ["disposable diaper bags", "disposable diaper bag dispenser refill", "diaper bag refill"],
+      "context_keywords": ["scented", "arm and hammer", "refill", "count", "dispenser"],
+      "negative_keywords": ["diaper pail liners", "diaper pail refills", "diaper pail", "wet diaper bag", "baby wipes", "baby wipe holder"]
+    },
+    "peepee_cones": {
+      "display_name": "Peepee Cones",
+      "formula": ["Brand", "Product Line", "Features", "Fabric Material Name", "\"Peepee Cone\"", "Retail Packaging", "\"with\"/\"&\" Items Included", "Theme/Pattern/Character/Color", "Count \"Pack\""],
+      "attributes": ["Age Group", "Count Per Pack", "Color"],
+      "aliases": ["peepee cone", "peepee cones", "pee-pee teepee", "pee pee cone"],
+      "title_keywords": ["peepee cone", "peepee cones", "pee-pee teepee"],
+      "context_keywords": ["baby boy", "french terry", "emoji", "football", "baseball"],
+      "negative_keywords": ["toilet training pants", "baby diaper covers", "cloth baby diapers", "disposable baby diapers", "burp cloths", "baby bibs"]
+    },
+    "toilet_training_pants": {
+      "display_name": "Toilet Training Pants",
+      "formula": ["Brand", "Product Line", "Features", "Gender", "\" Potty Training Pants\"/\"Nighttime Bedwetting Underwear\"/\"Bedwetting Underwear\"", "Retail Packaging", "\"with\"/\"&\" Items Included", "Theme/Pattern/Character Group/Character", "Diaper Size", "Count \"Count\""],
+      "attributes": ["Diaper Size", "Brand", "Gender"],
+      "aliases": ["toilet training pants", "potty training pants", "training pants", "bedwetting underwear", "nighttime bedwetting underwear"],
+      "title_keywords": ["potty training pants", "training pants", "bedwetting underwear", "nighttime bedwetting underwear"],
+      "context_keywords": ["boys", "girls", "easy ups", "ninjamas", "size"],
+      "negative_keywords": ["disposable baby diapers", "cloth baby diapers", "baby diaper covers", "peepee cones", "diaper liners", "diaper inserts"]
+    }
+
+  }
+},
+
+"baby_feeding_supplies": {
+  "display_name": "Baby Feeding Supplies",
+  "product_types": {
+    "baby_bibs": {
+      "display_name": "Baby Bibs",
+      "formula": ["Brand/Global Brand License", "Product Line/Collection", "Character Group/Character", "Gender", "Sports Team/Sports League/Occasion", "Features", "Fabric Material Name/Material", "Baby Bib Type/\"Bib\"/\"Baby Bib\"", "\"with\"/\"and\" Items Included", "Retail Packaging", "Color/Theme/Pattern", "Clothing Size", "Piece Count \"Piece\"/Count \"Pack\""],
+      "attributes": ["Gender", "Age Group", "Brand"],
+      "aliases": ["baby bib", "baby bibs", "bib", "bibs", "drool bib", "bandana bib"],
+      "title_keywords": ["baby bib", "baby bibs", "drool bib", "bandana bib", "silicone baby bib"],
+      "context_keywords": ["baby girl", "baby boy", "cotton", "silicone", "set", "headband"],
+      "negative_keywords": ["burp cloth", "baby feeding smock", "baby bottle brush", "baby bottle", "pacifier holder", "baby snack feeder"]
+    },
+    "baby_bottle_brushes": {
+      "display_name": "Baby Bottle Brushes",
+      "formula": ["Brand/Global Brand License", "Product Line", "Product Multifunction Descriptor", "Character Group", "Character", "Size Descriptor", "Features", "Handle Material", "Recommended Use \"Brush\"/\"Brush Cleaning\"", "Retail Packaging", "\"with\" Items Included", "Toxin Free Claims", "Assembled Product Length", "Color", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Brand", "Age Group", "Baby Bottle Brush Type"],
+      "aliases": ["baby bottle brush", "baby bottle brushes", "bottle brush", "bottle cleaning brush", "nipple brush"],
+      "title_keywords": ["baby bottle brush", "baby bottle brushes", "bottle cleaning brush", "bottle brush set"],
+      "context_keywords": ["brush cleaning", "with stand", "handle material", "bottle cleaning", "brush set"],
+      "negative_keywords": ["baby bottle", "baby bottle drying rack", "baby bottle warmer", "baby bottle liner", "baby bottle nipple", "baby bib"]
+    },
+    "baby_bottle_liners": {
+      "display_name": "Baby Bottle Liners",
+      "formula": ["Brand", "Product Line", "Features", "Material", "\"Baby Bottle Liners\"/\"Bottle Liners\"", "Retail Packaging", "\"with\" Items Included", "Toxin Free Claims", "Holding Capacity", "Count \"Count\""],
+      "attributes": ["Brand", "Warranty Information", "Material"],
+      "aliases": ["baby bottle liner", "baby bottle liners", "bottle liner", "bottle liners"],
+      "title_keywords": ["baby bottle liners", "bottle liners", "disposable bottle liners", "reusable bottle liners"],
+      "context_keywords": ["pre-formed", "pre-sterilized", "silicone", "holding capacity", "pods"],
+      "negative_keywords": ["baby bottle nipple", "baby bottle", "baby bottle warmer", "baby bottle brush", "baby bottle drying rack", "sippy cup"]
+    },
+    "baby_bottle_nipples": {
+      "display_name": "Baby Bottle Nipples",
+      "formula": ["Brand", "Product Line", "Features", "Size Descriptor", "Material", "\"Baby Bottle Nipple\"", "Retail Packaging", "\"with\" Items Included", "\"for\" Compatible Brands", "Compatible Models", "Toxin-Free Claim/Ingredient Preference", "Minimum Recommended Age - Maximum Recommended Age", "Nipple Flow", "Size", "Count \"Pack\""],
+      "attributes": ["Brand", "Condition", "Age Group"],
+      "aliases": ["baby bottle nipple", "baby bottle nipples", "bottle nipple", "bottle nipples"],
+      "title_keywords": ["baby bottle nipple", "baby bottle nipples", "bottle nipple", "nipple flow", "y-cut nipple"],
+      "context_keywords": ["fast flow", "medium flow", "level 2", "level 3", "compatible brands"],
+      "negative_keywords": ["baby bottle liners", "baby bottle", "baby bottle warmer", "baby bottle brush", "pacifier", "sippy cup"]
+    },
+    "baby_bottle_warmers": {
+      "display_name": "Baby Bottle Warmers",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Material", "Power Type", "\"Baby Bottle Warmer\"/\"Bottle Warmer Bag\"", "Retail Packaging", "\"with\"/\"and\" Items Included", "\"for\" Recommended Use", "Toxin-Free Claims", "Color", "Count \"Pack\""],
+      "attributes": ["Brand", "Count Per Pack", "Condition"],
+      "aliases": ["baby bottle warmer", "baby bottle warmers", "bottle warmer", "bottle warmer bag"],
+      "title_keywords": ["baby bottle warmer", "bottle warmer", "portable bottle warmer", "electric bottle warmer"],
+      "context_keywords": ["travel", "digital display", "smart temperature control", "sterilizer", "portable"],
+      "negative_keywords": ["baby bottle", "baby bottle liners", "baby bottle nipples", "baby bottle brush", "baby bottle drying rack", "formula mixer"]
+    },
+    "baby_bottles": {
+      "display_name": "Baby Bottles",
+      "formula": ["Brand/Global Brand License", "Product Line", "Character Group", "Character", "Material", "Features", "Baby Bottle Type", "Age Group", "\"Baby Bottle\"/\"Bottle\"", "Retail Packaging", "\"with\" Items Included", "Toxin-Free Claims", "Minimum Recommended Age - Maximum Recommended Age", "Gender", "Volume Capacity", "Color/Pattern/Theme", "Count \"Pack\""],
+      "attributes": ["Brand", "Material", "Baby Bottle Type"],
+      "aliases": ["baby bottle", "baby bottles", "bottle", "infant bottle", "feeding bottle"],
+      "title_keywords": ["baby bottle", "baby bottles", "anti-colic bottle", "wide-neck bottle", "glass baby bottle"],
+      "context_keywords": ["silicone", "glass", "starter set", "warmer", "volume capacity"],
+      "negative_keywords": ["baby bottle liners", "baby bottle nipples", "baby bottle warmer", "baby bottle brush", "sippy cup", "formula dispenser"]
+    },
+    "baby_feeding_smocks": {
+      "display_name": "Baby Feeding Smocks",
+      "formula": ["Brand/Global Brand License", "Product Line/Collection", "Character Group/Character", "Age Group", "Gender", "Sports Team/Sports League/Occasion", "Features", "Sleeve Length Style", "Fabric Material Name/Material", "\"Baby Feeding Smock\"/\"Feeding Smock\"", "\"with\"/\"and\" Items Included", "Retail Packaging", "Color/Theme/Pattern", "Clothing Size", "Piece Count \"Piece\"/Count \"Pack\""],
+      "attributes": ["Age Group", "Brand", "Multipack Quantity"],
+      "aliases": ["baby feeding smock", "baby feeding smocks", "feeding smock", "feeding smocks", "baby bib smock"],
+      "title_keywords": ["baby feeding smock", "feeding smock", "long sleeve feeding smock", "waterproof feeding smock"],
+      "context_keywords": ["long sleeve", "waterproof", "infant girl", "baby boy", "clothing size"],
+      "negative_keywords": ["baby bib", "burp cloth", "baby bottle", "baby bottle brush", "sippy cup", "shopping cart cover"]
+    },
+    "baby_food_makers": {
+      "display_name": "Baby Food Makers",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Power Type", "Baby Food Maker Type/\"Baby Food Maker\"", "Retail Packaging", "\"with\"/\"and\" Items Included", "Color", "Shape", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Brand", "Baby Food Maker Type", "Multipack Quantity"],
+      "aliases": ["baby food maker", "baby food makers", "baby food blender", "baby food processor"],
+      "title_keywords": ["baby food maker", "baby food blender", "baby food processor", "meal station", "baby food cutter"],
+      "context_keywords": ["steamer", "blender", "processor", "reusable food pouches", "2-in-1", "7-in-1"],
+      "negative_keywords": ["baby food storage container", "formula dispenser", "formula mixer", "baby snack feeder", "baby bottle warmer", "sippy cup"]
+    },
+    "baby_food_storage_dispensers": {
+      "display_name": "Baby Food Storage & Dispensers",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Material", "\"Baby Food Storage Container\"/Baby Food Storage & Dispenser Type", "Retail Packaging", "\"with\"/\"and\" Items Included", "\"for\" Recommended Location", "Toxin-Free Claims", "Volume Capacity", "Color/Theme/Pattern", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Age Group", "Brand", "Baby Food Storage And Dispenser Type"],
+      "aliases": ["baby food storage container", "baby food storage containers", "baby food dispenser", "baby food pouch", "food pouch holder"],
+      "title_keywords": ["baby food storage container", "baby food storage containers", "baby food pouches", "food pouch holder", "baby storage bowl"],
+      "context_keywords": ["for freezer", "glass", "squeezable", "locking lids", "volume capacity", "container set"],
+      "negative_keywords": ["baby food maker", "formula dispenser", "formula mixer", "baby bottle", "sippy cup", "baby snack feeder"]
+    },
+    "baby_formula_dispensers_mixers": {
+      "display_name": "Baby Formula Dispensers & Mixers",
+      "formula": ["Brand", "Product Line", "Number of Compartments \"Section\"", "Features", "Material", "Age Group", "\"Formula Mixer'/'Formula Dispenser\"/\"Formula Dispenser Machine\"/\"Formula Maker\"", "Retail Packaging", "\"with\"/\"and\" Items Included", "\"for\" Recommended Use", "Toxin-Free Claims", "Volume Capacity", "Color/Theme/Pattern", "Count\"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Brand", "Age Group", "Condition"],
+      "aliases": ["formula dispenser", "formula dispensers", "formula mixer", "formula maker", "formula dispenser machine"],
+      "title_keywords": ["formula dispenser", "formula mixer", "formula maker", "formula dispenser machine"],
+      "context_keywords": ["3 section", "powdered formula", "for travel", "bpa-free", "snack cup"],
+      "negative_keywords": ["baby food maker", "baby food storage container", "baby bottle", "baby bottle warmer", "sippy cup", "baby snack feeder"]
+    },
+    "baby_snack_feeders": {
+      "display_name": "Baby Snack Feeders",
+      "formula": ["Brand/Global Brand License", "Product Line", "Features", "Character Group", "Character", "Theme", "Material", "Baby Feeder Style", "Retail Packaging", "\"with\"/\"and\" Items Included", "Toxin-Free Claims", "Minimum Recommended Age - Maximum Recommended Age", "Color/Pattern", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Brand", "Baby Feeder Style", "Condition"],
+      "aliases": ["baby snack feeder", "baby snack feeders", "baby feeder", "snack feeder", "silicone feeder"],
+      "title_keywords": ["baby snack feeder", "baby snack feeders", "baby food feeder", "silicone baby food feeder", "snack cup"],
+      "context_keywords": ["fork and spoon", "3+ months", "silicone", "spill-proof", "collapsible"],
+      "negative_keywords": ["sippy cup", "baby pacifier", "baby bottle", "baby bib", "burp cloth", "formula dispenser"]
+    },
+    "burp_cloths": {
+      "display_name": "Burp Cloths",
+      "formula": ["Brand/Global Brand License", "Product Line/Collection", "Character Group/Character", "Gender", "Sports Team/Sports League/Occasion", "Size Descriptor", "Features", "Fabric Material Name/Material", "\"Burp Cloth\"", "\"with\"/\"and\" Items Included", "Retail Packaging", "Color/Theme/Pattern", "Piece Count \"Piece\"/Count \"Pack\""],
+      "attributes": ["Age Group", "Gender", "Brand"],
+      "aliases": ["burp cloth", "burp cloths", "baby burp cloth", "baby burp cloths"],
+      "title_keywords": ["burp cloth", "burp cloths", "baby burp cloth", "muslin burp cloth"],
+      "context_keywords": ["organic muslin", "baby girl", "baby boy", "cloth set", "cotton"],
+      "negative_keywords": ["baby bib", "baby feeding smock", "baby snack feeder", "baby bottle", "diaper cloth", "changing pad cover"]
+    },
+    "shopping_cart_high_chair_covers": {
+      "display_name": "Shopping Cart & High Chair Covers",
+      "formula": ["Brand/Global Brand License", "Product Line", "Product Multifunction Descriptor", "Sports League", "Sports Team", "Character Group", "Character", "Ingredient Properties", "Features", "Fabric Material Percentage", "Fabric Material Name", "\"Shopping Cart Cover\"/\"High Chair Cover\"/\"Shopping Cart and High Chair Cover\"/\"Shopping Cart Hammock\"", "Retail Packaging", "\"with\"/\"and\" Items Included", "\"for\" Age Group", "Size", "Gender", "Color/Pattern/Theme", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Brand", "Gender", "Color"],
+      "aliases": ["shopping cart cover", "high chair cover", "shopping cart and high chair cover", "shopping cart hammock"],
+      "title_keywords": ["shopping cart cover", "high chair cover", "shopping cart and high chair cover", "shopping cart hammock"],
+      "context_keywords": ["2-in-1", "detachable toy", "organic cotton", "baby", "toddler"],
+      "negative_keywords": ["stroller cover", "stroller accessory", "baby feeding smock", "baby bib", "booster seat", "high chair"]
+    },
+    "sippy_cups": {
+      "display_name": "Sippy Cups",
+      "formula": ["Brand/Global Brand License", "Product Line", "Sports League", "Sports Team", "Character Group", "Character", "Product Multifunction Descriptor", "Features", "Material", "Sippy Cup Type", "Retail Packaging", "\"with\"/\"and\" Items Included", "Toxin-Free Claims", "Volume Capacity", "Gender", "Minimum Recommended Age - Maximum Recommended Age", "Color/Pattern/Theme", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Age Group", "Brand", "Sippy Cup Type"],
+      "aliases": ["sippy cup", "sippy cups", "trainer cup", "straw sippy cup", "spoutless cup"],
+      "title_keywords": ["sippy cup", "sippy cups", "trainer cup", "soft spout sippy cup", "hard spout sippy cup", "spoutless sippy cup"],
+      "context_keywords": ["9 oz", "10 oz", "handles", "insulated", "9+ months", "360 degree"],
+      "negative_keywords": ["baby bottle", "baby bottle nipple", "baby snack feeder", "formula dispenser", "pacifier", "baby cup holder"]
+    },
+    "other_baby_feeding_supplies": {
+      "display_name": "Other Baby Feeding Supplies",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Material", "Color", "Size", "Count/Pack"],
+      "attributes": ["Brand", "Condition", "Multipack Quantity"],
+      "aliases": ["baby feeding supply", "baby feeding supplies", "feeding accessory", "baby feeding accessory"],
+      "title_keywords": ["baby feeding supply", "baby feeding supplies", "feeding accessory", "baby feeding accessory"],
+      "context_keywords": ["pro series", "heavy-duty", "silicone", "small", "pack"],
+      "negative_keywords": ["baby bottle", "sippy cup", "baby bib", "baby snack feeder", "formula dispenser", "baby food maker"]
+    },
+    "baby_pacifiers": {
+      "display_name": "Baby Pacifiers",
+      "formula": ["Brand/Global Brand License", "Product Line", "Features", "Texture", "Sports League", "Sports Team", "Character Group", "Material", "Character", "Theme/Animal Type", "Recommended Use", "Age Group", "\"Baby Pacifier\"/\"Pacifier\"/\"Pacifier Medicine Dispenser\"", "Retail Packaging", "\"with\"/\"and\" Items Included", "Toxin-Free Claims", "Minimum Recommended Age - Maximum Recommended Age", "Gender", "Color/Pattern", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Brand", "Age Group", "Material"],
+      "aliases": ["baby pacifier", "baby pacifiers", "pacifier", "pacifiers", "orthodontic pacifier", "silicone pacifier"],
+      "title_keywords": ["baby pacifier", "baby pacifiers", "pacifier", "pacifiers", "orthodontic pacifier", "pacifier medicine dispenser"],
+      "context_keywords": ["0-3 months", "0-6 months", "6-18 months", "bpa-free", "silicone", "infant pacifier"],
+      "negative_keywords": ["pacifier holder", "pacifier clip", "baby snack feeder", "baby bottle nipple", "teether", "baby bottle"]
+    },
+    "pacifier_holders": {
+      "display_name": "Pacifier Holders",
+      "formula": ["Brand/Global Brand License", "Product Line", "Product Multifunction Descriptor", "Material", "Age Group", "Pacifier Holder Type", "Sports League", "Sports Team", "Character Group", "Retail Packaging", "\"with\"/\"and\" Items Included", "Character", "Features", "\"for\" Recommended Use", "Gender", "Color/Pattern/Theme", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Brand", "Age Group", "Multipack Quantity"],
+      "aliases": ["pacifier holder", "pacifier holders", "pacifier clip", "pacifier case", "pacifier pouch"],
+      "title_keywords": ["pacifier holder", "pacifier holders", "pacifier clip", "silicone pacifier holder", "pacifier clip set"],
+      "context_keywords": ["detachable pacifier", "clip", "case", "for teething", "teether toy", "silicone"],
+      "negative_keywords": ["baby pacifier", "pacifier medicine dispenser", "baby bottle nipple", "baby snack feeder", "teether", "baby bib"]
+    }
+  }
+},
+"baby_car_seat_stroller_accessories": {
+  "display_name": "Baby Car Seat & Stroller Accessories",
+  "product_types": {
+    "baby_car_seat_adapters": {
+      "display_name": "Baby Car Seat Adapters",
+      "formula": ["Brand", "Product Line", "Compatible Brands", "Baby Car Seat Adapter Type", "\"for\" Compatible Devices", "Retail Packaging", "\"with\" Items Included", "Color", "Count \"Count\"/Piece Count \"Piece\""],
+      "attributes": ["Age Group", "Brand", "Condition"],
+      "aliases": ["baby car seat adapter", "baby car seat adapters", "car seat adapter", "car seat adapters", "stroller car seat adapter"],
+      "title_keywords": ["baby car seat adapter", "car seat adapter", "stroller car seat adapter", "infant car seat adapter"],
+      "context_keywords": ["compatible brands", "for stroller", "for compatible devices", "stroller adapter", "travel system"],
+      "negative_keywords": ["baby car seat angle adjuster", "baby car seat back protector", "baby car seat cover", "baby car seat latch guide", "baby car seat liner", "baby car seat mirror"]
+    },
+    "baby_car_seat_angle_adjusters": {
+      "display_name": "Baby Car Seat Angle Adjusters",
+      "formula": ["Brand", "Product Line", "Material", "\"Angle Adjuster\"/\"Car Seat Positioner\"", "\"for\" Car Seat Facing Direction \"Car Seat\"", "Color", "Count \"Count\""],
+      "attributes": ["Manufacturer", "Age Group", "Condition"],
+      "aliases": ["baby car seat angle adjuster", "baby car seat angle adjusters", "angle adjuster", "car seat positioner"],
+      "title_keywords": ["angle adjuster", "car seat positioner", "rear facing car seat adjuster"],
+      "context_keywords": ["rear facing car seat", "material", "car seat angle", "seat positioner"],
+      "negative_keywords": ["baby car seat adapter", "baby car seat back protector", "baby car seat cover", "baby car seat latch guide", "baby car seat liner", "baby car seat mirror"]
+    },
+    "baby_car_seat_back_protectors": {
+      "display_name": "Baby Car Seat Back Protectors",
+      "formula": ["Brand", "Product Line", "Features", "Product Multifunction Descriptor", "\"Baby Car Seat Protector\"/\"Kick Mat\"/\"Back Seat Protector\"", "Retail Packaging", "\"with\"/\"and\" Items Included/Number of Pockets \"Storage Pockets\"", "Color", "Count \"Count\""],
+      "attributes": ["Age Group", "Brand", "Multipack Quantity"],
+      "aliases": ["baby car seat back protector", "baby car seat back protectors", "baby car seat protector", "kick mat", "back seat protector"],
+      "title_keywords": ["baby car seat protector", "kick mat", "back seat protector", "seat guardian"],
+      "context_keywords": ["storage pockets", "back seat", "protector", "xtra-grip", "deluxe"],
+      "negative_keywords": ["baby car seat adapter", "baby car seat angle adjuster", "baby car seat cover", "baby car seat latch guide", "baby car seat liner", "car seat travel bag"]
+    },
+    "baby_car_seat_covers": {
+      "display_name": "Baby Car Seat Covers",
+      "formula": ["Brand", "Product Line", "Features", "Gender", "Product Multifunction Descriptor", "Season", "Weather/Activity", "Baby Car Seat Cover Type", "\"Infant Car Seat Cover\"", "Retail Packaging", "\"with\"/\"and\" Items Included", "Color/Pattern/Theme/ Character Group + Character", "Count \"Pack\""],
+      "attributes": ["Age Group", "Baby Car Seat Cover Type", "Brand"],
+      "aliases": ["baby car seat cover", "baby car seat covers", "infant car seat cover", "car seat canopy cover"],
+      "title_keywords": ["baby car seat cover", "infant car seat cover", "car seat cover", "car seat canopy"],
+      "context_keywords": ["all-weather", "summer cover", "sun and bug", "heat shield", "nursing cover"],
+      "negative_keywords": ["baby car seat adapter", "baby car seat angle adjuster", "baby car seat back protector", "baby car seat liner", "baby car seat mirror", "stroller weather shield"]
+    },
+    "baby_car_seat_latch_guides": {
+      "display_name": "Baby Car Seat Latch Guides",
+      "formula": ["Brand", "Product Line", "Features", "\"Baby Car Seat Latch Guide\"", "Retail Packaging", "\"with\" Items Included", "Color", "Count \"Pack\""],
+      "attributes": ["Brand", "Count Per Pack", "Age Group"],
+      "aliases": ["baby car seat latch guide", "baby car seat latch guides", "car seat latch guide", "latch guide"],
+      "title_keywords": ["baby car seat latch guide", "car seat latch guide", "latch guide"],
+      "context_keywords": ["seat latch", "guide", "2 count", "installation"],
+      "negative_keywords": ["baby car seat adapter", "baby car seat angle adjuster", "baby car seat back protector", "baby car seat cover", "baby car seat liner", "baby car seat mirror"]
+    },
+    "baby_car_seat_liners": {
+      "display_name": "Baby Car Seat Liners",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Attachment Style", "Season", "\"Car Seat Liner\"/\"Liner\"/\"Car Seat Insert\"/\"Car Seat Pad\"", "\"for\" Recommended Use", "Retail Packaging", "\"with\" Items Included", "Color/Theme/Pattern", "Count \"Count\""],
+      "attributes": ["Age Group", "Brand", "Condition"],
+      "aliases": ["baby car seat liner", "baby car seat liners", "car seat liner", "car seat insert", "car seat pad"],
+      "title_keywords": ["car seat liner", "car seat insert", "car seat pad", "seat saver waterproof liner"],
+      "context_keywords": ["waterproof", "warming and cooling", "for stroller", "ultra dry", "attachment style"],
+      "negative_keywords": ["baby car seat adapter", "baby car seat angle adjuster", "baby car seat back protector", "baby car seat cover", "baby car seat latch guide", "baby car seat mirror"]
+    },
+    "baby_car_seat_mirrors": {
+      "display_name": "Baby Car Seat Mirrors",
+      "formula": ["Brand/Global Brand License", "Product Line", "Tilt Angle", "Features", "Shape \"Shaped\"", "Character Group", "Character", "\"Baby Car Mirror\"/\"Backseat Mirror\"", "Retail Packaging", "\"with\" Items Included", "Color/Theme/Animal Type", "Count \"Pack\""],
+      "attributes": ["Age Group", "Brand", "Condition"],
+      "aliases": ["baby car seat mirror", "baby car seat mirrors", "baby car mirror", "backseat mirror", "rear facing mirror"],
+      "title_keywords": ["baby car mirror", "backseat mirror", "rear facing baby mirror", "baby car seat mirror"],
+      "context_keywords": ["adjustable", "night light", "penguin shaped", "rear view mirror", "baby in-sight"],
+      "negative_keywords": ["baby car seat adapter", "baby car seat cover", "baby car seat liner", "baby car seat tray", "car seat travel bag", "stroller accessory"]
+    },
+    "baby_car_seat_trays": {
+      "display_name": "Baby Car Seat Trays",
+      "formula": ["Global Brand License \"by\" Brand OR Brand", "Product Line", "Features", "Product Multifunction Description", "Age Group", "\"Travel Tray\"/\"Car Seat Lap Tray\"", "Retail Packaging", "\"with\" Items Included", "\"for\" Recommended Use", "Color/Pattern/Theme/Character Group + Character", "Count \"Count\""],
+      "attributes": ["Age Group", "Brand", "Condition"],
+      "aliases": ["baby car seat tray", "baby car seat trays", "travel tray", "car seat lap tray", "kids travel tray"],
+      "title_keywords": ["travel tray", "car seat lap tray", "kids travel tray", "baby car seat tray"],
+      "context_keywords": ["dry erase top", "tablet holder", "playing", "snacking", "kids and toddler"],
+      "negative_keywords": ["baby car seat mirror", "baby car seat cover", "baby car seat liner", "car seat travel bag", "stroller organizer", "stroller accessory"]
+    },
+    "car_seat_button_covers": {
+      "display_name": "Car Seat Button Covers",
+      "formula": ["Brand", "Product Line", "\"Car Seat Buckle Release Tool\"/\"Car Seat Button Cover\"", "Retail Packaging", "\"with\" Items Included", "Color", "Count \"Pack\""],
+      "attributes": ["Brand", "Age Group", "Condition"],
+      "aliases": ["car seat button cover", "car seat button covers", "car seat buckle release tool", "buckle release tool"],
+      "title_keywords": ["car seat buckle release tool", "car seat button cover", "unbuckle me", "car seat key"],
+      "context_keywords": ["buckle", "release", "tool", "twin pack"],
+      "negative_keywords": ["baby car seat latch guide", "baby car seat adapter", "baby car seat mirror", "baby car seat tray", "car seat travel bag", "stroller accessory"]
+    },
+    "car_seat_travel_bags": {
+      "display_name": "Car Seat Travel Bags",
+      "formula": ["Brand/Brand + Global Brand License", "Product Line", "Features", "Baby Carrier Position", "Bag Style", "\"Car Seat Travel Bag\"", "\"for\" Child Car Seat Style/Recommended Use/Compatible Brands/Compatible Models", "\"with\" Items Included", "Color/Pattern/Theme/Character Group + Character", "Count \"Pack\""],
+      "attributes": ["Brand", "Age Group", "Gender"],
+      "aliases": ["car seat travel bag", "car seat travel bags", "travel bag for car seat", "gate check car seat bag"],
+      "title_keywords": ["car seat travel bag", "gate check car seat bag", "padded backpack car seat travel bag", "car seat carrier bag"],
+      "context_keywords": ["with wheels", "side carry", "padded straps", "backless booster car seats", "infant seats"],
+      "negative_keywords": ["baby car seat cover", "baby car seat liner", "baby car seat tray", "stroller organizer", "stroller weather shield", "baby car seat adapter"]
+    },
+    "stroller_car_seat_toys": {
+      "display_name": "Stroller & Car Seat Toys",
+      "formula": ["Brand/Global Brand License", "Product Line", "Character Group", "Character", "Theme/Pattern/Animal Type", "Features", "Attachment Style", "Stroller & Car Seat Toy Type/\"Car Seat Toy\"/\"Stroller Toy\"", "Retail Packaging", "\"with\" Items Included", "Minimum Recommended Age + \"-\" + Maximum Recommended Age", "Color", "Count \"Pack\""],
+      "attributes": ["Age Group", "Brand", "Stroller And Car Seat Toy Type"],
+      "aliases": ["stroller toy", "car seat toy", "stroller and car seat toy", "activity toy bar", "take-along stroller toy"],
+      "title_keywords": ["stroller toy", "car seat toy", "activity toy bar", "take-along toy", "travel buddy plush"],
+      "context_keywords": ["clip and go", "newborn +", "infants", "hanging toy", "sensory pull down toy"],
+      "negative_keywords": ["stroller accessory", "stroller attachment", "stroller connector", "baby car seat mirror", "baby car seat tray", "baby rattle"]
+    },
+    "stroller_accessories": {
+      "display_name": "Stroller Accessories",
+      "formula": ["Brand/Global Brand License", "Product Line", "Product Multifunction Descriptor", "Character Group", "Character", "Features", "Attachment Style", "Material", "Stroller Accessory Type", "Retail Packaging", "\"with\" Items Included", "\"for\" Compatible Devices", "Color", "Count \"Pack\"/ Piece Count \"Piece\""],
+      "attributes": ["Age Group", "Brand", "Stroller Accessory Type"],
+      "aliases": ["stroller accessory", "stroller accessories", "stroller hook", "stroller fan", "stroller parent tray"],
+      "title_keywords": ["stroller accessory", "stroller accessories", "stroller hooks", "stroller fan", "stroller parent tray"],
+      "context_keywords": ["clip-on", "cargo n' drink", "compatible devices", "mickey mouse", "parent tray"],
+      "negative_keywords": ["stroller attachment", "stroller connector", "stroller organizer", "stroller weather shield", "stroller footmuff", "stroller toy"]
+    },
+    "stroller_attachments": {
+      "display_name": "Stroller Attachments",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Attachment Style", "Material", "Stroller Accessory Type", "Retail Packaging", "\"with\" Items Included", "\"for\" Compatible Devices", "Color/Pattern/Theme", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Age Group", "Brand", "Stroller Accessory Type"],
+      "aliases": ["stroller attachment", "stroller attachments", "stroller board", "ride-on stroller board", "stroller second seat"],
+      "title_keywords": ["stroller attachment", "stroller attachments", "stroller board", "ride-on stroller board", "stroller second seat"],
+      "context_keywords": ["for compatible devices", "second seat", "ride-on", "board", "attachment style"],
+      "negative_keywords": ["stroller accessory", "stroller connector", "stroller organizer", "stroller weather shield", "stroller footmuff", "stroller toy"]
+    },
+    "stroller_connectors": {
+      "display_name": "Stroller Connectors",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Attachment Style", "'Stroller Connector'/'Stroller Adapter'", "Retail Packaging", "\"with\" Items Included", "\"for\" Compatible Models", "Color", "Count 'Pack'/Piece Count \"Piece\""],
+      "attributes": ["Age Group", "Brand", "Condition"],
+      "aliases": ["stroller connector", "stroller connectors", "stroller adapter", "stroller adapters"],
+      "title_keywords": ["stroller connector", "stroller connectors", "stroller adapter", "stroller adapters"],
+      "context_keywords": ["convertible", "for compatible models", "2 piece", "coast rider", "city mini gt2"],
+      "negative_keywords": ["stroller attachment", "stroller accessory", "baby car seat adapter", "stroller organizer", "stroller weather shield", "stroller footmuff"]
+    },
+    "stroller_footmuffs": {
+      "display_name": "Stroller Footmuffs",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Size Descriptor", "Features", "Fabric Material Name", "Season", "Age Group", "'Stroller Footmuff'/'Stroller Bunting'/'Stroller Blanket'", "Retail Packaging", "\"with\" Items Included", "Color/Pattern/Theme", "Count \"Pack\""],
+      "attributes": ["Age Group", "Brand", "Multipack Quantity"],
+      "aliases": ["stroller footmuff", "stroller footmuffs", "stroller bunting", "stroller blanket"],
+      "title_keywords": ["stroller footmuff", "stroller bunting", "stroller blanket"],
+      "context_keywords": ["all weather", "winter", "waterproof", "windproof", "insulated pocket"],
+      "negative_keywords": ["stroller weather shield", "stroller organizer", "stroller accessory", "stroller attachment", "stroller connector", "baby blanket"]
+    },
+    "stroller_organizers": {
+      "display_name": "Stroller Organizers",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "'Stroller Organizer'", "Retail Packaging", "\"with\" Items Included", "\"for\" Compatible Devices", "Color"],
+      "attributes": ["Brand", "Age Group", "Number Of Compartments"],
+      "aliases": ["stroller organizer", "stroller organizers", "stroller caddy", "stroller organizer accessory"],
+      "title_keywords": ["stroller organizer", "stroller organizers", "stroller caddy"],
+      "context_keywords": ["insulated cup holder", "adjustable", "universal", "buggy buddy", "organizer accessory"],
+      "negative_keywords": ["stroller accessory", "stroller attachment", "stroller connector", "stroller weather shield", "stroller footmuff", "diaper organizer"]
+    },
+    "stroller_weather_shields": {
+      "display_name": "Stroller Weather Shields",
+      "formula": ["Brand", "Product Line", "Product Multifunction Description", "Features", "Stroller Weather Shield Type/\"Stroller Rain Cover\"/\"Stroller Sun Shade\"", "Retail Packaging", "\"with\" Items Included", "\"for\" Stroller Style/Recommended Use", "Color/Pattern/Theme", "Count \"Pack\""],
+      "attributes": ["Age Group", "Brand", "Condition"],
+      "aliases": ["stroller weather shield", "stroller weather shields", "stroller rain cover", "stroller sun shade"],
+      "title_keywords": ["stroller weather shield", "stroller rain cover", "stroller sun shade"],
+      "context_keywords": ["clear", "with windows", "for tandem strollers", "for wind", "wagon stroller"],
+      "negative_keywords": ["stroller footmuff", "stroller organizer", "stroller accessory", "stroller attachment", "stroller connector", "baby car seat cover"]
+    }
+  }
+}, 
+"baby_transport": {
+  "display_name": "Baby Transport",
+  "product_types": {
+    "baby_toddler_car_seats": {
+      "display_name": "Baby & Toddler Car Seats",
+      "formula": ["Brand", "Global Brand License", "Product Line", "Product Multifunction Descriptor", "Features", "Child Car Seat Style", "\"with\" Items Included", "Color/Pattern/Character Group/Character", "Count \"Count\""],
+      "attributes": ["Age Group", "Brand", "Baby And Toddler Car Seat Type"],
+      "aliases": ["baby car seat", "toddler car seat", "infant car seat", "booster car seat", "high-back booster car seat"],
+      "title_keywords": ["baby car seat", "toddler car seat", "infant car seat", "booster car seat", "high-back booster car seat"],
+      "context_keywords": ["3-in-1", "snugride", "snuglock", "rear-facing", "child car seat style"],
+      "negative_keywords": ["infant car seat base", "baby carrier", "baby stroller", "car seat adapter", "car seat cover", "car seat travel bag"]
+    },
+    "baby_carriers": {
+      "display_name": "Baby Carriers",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Baby Carrier Type/\"Baby Carrier\"", "\"for\" Age Group/Activity", "Number of Positions \"-Position\"", "Color/Pattern/Character Group/Character", "Size", "Count \"Pack\""],
+      "attributes": ["Age Group", "Brand", "Baby Carrier Type"],
+      "aliases": ["baby carrier", "baby carriers", "ring sling baby carrier", "convertible baby carrier", "frame baby carrier"],
+      "title_keywords": ["baby carrier", "ring sling baby carrier", "convertible baby carrier", "frame baby carrier", "hiking baby carrier"],
+      "context_keywords": ["for hiking", "4-position", "lightweight frame", "ring sling", "one size"],
+      "negative_keywords": ["baby stroller", "infant car seat base", "baby car seat", "car seat adapter", "stroller accessory", "car seat cover"]
+    },
+    "baby_strollers": {
+      "display_name": "Baby Strollers",
+      "formula": ["Brand", "Global Brand License", "Product Line", "Product Multifunction Descriptor", "Features", "Stroller Style", "\"with\" Items Included", "Color/Pattern/Character Group/Character", "Count \"Count\""],
+      "attributes": ["Baby Stroller Type", "Brand", "Age Group"],
+      "aliases": ["baby stroller", "baby strollers", "stroller", "wagon stroller", "umbrella stroller", "travel system stroller"],
+      "title_keywords": ["baby stroller", "stroller", "wagon stroller", "umbrella stroller", "travel system stroller"],
+      "context_keywords": ["travel system", "2-in-1", "with rear-facing infant car seat", "with basket", "comfort height"],
+      "negative_keywords": ["baby carrier", "baby car seat", "infant car seat base", "stroller accessory", "stroller connector", "stroller weather shield"]
+    },
+    "infant_car_seat_bases": {
+      "display_name": "Infant Car Seat Bases",
+      "formula": ["Brand", "Product Line", "Features", "'Infant Car Seat Base'", "\"with\" Items Included", "Color", "Count \"Count\""],
+      "attributes": ["Brand", "Age Group", "Maximum Weight"],
+      "aliases": ["infant car seat base", "infant car seat bases", "car seat base", "baby car seat base"],
+      "title_keywords": ["infant car seat base", "car seat base", "baby car seat base"],
+      "context_keywords": ["secure latch system", "base", "infant seat", "color", "count"],
+      "negative_keywords": ["baby car seat", "baby carrier", "baby stroller", "car seat adapter", "car seat cover", "car seat travel bag"]
+    }
+  }
+},
+
+"baby_furniture": {
+  "display_name": "Baby Furniture",
+  "product_types": {
+    "baby_cribs": {
+      "display_name": "Baby Cribs",
+      "formula": ["Brand", "Product Line / Collection", "Product Multifunction Descriptor", "Crib Features", "Baby Crib Type", "Retail Packaging", "'with' Item Included", "Color/Finish"],
+      "attributes": ["Age Group", "Food Condition", "Baby Crib Type", "Brand", "Condition"],
+      "aliases": ["baby crib", "baby cribs", "crib", "convertible crib", "nursery crib"],
+      "title_keywords": ["baby crib", "baby cribs", "crib", "convertible crib", "4-in-1 crib"],
+      "context_keywords": ["with drawer", "espresso", "crib features", "nursery", "baby crib type"],
+      "negative_keywords": ["bassinet", "baby play yard", "moses basket", "diaper changing table", "diaper changing station", "crib accessory"]
+    },
+    "baby_feeding_chairs": {
+      "display_name": "Baby Feeding Chairs",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Size Descriptor", "Material", "Baby Feeding Chair Type", "Retail Packaging", "\"with\" Items Included", "Color/Finish/Theme/Character/Pattern"],
+      "attributes": ["Brand", "Condition", "Baby Feeding Chair Type"],
+      "aliases": ["baby feeding chair", "baby feeding chairs", "high chair", "portable high chair", "feeding seat"],
+      "title_keywords": ["baby feeding chair", "high chair", "portable high chair", "feeding chair"],
+      "context_keywords": ["3-in-1", "portable", "natural", "wooden", "chair type"],
+      "negative_keywords": ["booster seat", "baby stroller", "baby carrier", "crib", "baby play yard", "shopping cart and high chair cover"]
+    },
+    "baby_play_yards": {
+      "display_name": "Baby Play Yards",
+      "formula": ["Brand / Global Brand License", "Product Line / Character Group", "\"Baby Play Yard\" /\"Baby Play Pen\"", "Product Multifunction Descriptor", "Number of Panels '-Panel'", "Features", "Recommended Location", "Retail Packaging", "\"with\" Items Included", "Color", "Size"],
+      "attributes": ["Brand", "Condition", "Maximum Load Weight"],
+      "aliases": ["baby play yard", "baby play yards", "baby play pen", "play yard", "playard"],
+      "title_keywords": ["baby play yard", "baby play pen", "play yard", "playard", "superyard"],
+      "context_keywords": ["pack 'n play", "6-panel", "portable", "indoor and outdoor", "with bassinet"],
+      "negative_keywords": ["crib", "bassinet", "baby stroller", "baby carrier", "playmat", "baby activity center"]
+    },
+    "bassinets": {
+      "display_name": "Bassinets",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Crib Features", "Fabric Material Name/Material", "Bassinet Type", "Retail Packaging", "\"with\" Items Included", "Color/Finish"],
+      "attributes": ["Bassinet Type", "Brand", "Maximum Load Weight"],
+      "aliases": ["bassinet", "bassinets", "bedside bassinet", "co-sleeper bassinet", "gliding bassinet"],
+      "title_keywords": ["bassinet", "bedside bassinet", "co-sleeper bassinet", "gliding bassinet"],
+      "context_keywords": ["2-in-1", "periwinkle purple", "crib features", "fabric material", "bassinet type"],
+      "negative_keywords": ["crib", "moses basket", "baby play yard", "diaper changing table", "diaper changing station", "crib accessory"]
+    },
+    "booster_seats": {
+      "display_name": "Booster Seats",
+      "formula": ["Brand / Global Brand License", "Product Line / Character Group", "Product Multifunction Descriptor", "Features", "Material", "Age Group", "Booster Seat Type", "Retail Packaging", "\"with\" Items Included", "Color/Theme/Pattern/Character"],
+      "attributes": ["Brand", "Booster Seat Type", "Color"],
+      "aliases": ["booster seat", "booster seats", "baby booster seat", "infant floor seat", "feeding booster seat"],
+      "title_keywords": ["booster seat", "baby booster seat", "infant floor seat", "feeding booster seat"],
+      "context_keywords": ["soft foam", "3-point harness", "hemlock", "age group", "booster seat type"],
+      "negative_keywords": ["baby feeding chair", "high chair", "baby car seat", "baby stroller", "shopping cart and high chair cover", "baby carrier"]
+    },
+    "crib_accessories": {
+      "display_name": "Crib Accessories",
+      "formula": ["Brand", "Product Line", "Features", "Material", "Crib Accessory Type", "Retail Packaging", "\"with\" Items Included", "Color", "Count 'Count' / Piece Count 'Piece'"],
+      "attributes": ["Brand", "Condition", "Multipack Quantity"],
+      "aliases": ["crib accessory", "crib accessories", "crib wedge", "crib accessory set"],
+      "title_keywords": ["crib accessory", "crib accessories", "crib wedge"],
+      "context_keywords": ["memory foam", "off white", "crib", "piece count", "count"],
+      "negative_keywords": ["baby crib", "bassinet", "crib bumper", "crib rail cover", "crib toy", "baby sleep positioner"]
+    },
+    "diaper_changing_stations": {
+      "display_name": "Diaper Changing Stations",
+      "formula": ["Brand", "Product Line", "Features", "Material", "\" Diaper Changing Station\"", "Retail Packaging", "\"with\" Items Included", "Color", "Count 'Count'"],
+      "attributes": ["Brand", "Material", "Condition"],
+      "aliases": ["diaper changing station", "diaper changing stations", "baby changing station", "commercial diaper changing station"],
+      "title_keywords": ["diaper changing station", "baby changing station", "commercial diaper changing station"],
+      "context_keywords": ["commercial", "wall mount", "white", "material", "changing station"],
+      "negative_keywords": ["diaper changing table", "diaper changing pad", "diaper changing pad cover", "diaper bag", "diaper organizer", "baby crib"]
+    },
+    "diaper_changing_tables": {
+      "display_name": "Diaper Changing Tables",
+      "formula": ["Brand", "Product Line / Collection", "Features", "Number of Drawers \"Drawer\"", "\"Diaper Changing Table\"", "Retail Packaging", "\"with\" Items Included", "Color/Finish", "Count \"Count\""],
+      "attributes": ["Brand", "Color", "Material"],
+      "aliases": ["diaper changing table", "diaper changing tables", "changing table", "baby changing table"],
+      "title_keywords": ["diaper changing table", "changing table", "baby changing table"],
+      "context_keywords": ["3 drawers", "espresso", "finish", "nursery furniture", "with items included"],
+      "negative_keywords": ["diaper changing station", "diaper changing pad", "diaper changing pad cover", "baby crib", "moses basket", "bassinet"]
+    },
+    "moses_baskets": {
+      "display_name": "Moses Baskets",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Material / Fabric Material Name", "\"Moses Basket\"", "Retail Packaging", "\"with\" Items Included", "Color", "Count 'Count'/ Piece Count 'Piece'"],
+      "attributes": ["Assembled Product Height", "Color Category", "Brand"],
+      "aliases": ["moses basket", "moses baskets", "baby moses basket", "bassinet basket"],
+      "title_keywords": ["moses basket", "baby moses basket", "palm leaf moses basket"],
+      "context_keywords": ["muslin cotton gauze", "organic palm leaf", "set", "sand", "3 piece"],
+      "negative_keywords": ["bassinet", "baby crib", "baby play yard", "diaper changing table", "crib accessory", "baby blanket"]
+    }
+  }
+},
+"baby_foods_formula": {
+  "display_name": "Baby Foods & Formula",
+  "product_types": {
+    "baby_cereals": {
+      "display_name": "Baby Cereals",
+      "formula": ["Brand", "Global Brand License", "Product Line", "Baby Food Stage", "Ingredient Preference/Ingredient Properties", "Nutrient Content Claims", "Primary Ingredient", "\"Baby Cereal\"/\"Toddler Cereal\"", "Retail Packaging", "Flavor", "Size", "Container Type (Count \"Pack\")"],
+      "attributes": ["Brand", "Age Group", "Baby Food Stage"],
+      "aliases": ["baby cereal", "baby cereals", "toddler cereal", "infant cereal", "rice cereal"],
+      "title_keywords": ["baby cereal", "toddler cereal", "oatmeal baby cereal", "multi-grain baby cereal"],
+      "context_keywords": ["2nd foods", "probiotic", "whole grain", "canister", "box"],
+      "negative_keywords": ["baby food", "baby formula", "toddler formula", "baby snack", "juice", "electrolyte"]
+    },
+    "baby_foods": {
+      "display_name": "Baby Foods",
+      "formula": ["Brand", "Product Line", "Serving Size", "Ingredient Preference", "Nutrient Content Claims", "Baby Food Stage", "\"Baby Food\"", "Retail Packaging", "\"with\"/\"&\" Items Included", "Flavor", "Container Type (Count6 \"Pack\")"],
+      "attributes": ["Baby Food Stage", "Baby Formula", "Brand", "Container Type"],
+      "aliases": ["baby food", "baby foods", "baby puree", "baby purée", "puree pouch"],
+      "title_keywords": ["baby food", "baby puree", "baby purée", "stage 2 baby food", "stage 4 baby food"],
+      "context_keywords": ["1st foods", "2nd foods", "3rd foods", "graduates", "organic", "pouch", "tub"],
+      "negative_keywords": ["baby cereal", "baby formula", "toddler formula", "baby snack", "juice", "shake mix"]
+    },
+    "baby_formula": {
+      "display_name": "Baby Formula",
+      "formula": ["Brand", "Product Line", "Ingredient Preference/Ingredient Properties", "Nutrient Content Claims", "Food Condition", "Food Form", "'Baby Formula'", "\"with\" Primary Ingredient/Items Included \"for\" Recommended Use", "Size", "Container Type (Count8 \"Pack\")"],
+      "attributes": ["Brand", "Age Group", "Food Form"],
+      "aliases": ["baby formula", "infant formula", "formula powder", "ready to drink formula"],
+      "title_keywords": ["baby formula", "infant formula", "powder baby formula", "ready to drink baby formula"],
+      "context_keywords": ["non-gmo", "gentle", "pro-sensitive", "immune support", "canister", "bottle"],
+      "negative_keywords": ["toddler formula", "baby food", "baby cereal", "pediatric nutrition shake", "electrolyte", "juice"]
+    },
+    "baby_juices": {
+      "display_name": "Baby Juices",
+      "formula": ["Brand", "Product Line", "Flavor", "'Juice'", "Size", "Container Type (Count2 'Pack')"],
+      "attributes": ["Brand", "Fruit Type", "Flavor"],
+      "aliases": ["baby juice", "baby juices", "juice", "fruit juice"],
+      "title_keywords": ["baby juice", "juice", "fruit splashers juice", "apple prune juice"],
+      "context_keywords": ["bottle", "fl oz", "4 pack", "strawberry kiwi", "mixed fruit"],
+      "negative_keywords": ["baby snack", "baby food", "baby cereal", "electrolyte", "shake mix", "toddler formula"]
+    },
+    "baby_snacks": {
+      "display_name": "Baby Snacks",
+      "formula": ["Brand", "Global Brand License", "Product Line", "Ingredient Preference", "Nutrient Content Claims", "Flavor", "Food Preparation Method", "Food Condition", "Food Type", "Food Form", "Age Group", "\"Snack\"/\"Snack Bar\"", "Retail Packaging", "\"with\"/\"&\" Items Included", "Size", "Container Type (Count12 \"Pack\")"],
+      "attributes": ["Brand", "Age Group", "Baby Food Stage"],
+      "aliases": ["baby snack", "baby snacks", "toddler snack", "baby puff snack", "snack bar"],
+      "title_keywords": ["baby snack", "baby snacks", "puffs", "snack bar", "wafflez"],
+      "context_keywords": ["baked corn puffs", "organic", "value pack", "bag", "canisters"],
+      "negative_keywords": ["baby food", "baby cereal", "baby formula", "toddler formula", "juice", "electrolyte"]
+    },
+    "oral_electrolyte_solutions": {
+      "display_name": "Oral Electrolyte Solutions",
+      "formula": ["Brand", "Product Line", "Nutrient Content Claims", "'Electrolyte'", "Food Form", "Retail Packaging", "\"with\" Items Included", "Flavor", "Size", "Container Type (Count6 'Pack')"],
+      "attributes": ["Age Group", "Brand", "Flavor"],
+      "aliases": ["oral electrolyte solution", "oral electrolyte solutions", "electrolyte drink", "electrolyte powder"],
+      "title_keywords": ["oral electrolyte solution", "electrolyte solution", "electrolyte drink mix", "electrolyte powder"],
+      "context_keywords": ["pediatric", "strawberry", "berry frost", "variety pack", "bottle", "packets"],
+      "negative_keywords": ["pediatric nutrition shake", "baby juice", "baby formula", "toddler formula", "baby snack", "baby food"]
+    },
+    "pediatric_nutrition_shakes": {
+      "display_name": "Pediatric Nutrition Shakes",
+      "formula": ["Brand", "Product Line", "Ingredient Preference/Ingredient Properties", "Nutrient Content Claims", "'Shake Mix'", "Food Form", "Retail Packaging", "'with' Primary Ingredient", "Flavor", "Size", "Container Type (Count6 \"Pack\")"],
+      "attributes": ["Brand", "Age Group", "Flavor"],
+      "aliases": ["pediatric nutrition shake", "pediatric nutrition shakes", "nutrition shake mix", "kids nutrition shake"],
+      "title_keywords": ["pediatric nutrition shake", "shake mix", "nutrition shake mix", "grow and gain shake mix"],
+      "context_keywords": ["powder", "chocolate", "protein", "dha", "canister"],
+      "negative_keywords": ["oral electrolyte solution", "baby formula", "toddler formula", "baby juice", "baby snack", "baby food"]
+    },
+    "toddler_formulas": {
+      "display_name": "Toddler Formulas",
+      "formula": ["Brand", "Product Line", "Ingredient Preference/Ingredient Properties", "Nutrient Content Claims", "Food Condition", "Food Form", "'Toddler Formula'", "\"with\" Primary Ingredient/Items Included \"for\" Recommended Use", "Flavor", "Size", "Container Type (Count9 \"Pack\")"],
+      "attributes": ["Brand", "Age Group", "Food Condition"],
+      "aliases": ["toddler formula", "toddler formulas", "next stage formula", "powder toddler formula"],
+      "title_keywords": ["toddler formula", "powder toddler formula", "next stage toddler formula"],
+      "context_keywords": ["natural vanilla flavor", "a2 milk", "2-fl hmo blend", "can", "canister"],
+      "negative_keywords": ["baby formula", "baby food", "baby cereal", "pediatric nutrition shake", "oral electrolyte solution", "baby snack"]
+    }
+  }
+},
+"baby_play_gear": {
+  "display_name": "Baby Play & Gear",
+  "product_types": {
+    "baby_activity_centers": {
+      "display_name": "Baby Activity Centers",
+      "formula": ["Brand/Global Brand License", "Product Line", "Product Multifunction Descriptor", "Features", "Theme/Character Group/Character", "'Activity Center'/'Activity Saucer'/'Activity Cube'", "Retail Packaging", "'with' Items Included", "Count 'Count' / Piece Count 'Piece'"],
+      "attributes": ["Brand", "Condition", "Color"],
+      "aliases": ["baby activity center", "baby activity centers", "activity center", "activity saucer", "activity cube"],
+      "title_keywords": ["baby activity center", "activity center", "activity saucer", "activity cube", "exersaucer"],
+      "context_keywords": ["4-in-1", "zoo friends", "mickey mouse", "interactive", "play center"],
+      "negative_keywords": ["baby gym", "baby jumper", "baby swing", "baby walker", "playmat", "crib mobile"]
+    },
+    "baby_bouncer_rocker_chairs": {
+      "display_name": "Baby Bouncer & Rocker Chairs",
+      "formula": ["Brand/Global Brand License", "Product Line", "Product Multifunction Descriptor", "Features", "Baby Bouncer & Rocker Chair Type", "Retail Packaging", "'with' Items Included / Wireless Technology", "Theme", "Count 'Count' / Piece Count 'Piece'"],
+      "attributes": ["Baby Bouncer And Rocker Chair Type", "Brand", "Condition"],
+      "aliases": ["baby bouncer chair", "baby rocker chair", "baby bouncer", "baby rocker", "bouncer rocker chair"],
+      "title_keywords": ["baby bouncer", "baby rocker chair", "baby bouncer chair", "infant-to-toddler rocker", "baby rocker"],
+      "context_keywords": ["infant-to-toddler", "wireless technology", "bluetooth", "soothing", "rocker chair"],
+      "negative_keywords": ["baby swing", "baby activity center", "baby gym", "baby walker", "booster seat", "bassinet"]
+    },
+    "baby_gyms": {
+      "display_name": "Baby Gyms",
+      "formula": ["Brand/Global Brand License", "Product Line", "Features", "Theme", "'Activity Gym'/'Baby Activity Gym'", "Retail Packaging", "'with' Items Included", "Character Group/Character", "Count 'Count' / Piece Count 'Piece'"],
+      "attributes": ["Brand", "Color", "Condition"],
+      "aliases": ["baby gym", "baby gyms", "activity gym", "baby activity gym", "play gym"],
+      "title_keywords": ["baby gym", "activity gym", "baby activity gym", "kick and play gym", "play gym"],
+      "context_keywords": ["removable piano", "kick and play", "jungle", "deluxe", "tummy time"],
+      "negative_keywords": ["baby activity center", "baby playmat", "baby swing", "baby walker", "crib mobile", "soft baby book"]
+    },
+    "baby_jumping_exercisers": {
+      "display_name": "Baby Jumping Exercisers",
+      "formula": ["Brand/Global Brand License", "Product Line", "Features", "'Jumper'", "Retail Packaging", "'with' Items Included", "Color/Pattern/Theme/Character/Character Group", "Count 'Count' / Piece Count 'Piece'"],
+      "attributes": ["Brand", "Count Per Pack", "Color"],
+      "aliases": ["baby jumper", "baby jumping exerciser", "jumping exerciser", "doorway jumper", "baby jumper seat"],
+      "title_keywords": ["baby jumper", "jumping exerciser", "doorway jumper", "jumper"],
+      "context_keywords": ["doorway", "star power", "bouncer", "suspended", "exercise"],
+      "negative_keywords": ["baby activity center", "baby gym", "baby swing", "baby walker", "baby bouncer", "playmat"]
+    },
+    "baby_mobiles": {
+      "display_name": "Baby Mobiles",
+      "formula": ["Brand/Global Brand License", "Product Line", "Features", "Theme/Character", "'Baby Crib Mobile'/'Crib Mobile' 'Baby Mobile'", "Retail Packaging", "'with' Items Included/Wireless Technology", "Color/Pattern", "Count 'Count' / Piece Count 'Piece'"],
+      "attributes": ["Brand", "Color", "Multipack Quantity"],
+      "aliases": ["baby mobile", "baby mobiles", "crib mobile", "baby crib mobile"],
+      "title_keywords": ["baby mobile", "crib mobile", "baby crib mobile"],
+      "context_keywords": ["soothing", "ocean slumbers", "wireless technology", "crib attachment", "musical"],
+      "negative_keywords": ["crib toy", "baby gym", "baby activity center", "baby swing", "baby rattle", "sound machine"]
+    },
+    "baby_playmats": {
+      "display_name": "Baby Playmats",
+      "formula": ["Brand/Global Brand License", "Product Line", "Product Multifunction Descriptor", "Features", "'Baby Mat'/'Baby Playmat'", "'for' Recommended Use", "Retail Packaging", "'with' Items Included", "Color/Theme/Character/Pattern", "Count 'Pack'"],
+      "attributes": ["Brand", "Condition", "Color"],
+      "aliases": ["baby playmat", "baby playmats", "baby mat", "play mat", "tummy time mat"],
+      "title_keywords": ["baby playmat", "baby mat", "play mat", "tummy time mat"],
+      "context_keywords": ["tummy time", "prop and play", "floor mat", "recommended use", "soft mat"],
+      "negative_keywords": ["baby gym", "baby activity center", "baby walker", "baby swing", "crib mat", "stroller mat"]
+    },
+    "baby_rattles": {
+      "display_name": "Baby Rattles",
+      "formula": ["Brand/Global Brand License", "Product Line", "Features", "Texture", "Shape", "Baby Rattle Type", "Retail Packaging", "'with' Items Included", "Color/Theme/Character", "Count 'Count'"],
+      "attributes": ["Brand", "Condition", "Baby Rattle Type"],
+      "aliases": ["baby rattle", "baby rattles", "rattle toy", "infant rattle"],
+      "title_keywords": ["baby rattle", "baby rattles", "rattle toy", "infant rattle"],
+      "context_keywords": ["monkey", "shape", "texture", "sensory", "teething toy"],
+      "negative_keywords": ["baby teether", "soft baby book", "baby gym", "baby activity center", "crib toy", "stroller toy"]
+    },
+    "baby_swings": {
+      "display_name": "Baby Swings",
+      "formula": ["Brand/Global Brand License", "Product Line", "Product Multifunction Descriptor", "Size Descriptor", "Features", "'Baby Swing'", "Retail Packaging", "'with' Items Included/Wireless Technology", "Color/Pattern/Theme", "Count 'Count'"],
+      "attributes": ["Brand", "Condition", "Color"],
+      "aliases": ["baby swing", "baby swings", "infant swing", "glider swing"],
+      "title_keywords": ["baby swing", "baby swings", "infant swing", "glider swing"],
+      "context_keywords": ["glider lx", "wireless technology", "soothing", "motorized", "affinia"],
+      "negative_keywords": ["baby bouncer", "baby rocker chair", "baby activity center", "baby jumper", "baby walker", "bassinet"]
+    },
+    "baby_teethers": {
+      "display_name": "Baby Teethers",
+      "formula": ["Brand/Global Brand License", "Product Line", "Material", "Features", "Texture", "Shape", "Baby Teether Type", "Retail Packaging", "'with' Items Included", "Color/Theme/Character/Character Group", "Count 'Count'"],
+      "attributes": ["Brand", "Baby Teether Type", "Condition"],
+      "aliases": ["baby teether", "baby teethers", "teether", "teething toy", "water teether"],
+      "title_keywords": ["baby teether", "teether", "teething toy", "water teether"],
+      "context_keywords": ["vibrating", "water", "turtle", "silicone", "texture"],
+      "negative_keywords": ["baby rattle", "baby pacifier", "pacifier holder", "baby snack feeder", "baby bottle nipple", "soft baby book"]
+    },
+    "baby_walkers": {
+      "display_name": "Baby Walkers",
+      "formula": ["Brand/Global Brand License", "Product Line", "Product Multifunction Descriptor", "Features", "'Baby Walker'", "Retail Packaging", "'with' Items Included", "Color/Theme/Character/Character Group", "Count 'Count'"],
+      "attributes": ["Brand", "Condition", "Multipack Quantity"],
+      "aliases": ["baby walker", "baby walkers", "activity walker", "push walker"],
+      "title_keywords": ["baby walker", "baby walkers", "activity walker", "push walker"],
+      "context_keywords": ["stroll and discover", "activity stations", "minnie mouse", "interactive", "walker"],
+      "negative_keywords": ["baby activity center", "baby jumper", "baby swing", "baby bouncer", "playmat", "stroller"]
+    },
+    "soft_baby_books": {
+      "display_name": "Soft Baby Books",
+      "formula": ["Brand", "Product Line", "Character Group/Character", "Features", "Texture", "Fabric Material Name", "'Baby Book'", "'with' Items Included", "Piece Count \"Piece\"/Count \"Count\"", "Retail Packaging"],
+      "attributes": ["Color", "Brand", "Color Category"],
+      "aliases": ["soft baby book", "soft baby books", "cloth baby book", "fabric baby book"],
+      "title_keywords": ["soft baby book", "cloth baby book", "fabric baby book", "baby book"],
+      "context_keywords": ["soft cloth", "peek-a-boo", "3 piece set", "fabric", "sensory book"],
+      "negative_keywords": ["baby rattle", "baby teether", "baby gym", "crib toy", "stroller toy", "board book"]
+    }
+  }
+},
+"baby_nursery_crib_accessories": {
+  "display_name": "Baby Nursery & Crib Accessories",
+  "product_types": {
+    "baby_crib_bumpers": {
+      "display_name": "Baby Crib Bumpers",
+      "formula": ["Brand/Global Brand License", "Character Group", "Character", "Product Line", "Piece Count \"-Piece\"", "Features", "Fabric Material Name", "\"Crib Liner\"", "Retail Packaging", "\"with\" Items Included", "Color/Pattern/Theme", "Count \"Pack\""],
+      "attributes": ["Age Group", "Brand", "Color Category"],
+      "aliases": ["baby crib bumper", "baby crib bumpers", "crib bumper", "crib liner", "baby crib liner"],
+      "title_keywords": ["baby crib bumper", "crib bumper", "crib liner", "baby crib liner"],
+      "context_keywords": ["4-piece", "dumbo", "hello kitty", "fitted crib sheet", "crib"],
+      "negative_keywords": ["crib rail cover", "crib toy", "bassinet", "baby crib", "crib accessory", "baby sleep sound machine"]
+    },
+    "baby_sleep_sound_machines_soothers": {
+      "display_name": "Baby Sleep Sound Machines & Soothers",
+      "formula": ["Brand/Global Brand License", "Product Line", "Size Descriptor", "Features", "Theme/Character Group/Character", "Recommended Room", "Activity", "Baby Sleep Sound Machine & Soother Type/\"White Noise Sound Machine\"/\"Projector\"", "\"with\" Items Included", "\"for\" Age Group/Gender", "Color", "Count \"Pack\""],
+      "attributes": ["Age Group", "Brand", "Baby Sleep Sound Machine And Soother Type"],
+      "aliases": ["baby sleep sound machine", "baby sleep soother", "white noise sound machine", "baby projector", "nursery sound machine"],
+      "title_keywords": ["baby sleep sound machine", "white noise sound machine", "baby soother", "projector", "nursery sound machine"],
+      "context_keywords": ["for babies", "for kids", "color changing lights", "nightlight", "nursery", "white noise"],
+      "negative_keywords": ["crib toy", "crib mobile", "baby swing", "baby monitor", "baby sleep positioner", "crib rail cover"]
+    },
+    "crib_rail_covers": {
+      "display_name": "Crib Rail Covers",
+      "formula": ["Brand/Global Brand License", "Product Line", "Theme/Character Group/Character", "Features", "Texture", "Size Descriptor", "Fabric Material Percentage", "Fabric Material Name", "\"Crib Rail Cover\"/\"Crib Rail Teething Guard\"", "Retail Packaging", "\"with\" Items Included", "Assembled Product Length \"x\" Assembled Product Width", "Color/Pattern", "Count \"Pack\""],
+      "attributes": ["Brand", "Color", "Color Category"],
+      "aliases": ["crib rail cover", "crib rail covers", "crib rail teething guard", "crib teething guard"],
+      "title_keywords": ["crib rail cover", "crib rail covers", "crib rail teething guard", "crib teething guard"],
+      "context_keywords": ["52 in x 6 in", "reversible", "with ties", "fleece", "teething guard"],
+      "negative_keywords": ["baby crib bumper", "crib liner", "crib toy", "crib accessory", "baby crib", "baby teether"]
+    },
+    "crib_toys": {
+      "display_name": "Crib Toys",
+      "formula": ["Brand/Global Brand License", "Product Line", "Product Multifunction Descriptor", "Theme/Character Group/Character/Shape", "Crib Toy Type", "Retail Packaging", "\"with\" Items Included", "Color/Pattern", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Brand", "Manufacturer", "Multipack Quantity"],
+      "aliases": ["crib toy", "crib toys", "baby crib toy", "crib attachment toy"],
+      "title_keywords": ["crib toy", "crib toys", "baby crib toy"],
+      "context_keywords": ["shape", "theme", "character", "piece count", "crib"],
+      "negative_keywords": ["crib mobile", "baby crib bumper", "crib rail cover", "baby sleep sound machine", "baby rattle", "soft baby book"]
+    }
+  }
+},
+"baby_health_safety_supplies": {
+  "display_name": "Baby Health & Safety Supplies",
+  "product_types": {
+    "other_baby_safety_supplies": {
+      "display_name": "Other Baby Safety Supplies",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Size", "Count/Pack"],
+      "attributes": ["Net Content UOM", "Product Net Content Quantity", "Product Net Content Uom", "Condition"],
+      "aliases": ["baby safety supply", "baby safety supplies", "baby proofing supply", "baby proofing supplies"],
+      "title_keywords": ["baby safety supply", "baby safety supplies", "baby proofing supply", "baby proofing supplies"],
+      "context_keywords": ["adjustable", "premium", "refurbished", "count", "size"],
+      "negative_keywords": ["baby safety gate", "baby safety lock", "baby safety outlet cover", "baby safety rail", "edge protector", "corner guard"]
+    },
+    "baby_head_body_support_cushions": {
+      "display_name": "Baby Head & Body Support Cushions",
+      "formula": ["Brand/Global Brand License", "Product Line", "Character Group/Character", "Product Multifunction Descriptor", "Features", "Texture", "Body Part", "Baby Head & Body Support Cushion Type/\"Support\"/\"Support Cushion\"", "\"with\" Items Included", "Age Group", "\"for\" Compatible Devices", "Color/Theme/Pattern", "Size", "Count \"Pack\"/Piece Count \"Piece\"", "Retail Packaging"],
+      "attributes": ["Age Group", "Baby Head And Body Support Cushion Type", "Brand"],
+      "aliases": ["baby head support", "baby body support cushion", "car seat head support", "infant support cushion", "head and body support"],
+      "title_keywords": ["baby head support", "head and body support", "support cushion", "car seat insert", "head and neck support"],
+      "context_keywords": ["for car seats", "for strollers", "strap cover", "newborn", "toddler"],
+      "negative_keywords": ["baby sleep positioner", "baby safety rail", "baby car seat liner", "baby monitor", "crib liner", "baby pillow"]
+    },
+    "baby_monitors": {
+      "display_name": "Baby Monitors",
+      "formula": ["Brand", "Product Line/Model", "Screen Size", "Resolution", "Video Streaming Quality", "Product Multifunction Descriptor", "Wireless Technology", "Display Technology", "Features", "Baby Monitor Type", "Retail Packaging", "\"with\"/\"and\" Items Included", "\"for\" Compatible Devices", "Model", "Color", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Baby Monitor Type", "Brand", "Smart Technology"],
+      "aliases": ["baby monitor", "baby monitors", "video baby monitor", "audio baby monitor", "smart baby monitor"],
+      "title_keywords": ["baby monitor", "video baby monitor", "audio baby monitor", "smart baby monitor", "movement monitor"],
+      "context_keywords": ["wi-fi", "hd camera", "5.0\"", "2 parent units", "sock monitor"],
+      "negative_keywords": ["baby sleep sound machine", "projector", "fetal doppler", "baby scale", "camera case", "sound machine"]
+    },
+    "baby_safety_gates": {
+      "display_name": "Baby Safety Gates",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Size Descriptor", "Features", "Material", "Recommended Location", "\"Baby Safety Gate\"/\"Baby Gate\"/\"Safety Gate\"", "Retail Packaging", "\"with\"/\"and\" Items Included", "\"Fits\" Fits Minimum Opening Width \"to\" Fits Maximum Opening Width \"Wide\" OR Assembled Product Height \"Tall\" x Assembled Product Width \"Wide\"", "Color/Finish", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Recommended Location", "Brand", "Mount Type"],
+      "aliases": ["baby safety gate", "baby gate", "safety gate", "walk-through gate", "pressure mount gate"],
+      "title_keywords": ["baby safety gate", "baby gate", "safety gate", "walk-through safety gate", "retractable baby gate"],
+      "context_keywords": ["extra wide", "pressure mount", "wall safe", "wood", "pet door"],
+      "negative_keywords": ["safety gate extension", "baby safety rail", "baby safety lock", "edge protector", "corner guard", "play yard"]
+    },
+    "baby_safety_harnesses_leashes": {
+      "display_name": "Baby Safety Harnesses & Leashes",
+      "formula": ["Brand/Global Brand License", "Product Line", "Product Multifunction Descriptor", "Character Group", "Character", "Features", "Age Group", "Gender", "Size Descriptor", "Baby Safety Harness & Leash Type/\"Safety Harness\"", "Retail Packaging", "\"with\" Items Included", "Color/Pattern/Theme", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Baby Safety Harness And Leash Type", "Brand", "Age Group"],
+      "aliases": ["baby safety harness", "baby leash", "toddler harness", "safety harness backpack", "child safety harness"],
+      "title_keywords": ["baby safety harness", "safety harness backpack", "child safety harness", "toddler harness", "harness backpack"],
+      "context_keywords": ["with leash", "toddler", "child", "backpack", "adjustable straps"],
+      "negative_keywords": ["baby carrier", "baby backpack carrier", "baby safety gate", "baby safety lock", "stroller harness", "pet leash"]
+    },
+    "baby_safety_locks": {
+      "display_name": "Baby Safety Locks",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Shape", "Attachment Style", "Age Group", "Recommended Room", "Recommended Use", "Baby Safety Lock Type/\"Safety Lock\"", "Retail Packaging", "\"with\" Items Included", "\"for\" Activity", "Color", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Baby Safety Lock Type", "Brand", "Attachment Style"],
+      "aliases": ["baby safety lock", "baby safety locks", "childproof lock", "cabinet lock", "magnetic safety lock"],
+      "title_keywords": ["baby safety lock", "childproof lock", "cabinet lock", "magnetic safety lock", "safety latch"],
+      "context_keywords": ["microwave", "oven", "cabinet", "adhesive", "childproofing"],
+      "negative_keywords": ["baby safety outlet cover", "baby safety gate", "safety gate extension", "edge protector", "corner guard", "bed rail"]
+    },
+    "baby_safety_outlet_covers": {
+      "display_name": "Baby Safety Outlet Covers",
+      "formula": ["Brand", "Product Line", "Features", "Age Group", "Baby Safety Outlet Cover Type", "Retail Packaging", "\"with\" Items Included", "\"for\" Activity", "Color/Finish", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Baby Safety Outlet Cover Type", "Brand", "Number Of Pieces"],
+      "aliases": ["baby safety outlet cover", "baby safety outlet covers", "outlet cover", "outlet plug cover", "plug protector"],
+      "title_keywords": ["baby safety outlet cover", "outlet cover", "outlet plug cover", "plug protectors", "outlet plug covers"],
+      "context_keywords": ["childproofing", "clear", "white", "24 pack", "32 pack"],
+      "negative_keywords": ["baby safety lock", "baby safety gate", "safety gate extension", "edge protector", "corner guard", "safety rail"]
+    },
+    "baby_safety_rails": {
+      "display_name": "Baby Safety Rails",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Features", "Material", "Age Group", "Gender", "\"Safety Rail\"/\"Safety Bed Rail\"", "Retail Packaging", "\"with\" Items Included", "\"for\" Bed Size", "Assembled Product Length x Assembled Product Height", "Model", "Color/Finish", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Age Group", "Material", "Brand"],
+      "aliases": ["baby safety rail", "baby safety rails", "safety bed rail", "bed rail", "toddler bed rail"],
+      "title_keywords": ["safety bed rail", "bed rail", "toddler safety bed rail", "baby safety rail"],
+      "context_keywords": ["for twin bed", "36\" x 19\"", "mesh", "wooden", "under mattress anchors"],
+      "negative_keywords": ["baby safety gate", "safety gate extension", "baby sleep positioner", "crib rail cover", "crib liner", "booster seat"]
+    },
+    "baby_scales": {
+      "display_name": "Baby Scales",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Material", "Display Technology", "Wireless Technology", "Age Group", "\"Scale\"", "Retail Packaging", "\"with\"/\"and\" Items Included", "Maximum Load Weight \"Capacity\"", "Color", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Brand", "Manufacturer", "Condition"],
+      "aliases": ["baby scale", "baby scales", "infant scale", "digital baby scale"],
+      "title_keywords": ["baby scale", "infant scale", "digital baby scale", "baby weigh scale"],
+      "context_keywords": ["44 lb capacity", "removable tray", "bluetooth", "smart technology", "weight and height tracking"],
+      "negative_keywords": ["baby monitor", "fetal doppler", "bedwetting alarm", "sleep positioner", "nasal aspirator", "oral thermometer"]
+    },
+    "baby_sleep_positioners": {
+      "display_name": "Baby Sleep Positioners",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Material/Fabric Material Name", "Age Group", "Baby Sleep Positioner Type", "Retail Packaging", "\"with\"/\"and\" Items Included", "Color/Pattern/Theme", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Brand", "Color", "Condition"],
+      "aliases": ["baby sleep positioner", "baby sleep positioners", "infant sleep positioner", "newborn lounger"],
+      "title_keywords": ["baby sleep positioner", "infant sleep positioner", "newborn lounger", "sleep positioner"],
+      "context_keywords": ["3-in-1", "infant", "lounger", "white", "lion"],
+      "negative_keywords": ["baby head support", "crib liner", "crib rail cover", "bassinet", "baby pillow", "baby monitor"]
+    },
+    "bedwetting_alarms": {
+      "display_name": "Bedwetting Alarms",
+      "formula": ["Brand", "Product Line", "Features", "Display Technology", "\"Bedwetting Alarm\"/\"Bedwetting Brief\"/\"Urine Sensor\"/\"Bedwetting Alarm Watch\"", "Retail Packaging", "\"with\" Items Included", "\"for\" Activity/Age Group/Recommended Use", "Color/Theme/Pattern", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Number Of Pieces", "Brand", "Color"],
+      "aliases": ["bedwetting alarm", "bedwetting alarms", "urine sensor", "bedwetting alarm watch", "enuresis alarm"],
+      "title_keywords": ["bedwetting alarm", "urine sensor", "bedwetting alarm watch", "enuresis alarm"],
+      "context_keywords": ["deep sleepers", "children", "vibrating", "lights", "loud alert"],
+      "negative_keywords": ["baby monitor", "baby scale", "fetal doppler", "nasal aspirator", "sleep positioner", "sound machine"]
+    },
+    "edge_corner_guards": {
+      "display_name": "Edge & Corner Guards",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Features", "Mount Type", "Texture", "Material", "Recommended Use", "\"Corner Guard\"/\"Edge Protector\"/\"Edge and Corner Protector\"", "Retail Packaging", "\"with\" Items Included", "\"for\" Activity/Age Group/Recommended Use/\"Furniture\"", "Assembled Product Length", "Color", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Color", "Brand", "Number Of Pieces"],
+      "aliases": ["edge guard", "corner guard", "edge protector", "edge and corner protector", "table edge guard"],
+      "title_keywords": ["corner guard", "edge protector", "edge guard", "edge and corner protector"],
+      "context_keywords": ["for tables", "for furniture", "for fireplaces", "adhesive strips", "6 ft"],
+      "negative_keywords": ["baby safety lock", "baby safety gate", "baby safety outlet cover", "safety rail", "crib rail cover", "safety gate extension"]
+    },
+    "fetal_dopplers": {
+      "display_name": "Fetal Dopplers",
+      "formula": ["Brand", "Product Line", "\"Fetal Doppler\"/\"Fetal Heartbeat Monitor\"/\"Fetal Heartbeat Monitor Straps\"", "Retail Packaging", "\"with\"/\"and\" Items Included", "Color", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Brand", "Count Per Pack", "Color Category"],
+      "aliases": ["fetal doppler", "fetal dopplers", "fetal heartbeat monitor", "baby doppler"],
+      "title_keywords": ["fetal doppler", "fetal heartbeat monitor", "baby doppler", "fetal heartbeat monitor straps"],
+      "context_keywords": ["ultrasound gel", "pink/white", "blue/white", "heartbeat"],
+      "negative_keywords": ["baby monitor", "baby scale", "nasal aspirator", "bedwetting alarm", "sleep positioner", "oral thermometer"]
+    },
+    "nasal_aspirators": {
+      "display_name": "Nasal Aspirators",
+      "formula": ["Brand", "Product Line", "Features", "Power Type", "Age Group", "\"Nasal Aspirator\"/\"Nasal Aspirator Bulb\"/\"Ear & Nose Cleaner\"", "Retail Packaging", "\"with\"/\"and\" Items Included", "\"for\" Age Group/Health Concern/Symptoms", "Color", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Brand", "Count Per Pack", "Multipack Quantity"],
+      "aliases": ["nasal aspirator", "nasal aspirators", "baby nasal aspirator", "snot sucker", "ear and nose cleaner"],
+      "title_keywords": ["nasal aspirator", "baby nasal aspirator", "snot sucker", "ear and nose cleaner", "electric nasal aspirator"],
+      "context_keywords": ["for newborns and infants", "rechargeable", "battery powered", "lights and music", "easy clean"],
+      "negative_keywords": ["fetal doppler", "baby monitor", "baby scale", "bedwetting alarm", "baby sleep sound machine", "baby thermometer"]
+    },
+    "safety_gate_extensions_kits": {
+      "display_name": "Safety Gate Extensions & Kits",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Size Descriptor", "Features", "Number of Panels \"Panel\"", "Material", "Recommended Location", "Assembled Product Width", "\"Safety Gate Extension\"/\"Baby Gate Extension\"", "Retail Packaging", "\"with\"/\"and\" Items Included", "\"for\" Compatible Devices", "Color/Finish", "Count \"Pack\"/Piece Count \"Piece\""],
+      "attributes": ["Brand", "Recommended Location", "Color"],
+      "aliases": ["safety gate extension", "safety gate extensions", "baby gate extension", "gate extension kit", "gate extension"],
+      "title_keywords": ["safety gate extension", "baby gate extension", "gate extension", "safety gate extension kit"],
+      "context_keywords": ["1 panel", "2 panel", "10.5\"", "for dreambaby mayfair and newport", "extension kit"],
+      "negative_keywords": ["baby safety gate", "baby safety lock", "baby safety rail", "edge protector", "corner guard", "baby play yard"]
+    }
+  }
+},"pregnancy_breastfeeding_pumping_supplies": {
+  "display_name": "Pregnancy, Breastfeeding & Pumping Supplies",
+  "product_types": {
+    "other_breastfeeding_pumping_supplies": {
+      "display_name": "Other Breastfeeding & Pumping Supplies",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Count/Pack", "Warranty Info", "Net Content", "Net Content UOM"],
+      "attributes": ["Number Of Pieces", "Count Per Pack", "Warranty Information"],
+      "aliases": ["breastfeeding supply", "pumping supply", "breastfeeding accessory", "pumping accessory"],
+      "title_keywords": ["breastfeeding supply", "pumping supply", "breastfeeding accessory", "pumping accessory"],
+      "context_keywords": ["signature", "compact", "silver", "pack", "oz"],
+      "negative_keywords": ["breast pump", "nipple shield", "nursing pad", "nursing cover", "pregnancy pillow", "breastmilk storage bag"]
+    },
+    "baby_bottle_breast_pump_part_sterilizers": {
+      "display_name": "Baby Bottle & Breast Pump Part Sterilizers",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Recommended Use", "Baby Bottle & Breast Pump Part Sterilizer Type", "Retail Packaging", "\"with\"/\"and\" Items Included", "Color", "Count \"Count\""],
+      "attributes": ["Brand", "Baby Bottle And Breast Pump Part Sterilizer Type", "Activity"],
+      "aliases": ["baby bottle sterilizer", "breast pump part sterilizer", "bottle sterilizer", "pump part sterilizer", "uv sterilizer"],
+      "title_keywords": ["baby bottle sterilizer", "breast pump part sterilizer", "bottle sterilizer", "pump part sterilizer", "uv sterilizer"],
+      "context_keywords": ["portable", "warmer", "sterilizer", "pacifier uv light sterilizer", "recommended use"],
+      "negative_keywords": ["baby bottle warmer", "breast pump accessory set", "breast pump", "breastmilk storage bag", "nipple shield", "baby bottle brush"]
+    },
+    "breast_pump_accessory_sets": {
+      "display_name": "Breast Pump Accessory Sets",
+      "formula": ["Brand", "Product Line", "Features", "Material", "Breast Pump Accessory Set Type", "Retail Packaging", "\"with\" Items Included", "\"for\" Compatible Devices", "Piece Count + \"Piece\""],
+      "attributes": ["Brand", "Activity", "Number Of Pieces"],
+      "aliases": ["breast pump accessory set", "breast pump accessory kit", "pump accessory kit", "breast pump parts kit"],
+      "title_keywords": ["breast pump accessory set", "breast pump accessory kit", "pump accessory kit", "breast pump parts kit"],
+      "context_keywords": ["breast flange", "replacement parts", "bottle", "for medela pump 'n style", "piece count"],
+      "negative_keywords": ["breast shield", "breast pump tubing", "breast pump valve", "breast pump membrane", "breast pump", "nipple shield"]
+    },
+    "breast_pump_breast_shields": {
+      "display_name": "Breast Pump Breast Shields",
+      "formula": ["Brand", "Product Line", "\"Flange\"/\"Breast Shield\"", "\"with\" Items Included", "\"for\" Compatible Devices", "Diameter", "Count + \"Count\""],
+      "attributes": ["Brand", "Compatible Brands", "Material"],
+      "aliases": ["breast shield", "breast shields", "flange", "pump flange", "breast pump flange"],
+      "title_keywords": ["breast shield", "breast shields", "flange", "pump flange", "breast pump flange"],
+      "context_keywords": ["24 mm", "27mm", "compatible devices", "medela", "elvie"],
+      "negative_keywords": ["nipple shield", "breast pump accessory set", "breast pump tubing", "breast pump valve", "breast shell", "breast pump"]
+    },
+    "breast_pump_replacement_tubing": {
+      "display_name": "Breast Pump Replacement Tubing",
+      "formula": ["Brand", "Product Line", "Material", "Breast Pump Replacement Tubing Type", "Retail Packaging", "\"with\" Items Included", "Count + \"Count\""],
+      "attributes": ["Brand", "Breast Pump Replacement Tubing Type", "Compatible Devices"],
+      "aliases": ["breast pump tubing", "replacement tubing", "pump tubing", "breast pump replacement tubing"],
+      "title_keywords": ["breast pump tubing", "replacement tubing", "pump tubing", "breast pump replacement tubing"],
+      "context_keywords": ["pump in style", "advanced", "2 count", "compatible devices", "replacement parts"],
+      "negative_keywords": ["breast pump accessory set", "breast shield", "breast pump valve", "breast pump membrane", "breast pump", "nipple shield"]
+    },
+    "breast_pump_valves_membranes": {
+      "display_name": "Breast Pump Valves & Membranes",
+      "formula": ["Brand", "Product Line", "Material", "Breast Pump Valve & Membrane Type", "Retail Packaging", "\"for\" Compatible Devices", "\"with\" Items Included", "Count + \"Count\"/Piece Count + \"Piece\""],
+      "attributes": ["Brand", "Breast Pump Valve And Membrane Type", "Compatible Brands"],
+      "aliases": ["breast pump valve", "breast pump membrane", "pump valve", "pump membrane", "valve and membrane set"],
+      "title_keywords": ["breast pump valve", "breast pump membrane", "pump valve", "pump membrane", "valve and membrane"],
+      "context_keywords": ["for spectra s2", "set", "piece count", "for medela pump in style", "replacement parts"],
+      "negative_keywords": ["breast pump tubing", "breast shield", "breast pump accessory set", "breast shell", "breast pump", "nipple shield"]
+    },
+    "breast_pumps": {
+      "display_name": "Breast Pumps",
+      "formula": ["Brand", "Product Line", "Features", "Material", "Breast Pump Type", "Power Type", "\"Breast Pump\"", "Retail Packaging", "\"Includes\" Items Included", "Diameter"],
+      "attributes": ["Brand", "Breast Pump Type", "Power Type"],
+      "aliases": ["breast pump", "breast pumps", "electric breast pump", "manual breast pump", "wearable breast pump"],
+      "title_keywords": ["breast pump", "electric breast pump", "manual breast pump", "double electric breast pump", "wearable breast pump"],
+      "context_keywords": ["hospital grade", "single manual", "double electric", "24mm", "on-the-go tote"],
+      "negative_keywords": ["breast pump accessory set", "breast shield", "breast pump tubing", "breast pump valve", "breast shell", "nipple shield"]
+    },
+    "breast_shells": {
+      "display_name": "Breast Shells",
+      "formula": ["Brand", "Product Line", "Material", "Breast Shell Type", "Retail Packaging", "\"with\" Items Included", "Diameter", "Count + \"Count\""],
+      "attributes": ["Brand", "Activity", "Breast Shell Type"],
+      "aliases": ["breast shell", "breast shells", "milk collection cup", "milk saver", "milk collection shell"],
+      "title_keywords": ["breast shell", "breast shells", "milk collection cup", "milk saver", "milk collection shell"],
+      "context_keywords": ["softshells", "collection cup", "storage container", "2 count", "silicone"],
+      "negative_keywords": ["breastmilk storage bag", "breast shield", "nipple shield", "breast pump", "breast pump accessory set", "nursing pad"]
+    },
+    "breastmilk_storage_bags": {
+      "display_name": "Breastmilk Storage Bags",
+      "formula": ["Brand", "Product Line", "Ingredient Preference", "Breastmilk Storage Bag Type", "Retail Packaging", "Items Included", "Volume Capacity", "Count + \"Count\"/Piece Count + \"Piece\""],
+      "attributes": ["Breastmilk Storage Bag Type", "Brand", "Container Type"],
+      "aliases": ["breastmilk storage bag", "breastmilk storage bags", "breast milk storage bag", "milk storage bag", "storage bottle set"],
+      "title_keywords": ["breastmilk storage bag", "breast milk storage bag", "milk storage bag", "breastmilk storage bottle", "storage starter kit"],
+      "context_keywords": ["5 oz", "6 oz", "70 count", "starter kit", "pouch adapter set"],
+      "negative_keywords": ["breast shell", "breast pump", "breast pump accessory set", "nursing pad", "nipple shield", "baby bottle"]
+    },
+    "hand_free_breast_pump_bras": {
+      "display_name": "Hand-Free Breast Pump Bras",
+      "formula": ["Brand", "Product Line", "Features", "Bra Style", "\"Pumping Bra\"", "Retail Packaging", "\"with\" Items Included", "Color/Pattern", "Size", "Count \"Count\""],
+      "attributes": ["Brand", "Material Percentage", "Color"],
+      "aliases": ["hands-free pumping bra", "hand-free breast pump bra", "pumping bra", "pump bra"],
+      "title_keywords": ["hands-free pumping bra", "pumping bra", "pump bra", "breast pump bra"],
+      "context_keywords": ["bustier", "adjustable", "pink", "aqua dot pattern", "one size"],
+      "negative_keywords": ["nursing bra", "nursing cover", "nursing pad", "nipple shield", "breast pump", "pregnancy pillow"]
+    },
+    "nipple_shields": {
+      "display_name": "Nipple Shields",
+      "formula": ["Brand", "Product Line", "Features", "\"Nipple Shield\"", "Retail Packaging", "\"with\" Items Included", "Diameter + / Size", "Count \"Count\""],
+      "attributes": ["Brand", "Color", "Condition"],
+      "aliases": ["nipple shield", "nipple shields", "breastfeeding nipple shield", "silicone nipple shield"],
+      "title_keywords": ["nipple shield", "nipple shields", "breastfeeding nipple shield", "silicone nipple shield"],
+      "context_keywords": ["24mm", "19mm", "xs", "sterilizing case", "one size"],
+      "negative_keywords": ["breast shield", "breast shell", "nursing pad", "nipple cream", "breast pump", "pacifier"]
+    },
+    "nipple_soothing_creams": {
+      "display_name": "Nipple Soothing Creams",
+      "formula": ["Brand", "Product Line", "Ingredient Preference", "Primary Ingredient", "\"Nipple\"", "Form", "\"for\" Activity", "Retail Packaging", "\"with\" Items Included", "Size", "Count \"Pack\""],
+      "attributes": ["Brand", "Form", "Size"],
+      "aliases": ["nipple cream", "nipple balm", "nipple butter", "nipple soothing cream"],
+      "title_keywords": ["nipple cream", "nipple balm", "nipple butter", "nipple soothing cream"],
+      "context_keywords": ["lanolin", "for breastfeeding", "1.41 oz", "1.2 oz", "3.4 fl oz"],
+      "negative_keywords": ["nipple shield", "nursing pad", "nursing cover", "breast shell", "breast pump", "body lotion"]
+    },
+    "nursing_covers": {
+      "display_name": "Nursing Covers",
+      "formula": ["Brand", "Product Line", "Features", "Product Multifunction Descriptor", "Fabric Material Name", "Nursing Cover Type", "Retail Packaging", "\"with\" Items Included", "Color/Pattern/Theme/Character Group + Character", "Count \"Count\""],
+      "attributes": ["Brand", "Nursing Cover Type", "Color"],
+      "aliases": ["nursing cover", "nursing covers", "breastfeeding cover", "nursing shawl"],
+      "title_keywords": ["nursing cover", "breastfeeding cover", "nursing shawl", "4-in-1 nursing cover"],
+      "context_keywords": ["burp cloth", "black and white stripe", "damask", "multi-use", "fabric"],
+      "negative_keywords": ["hand-free breast pump bra", "nursing pad", "nipple shield", "nipple cream", "pregnancy pillow cover", "scarf"]
+    },
+    "nursing_pads": {
+      "display_name": "Nursing Pads",
+      "formula": ["Brand", "Product Line", "Fabric Material Name", "Features", "Size Descriptor", "\"Nursing Pads\"", "Retail Packaging", "\"with\" Items Included", "Color", "Size", "Count \"Count\""],
+      "attributes": ["Brand", "Condition", "Color"],
+      "aliases": ["nursing pad", "nursing pads", "breast pads", "disposable nursing pads", "reusable nursing pads"],
+      "title_keywords": ["nursing pads", "breast pads", "disposable nursing pads", "reusable nursing pads"],
+      "context_keywords": ["stay dry", "wash bag", "large", "bamboo", "42 count"],
+      "negative_keywords": ["nursing cover", "nipple shield", "nipple cream", "breast shell", "bra pad", "breastmilk storage bag"]
+    },
+    "nursing_pillows": {
+      "display_name": "Nursing Pillows",
+      "formula": ["Brand", "Product Line", "Features", "Shape", "Fabric Material Name", "\"Nursing Pillow\"/\"Breastfeeding Pillow\"", "\"for\" Recommended Use/Activity", "Color/Pattern/Theme/Character Group + Character", "Count \"Count\""],
+      "attributes": ["Brand", "Condition", "Multipack Quantity"],
+      "aliases": ["nursing pillow", "breastfeeding pillow", "feeding pillow", "nursing support pillow"],
+      "title_keywords": ["nursing pillow", "breastfeeding pillow", "feeding pillow", "nursing support pillow"],
+      "context_keywords": ["u-shaped", "positioner", "with cover", "starry sky", "deluxe"],
+      "negative_keywords": ["pregnancy pillow", "nursing pillow cover", "pregnancy pillow cover", "neck pillow", "body pillow", "lounger"]
+    },
+    "pregnancy_nursing_pillow_covers": {
+      "display_name": "Pregnancy & Nursing Pillow Covers",
+      "formula": ["Brand", "Product Line", "Features", "Shape", "Fabric Material Name", "\"Nursing Pillow Cover\"/\"Pregnancy Pillow Cover\"", "\"for\" Recommended Use", "Color/Pattern/Theme/Character Group + Character", "Count \"Count\""],
+      "attributes": ["Brand", "Color Category", "Multipack Quantity"],
+      "aliases": ["nursing pillow cover", "pregnancy pillow cover", "pillow cover for nursing pillow", "pillow cover for pregnancy pillow"],
+      "title_keywords": ["nursing pillow cover", "pregnancy pillow cover"],
+      "context_keywords": ["u-shaped", "100% cotton", "waterproof", "pink hip hop bunnies", "gray"],
+      "negative_keywords": ["nursing pillow", "pregnancy pillow", "nursing cover", "blanket cover", "pillowcase", "maternity pillow"]
+    },
+    "pregnancy_pillows": {
+      "display_name": "Pregnancy Pillows",
+      "formula": ["Brand", "Product Line", "Features", "Shape", "Ingredient Preference", "Fabric Material Name", "\"Pregnancy Pillow\"/\"Maternity Pillow\"", "\"for\" Recommended Use/Sleep Position", "Color/Pattern/Theme/Character Group + Character", "Count \"Count\""],
+      "attributes": ["Brand", "Color", "Material Name"],
+      "aliases": ["pregnancy pillow", "pregnancy pillows", "maternity pillow", "side sleeper pregnancy pillow"],
+      "title_keywords": ["pregnancy pillow", "maternity pillow", "side sleeper pregnancy pillow"],
+      "context_keywords": ["u-shaped", "contoured", "hypoallergenic", "organic cotton", "for side sleeper"],
+      "negative_keywords": ["nursing pillow", "pregnancy pillow cover", "nursing pillow cover", "body pillow cover", "bed pillow", "lounger"]
+    }
+  }
+}
+
+  }
+}

@@ -1,0 +1,395 @@
+{
+    "category": "Safety & Emergency",
+    "status": "partial",
+    "source": "SafetyEmergencyContentStyleGuide.pdf",
+    "families":{
+        "indoor_and_outdoor_safety":{
+            "display_name": "Indoor & Outdoor Safety",
+            "product_types":{
+                "geiger_counters":{
+                    "display_name": "Geiger Counters",
+                    "formula": ["Brand", "Model", "Material", "Product/Type", "Key Feature"],
+                    "attributes": ["Material", "Power Type", "Brand"],
+                    "aliases": ["geiger counter"],
+                    "title_keywords": ["geiger counter"],
+                    "context_keywords": ["by", "brand", "model"],
+                    "negative_keywords": ["smoke detector", "carbon monoxide detector", "fire extinguisher"]
+                },
+                "emergency_kits":{
+                    "display_name": "Emergency Preparedness Kits",
+                    "formula": ["Brand", "Condition", "Product Line", "Kit Type", "Contents", "Pack Size"],
+                    "attributes": ["Number of People", "Condition", "Brand"],
+                    "aliases": ["emergency kit"],
+                    "title_keywords": ["emergency kit"],
+                    "context_keywords": ["by", "brand", "model"],
+                    "negative_keywords": ["child safety gate", "carbon monoxide detector", "fire extinguisher"]
+                },
+                "safety_cones_and_triangles":{
+                    "display_name": "Safety Cones & Triangles",
+                    "formula": ["Brand", "Product/Type", "Color", "Key Feature"],
+                    "attributes": ["Color", "Brand", "Safety Cone And Triangle Type"],
+                    "aliases": ["safety cone", "safety triangle"],
+                    "title_keywords": ["safety cone", "safety triangle"],
+                    "context_keywords": ["by", "brand", "model"],
+                    "negative_keywords": ["geiger counter", "emergency kit", "smoke detector"]
+                },
+                "fire_blankets":{
+                    "display_name": "Fire Blankets",
+                    "formula": ["Brand", "Product/Type", "Key Feature"],
+                    "attributes": ["Material", "Brand", "Condition"],
+                    "aliases": ["fire blanket"],
+                    "title_keywords": ["fire blanket"],
+                    "context_keywords": ["by", "brand", "model"],
+                    "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+                },
+                "warning_lights_beacons":{
+                    "display_name": "Warning Lights & Beacons",
+                    "formula": ["Brand", "Model", "Product/Type", "Key Feature"],
+                    "attributes": ["Color", "Brand", "Power Type"],
+                    "aliases": ["warning light", "beacon"],
+                    "title_keywords": ["warning light", "beacon"],
+                    "context_keywords": ["by", "brand", "model", "lights", "warn"],
+                    "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+                },
+                "fire_retardants":{
+                    "display_name": "Fire Retardants",
+                    "formula": ["Brand", "Product/Type", "Fire Retardant Type"],
+                    "attributes": ["Material", "Brand", "Fire Retardant Type"],
+                    "aliases": ["fire retardant"],
+                    "title_keywords": ["fire retardant"],
+                    "context_keywords": ["by", "brand", "model"],
+                    "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+                },
+                "lab_control_and_response_products":{
+                    "display_name": "Lab Spill Control & Response Supplies",
+                    "formula": ["Brand", "Product Line", "Absorbent Type", "Volume Capacity", "Count", "Lab Spill Control And Response Supply Type"],
+                    "attributes": ["Brand", "Fire Extinguisher Classes", "Multipack Quantity"],
+                    "aliases": ["lab control and response product"],
+                    "title_keywords": ["lab control and response product"],
+                    "context_keywords": ["by", "brand", "model"],
+                    "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+                },
+                "fire_extinguishers":{
+                    "display_name": "Fire Extinguishers",
+                    "formula": ["Brand", "Product/Type", "Key Feature", "Fire Extinguisher Classes"],
+                    "attributes": ["Fire Extinguisher Classes", "Brand", "Multipack Quantity"],
+                    "aliases": ["fire extinguisher"],
+                    "title_keywords": ["fire extinguisher"],
+                    "context_keywords": ["by", "brand", "model", "extinguish"],
+                    "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+                },
+                "sandbags_floodguards":{
+                    "display_name": "Sandbags & Flood Guards",
+                    "formula": ["Brand", "Product/Type", "Key Feature", "Weight"],
+                    "attributes": ["Assembled Product Weight", "Brand", "Size"],
+                    "aliases": ["sandbag", "floodguard"],
+                    "title_keywords": ["sandbag", "floodguard"],
+                    "context_keywords": ["by", "brand", "model", "flood"],
+                    "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+                },
+                "other_safety_products":{
+                    "display_name": "Other Indoor & Outdoor Safety",
+                    "formula": ["Brand", "Product Line", "Safety Type", "Material", "Count"],
+                    "attributes": ["Brand", "Multipack Quantity", "Condition"],
+                    "aliases": ["safety product"],
+                    "title_keywords": ["other indoor & outdoor safety", "safety products"],
+                    "context_keywords": ["by", "brand", "model", "indoor", "outdoor", "safety"],
+                    "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+            },
+            "fire_sprinklers":{
+                "display_name": "Fire Sprinklers",
+                "formula": ["Brand", "Manufacturer", "Model", "Material", "Product/Type", "Key Feature"],
+                "attributes": ["Manufacturer", "Material", "Condition"],
+                "aliases": ["fire sprinkler"],
+                "title_keywords": ["fire sprinkler"],
+                "context_keywords": ["by", "brand", "model", "sprinkler"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+        },
+        "safety_caution_tape":{
+            "display_name": "Safety & Caution Tape",
+            "formula": ["Brand", "Product/Type", "Color", "Key Feature", "Safety And Caution Tape Type"],
+            "attributes": ["Brand", "Color", "Safety And Caution Tape Type"],
+            "aliases": ["safety tape", "caution tape"],
+            "title_keywords": ["safety tape", "caution tape"],
+            "context_keywords": ["by", "brand", "model", "tape"],
+            "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]},
+            
+            "safety_barriers":{
+                    "display_name": "Safety Barriers",
+                    "formula": ["Brand", "Material", "Product/Type", "Key Feature"],
+                    "attributes": ["Manufacturer", "Material", "Safety Barrier Type"],
+                    "aliases": ["safety barrier"],
+                    "title_keywords": ["safety barrier"],
+                    "context_keywords": ["by", "brand", "model", "barrier"],
+                    "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+
+    },
+    "lockout_and_tagout_products":{
+        "display_name": "Lockout & Tagout Devices",
+        "formula": ["Brand", "Product/Type", "Key Feature"],
+        "attributes": ["Brand", "Lockout And Tagout Device Type", "Material"],
+        "aliases": ["lockout product", "tagout product"],
+        "title_keywords": ["lockout product", "tagout product"],
+        "context_keywords": ["by", "brand", "model", "lockout", "tagout"],
+        "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+},
+"fire_hoses":{
+    "display_name": "Fire Hoses",
+    "formula": ["Brand", "Product/Type", "Key Feature"],
+    "attributes": ["Brand", "Material", "Inside Diameter"],
+    "aliases": ["fire hose"],
+    "title_keywords": ["fire hose"],
+    "context_keywords": ["by", "brand", "model", "hose"],
+    "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+},
+"stun_guns":{
+    "display_name": "Stun Guns",
+    "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Weight"],
+    "attributes": ["Brand", "Assembled Product Weight", "Color"],
+    "aliases": ["stun gun"],
+    "title_keywords": ["stun gun"],
+    "context_keywords": ["by", "brand", "model", "stun"],
+    "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]                                         
+},
+"emergency_shelters":{
+    "display_name": "Emergency Shelters",
+    "formula": ["Brand", "Product/Type", "Key Feature"],
+    "attributes": ["Brand", "Material", "Number of People"],
+    "aliases": ["emergency shelter"],
+    "title_keywords": ["emergency shelter"],
+    "context_keywords": ["by", "brand", "model", "shelter"],
+    "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+
+
+},
+"hazardous_waste_containers":{
+    "display_name": "Hazardous Waste Storage Containers",
+    "formula": ["Brand", "Product/Type", "Key Feature", "Width", "Height"],
+    "attributes": ["Brand", "Assembled Product Width", "Assembled Product Weight"],
+    "aliases": ["hazardous waste container"],
+    "title_keywords": ["hazardous waste container"],
+    "context_keywords": ["by", "brand", "model", "hazardous waste"],
+    "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+},
+"pepper_sprays":{
+    "display_name": "Pepper Spray",
+    "formula": ["Brand", "Product/Type", "Pepper Spray Type"],
+    "attributes": ["Brand", "Pepper Spray Type", "Color"],
+    "aliases": ["pepper spray"],
+    "title_keywords": ["pepper spray"],
+    "context_keywords": ["by", "brand", "model", "pepper"],
+    "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+},
+"sorbents":{
+    "display_name": "Sorbents",
+    "formula": ["Brand", "Product Line", "Form", "Absorbent Type", "Volume Capacity", "Count"],
+    "attributes": ["Brand", "Sorbent Type", "Form"],
+    "aliases": ["sorbent"],
+    "title_keywords": ["sorbent"],
+    "context_keywords": ["by", "brand", "model", "absorbent"],
+    "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+},
+"alarms_and_sirens":{
+    "display_name": "Warning Alarms & Sirens",
+    "formula": ["Brand", "Model", "Product/Type", "Key Feature"],
+    "attributes": ["Material", "Decibels", "Power Type"],
+    "aliases": ["alarm", "siren"],
+    "title_keywords": ["alarm", "siren"],
+    "context_keywords": ["by", "brand", "model", "alarm", "siren"],
+    "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+},
+"floor_markers":{
+    "display_name": "Safety Floor Markers",
+    "formula": ["Brand", "Product/Type", "Key Feature", "Number of Pieces"],
+    "attributes": ["Brand", "Color", "Number Of Pieces"],
+    "aliases": ["floor marker"],
+    "title_keywords": ["floor marker"],
+    "context_keywords": ["by", "brand", "model", "floor"],
+    "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+
+}
+
+}
+
+    }, "occupational_health": {
+        "display_name": "Occupational Health",
+        "product_types": {
+            "respirators":{
+                "display_name": "Respirators",
+                "formula": ["Brand", "Product Line", "Filter Type", "Size", "Pack Count"],
+                "attributes": ["Brand", "Respirator Type", "Condition"],
+                "aliases": ["respirator"],
+                "title_keywords": ["respirator"],
+                "context_keywords": ["by", "brand", "model"],
+                "negative_keywords": ["child safety gate", "carbon monoxide detector", "fire extinguisher"]
+            },
+            "other_occ_health":{
+                "display_name": "Other Occupational Health",
+                "formula": ["Brand", "Product Line", "Use Type", "Size", "Count"],
+                "attributes": ["Color Category", "Manufacturer", "Manufacturer Part Number"],
+                "aliases": ["occupational health product"],
+                "title_keywords": ["occupational health product"],
+                "context_keywords": ["by", "brand", "model", "protective equipment"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+            },
+            "eye_wash_units":{
+                "display_name": "Eye Wash Units",
+                "formula": ["Brand", "Product Line", "Product/Type", "Key Feature"],
+                "attributes": ["Brand", "Mount Type", "Assembly Required"],
+                "aliases": ["eye wash unit"],
+                "title_keywords": ["eye wash unit"],
+                "context_keywords": ["by", "brand", "model", "eye wash"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+            }
+
+        }
+
+}, "safety_wear":{
+        "display_name": "Safety Wear",
+        "product_types": {
+            "dust_pollen_masks":{
+                "display_name": "Dust & Pollen Masks",
+                "formula": ["Brand", "Product Line", "Filtration Rating", "Size", "Pack Count"],
+                "attributes": ["Brand", "Material", "Optimal Wear Time"],
+                "aliases": ["dust mask", "pollen mask"],
+                "title_keywords": ["dust mask", "pollen mask"],
+                "context_keywords": ["by", "brand", "model", "dust mask", "pollen mask"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+            },
+            "hazmat_suits":{
+                "display_name": "Hazmat Suits",
+                "formula": ["Brand", "Condition", "Product/Type", "Key Feature", "Hazmat Suit Type", "Model"],
+                "attributes": ["Condition", "Hazmat Suit Type", "Model"],
+                "aliases": ["hazmat suit"],
+                "title_keywords": ["hazmat suit"],
+                "context_keywords": ["by", "brand", "model", "hazmat suit"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]                                                         
+            },
+            "workwear_knee_pads":{
+                "display_name": "Workwear Knee Pads",
+                "formula": ["Brand", "Product Line", "Padding Type", "Material", "Size"],
+                "attributes": ["Brand", "Condition", "Size"],
+                "aliases": ["workwear", "knee pad"],
+                "title_keywords": ["workwear", "knee pad"],
+                "context_keywords": ["by", "brand", "model", "workwear", "knee pad"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]                                                         
+            },
+            "back_support_belts":{
+                "display_name": "Back Support Belts",
+                "formula": ["Brand", "Condition", "Product Line", "Support Type", "Size", "Closure Type"],
+                "attributes": ["Brand", "Condition", "Size"],
+                "aliases": ["back support belt"],
+                "title_keywords": ["back support belt"],
+                "context_keywords": ["by", "brand", "model", "back support"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]                                                         
+             },
+             "protective_sleeves":{
+                "display_name": "Protective Sleeves",
+                "formula": ["Brand", "Product Line", "Material", "Length", "Pack Count"],
+                "attributes": ["Brand", "Condition", "Size"],
+                "aliases": ["safety wear product"],
+                "title_keywords": ["safety wear product"],
+                "context_keywords": ["by", "brand", "model", "safety wear"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]                                                         
+                },
+            "handcuffs":{
+                "display_name": "Handcuffs",
+                "formula": ["Brand", "Manufacturer", "Product/Type", "Key Feature", "Width"],
+                "attributes": ["Manufacturer", "Assembled Product Width", "Color"],
+                "aliases": ["handcuff"],
+                "title_keywords": ["handcuff"],
+                "context_keywords": ["by", "brand", "model", "handcuff"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+            },
+            "workwear_safety_gloves":{
+                "display_name": "Workwear Safety Gloves",
+                "formula": ["Brand", "Product Line", "Material", "Gender", "Grip Type", "Size"],
+                "attributes": ["Brand", "Material", "Gender"],
+                "aliases": ["workwear safety glove"],
+                "title_keywords": ["workwear safety glove"],
+                "context_keywords": ["by", "brand", "model", "workwear safety glove"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+             },
+             "protective_eyewear":{
+                "display_name": "Protective Eyewear",
+                "formula": ["Brand","Product/Type", "Key Feature", "Protective Eyewear Type"],
+                "attributes": ["Brand", "Age Group", "Protective Eyewear Type"],
+                "aliases": ["protective eyewear"],
+                "title_keywords": ["protective eyewear"],
+                "context_keywords": ["by", "brand", "model", "protective eyewear"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+             },
+             "safety_harnesses":{
+                "display_name": "Safety Harnesses",
+                "formula": ["Brand", "Product/Type", "Key Feature", "Safety Harness Type"],
+                "attributes": ["Brand", "Material", "Safety Harness Type"],
+                "aliases": ["safety harness"],
+                "title_keywords": ["safety harness"],
+                "context_keywords": ["by", "brand", "model", "safety harness"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+
+            },
+            "safety_vests":{
+                "display_name": "Safety Vests",
+                "formula": ["Brand", "Product Line", "Reflectivity Type", "Color", "Size", "Closure Type"],
+                "attributes": ["Brand", "Color", "Age Group"],
+                "aliases": ["safety vest"],
+                "title_keywords": ["safety vest"],
+                "context_keywords": ["by", "brand", "model", "safety vest"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+            },
+            "protective_ear_muffs":{
+                "display_name": "Protective Ear Muffs",
+                "formula": ["Brand", "Product Line", "Noise Reduction Rating", "Fit Type", "Count"],
+                "attributes": ["Brand", "Material", "Noise Reduction Rating"],
+                "aliases": ["protective ear muff"],
+                "title_keywords": ["protective ear muff"],
+                "context_keywords": ["by", "brand", "model", "protective ear muff"],
+                "negative_keywords": ["vests", "harness", "geiger", "emergency kit"]
+                     
+            }, 
+            "controlled_disposable_apparel":{
+                "display_name": "Controlled Environment Disposable Apparel",
+                "formula": ["Brand", "Condition", "Product/Type", "Key Feature", "Color"],
+                "attributes": ["Condition", "Brand", "Color"],
+                "aliases": ["controlled disposable apparel"],
+                "title_keywords": ["controlled disposable apparel"],
+                "context_keywords": ["by", "brand", "model", "disposable apparel"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+            },
+            "protective_headwear":{
+                "display_name": "Protective Hardhats & Helmets",
+                "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Color"],
+                "attributes": ["Brand", "Gender", "Protective Hardhat And Helmet Type"],
+                "aliases": ["protective headwear"],
+                "title_keywords": ["protective headwear"],
+                "context_keywords": ["by", "brand", "model", "protective headwear"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+            },
+            "fall_arrest_systems":{
+                "display_name": "Fall-Arrest Kits",
+                "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Weight"],
+                "attributes": ["Brand", "Material", "Assembled Product Weight"],
+                "aliases": ["fall arrest system"],
+                "title_keywords": ["fall arrest system"],
+                "context_keywords": ["by", "brand", "model", "fall arrest system"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+    },
+            "lab_mask_shields":{
+                "display_name": "Lab Face Masks & Shields",
+                "formula": ["Brand", "Material", "Product/Type", "Key Feature", "Count/Pack", "Lab Face Mask And Shield Type"],
+                "attributes": ["Brand", "Material", "Size"],
+                "aliases": ["lab mask", "face shield"],
+                "title_keywords": ["lab mask", "face shield"],
+                "context_keywords": ["by", "brand", "model", "lab mask", "face shield"],
+                "negative_keywords": ["geiger counter", "emergency kit", "safety cone"]
+            }
+            
+}
+
+}
+
+    }
+
+
+}

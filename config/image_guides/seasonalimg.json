@@ -1,0 +1,600 @@
+{
+  "category": "Seasonal & Occasion",
+  "category_key": "seasonal_occasion",
+  "guide_key": "seasonalimg",
+  "source": "FY27_Category_StyleGuide_Seasonal-Occassion.pdf",
+  "last_updated": "Apr 21, 2026",
+  "status": "complete",
+  "global_guidance": {
+    "general": [
+      "imagery should have high appetite appeal",
+      "silo images should be photographed consistently according to packaging or product type",
+      "minimize reflections on plastic, foil, and shiny packaging, especially when covering important product information",
+      "remove unnecessary stickers not part of package design, such as special promotion stickers or legal declarations",
+      "packaging and labels should be presented straight, not angled or crooked",
+      "photograph each unique and meaningful side of the product package",
+      "for round or irregular shapes, present sides so printed information and graphics are centered and legible",
+      "front view is the side with predominant brand and labeling, format, variant, and size/quantity",
+      "products should be evenly lit from side to side and top to bottom",
+      "exposure and color should correctly represent the item",
+      "maintain separation between product and background",
+      "clip products onto pure white background, RGB 255/255/255",
+      "retouch dirt, dust, fingerprints, damage, blemishes, expiration dates, lot numbers, and sample-only information",
+      "lifestyle images should be realistic, professionally lit, and styled appropriately to the item and brand",
+      "product being sold should remain the hero of the lifestyle image",
+      "packaging should be incorporated into lifestyle images when practical to connect lifestyle images to silo shots",
+      "items must display all indicated required images and conditionally required images and meet the minimum image count listed on each page"
+    ],
+    "seasonal_notes": [
+      "Individual brand guidelines should take precedence.",
+      "Seasonal imagery should clearly communicate occasion, theme, scale, count, packaging, color/design variants, and how the product is used in its intended celebration or event context.",
+      "Keep lifestyle imagery festive, aspirational, and achievable for everyday shoppers.",
+      "For sets and kits, show all included pieces clearly.",
+      "For costumes and wearables, show front/back views and size guidance when applicable."
+    ],
+    "common_additional_recommendations": [
+      "Theme Collection: Show other products in the same theme or party collection to inspire a coordinated purchase.",
+      "Color / Design Range: Display all available color schemes or design variants in the assortment.",
+      "Size Chart: For costumes and wearables, display a size chart with measurements.",
+      "Personalization Note: If the product is customizable, show personalization options or examples."
+    ]
+  },
+  "slot_definitions": {
+    "main_image": {
+      "label": "Main Image",
+      "description": "Primary carousel image/hero image for the PDP.",
+      "detection_hints": [
+        "main",
+        "hero",
+        "primary",
+        "front",
+        "image 1",
+        "carousel 1"
+      ]
+    },
+    "silo_front": {
+      "label": "Silo, Front",
+      "guidance": "Photograph the product straight-on on a pure white background, showing all pieces for sets, full garments for costumes, and primary display for decor.",
+      "recommendation": "Add a straight-on front silo image on pure white showing all pieces, full garment, or primary decor display as applicable.",
+      "detection_hints": [
+        "front",
+        "silo",
+        "white background",
+        "all pieces",
+        "set",
+        "costume",
+        "decor",
+        "primary display"
+      ]
+    },
+    "silo_with_model": {
+      "label": "Silo, with Model",
+      "guidance": "Show the product out of packaging from the front, straight-on or top down when applicable on a white background, or on a model when applicable, with full product visibility and no shadows.",
+      "recommendation": "Add a front/top-down silo or model image with full product visibility and no shadows.",
+      "detection_hints": [
+        "model",
+        "with model",
+        "costume",
+        "front",
+        "top down",
+        "full product",
+        "no shadows"
+      ]
+    },
+    "silo_back": {
+      "label": "Silo, Back",
+      "guidance": "Show the product out of packaging from the back, straight-on or top down when applicable on a white background, or on a model when applicable, with full product visibility and no shadows.",
+      "recommendation": "Add a back silo or model image showing the product from the back with full visibility.",
+      "detection_hints": [
+        "back",
+        "silo back",
+        "rear",
+        "model back",
+        "top down",
+        "full visibility"
+      ]
+    },
+    "silo_angle": {
+      "label": "Silo, Angle",
+      "guidance": "Show the product on white background in the angle that best communicates profile, thickness, or shape.",
+      "recommendation": "Add an angled silo image showing product profile, thickness, or shape.",
+      "detection_hints": [
+        "angle",
+        "angled",
+        "profile",
+        "thickness",
+        "shape",
+        "side"
+      ]
+    },
+    "silo_detail": {
+      "label": "Silo, Detail",
+      "guidance": "Show a close-up of a key design detail such as embroidery, embellishments, print, accessories, or finish to highlight quality.",
+      "recommendation": "Add a detail image showing embroidery, embellishment, print, accessory, finish, or quality detail.",
+      "detection_hints": [
+        "detail",
+        "close-up",
+        "closeup",
+        "embroidery",
+        "embellishment",
+        "print",
+        "accessory",
+        "finish",
+        "quality"
+      ]
+    },
+    "silo_front_in_pack": {
+      "label": "Silo, Front, In Pack",
+      "guidance": "Show the front of product packaging straight-on on a white background with all branding and key label details legible.",
+      "recommendation": "Add a straight-on front packaging image on white with branding and key label details legible.",
+      "detection_hints": [
+        "front in pack",
+        "in pack",
+        "packaging",
+        "package front",
+        "branding",
+        "label",
+        "boxed"
+      ]
+    },
+    "silo_back_in_pack": {
+      "label": "Silo, Back, In Pack",
+      "guidance": "Show the back of product packaging straight-on on a pure white background with all label details legible.",
+      "recommendation": "Add a straight-on back packaging image on pure white with label details legible.",
+      "detection_hints": [
+        "back in pack",
+        "package back",
+        "back label",
+        "label details",
+        "packaging"
+      ]
+    },
+    "silo_out_of_pack_whats_included": {
+      "label": "Silo, Out of Pack, What's Included",
+      "guidance": "Show all included pieces and accessories in a flat-lay with labels or callouts identifying each item.",
+      "recommendation": "Add a what's-included flat-lay showing all included pieces and accessories with labels or callouts.",
+      "detection_hints": [
+        "what's included",
+        "whats included",
+        "out of pack",
+        "flat-lay",
+        "flat lay",
+        "included pieces",
+        "accessories",
+        "callouts"
+      ]
+    },
+    "lifestyle_in_use": {
+      "label": "Lifestyle, In-Use",
+      "guidance": "Show the product in its intended occasion context and keep the setting festive, aspirational, and achievable for the everyday shopper.",
+      "recommendation": "Add a lifestyle image showing the product in its intended occasion context with a festive, aspirational, achievable setting.",
+      "detection_hints": [
+        "lifestyle",
+        "in-use",
+        "in use",
+        "occasion",
+        "party",
+        "holiday",
+        "festive",
+        "celebration",
+        "decor",
+        "shopper"
+      ]
+    },
+    "dimensions": {
+      "label": "Dimensions",
+      "guidance": "Show product dimensions, pack size, diameter, width, coverage, size, or scale with clear callouts and scale reference where needed.",
+      "recommendation": "Add a dimensions graphic showing size, diameter, width, coverage, pack size, or scale clearly.",
+      "detection_hints": [
+        "dimensions",
+        "size",
+        "diameter",
+        "width",
+        "coverage",
+        "scale",
+        "height",
+        "length",
+        "pack size",
+        "measurements"
+      ]
+    },
+    "dimensions_occasion_scale": {
+      "label": "Dimensions",
+      "guidance": "Show size or scale using a human reference or clear dimension callouts such as height, diameter, or length.",
+      "recommendation": "Add a dimensions graphic using human scale or clear callouts for height, diameter, or length.",
+      "detection_hints": [
+        "human reference",
+        "scale",
+        "height",
+        "diameter",
+        "length",
+        "clear callouts"
+      ]
+    },
+    "graphic_count": {
+      "label": "Graphic, Count",
+      "guidance": "Call out piece count, pack contents, or pack size using bold, clean graphics.",
+      "recommendation": "Add a count graphic clearly showing piece count, pack contents, or pack size.",
+      "detection_hints": [
+        "count",
+        "piece count",
+        "pack contents",
+        "pack size",
+        "pieces",
+        "ct",
+        "bold graphics"
+      ]
+    },
+    "graphic_size_guide": {
+      "label": "Graphic, Size Guide",
+      "guidance": "Display a size chart with height and weight measurements, mapping to age ranges for children or standard sizing for adults.",
+      "recommendation": "Add a size guide chart with height and weight measurements mapped to age ranges or adult sizing.",
+      "detection_hints": [
+        "size guide",
+        "size chart",
+        "height",
+        "weight",
+        "age range",
+        "adult sizing",
+        "children"
+      ]
+    },
+    "feature_graphic": {
+      "label": "Feature Graphic",
+      "guidance": "Highlight material quality, construction, light type/count, assembly, storage, branch shape, timer function, power type, or other secondary features using clean badge-style callouts.",
+      "recommendation": "Add a feature graphic highlighting material quality, light count/type, assembly, storage, timer, power type, or secondary features.",
+      "detection_hints": [
+        "feature",
+        "callout",
+        "pre-lit",
+        "shatterproof",
+        "fade-resistant",
+        "light count",
+        "assembly",
+        "storage",
+        "timer",
+        "power type"
+      ]
+    },
+    "graphic_theme_collection": {
+      "label": "Theme Collection",
+      "guidance": "Show other products in the same theme or party collection to inspire a coordinated purchase.",
+      "recommendation": "Add a theme collection image showing coordinated products in the same theme or collection.",
+      "detection_hints": [
+        "theme collection",
+        "collection",
+        "same theme",
+        "party collection",
+        "coordinated"
+      ]
+    },
+    "graphic_color_design_range": {
+      "label": "Color / Design Range",
+      "guidance": "Display all available color schemes or design variants in the assortment.",
+      "recommendation": "Add a color or design range graphic showing available color schemes or variants.",
+      "detection_hints": [
+        "color range",
+        "design range",
+        "variants",
+        "assortment",
+        "color schemes"
+      ]
+    },
+    "graphic_personalization": {
+      "label": "Personalization Note",
+      "guidance": "If the product is customizable, show personalization options or examples.",
+      "recommendation": "Add a personalization graphic showing customization options or examples when applicable.",
+      "detection_hints": [
+        "personalization",
+        "personalized",
+        "customizable",
+        "custom",
+        "name",
+        "monogram"
+      ]
+    },
+    "graphic_assembly_overview": {
+      "label": "Assembly Overview",
+      "guidance": "Provide a simplified assembly or setup diagram.",
+      "recommendation": "Add an assembly overview graphic showing simplified setup or assembly steps.",
+      "detection_hints": [
+        "assembly",
+        "setup",
+        "diagram",
+        "steps",
+        "assembly overview"
+      ]
+    }
+  },
+  "pages": {
+    "party_supplies_decorations_balloons": {
+      "display_name": "Party Supplies, Decorations & Balloons",
+      "format": "General",
+      "product_types": [
+        "Balloons",
+        "Balloon Holders",
+        "Balloon Pumps",
+        "Balloon Ribbons",
+        "Balloon Tie Tools",
+        "Balloon Weights",
+        "Helium Tanks",
+        "Glow Bracelets",
+        "Glow Necklaces",
+        "Glow Rings",
+        "Glow Sticks",
+        "Table Place Cards",
+        "Table Place Card Holders",
+        "Chair Sashes",
+        "Party Banners",
+        "Party Streamers",
+        "Party Lanterns & Hanging Pom Poms",
+        "Party Decoration Kits",
+        "Party Supply Sets",
+        "Other Party Supplies",
+        "Party Hats",
+        "Party Glasses",
+        "Party Noisemakers",
+        "Head Boppers",
+        "Photo Props",
+        "Pinatas",
+        "Party Favors",
+        "Party Favor Cups",
+        "Party Bags",
+        "Birthday Candles",
+        "Birthday Sashes"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_back_in_pack",
+        "dimensions",
+        "lifestyle_in_use",
+        "graphic_count",
+        "silo_front_in_pack"
+      ],
+      "additional_recommendations": [
+        "Theme Collection: Show other products in the same theme or party collection to inspire a coordinated purchase.",
+        "Color / Design Range: Display all available color schemes or design variants in the assortment.",
+        "Size Chart: For costumes and wearables, display a size chart with measurements.",
+        "Personalization Note: If the product is customizable, show personalization options or examples."
+      ],
+      "notes": [
+        "Silo Front should show all pieces for sets, full garments for costumes, and primary display for decor.",
+        "Graphic Count should call out piece count or pack contents using bold graphics.",
+        "Dimensions should show diameter, width, or coverage with callouts and scale reference where needed."
+      ]
+    },
+    "costumes_costume_accessories": {
+      "display_name": "Costumes & Costume Accessories",
+      "format": "General",
+      "product_types": [
+        "Fancy-Dress Costumes",
+        "Historical Reenactment Apparel",
+        "Costume Accessories",
+        "Costume Capes & Cloaks",
+        "Costume Facial Hair",
+        "Costume Glasses",
+        "Costume Masks",
+        "Costume Prosthetics",
+        "Costume Tails",
+        "Costume Wigs",
+        "Costume Wings",
+        "Boas & Leis"
+      ],
+      "required_slots": [
+        "silo_with_model",
+        "graphic_size_guide",
+        "lifestyle_in_use",
+        "silo_detail",
+        "silo_back"
+      ],
+      "additional_recommendations": [
+        "Theme Collection: Show other products in the same theme or party collection to inspire a coordinated purchase.",
+        "Color / Design Range: Display all available color schemes or design variants in the assortment.",
+        "Size Chart: For costumes and wearables, display a size chart with measurements.",
+        "Personalization Note: If the product is customizable, show personalization options or examples."
+      ],
+      "notes": [
+        "Silo with Model should show the product out of packaging from the front, straight-on or top down when applicable, or on a model when applicable.",
+        "Silo Back should show the product out of packaging from the back, straight-on or top down when applicable, or on a model when applicable.",
+        "Graphic Size Guide should map height and weight measurements to age ranges for children or standard sizing for adults.",
+        "Silo Detail should show embroidery, embellishments, print, or accessories to highlight quality."
+      ]
+    },
+    "gift_wrapping_cards_celebration_keepsakes": {
+      "display_name": "Gift Wrapping, Cards & Celebration Keepsakes",
+      "format": "General",
+      "product_types": [
+        "Gift Bags",
+        "Gift Boxes",
+        "Gift Wrap Paper",
+        "Gift Wrap Tissue",
+        "Gift Tags",
+        "Ribbons & Bows",
+        "Cellophane",
+        "Other Gift Wrapping Supplies",
+        "Printed Invitations",
+        "Greeting Cards",
+        "Gift Baskets & Sets",
+        "Snow Globes",
+        "Award Certificates",
+        "Trophies & Awards"
+      ],
+      "required_slots": [
+        "silo_front",
+        "dimensions",
+        "lifestyle_in_use",
+        "silo_angle",
+        "silo_detail"
+      ],
+      "additional_recommendations": [
+        "Theme Collection: Show other products in the same theme or party collection to inspire a coordinated purchase.",
+        "Color / Design Range: Display all available color schemes or design variants in the assortment.",
+        "Size Chart: For costumes and wearables, display a size chart with measurements.",
+        "Personalization Note: If the product is customizable, show personalization options or examples."
+      ],
+      "notes": [
+        "Silo Front should show all pieces for sets and primary display for decor/keepsakes.",
+        "Dimensions should be applied to the image to communicate size and scale.",
+        "Silo Angle should communicate profile, thickness, or shape.",
+        "Silo Detail should show a close-up of a key design detail."
+      ]
+    },
+    "christmas_holiday_decor": {
+      "display_name": "Christmas & Holiday Decor",
+      "format": "General",
+      "product_types": [
+        "Christmas Trees",
+        "Christmas Tree Stands",
+        "Christmas Tree Skirts",
+        "Christmas Tree Toppers",
+        "Christmas Stockings",
+        "Decorative Nutcrackers",
+        "Nativity Scenes",
+        "Ornaments",
+        "Wreaths",
+        "Holiday Lighting",
+        "Wreath Hangers",
+        "Christmas Stocking Holders",
+        "Yard Inflatables"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_front_in_pack",
+        "dimensions_occasion_scale",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "feature_graphic"
+      ],
+      "additional_recommendations": [
+        "Theme Collection: Show other products in the same theme or party collection to inspire a coordinated purchase.",
+        "Assembly Overview: Provide a simplified assembly or setup diagram.",
+        "Size Chart: For costumes and wearables, display a size chart with measurements.",
+        "Personalization Note: If the product is customizable, show personalization options or examples."
+      ],
+      "notes": [
+        "Preserve repeated feature_graphic because the source page shows two separate feature graphics.",
+        "One feature graphic should highlight material quality such as pre-lit, shatterproof, or fade-resistant features, and include light type or count using badge-style callouts.",
+        "Another feature graphic should highlight secondary features such as easy assembly, storage bag, pre-shaped branches, timer function, or power type.",
+        "Dimensions should show size or scale using a human reference or callouts such as height, diameter, or length."
+      ]
+    },
+    "seasonal_specialty_occasions": {
+      "display_name": "Seasonal & Specialty Occasions",
+      "format": "General",
+      "product_types": [
+        "Advent Calendars",
+        "Pumpkin Carving Tools & Kits",
+        "Easter Eggs",
+        "Firecrackers & Fireworks",
+        "Menorahs",
+        "Mezuzahs",
+        "Megillah Cases",
+        "Caskets",
+        "Cremation Urns",
+        "Pet Memorials"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_back_in_pack",
+        "dimensions",
+        "lifestyle_in_use",
+        "silo_out_of_pack_whats_included",
+        "graphic_count",
+        "silo_front_in_pack"
+      ],
+      "additional_recommendations": [
+        "Theme Collection: Show other products in the same theme or party collection to inspire a coordinated purchase.",
+        "Color / Design Range: Display all available color schemes or design variants in the assortment.",
+        "Size Chart: For costumes and wearables, display a size chart with measurements.",
+        "Personalization Note: If the product is customizable, show personalization options or examples."
+      ],
+      "notes": [
+        "Silo Out of Pack What's Included should show all included pieces and accessories in a flat-lay with labels or callouts.",
+        "Graphic Count should clearly communicate piece count or pack size.",
+        "Dimensions should communicate pack size or product dimensions using clean callout graphics or scale reference."
+      ]
+    }
+  },
+  "product_type_index": {
+    "Balloons": "party_supplies_decorations_balloons",
+    "Balloon Holders": "party_supplies_decorations_balloons",
+    "Balloon Pumps": "party_supplies_decorations_balloons",
+    "Balloon Ribbons": "party_supplies_decorations_balloons",
+    "Balloon Tie Tools": "party_supplies_decorations_balloons",
+    "Balloon Weights": "party_supplies_decorations_balloons",
+    "Helium Tanks": "party_supplies_decorations_balloons",
+    "Glow Bracelets": "party_supplies_decorations_balloons",
+    "Glow Necklaces": "party_supplies_decorations_balloons",
+    "Glow Rings": "party_supplies_decorations_balloons",
+    "Glow Sticks": "party_supplies_decorations_balloons",
+    "Table Place Cards": "party_supplies_decorations_balloons",
+    "Table Place Card Holders": "party_supplies_decorations_balloons",
+    "Chair Sashes": "party_supplies_decorations_balloons",
+    "Party Banners": "party_supplies_decorations_balloons",
+    "Party Streamers": "party_supplies_decorations_balloons",
+    "Party Lanterns & Hanging Pom Poms": "party_supplies_decorations_balloons",
+    "Party Decoration Kits": "party_supplies_decorations_balloons",
+    "Party Supply Sets": "party_supplies_decorations_balloons",
+    "Other Party Supplies": "party_supplies_decorations_balloons",
+    "Party Hats": "party_supplies_decorations_balloons",
+    "Party Glasses": "party_supplies_decorations_balloons",
+    "Party Noisemakers": "party_supplies_decorations_balloons",
+    "Head Boppers": "party_supplies_decorations_balloons",
+    "Photo Props": "party_supplies_decorations_balloons",
+    "Pinatas": "party_supplies_decorations_balloons",
+    "Party Favors": "party_supplies_decorations_balloons",
+    "Party Favor Cups": "party_supplies_decorations_balloons",
+    "Party Bags": "party_supplies_decorations_balloons",
+    "Birthday Candles": "party_supplies_decorations_balloons",
+    "Birthday Sashes": "party_supplies_decorations_balloons",
+    "Fancy-Dress Costumes": "costumes_costume_accessories",
+    "Historical Reenactment Apparel": "costumes_costume_accessories",
+    "Costume Accessories": "costumes_costume_accessories",
+    "Costume Capes & Cloaks": "costumes_costume_accessories",
+    "Costume Facial Hair": "costumes_costume_accessories",
+    "Costume Glasses": "costumes_costume_accessories",
+    "Costume Masks": "costumes_costume_accessories",
+    "Costume Prosthetics": "costumes_costume_accessories",
+    "Costume Tails": "costumes_costume_accessories",
+    "Costume Wigs": "costumes_costume_accessories",
+    "Costume Wings": "costumes_costume_accessories",
+    "Boas & Leis": "costumes_costume_accessories",
+    "Gift Bags": "gift_wrapping_cards_celebration_keepsakes",
+    "Gift Boxes": "gift_wrapping_cards_celebration_keepsakes",
+    "Gift Wrap Paper": "gift_wrapping_cards_celebration_keepsakes",
+    "Gift Wrap Tissue": "gift_wrapping_cards_celebration_keepsakes",
+    "Gift Tags": "gift_wrapping_cards_celebration_keepsakes",
+    "Ribbons & Bows": "gift_wrapping_cards_celebration_keepsakes",
+    "Cellophane": "gift_wrapping_cards_celebration_keepsakes",
+    "Other Gift Wrapping Supplies": "gift_wrapping_cards_celebration_keepsakes",
+    "Printed Invitations": "gift_wrapping_cards_celebration_keepsakes",
+    "Greeting Cards": "gift_wrapping_cards_celebration_keepsakes",
+    "Gift Baskets & Sets": "gift_wrapping_cards_celebration_keepsakes",
+    "Snow Globes": "gift_wrapping_cards_celebration_keepsakes",
+    "Award Certificates": "gift_wrapping_cards_celebration_keepsakes",
+    "Trophies & Awards": "gift_wrapping_cards_celebration_keepsakes",
+    "Christmas Trees": "christmas_holiday_decor",
+    "Christmas Tree Stands": "christmas_holiday_decor",
+    "Christmas Tree Skirts": "christmas_holiday_decor",
+    "Christmas Tree Toppers": "christmas_holiday_decor",
+    "Christmas Stockings": "christmas_holiday_decor",
+    "Decorative Nutcrackers": "christmas_holiday_decor",
+    "Nativity Scenes": "christmas_holiday_decor",
+    "Ornaments": "christmas_holiday_decor",
+    "Wreaths": "christmas_holiday_decor",
+    "Holiday Lighting": "christmas_holiday_decor",
+    "Wreath Hangers": "christmas_holiday_decor",
+    "Christmas Stocking Holders": "christmas_holiday_decor",
+    "Yard Inflatables": "christmas_holiday_decor",
+    "Advent Calendars": "seasonal_specialty_occasions",
+    "Pumpkin Carving Tools & Kits": "seasonal_specialty_occasions",
+    "Easter Eggs": "seasonal_specialty_occasions",
+    "Firecrackers & Fireworks": "seasonal_specialty_occasions",
+    "Menorahs": "seasonal_specialty_occasions",
+    "Mezuzahs": "seasonal_specialty_occasions",
+    "Megillah Cases": "seasonal_specialty_occasions",
+    "Caskets": "seasonal_specialty_occasions",
+    "Cremation Urns": "seasonal_specialty_occasions",
+    "Pet Memorials": "seasonal_specialty_occasions"
+  }
+}

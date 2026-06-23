@@ -1,0 +1,899 @@
+{
+  "category": "Photography",
+  "status": "partial",
+  "source": "PhotographyContentStyleGuide.pdf",
+  "families": {
+    "camera_accessories":{
+        "display_name": "Camera Accessories",
+        "product_types": {
+        "other_camera_accessories": {
+             "display_name": "Other Camera Accessories",
+                    "formula": ["Brand", "Condition", "Model", "Product Line", "Product/Type", "Key Feature", "Color", "Count/Pack", "Mount/Attachment"],
+                    "attributes": ["Condition", "Number of Pieces", "Multipack Quantity"],
+                    "aliases": ["miscellaneous", "other", "camera"],
+                    "title_keywords": ["camera", "accessories"],
+                    "context_keywords": ["camera", "accessory", "photography"],
+                    "negative_keywords": ["smoke detector", "carbon monoxide detector", "fire extinguisher"]
+                },
+        "camera_camcorder_mounts": {
+            "display_name": "Camera & Camcorder Mounts",
+            "formula": ["Brand", "Model/Product Line", "Features", "Camera & Camcorder Mount Type", "Accessories Included/Retail Packaging", "Compatible Devices/Compatible Cameras", "Color", "Count(Count Per Pack)"],
+            "attributes": ["Brand", "Camera and Camcorder Mount Type", "Features"],
+            "aliases": ["mount", "stand", "tripod"],
+            "title_keywords": ["camera", "camcorder", "mount"],
+            "context_keywords": ["camera mount", "mount", "photography"],
+            "negative_keywords": ["lens", "camera"]
+        },
+        "camera_accessory_bundles": {
+            "display_name": "Camera Accessory Bundles",
+            "formula": ["Brand", "Model/Product Line", "Features", "Digital Camera Type", "Camera Accessory Bundle Type", "Retail Packaging/Accessories Included", "Compatible Cameras", "Color", "Count(Count Per Pack)"],
+            "attributes": ["Brand", "Features", "Camera Accessory Bundle Type"],
+            "aliases": ["bundle", "set"],
+            "title_keywords": ["camera", "accessory", "bundle"],
+            "context_keywords": ["camera accessory bundle", "bundle", "photography"],
+            "negative_keywords": ["lens", "case"]
+        },
+        "camera_bag_padded": {
+            "display_name": "Camera Bag Padded Partitions",
+            "formula": ["Camera Bag & Case Type", "Brand", "Product Line", "Features", "Number of Compartments", "Product Name Type", "Accessories Included/Retail Packaging", "Color", "Count(Count Per Pack)"],
+            "attributes": ["Brand", "Camera Bag Type", "Features"],
+            "aliases": ["camera bag", "padded bag"],
+            "title_keywords": ["camera", "bag", "padded"],
+            "context_keywords": ["padded camera bag", "camera bag", "photography"],
+            "negative_keywords": ["lens", "case"]
+        },
+        "camera_bags_cases": {
+            "display_name": "Camera Bags & Cases",
+            "formula": ["Product Line", "Brand", "Features", "Case Style/Bag Style", "Compatible Cameras/Camera Type", "Accessories Included/Retail Packaging", "Color/Pattern", "Count(Count Per Pack)"],
+            "attributes": ["Brand", "Camera Bag And Case Type", "Features"],
+            "aliases": ["camera bag", "camera case"],
+            "title_keywords": ["camera", "bag", "case"],
+            "context_keywords": ["camera bag", "camera case", "photography"],
+            "negative_keywords": ["lens", "accessory"]
+        },
+        "camera_battery_grips": {
+            "display_name": "Camera Battery Grips",
+            "formula": ["Model/Product Line", "Brand", "Camera Battery Grip Type", "Volts", "Accessories Included/Retail Packaging", "Features", "Color", "Count(Count Per Pack)"],
+            "attributes": ["Brand", "Features", "Camera Battery Grip Type"],
+            "aliases": ["battery grip", "grip"],
+            "title_keywords": ["camera", "battery", "grip"],
+            "context_keywords": ["camera battery grip", "battery grip", "photography"],
+            "negative_keywords": ["lens", "case"]
+        },
+        "camera_belts_harnesses":{
+            "display_name": "Camera Belts & Harnesses",
+            "formula": ["Product Line", "Digital Camera Type/Film Camera Type/Compatible Cameras", "Brand", "Features", "Number of Compartments", "Color/Pattern", "Count(Count Per Pack)"],
+            "attributes": ["Brand", "Features", "Color"],
+            "aliases": ["belt", "harness"],
+            "title_keywords": ["camera", "belt", "harness"],
+            "context_keywords": ["camera belt", "camera harness", "photography"],
+            "negative_keywords": ["lens", "case"]
+        },
+        "camera_cleaning": {
+            "display_name": "Camera Cleaning Equipment",
+            "formula": ["Product Line", "Brand", "Product Name Type", "Features", "Product Multifunction Descriptor", "Cleanser Formula", "Accessories Included/Retail Packaging", "Color/Pattern", "Count(Count Per Pack)"],
+            "attributes": ["Brand", "Number Of Pieces", "Cleanser Form"],
+            "aliases": ["cleaning kit", "cleaning supplies"],
+            "title_keywords": ["camera", "cleaning", "supplies"],
+            "context_keywords": ["camera cleaning kit", "cleaning supplies", "photography"],
+            "negative_keywords": ["lens", "case"]
+        },
+        "camera_docking": {
+            "display_name": "Camera Docking Stations",
+            "formula": ["Product Line/Model", "Product Multifunction Descriptor", "Brand", "Camera Docking Station Type", "Features", "Compatible Devices", "Accessories Included/Retail Packaging", "Color", "Count(Count Per Pack)"],
+            "attributes": ["Brand", "Features", "Color"],
+            "aliases": ["docking station", "charging station"],
+            "title_keywords": ["camera", "docking", "station"],
+            "context_keywords": ["camera docking station", "charging station", "photography"],
+            "negative_keywords": ["lens", "case"]
+        },        "camera_film": {
+          "display_name": "Camera Film",
+          "formula": ["Brand", "Product Line/Model", "Features", "Camera Film Type", "Accessories Included/Retail Packaging", ",", "No. of Exposures", ",", "Dimensions (W x L)", ",", "Count/Count Per Pack"],
+          "attributes": ["Brand", "Camera Film Type", "Film Size"],
+          "aliases": ["camera film", "film roll", "instant film", "photo film"],
+          "title_keywords": ["camera film", "film roll", "instant film", "photo film"],
+          "context_keywords": ["exposures", "film size", "multipack"],
+          "negative_keywords": ["camera film backs holders", "camera film winders", "camera flash", "camera lens", "camera remote control", "camera strap"]
+        },
+        "camera_film_backs_holders": {
+          "display_name": "Camera Film Backs & Holders",
+          "formula": ["Brand", "Product Line/Model", "Features", "Material", "Camera Film Back & Holder Type", "Accessories Included/Retail Packaging", "Compatible Models/Compatible Cameras/Camera Type", ",", "Film Size", ",", "Color", ",", "Count/Count Per Pack"],
+          "attributes": ["Brand", "Multipack Quantity", "Condition"],
+          "aliases": ["camera film back", "camera film holder", "film back", "film holder"],
+          "title_keywords": ["camera film back", "camera film holder", "film back", "film holder"],
+          "context_keywords": ["compatible camera", "film size", "color", "multipack"],
+          "negative_keywords": ["camera film", "camera film winders", "camera flash adapters", "camera lens", "camera strap", "camera remote control"]
+        },
+        "camera_film_winders": {
+          "display_name": "Camera Film Winders",
+          "formula": ["Brand", "Product Line", "Features", "Camera Film Winder Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Camera Type", ",", "Color", ",", "Count/Count Per Pack", "(Condition)"],
+          "attributes": ["Condition", "Features", "Multipack Quantity"],
+          "aliases": ["camera film winder", "film winder", "film advance winder"],
+          "title_keywords": ["camera film winder", "film winder", "film advance winder"],
+          "context_keywords": ["compatible cameras", "color", "condition", "multipack"],
+          "negative_keywords": ["camera film", "camera film backs holders", "camera remote controls", "camera stabilizers", "camera flash", "camera strap"]
+        },
+        "camera_flash_adapters": {
+          "display_name": "Camera Flash Adapters",
+          "formula": ["Brand", "Product Line", "Features", "Camera Flash Adapter Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Camera Type/Compatible Model", ",", "Color", ",", "Count/Count Per Pack"],
+          "attributes": ["Brand", "Number Of Pieces", "Features"],
+          "aliases": ["camera flash adapter", "flash adapter", "hot shoe adapter"],
+          "title_keywords": ["camera flash adapter", "flash adapter", "hot shoe adapter"],
+          "context_keywords": ["compatible camera", "color", "pieces"],
+          "negative_keywords": ["camera flash brackets", "camera flash diffusers", "camera flashes", "camera lighting sync cords", "camera remote controls", "camera lens"]
+        },
+        "camera_flash_brackets": {
+          "display_name": "Camera Flash Brackets",
+          "formula": ["Brand", "Product Line", "Features", "Camera Flash Bracket Type", "Accessories Included/Retail Packaging", "Compatible Device/Compatible Cameras", ",", "Color", ",", "Count/Count Per Pack"],
+          "attributes": ["Brand", "Number Of Pieces", "Features"],
+          "aliases": ["camera flash bracket", "flash bracket"],
+          "title_keywords": ["camera flash bracket", "flash bracket"],
+          "context_keywords": ["compatible device", "compatible camera", "color", "pieces"],
+          "negative_keywords": ["camera flash adapters", "camera flash diffusers", "camera flashes", "camera stabilizers", "tripod head", "phone mount"]
+        },
+        "camera_flash_diffusers": {
+          "display_name": "Camera Flash Diffusers",
+          "formula": ["Brand", "Product Line", "Features", "Size", "Camera Flash Diffuser Type", "Accessories Included/Retail Packaging", "Compatible Device/Compatible Camera/Camera Flash Type", ",", "Color", ",", "Count/Count Per Pack", "(Condition)"],
+          "attributes": ["Brand", "Camera Flash Diffuser Type", "Features"],
+          "aliases": ["camera flash diffuser", "flash diffuser", "flash softbox"],
+          "title_keywords": ["camera flash diffuser", "flash diffuser", "flash softbox"],
+          "context_keywords": ["size", "compatible flash type", "color", "condition"],
+          "negative_keywords": ["camera flash brackets", "camera flash adapters", "camera flash snoots", "camera flashes", "camera lighting sync cords", "camera lens"]
+        },
+        "camera_flash_slave_trigger_units": {
+          "display_name": "Camera Flash Slave Trigger Units",
+          "formula": ["Brand", "Product Line/Model", "Features", "Sensor Type", "Connector Type", "Camera Flash Slave Trigger Unit Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Model", ",", "Color", ",", "Count/Count Per Pack"],
+          "attributes": ["Brand", "Features", "Condition"],
+          "aliases": ["flash slave trigger", "camera flash slave trigger unit", "slave trigger unit"],
+          "title_keywords": ["flash slave trigger", "camera flash slave trigger unit", "slave trigger unit"],
+          "context_keywords": ["sensor type", "connector type", "compatible camera", "color"],
+          "negative_keywords": ["camera flashes", "camera lighting sync cords", "camera flash adapters", "camera remote controls", "wireless trigger", "microphone trigger"]
+        },
+        "camera_flash_snoots": {
+          "display_name": "Camera Flash Snoots",
+          "formula": ["Brand", "Product Line", "Features", "Camera Flash Snoot Type", "Accessories Included/Retail Packaging", "Compatible Models", ",", "Color", ",", "Count/Count Per Pack"],
+          "attributes": ["Brand", "Camera Flash Snoot Type", "Features"],
+          "aliases": ["camera flash snoot", "flash snoot"],
+          "title_keywords": ["camera flash snoot", "flash snoot"],
+          "context_keywords": ["compatible model", "color", "multipack"],
+          "negative_keywords": ["camera flash diffusers", "camera flash brackets", "camera flashes", "camera flash adapters", "lens hood", "camera lcd hood"]
+        },
+        "camera_flashes": {
+          "display_name": "Camera Flashes",
+          "formula": ["Brand", "Product Line/Model", "Features", "Sensor Type", "Watts/Volts", "Camera Flash Type", "Accessories Included/Retail Packaging", "Camera Type/Compatible Cameras/Compatible Models", ",", "Color", ",", "Count/Count Per Pack", "(Condition)"],
+          "attributes": ["Brand", "Features", "Camera Flash Type"],
+          "aliases": ["camera flash", "camera flashes", "speedlight", "strobe flash"],
+          "title_keywords": ["camera flash", "camera flashes", "speedlight", "strobe flash"],
+          "context_keywords": ["sensor type", "watts", "volts", "compatible camera", "condition"],
+          "negative_keywords": ["camera flash adapters", "camera flash brackets", "camera flash diffusers", "camera flash snoots", "camera lighting sync cords", "camera remote controls"]
+        },
+        "camera_lcd_hoods": {
+          "display_name": "Camera LCD Hoods",
+          "formula": ["Brand", "Product Line", "Features", "Camera LCD Hood Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models", ",", "Color", ",", "Count/Count Per Pack"],
+          "attributes": ["Brand", "Features", "Color"],
+          "aliases": ["camera lcd hood", "lcd hood", "screen hood"],
+          "title_keywords": ["camera lcd hood", "lcd hood", "screen hood"],
+          "context_keywords": ["compatible camera", "compatible model", "color", "multipack"],
+          "negative_keywords": ["lens hood", "camera flash snoots", "camera rain covers", "camera remote controls", "monitor hood", "phone hood"]
+        },
+        "camera_lenses": {
+          "display_name": "Camera Lenses",
+          "formula": ["Brand", "Product Line/Model", "Features", "Focal Length", "Focus Type", "Minimum Aperture", "Lens Diameter", "Camera Lens Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models", ",", "Color", ",", "Count/Count Per Pack", "(Condition)"],
+          "attributes": ["Brand", "Camera Lens Type", "Maximum Aperture"],
+          "aliases": ["camera lens", "camera lenses"],
+          "title_keywords": ["camera lens", "camera lenses"],
+          "context_keywords": ["focal length", "focus type", "aperture", "lens diameter", "compatible camera"],
+          "negative_keywords": ["lens filter", "camera lcd hood", "camera flashes", "camera stabilizers", "camera strap", "telescope lens"]
+        },
+        "camera_lighting_sync_cords": {
+          "display_name": "Camera Lighting Sync Cords",
+          "formula": ["Brand", "Product Line/Model", "Features", "Connector Type", "Camera Lighting Sync Cord Type", "Accessories Included/Retail Packaging", "Camera Flash Type/Compatible Cameras", ",", "Color", ",", "Count/Count Per Pack"],
+          "attributes": ["Brand", "Features", "Condition"],
+          "aliases": ["camera lighting sync cord", "flash sync cord", "sync cord"],
+          "title_keywords": ["camera lighting sync cord", "flash sync cord", "sync cord"],
+          "context_keywords": ["connector type", "compatible flash", "compatible camera", "color"],
+          "negative_keywords": ["camera flash adapters", "camera flash slave trigger units", "camera flashes", "camera remote controls", "audio cable", "usb cable"]
+        },
+        "camera_rain_covers": {
+          "display_name": "Camera Rain Covers",
+          "formula": ["Brand", "Product Line/Model", "Features", "Camera Rain Cover Type", "Accessories Included/Retail Packaging", "Compatible Camera/Compatible Model", ",", "Color", ",", "Count/Count Per Pack"],
+          "attributes": ["Camera Rain Cover Type", "Brand", "Features"],
+          "aliases": ["camera rain cover", "camera rain covers", "camera weather cover"],
+          "title_keywords": ["camera rain cover", "camera rain covers", "camera weather cover"],
+          "context_keywords": ["compatible camera", "compatible model", "color", "multipack"],
+          "negative_keywords": ["camera remote controls", "camera lcd hoods", "camera strap", "camera case", "rain poncho", "lens cover"]
+        },
+        "camera_remote_controls": {
+          "display_name": "Camera Remote Controls",
+          "formula": ["Brand", "Product Line/Model", "Features", "Sensor Type", "Camera Remote Control Type", "Accessories Included/Retail Packaging", "Compatible Camera/Compatible Model", ",", "Color", ",", "Count/Count Per Pack"],
+          "attributes": ["Features", "Camera Remote Control Type", "Brand"],
+          "aliases": ["camera remote control", "camera remote", "shutter remote"],
+          "title_keywords": ["camera remote control", "camera remote", "shutter remote"],
+          "context_keywords": ["sensor type", "compatible camera", "compatible model", "color"],
+          "negative_keywords": ["camera rain covers", "camera lighting sync cords", "camera flash slave trigger units", "camera stabilizers", "tv remote", "drone remote"]
+        },
+        "camera_stabilizers": {
+          "display_name": "Camera Stabilizers",
+          "formula": ["Brand", "Product Line/Model", "Features", "Camera Stabilizer Type", "Accessories Included/Retail Packaging", "Compatible Models/Compatible Cameras", ",", "Color", ",", "Count/Count Per Pack"],
+          "attributes": ["Brand", "Features", "Camera Stabilizer Type"],
+          "aliases": ["camera stabilizer", "camera stabilizers", "gimbal"],
+          "title_keywords": ["camera stabilizer", "camera stabilizers", "gimbal"],
+          "context_keywords": ["compatible camera", "compatible model", "color", "multipack"],
+          "negative_keywords": ["camera tripod", "camera strap", "camera remote controls", "camera flashes", "phone stabilizer", "camera rig handle"]
+        },
+        "camera_straps": {
+          "display_name": "Camera Straps",
+          "formula": ["Brand", "Product Line", "Features", "Fabric Material Name/Material", "Style", "Camera Strap Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Camera Type", ",", "Color/Pattern", ",", "Count/Count Per Pack"],
+          "attributes": ["Brand", "Camera Strap Type", "Material"],
+          "aliases": ["camera strap", "camera straps", "neck strap", "wrist strap"],
+          "title_keywords": ["camera strap", "camera straps", "neck strap", "wrist strap"],
+          "context_keywords": ["style", "material", "compatible camera", "color", "pattern"],
+          "negative_keywords": ["camera stabilizers", "camera vests jackets", "camera bag strap", "guitar strap", "watch strap", "lanyard"]
+        },
+        "camera_tool_kits": {
+          "display_name": "Camera Tool Kits",
+          "formula": ["Brand", "Product Line/Model", "Features", "Product Multifunction Descriptor", "Camera Tool Kit Type", "Retail Packaging", "Accessories Included", ",", "Color", ",", "Count/Count Per Pack"],
+          "attributes": ["Camera Tool Kit Type", "Brand", "Number Of Pieces"],
+          "aliases": ["camera tool kit", "camera cleaning kit", "camera repair kit"],
+          "title_keywords": ["camera tool kit", "camera cleaning kit", "camera repair kit"],
+          "context_keywords": ["multifunction", "set", "color", "pieces"],
+          "negative_keywords": ["camera straps", "camera remote controls", "camera stabilizers", "camera lenses", "tool box", "phone repair kit"]
+        },
+        "camera_vests_jackets": {
+          "display_name": "Camera Vests & Jackets",
+          "formula": ["Brand", "Product Line", "Features", "Product Multifunction Descriptor", "Number of Compartments", "Clothing Size Group", "Camera Vest & Jacket Type", "Accessories Included", ",", "Clothing Size", ",", "Color/Pattern", ",", "Count/Count Per Pack"],
+          "attributes": ["Brand", "Camera Vest And Jacket Type", "Clothing Size"],
+          "aliases": ["camera vest", "camera jacket", "photography vest", "photography jacket"],
+          "title_keywords": ["camera vest", "camera jacket", "photography vest", "photography jacket"],
+          "context_keywords": ["compartments", "clothing size", "color", "pattern", "multipack"],
+          "negative_keywords": ["camera strap", "camera bag", "photo backpack", "fishing vest", "hunting vest", "safety vest"]
+        }
+        }
+    },
+    "cameras_camcorders": {
+      "display_name": "Cameras & Camcorders",
+      "product_types": {
+        "360_cameras": {
+          "display_name": "360 Cameras",
+          "formula": ["Brand", "Model Name", "Feature", "Resolution", "Number of Megapixels", "Digital Camera Type", "Accessories Included/Retail Packaging", "Color", "Count"],
+          "attributes": ["Condition", "Memory Card Type", "Focal Length"],
+          "aliases": ["360 camera", "vr camera", "panoramic camera"],
+          "title_keywords": ["360 camera", "vr camera", "panoramic camera"],
+          "context_keywords": ["sensor type", "display size", "storage type", "color"],
+          "negative_keywords": ["camera lens", "camera flash", "camera bag", "camera strap", "camera stabilizer", "camera remote control"]
+        },
+        "digital_cameras": {
+          "display_name": "Digital Cameras",
+          "formula": ["Brand", "Model Name", "Feature", "Format/Digital Zoom", "Number of Megapixels", "Image Sensor", "Digital Camera Type", "Accessories Included/Retail Packaging", "Color","Count/Count Per Pack"],
+          "attributes": ["Brand", "Digital Camera Type", "Number of Megapixels"],
+          "aliases": ["digital camera", "dslr camera", "point and shoot camera"],
+          "title_keywords": ["digital camera", "dslr camera", "point and shoot camera"],
+          "context_keywords": ["sensor type", "display size", "storage type", "color"],
+          "negative_keywords": ["camera lens", "camera flash", "camera bag", "camera strap", "camera stabilizer", "camera remote control"]
+        },
+        "disposable_cameras": {
+          "display_name": "Disposable Cameras",
+          "formula": ["Brand", "Model Name", "Feature", "Theme/Occasion", "Film Size", "Camera Film Type", "Disposable Camera Type", "ISO Range", "Pattern", "Count"],
+          "attributes": ["Brand", "Disposable Camera Type", "Film Size"],
+          "aliases": ["disposable camera", "one time camera", "throw away camera"],
+          "title_keywords": ["disposable camera", "one time camera", "throw away camera"],
+          "context_keywords": ["sensor type", "display size", "storage type", "color"],
+          "negative_keywords": ["camera lens", "camera flash", "camera bag", "camera strap", "camera stabilizer", "camera remote control"]
+        },
+        "dummy_cameras": {
+            "display_name": "Dummy Cameras",
+            "formula": ["Brand", "Model Name", "Feature", "Dummy Camera Type", "Accessories Included", "Recommended Use", "Color","Count/Count Per Pack"],
+            "attributes": ["Brand", "Dummy Camera Type", "Condition"],
+            "aliases": ["dummy camera", "test camera"],
+            "title_keywords": ["dummy camera", "test camera"],
+            "context_keywords": ["sensor type", "display size", "storage type", "color"],
+            "negative_keywords": ["camera lens", "camera flash", "camera bag", "camera strap", "camera stabilizer", "camera remote control"]
+        },
+        "film_cameras": {
+            "display_name": "Film Cameras",
+            "formula": ["Brand", "Model Name", "Feature", "Film Size", "Film Camera Type", "Accessories Included", "Camera Lens Type", "Color", "Count(Count Per Pack)"],
+            "attributes": ["Brand", "Film Size", "Has Flash"],
+            "aliases": ["film camera", "analogue camera"],
+            "title_keywords": ["film camera", "analogue camera"],
+            "context_keywords": ["sensor type", "display size", "storage type", "color"],
+            "negative_keywords": ["camera lens", "camera flash", "camera bag", "camera strap", "camera stabilizer", "camera remote control"]
+        },
+        "instant_cameras": {
+            "display_name": "Instant Cameras",
+            "formula": ["Brand", "Model Name", "Features", "Theme/Occasion", "Instant Camera Type", "Accessories Included", "Color", "Count(Count Per Pack)"],
+            "attributes": ["Brand", "Instant Camera Type", "Condition"],
+            "aliases": ["instant camera", "polaroid camera"],
+            "title_keywords": ["instant camera", "polaroid camera"],
+            "context_keywords": ["sensor type", "display size", "storage type", "color"],
+            "negative_keywords": ["camera lens", "camera flash", "camera bag", "camera strap", "camera stabilizer", "camera remote control"]
+        },
+        "line_scan_cameras": {
+            "display_name": "Line Scan Cameras",
+            "formula": ["Brand", "Model Name", "Feature", "Number of Megapixels/Resolution", "Image Sensor", "Line-Scan Camera Type", "Accessories Included", "Color"],
+            "attributes": ["Multipack Quantity", "Has NRTL Listing Certification", "Condition"],
+            "aliases": ["line scan camera", "industrial camera"],
+            "title_keywords": ["line scan camera", "industrial camera"],
+            "context_keywords": ["sensor type", "display size", "storage type", "color"],
+            "negative_keywords": ["camera lens", "camera flash", "camera bag", "camera strap", "camera stabilizer", "camera remote control"]
+        },
+        "movie_cameras": {
+            "display_name": "Movie Cameras",
+            "formula": ["Brand", "Model Name", "Features", "Resolution", "Image Sensor", "Movie Camera Type", "Accessories Included", "Color"],
+            "attributes": ["Brand", "Assembled Product Weight", "Memory Card Type"],
+            "aliases": ["movie camera", "video camera"],
+            "title_keywords": ["movie camera", "video camera"],
+            "context_keywords": ["sensor type", "display size", "storage type", "color"],
+            "negative_keywords": ["camera lens", "camera flash", "camera bag", "camera strap", "camera stabilizer", "camera remote control"]
+        },
+        "surveillance_cameras": {
+            "display_name": "Surveillance Cameras",
+            "formula": ["Brand", "Model Name", "Feature", "Surveillance Camera Type", "Accessories Included", "Recommended Use", "Color","Count/Count Per Pack"],
+            "attributes": ["Brand", "Surveillance Camera Type", "Condition"],
+            "aliases": ["surveillance camera", "security camera"],
+            "title_keywords": ["surveillance camera", "security camera"],
+            "context_keywords": ["sensor type", "display size", "storage type", "color"],
+            "negative_keywords": ["camera lens", "camera flash", "camera bag", "camera strap", "camera stabilizer", "camera remote control"]
+        },
+        "underwater_cameras": {
+            "display_name": "Underwater Cameras",
+            "formula": ["Brand", "Model Name", "Feature", "Underwater Camera Type", "Accessories Included", "Recommended Use", "Color","Count/Count Per Pack"],
+            "attributes": ["Brand", "Underwater Camera Type", "Condition"],
+            "aliases": ["underwater camera", "diving camera"],
+            "title_keywords": ["underwater camera", "diving camera"],
+            "context_keywords": ["sensor type", "display size", "storage type", "color"],
+            "negative_keywords": ["camera lens", "camera flash", "camera bag", "camera strap", "camera stabilizer", "camera remote control"]
+        },
+        "video_cameras": {
+            "display_name": "Video Cameras",
+            "formula": ["Brand", "Model Name", "Features", "Resolution", "Digital Zoom", "Number of Megapixels", "Video Camera Type", "Accessories Included", "Color"],
+            "attributes": ["Brand", "Resolution", "Video Camera Type"],
+            "aliases": ["video camera", "camcorder"],
+            "title_keywords": ["video camera", "camcorder"],
+            "context_keywords": ["sensor type", "display size", "storage type", "color"],
+            "negative_keywords": ["camera lens", "camera flash", "camera bag", "camera strap", "camera stabilizer", "camera remote control"]
+        }
+
+      }
+    },
+    "darkroom": {
+        "display_name": "Darkroom",
+        "product_types": {
+            "other_darkroom_accessories": {
+                "display_name": "Other Darkroom Accessories",
+                "formula": ["Brand", "Condition", "Model", "Product Line", "Product/Type", "Key Feature", "Size", "Count/Pack"],
+                "attributes": ["Condition", "Number of Pieces", "Multipack Quantity"],
+                "aliases": ["darkroom film processor", "film developing kit"],
+                "title_keywords": ["darkroom film processor", "film developing kit"],
+                "context_keywords": ["film type", "processing method", "brand"],
+                "negative_keywords": ["photography camera", "lighting equipment", "printing supplies", "scanner", "digital editing software"]
+            },
+            "archival_photo_negative_sleeves": {
+                "display_name": "Archival Photo & Negative Sleeves",
+                "formula": ["Brand", "Model Name/Product Line", "Features", "Archival Photo & Negative Sleeve Type", "Items Included/Retail Packaging", "Film Size/Maximum Paper Size", "Number of Strips/Number of Sheets/Roll Length", "Count(Count Per Pack)"],
+                "attributes": ["Brand", "Material", "Assembled Product Height"],
+                "aliases": ["archival photo sleeve", "negative sleeve"],
+                "title_keywords": ["archival photo sleeve", "negative sleeve"],
+                "context_keywords": ["film type", "processing method", "brand"],
+                "negative_keywords": ["photography camera", "lighting equipment", "printing supplies", "scanner", "digital editing software"]
+            },
+            "darkroom_analyzers": {
+                "display_name": "Darkroom Analyzers",
+                "formula": ["Control Type/Operating Type", "Model/(Name)", "Brand", "Features", "Darkroom Analyzer Type", "Items Included/Retail Packaging", "Count(Count Per Pack)"],
+                "attributes": ["Condition", "Material", "Multipack Quantity"],
+                "aliases": ["darkroom analyzer", "photo analyzer"],
+                "title_keywords": ["darkroom analyzer", "photo analyzer"],
+                "context_keywords": ["film type", "processing method", "brand"],
+                "negative_keywords": ["photography camera", "lighting equipment", "printing supplies", "scanner", "digital editing software"]
+            },
+            "darkroom_develop_trays": {
+                "display_name": "Darkroom Develop Trays",
+                "formula": ["Size Descriptor", "Model Name/Product Line", "Darkroom Developing Tray Type", "Features/Maximum Paper Size", "Items Included/Retail Packaging", "Count(Count Per Pack)"],
+                "attributes": ["Brand", "Material", "Condition"],
+                "aliases": ["darkroom develop tray", "photo develop tray"],
+                "title_keywords": ["darkroom develop tray", "photo develop tray"],
+                "context_keywords": ["film type", "processing method", "brand"],
+                "negative_keywords": ["photography camera", "lighting equipment", "printing supplies", "scanner", "digital editing software"]
+            },
+            "darkroom_drymount_presses" : {
+                "display_name": "Darkroom Drymount Presses",
+                "formula": ["Size Descriptor", "Model Name/Product Line", "Brand", "Features/Color", "Assembled Product Height/Width/Length", "Items Included/Retail Packaging", "Count/Pack"],
+                "attributes": ["Condition", "Color", "Multipack Quantity"],
+                "aliases": ["darkroom drymount press", "photo drymount press"],
+                "title_keywords": ["darkroom drymount press", "photo drymount press"],
+                "context_keywords": ["film type", "processing method", "brand"],
+                "negative_keywords": ["photography camera", "lighting equipment", "printing supplies", "scanner", "digital editing software"]
+            },
+            "darkroom_easels": {
+                "display_name": "Darkroom Easels",
+                "formula": ["Size Descriptor", "Model Name/Product Line", "Brand/Darkroom Easel Type/Maximum Paper Size", "Features/Color", "Items Included/Retail Packaging", "Count(Count Per Pack)"],
+                "attributes": ["Condition", "Material", "Multipack Quantity"],
+                "aliases": ["darkroom easel", "photo easel"],
+                "title_keywords": ["darkroom easel", "photo easel"],
+                "context_keywords": ["film type", "processing method", "brand"],
+                "negative_keywords": ["photography camera", "lighting equipment", "printing supplies", "scanner", "digital editing software"]
+            },
+                    "darkroom_fans_louvers": {
+          "display_name": "Darkroom Fans & Louvers",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Power Type", "Darkroom Fan & Louver Type", "Items Included/Retail Packaging", ",", "CFM", ",", "Color", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Brand", "Power Type", "Condition"],
+          "aliases": ["darkroom fan", "darkroom louver", "darkroom fans louvers"],
+          "title_keywords": ["darkroom fan", "darkroom louver", "darkroom fans louvers"],
+          "context_keywords": ["cfm", "exhaust fan", "louver", "darkroom ventilation"],
+          "negative_keywords": ["darkroom safelights", "darkroom sinks", "bath fan", "computer fan", "camera fan", "vent cover"]
+        },
+        "darkroom_paper_safes": {
+          "display_name": "Darkroom Paper Safes",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Darkroom Paper Safe Type", "Items Included/Retail Packaging", ",", "Maximum Paper Size", ",", "Color", ",", "Count"],
+          "attributes": ["Color", "Maximum Paper Size", "Material"],
+          "aliases": ["darkroom paper safe", "paper safe"],
+          "title_keywords": ["darkroom paper safe", "paper safe"],
+          "context_keywords": ["maximum paper size", "black", "paper safe"],
+          "negative_keywords": ["photo paper box", "file box", "darkroom tank", "darkroom sink", "camera safe", "paper tray"]
+        },
+        "darkroom_print_film_dryers": {
+          "display_name": "Darkroom Print & Film Dryers",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Darkroom Print & Film Dryer Type", "Items Included/Retail Packaging", ",", "Power Type", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Condition", "Material", "Multipack Quantity"],
+          "aliases": ["darkroom print dryer", "film dryer", "darkroom print film dryer"],
+          "title_keywords": ["darkroom print dryer", "film dryer", "darkroom print film dryer"],
+          "context_keywords": ["rc print dryer", "filter flow", "power type"],
+          "negative_keywords": ["hair dryer", "clothes dryer", "darkroom washer", "darkroom tongs", "photo printer", "fan"]
+        },
+        "darkroom_print_film_washers": {
+          "display_name": "Darkroom Print & Film Washers",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Darkroom Print & Film Washer Type", "Items Included/Retail Packaging", ",", "Maximum Paper Size", ",", "Color", ",", "Count", "(Condition)"],
+          "attributes": ["Condition", "Material", "Multipack Quantity"],
+          "aliases": ["darkroom print washer", "film washer", "darkroom print film washer"],
+          "title_keywords": ["darkroom print washer", "film washer", "darkroom print film washer"],
+          "context_keywords": ["11x14 prints", "with hose", "white"],
+          "negative_keywords": ["dishwasher", "darkroom dryer", "darkroom sink", "film tank", "photo tray", "washing machine"]
+        },
+        "darkroom_print_tongs": {
+          "display_name": "Darkroom Print Tongs",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Material", "Darkroom Print Tongs", "Items Included/Retail Packaging", ",", "Color", ",", "Count"],
+          "attributes": ["Condition", "Material", "Multipack Quantity"],
+          "aliases": ["darkroom print tongs", "print tongs"],
+          "title_keywords": ["darkroom print tongs", "print tongs"],
+          "context_keywords": ["bamboo", "color coded rubber tips", "3 pk"],
+          "negative_keywords": ["kitchen tongs", "lab tongs", "darkroom squeegee", "pliers", "tweezers", "ice tongs"]
+        },
+        "darkroom_roller_transport_processors": {
+          "display_name": "Darkroom Roller Transport Processors",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Darkroom Roller Transport Processor Type", "Items Included/Retail Packaging", ",", "Assembled Product Width", "\"x\"", "Assembled Product Length", ",", "Count"],
+          "attributes": ["Material", "Brand", "Color"],
+          "aliases": ["darkroom roller transport processor", "roller transport processor"],
+          "title_keywords": ["darkroom roller transport processor", "roller transport processor"],
+          "context_keywords": ["11x16", "cleaning film", "50 sheets"],
+          "negative_keywords": ["darkroom dryer", "darkroom washer", "film processor general", "printer roller", "laminator", "paper feeder"]
+        },
+        "darkroom_safelight_filters": {
+          "display_name": "Darkroom Safelight Filters",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Darkroom Safelight Filter Type", "Items Included/Retail Packaging", ",", "Assembled Product Width", ",", "Assembled Product Length", ",", "Color", ",", "Count"],
+          "attributes": ["Assembled Product Width", "Brand", "Material"],
+          "aliases": ["darkroom safelight filter", "safelight filter"],
+          "title_keywords": ["darkroom safelight filter", "safelight filter"],
+          "context_keywords": ["red", "10 x 12", "safelight filter"],
+          "negative_keywords": ["darkroom safelights", "camera filter", "lens filter", "photo enlarger filters", "window film", "light bulb"]
+        },
+        "darkroom_safelights": {
+          "display_name": "Darkroom Safelights",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Size Descriptor", "Darkroom Safelight Type", "Items Included/Retail Packaging", ",", "Assembled Product Width", "\"x\"", "Assembled Product Length", ",", "Count"],
+          "attributes": ["Color", "Condition", "Material"],
+          "aliases": ["darkroom safelight", "safelight"],
+          "title_keywords": ["darkroom safelight", "safelight"],
+          "context_keywords": ["red filter", "5 x 7", "darkroom safelight"],
+          "negative_keywords": ["darkroom safelight filters", "flashlight", "camera light", "night light", "lamp", "headlamp"]
+        },
+        "darkroom_sinks": {
+          "display_name": "Darkroom Sinks",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Darkroom Sink Type", "Items Included/Retail Packaging", ",", "Assembled Product Width", ",", "Assembled Product Length", ",", "Assembled Product Height", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Condition", "Material", "Multipack Quantity"],
+          "aliases": ["darkroom sink", "darkroom sinks"],
+          "title_keywords": ["darkroom sink", "darkroom sinks"],
+          "context_keywords": ["4 ft", "sink ii", "darkroom sink"],
+          "negative_keywords": ["kitchen sink", "portable sink", "bath sink", "darkroom tray", "washing tub", "boat plumbing sink"]
+        },
+        "darkroom_squeegees": {
+          "display_name": "Darkroom Squeegees",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Size Descriptor", "Darkroom Squeegee Type", "Items Included/Retail Packaging", ",", "Count"],
+          "attributes": ["Assembled Product Width", "Condition", "Material"],
+          "aliases": ["darkroom squeegee", "film squeegee"],
+          "title_keywords": ["darkroom squeegee", "film squeegee"],
+          "context_keywords": ["film squeegee"],
+          "negative_keywords": ["window squeegee", "floor squeegee", "darkroom print tongs", "cleaning tool", "scraper", "bathroom squeegee"]
+        },
+        "darkroom_tanks_reels": {
+          "display_name": "Darkroom Tanks & Reels",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Size Descriptor/Material", "Darkroom Tank & Reel Type", "Items Included/Retail Packaging", ",", "Film Size/Number Of Rolls", "Color", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Brand", "Assembled Product Length", "Material"],
+          "aliases": ["darkroom tank", "darkroom reel", "developing tank", "tank reel kit"],
+          "title_keywords": ["darkroom tank", "darkroom reel", "developing tank", "tank reel kit"],
+          "context_keywords": ["universal developing tank reel kit", "black"],
+          "negative_keywords": ["water tank", "diving tank", "camera film holder", "storage tank", "darkroom sink", "chemical bottle"]
+        },
+        "darkroom_timers": {
+          "display_name": "Darkroom Timers",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Power Type", "Darkroom Timer Type", "Items Included/Retail Packaging", ",", "Volt", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Condition", "Material", "Multipack Quantity"],
+          "aliases": ["darkroom timer", "darkroom timers"],
+          "title_keywords": ["darkroom timer", "darkroom timers"],
+          "context_keywords": ["electro-mechanical", "120v/60hz", "darkroom timer"],
+          "negative_keywords": ["kitchen timer", "stopwatch", "coach timer", "egg timer", "time switch", "camera remote timer"]
+        },
+        "darkroom_water_temperature_controls": {
+          "display_name": "Darkroom Water Temperature Controls",
+          "formula": ["Brand", "Product Line", "Model Name/Model", "Features", "Darkroom Water Temperature Control Type", "Items Included/Retail Packaging", ",", "Count"],
+          "attributes": ["Brand", "Condition", "Material"],
+          "aliases": ["darkroom water temperature control", "water temperature control system"],
+          "title_keywords": ["darkroom water temperature control", "water temperature control system"],
+          "context_keywords": ["tcs-1000", "water temperature control system"],
+          "negative_keywords": ["thermometer", "water heater", "aquarium temperature control", "darkroom timer", "sink valve", "shower control"]
+        },
+        "photo_enlarger_filters": {
+          "display_name": "Photo Enlarger Filters",
+          "formula": ["Brand", "Model Name/Model", "Features", "Color", "Photo Enlarger Filter Type", "Items Included/Retail Packaging", ",", "Assembled Product Width", "\"x\"", "Assembled Product Length", "(Count Per Pack)"],
+          "attributes": ["Brand", "Color", "Condition"],
+          "aliases": ["photo enlarger filter", "enlarger filter"],
+          "title_keywords": ["photo enlarger filter", "enlarger filter"],
+          "context_keywords": ["filter set", "3.5 x 3.5", "assorted"],
+          "negative_keywords": ["darkroom safelight filters", "camera filter", "lens filter", "photo enlarger lens", "window filter", "flash filter"]
+        },
+        "photo_enlarger_heads": {
+          "display_name": "Photo Enlarger Heads",
+          "formula": ["Brand", "Model Name/Model", "Features", "Magnification", "Photo Enlarger Head Type", "Items Included/Retail Packaging", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Condition", "Material", "Multipack Quantity"],
+          "aliases": ["photo enlarger head", "enlarger head"],
+          "title_keywords": ["photo enlarger head", "enlarger head"],
+          "context_keywords": ["condenser enlarger", "value pack"],
+          "negative_keywords": ["photo enlargers", "photo enlarger lenses", "camera head", "tripod head", "printer head", "flash head"]
+        },
+        "photo_enlarger_lens_mounts": {
+          "display_name": "Photo Enlarger Lens Mounts",
+          "formula": ["Brand", "Model Name/Model", "Features", "Focal Length", "Maximum Aperture", "Photo Enlarger Lens Mount", "Items Included/Retail Packaging", ",", "Film Size or Assembled Product Width", "\"x\"", "Assembled Product Length", ",", "Color", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Brand", "Condition", "Material"],
+          "aliases": ["photo enlarger lens mount", "enlarger lens mount"],
+          "title_keywords": ["photo enlarger lens mount", "enlarger lens mount"],
+          "context_keywords": ["80mm f/4", "m39 lens mount"],
+          "negative_keywords": ["photo enlarger lenses", "camera lens mount", "lens adapter", "tripod mount", "camera lenses", "filter ring"]
+        },
+        "photo_enlarger_lenses": {
+          "display_name": "Photo Enlarger Lenses",
+          "formula": ["Brand", "Model Name/Model/Product Line", "Features", "Focal Length", "Maximum Aperture", "Magnification", "Photo Enlarger Lens", "Items Included/Retail Packaging", ",", "Color", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Brand", "Assembled Product Length", "Magnification"],
+          "aliases": ["photo enlarger lens", "photo enlarger lenses", "enlarging lens"],
+          "title_keywords": ["photo enlarger lens", "photo enlarger lenses", "enlarging lens"],
+          "context_keywords": ["50mm", "80mm", "f/4", "f/5.6"],
+          "negative_keywords": ["camera lenses", "photo enlarger lens mounts", "lens filter", "projector lens", "microscope lens", "binocular lens"]
+        },
+        "photo_enlargers": {
+          "display_name": "Photo Enlargers",
+          "formula": ["Brand", "Model Name/Model", "Features", "Control Type", "Photo Enlarger", "Items Included/Retail Packaging", ",", "Color", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Brand", "Condition", "Material"],
+          "aliases": ["photo enlarger", "photo enlargers"],
+          "title_keywords": ["photo enlarger", "photo enlargers"],
+          "context_keywords": ["photo enlarger", "manual control", "condenser"],
+          "negative_keywords": ["photo enlarger heads", "photo enlarger lenses", "projector", "printer", "scanner", "camera enlarger app"]
+        },
+        "photo_enlarging_paper": {
+          "display_name": "Photo Enlarging Paper",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Paper Finish Type", "Photo Enlarging Paper", "Items Included/Retail Packaging", ",", "Paper Size", ",", "Number Of Sheets", "(Count Per Pack)"],
+          "attributes": ["Brand", "Color", "Assembled Product Width"],
+          "aliases": ["photo enlarging paper", "enlarging paper", "darkroom paper"],
+          "title_keywords": ["photo enlarging paper", "enlarging paper", "darkroom paper"],
+          "context_keywords": ["metallic", "glossy", "matte", "6 x 577 roll"],
+          "negative_keywords": ["camera film", "photo paper inkjet", "printer paper", "copy paper", "paper safe", "canvas paper"]
+        },
+        "photography_developer": {
+          "display_name": "Photography Developer",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Photography Developer Type", "Items Included/Retail Packaging", ",", "Size", ",", "(Count Per Pack)"],
+          "attributes": ["Brand", "Multipack Quantity", "Photography Developer Type"],
+          "aliases": ["photography developer", "photo developer", "film developer"],
+          "title_keywords": ["photography developer", "photo developer", "film developer"],
+          "context_keywords": ["powder", "for photo paper", "2 gallons total", "2-pack"],
+          "negative_keywords": ["photography fixer", "photography stop bath", "photography toner", "software developer", "hair developer", "cleaner"]
+        },
+        "photography_fixers": {
+          "display_name": "Photography Fixers",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Photography Fixer Type", "Items Included/Retail Packaging", ",", "Size", ",", "(Count Per Pack)"],
+          "attributes": ["Count Per Pack", "Condition", "Material"],
+          "aliases": ["photography fixer", "photo fixer", "film fixer"],
+          "title_keywords": ["photography fixer", "photo fixer", "film fixer"],
+          "context_keywords": ["for black and white film and paper", "1 liter"],
+          "negative_keywords": ["photography developer", "photography stop bath", "photography toner", "glue fixer", "hair spray", "cleaner"]
+        },
+        "photography_negative_carriers": {
+          "display_name": "Photography Negative Carriers",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Film Size", "Photography Negative Carrier Type", "Items Included/Retail Packaging", ",", "Number Of Strips/Number Of Sheets", ",", "Color", ",", "Count"],
+          "attributes": ["Assembled Product Length", "Brand", "Photography Negative Carrier Type"],
+          "aliases": ["photography negative carrier", "negative carrier"],
+          "title_keywords": ["photography negative carrier", "negative carrier"],
+          "context_keywords": ["6x7cm", "glassless", "for enlargers"],
+          "negative_keywords": ["camera film holder", "slide holder", "photo enlarger lens mount", "film back", "paper carrier", "camera tray"]
+        },
+        "photography_slide_holders": {
+          "display_name": "Photography Slide Holders",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Film Size", "Photography Slide Holder Type", "Items Included/Retail Packaging", ",", "Number Of Strips", ",", "Color", ",", "Count"],
+          "attributes": ["Brand", "Assembled Product Width", "Color"],
+          "aliases": ["photography slide holder", "slide holder"],
+          "title_keywords": ["photography slide holder", "slide holder"],
+          "context_keywords": ["projection attachment", "slide holder"],
+          "negative_keywords": ["photography slides", "photography slide viewers", "camera slide rail", "paper holder", "phone holder", "frame mount"]
+        },
+        "photography_slide_viewers": {
+          "display_name": "Photography Slide Viewers",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Magnification", "Film Size", "Photography Slide Viewer", "Items Included/Retail Packaging", ",", "Color", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Brand", "Material", "Multipack Quantity"],
+          "aliases": ["photography slide viewer", "slide viewer"],
+          "title_keywords": ["photography slide viewer", "slide viewer"],
+          "context_keywords": ["magnification", "film size", "slide viewer"],
+          "negative_keywords": ["photography slides", "photography slide holders", "projector", "viewer app", "camera loupe", "binocular viewer"]
+        },
+        "photography_slides": {
+          "display_name": "Photography Slides",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Film Size", "Material", "Photography Slides", "Items Included/Retail Packaging", ",", "Assembled Product Width", "\"x\"", "Assembled Product Length", "Count"],
+          "attributes": ["Brand", "Condition", "Material"],
+          "aliases": ["photography slides", "slide sleeves", "slide mounts"],
+          "title_keywords": ["photography slides", "slide sleeves", "slide mounts"],
+          "context_keywords": ["35mm", "polyester", "2 x 2", "case of 500"],
+          "negative_keywords": ["photography slide viewers", "photography slide holders", "presentation slides", "drawer slides", "camera slideshows", "negative carrier"]
+        },
+        "photography_stop_baths": {
+          "display_name": "Photography Stop Baths",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Photography Stop Bath", "Items Included/Retail Packaging", ",", "Size", ",", "(Count Per Pack)"],
+          "attributes": ["Brand", "Condition", "Material"],
+          "aliases": ["photography stop bath", "stop bath"],
+          "title_keywords": ["photography stop bath", "stop bath"],
+          "context_keywords": ["for black and white film and paper", "1 liter"],
+          "negative_keywords": ["photography developer", "photography fixer", "photography toner", "bath product", "cleaner", "acid wash"]
+        },
+        "photography_toners": {
+          "display_name": "Photography Toners",
+          "formula": ["Brand", "Model Name/Product Line", "Features", "Photography Toner", "Items Included/Retail Packaging", ",", "Size", ",", "(Count Per Pack)"],
+          "attributes": ["Brand", "Count Per Pack", "Condition"],
+          "aliases": ["photography toner", "photo toner"],
+          "title_keywords": ["photography toner", "photo toner"],
+          "context_keywords": ["rapid selenium toner", "32 oz"],
+          "negative_keywords": ["printer toner", "photography developer", "photography fixer", "photography stop bath", "ink cartridge", "powder toner"]
+        }
+        }
+    },
+    "drones_accessories": {
+      "display_name": "Drones & Accessories",
+      "product_types": {
+        "aerial_drone_accessories": {
+          "display_name": "Aerial Drone Accessories",
+          "formula": ["Brand", "Model Name", "Aerial Drone Accessories Type", "Retail Packaging", "\"w/\"", "Accessories Included", ",", "\"for\"", "Compatible Brands", "Compatible Model", ",", "Color", ",", "(Condition)", "Count Per Pack", "\"Count\"", ",", "MultiPack Quantity", "\"Pack\""],
+          "attributes": ["Brand", "Assembled Product Weight", "Condition"],
+          "aliases": ["aerial drone accessory", "drone accessory", "quadcopter accessory"],
+          "title_keywords": ["aerial drone accessory", "drone accessory", "quadcopter accessory"],
+          "context_keywords": ["for dji mavic", "bag", "sunshade", "black"],
+          "negative_keywords": ["aerial drone controllers", "aerial drone goggles", "aerial drones", "drone propellers", "camera drone", "rc car accessory"]
+        },
+        "aerial_drone_controllers": {
+          "display_name": "Aerial Drone Controllers",
+          "formula": ["Brand", "Model Name", "Electronics Feature", "\"Aerial Drone Controller\"", "Retail Packaging", "\"w/\"", "Accessories Included", ",", "\"for\"", "Compatible Brands", "Compatible Model", ",", "(Condition)", "Count Per Pack", "\"Count\"", ",", "MultiPack Quantity", "\"Pack\""],
+          "attributes": ["Brand", "Has Nrtl Listing Certification", "Multipack Quantity"],
+          "aliases": ["aerial drone controller", "drone controller", "quadcopter controller"],
+          "title_keywords": ["aerial drone controller", "drone controller", "quadcopter controller"],
+          "context_keywords": ["for dji mavic 3 quadcopter", "controller"],
+          "negative_keywords": ["aerial drone accessories", "aerial drone goggles", "aerial drones", "video game controller", "rc car controller", "camera remote"]
+        },
+        "aerial_drone_goggles": {
+          "display_name": "Aerial Drone Goggles",
+          "formula": ["Brand", "Model Name", "Electronics Feature", "\"Aerial Drone Goggles\"", "Retail Packaging", "\"w/\"", "Accessories Included", ",", "\"for\"", "Compatible Brands", "Compatible Model", ",", "(Condition)", "Count Per Pack", "\"Count\"", ",", "MultiPack Quantity", "\"Pack\""],
+          "attributes": ["Brand", "Native Resolution", "Field Of View"],
+          "aliases": ["aerial drone goggles", "drone goggles", "fpv goggles"],
+          "title_keywords": ["aerial drone goggles", "drone goggles", "fpv goggles"],
+          "context_keywords": ["for rc racing drone quadcopter", "black"],
+          "negative_keywords": ["aerial drone controllers", "aerial drones", "vr headset", "ski goggles", "swim goggles", "camera viewfinder"]
+        },
+        "aerial_drone_propeller_guards": {
+          "display_name": "Aerial Drone Propeller Guards",
+          "formula": ["Brand", "Model Name", "\"Aerial Drone Propeller Guards\"", "Retail Packaging", "\"w/\"", "Accessories Included", ",", "\"for\"", "Compatible Brands", "Compatible Model", ",", "Color", ",", "(Condition)", "Count Per Pack", "\"Count\"", ",", "MultiPack Quantity", "\"Pack\""],
+          "attributes": ["Brand", "Assembled Product Weight", "Condition"],
+          "aliases": ["aerial drone propeller guards", "drone propeller guards"],
+          "title_keywords": ["aerial drone propeller guards", "drone propeller guards"],
+          "context_keywords": ["for dji mavic", "multi-color", "4 count"],
+          "negative_keywords": ["drone propellers", "aerial drone replacement parts", "aerial drones", "fan guard", "prop guard general", "camera cage"]
+        },
+        "aerial_drone_replacement_parts": {
+          "display_name": "Aerial Drone Replacement Parts",
+          "formula": ["Brand", "Model Name", "Aerial Drone Replacement Part Type", "\"Replacement Part\"", "Retail Packaging", "\"w/\"", "Accessories Included", ",", "\"for\"", "Compatible Brands", "Compatible Model", ",", "Color", ",", "(Condition)", "Count Per Pack", "\"Count\"", ",", "MultiPack Quantity", "\"Pack\""],
+          "attributes": ["Assembled Product Weight", "Brand", "Assembled Product Length"],
+          "aliases": ["aerial drone replacement part", "drone replacement part"],
+          "title_keywords": ["aerial drone replacement part", "drone replacement part"],
+          "context_keywords": ["board replacement part", "for dji mavic 2 pro"],
+          "negative_keywords": ["drone propellers", "aerial drone accessories", "aerial drones", "phone replacement part", "camera replacement part", "rc car part"]
+        },
+        "aerial_drones": {
+          "display_name": "Aerial Drones",
+          "formula": ["Brand", "Model Name", "Electronics Feature", "\"Aerial Drones\"", "Retail Packaging", "\"w/\"", "Accessories Included", ",", "(Condition)", "Count Per Pack", "\"Count\"", ",", "MultiPack Quantity", "\"Pack\""],
+          "attributes": ["Brand", "Expertise Level", "Foldable"],
+          "aliases": ["aerial drone", "aerial drones", "drone", "quadcopter"],
+          "title_keywords": ["aerial drone", "aerial drones", "drone", "quadcopter"],
+          "context_keywords": ["bundle", "with 128gb microsd card & landing pad"],
+          "negative_keywords": ["aerial drone controllers", "aerial drone goggles", "drone propellers", "rc car", "camera tripod", "toy helicopter"]
+        },
+        "drone_propellers": {
+          "display_name": "Drone Propellers",
+          "formula": ["Brand", "Model Name", "\"Drone Propellers\"", "Retail Packaging", "\"w/\"", "Accessories Included", ",", "\"for\"", "Compatible Brands", "Compatible Model", ",", "Color", ",", "(Condition)", "Count Per Pack", "\"Count\"", ",", "MultiPack Quantity", "\"Pack\""],
+          "attributes": ["Brand", "Assembled Product Weight", "Condition"],
+          "aliases": ["drone propellers", "drone props"],
+          "title_keywords": ["drone propellers", "drone props"],
+          "context_keywords": ["for dji mavic pro platinum", "multi-color", "4 count"],
+          "negative_keywords": ["aerial drone propeller guards", "aerial drones", "ceiling fan blades", "propeller toy", "boat propeller", "camera accessory"]
+        },
+        "skins_for_aerial_drones": {
+          "display_name": "Skins for Aerial Drones",
+          "formula": ["Brand", "Model", "\"Aerial Drone Skins\"", "Retail Packaging", "\"w/\"", "Accessories Included", ",", "\"for\"", "Compatible Brands", "Compatible Model", ",", "Color", "Theme", "Pattern", ",", "(Condition)", "Count Per Pack", "\"Count\"", ",", "MultiPack Quantity", "\"Pack\""],
+          "attributes": ["Assembled Product Weight", "Brand", "Assembled Product Length"],
+          "aliases": ["drone skin", "aerial drone skin", "skins for aerial drones"],
+          "title_keywords": ["drone skin", "aerial drone skin", "skins for aerial drones"],
+          "context_keywords": ["for compatible model", "theme", "pattern", "color"],
+          "negative_keywords": ["aerial drone accessories", "aerial drones", "phone skin", "laptop skin", "camera skin", "vinyl wrap for cars"]
+        }
+      }
+    },
+    "photo_studio": {
+      "display_name": "Photo Studio",
+      "product_types": {
+        "photo_studio_backgrounds": {
+          "display_name": "Photo Studio Backgrounds",
+          "formula": ["Brand", "Model Name", "Features", "Dimensions (L x W)", "Material", "Photo Studio Background Type", "Items Included/Retail Packaging", ",", "Pattern OR Theme", ",", "Background Color", ",", "Count"],
+          "attributes": ["Brand", "Photo Studio Background Type", "Color"],
+          "aliases": ["photo studio background", "studio backdrop", "background backdrop"],
+          "title_keywords": ["photo studio background", "studio backdrop", "background backdrop"],
+          "context_keywords": ["5 x 7", "portable background", "chroma green"],
+          "negative_keywords": ["photo studio posing props", "photography light tents", "wallpaper", "curtain", "shower curtain", "projector screen"]
+        },
+        "photo_studio_posing_props": {
+          "display_name": "Photo Studio Posing Props",
+          "formula": ["Brand", "Features", "Product Multifunction Descriptor", "Photo Studio Posing Prop Type", "Items Included/Retail Packaging", ",", "Color OR Pattern", ",", "Count"],
+          "attributes": ["Photo Studio Posing Prop Type", "Brand", "Assembled Product Length"],
+          "aliases": ["photo studio posing prop", "posing prop", "posing table"],
+          "title_keywords": ["photo studio posing prop", "posing prop", "posing table"],
+          "context_keywords": ["posing table", "with caster base", "black"],
+          "negative_keywords": ["photo studio backgrounds", "photography shooting tables", "stool", "chair", "furniture", "camera tripod"]
+        },
+        "photography_constant_lighting_units": {
+          "display_name": "Photography Constant Lighting Units",
+          "formula": ["Brand", "Model Name", "Features", "Watts", "Light Bulb Type", "Photography Constant Lighting Unit Type", "Items Included/Retail Packaging", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Brand", "Watts", "Color Temperature"],
+          "aliases": ["photography constant lighting unit", "studio lighting kit", "continuous light"],
+          "title_keywords": ["photography constant lighting unit", "studio lighting kit", "continuous light"],
+          "context_keywords": ["700w", "lighting kit", "with softboxes & case"],
+          "negative_keywords": ["photography flash heads", "photography monolights", "light bulb", "flashlight", "work light", "ceiling light"]
+        },
+        "photography_flash_heads": {
+          "display_name": "Photography Flash Heads",
+          "formula": ["Brand", "Model Name", "Features", "Watts", "Photography Flash Head Type", "Items Included/Retail Packaging", ",", "Color", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Brand", "Color Temperature", "Watts"],
+          "aliases": ["photography flash head", "flash head", "studio flash head"],
+          "title_keywords": ["photography flash head", "flash head", "studio flash head"],
+          "context_keywords": ["320w", "compact flash head", "retro camera flash", "mint green"],
+          "negative_keywords": ["camera flashes", "photography constant lighting units", "photography monolights", "flashlight", "camera hot shoe flash", "strobe trigger"]
+        },
+        "photography_light_tents": {
+          "display_name": "Photography Light Tents",
+          "formula": ["Brand", "Model Name", "Features", "Light Bulb Type", "Photography Light Tent Type", "Items Included/Retail Packaging", ",", "Photography Light Tent Size", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Brand", "Photography Light Tent Type", "Condition"],
+          "aliases": ["photography light tent", "light tent", "shooting tent"],
+          "title_keywords": ["photography light tent", "light tent", "shooting tent"],
+          "context_keywords": ["led", "with dimmer", "large", "27 inch"],
+          "negative_keywords": ["photography shooting tables", "photo studio backgrounds", "camping tent", "screen house", "product box", "softbox"]
+        },
+        "photography_lighting_barn_door_frames": {
+          "display_name": "Photography Lighting Barn Door Frames",
+          "formula": ["Brand", "Model Name", "Features", "Light Bulb Type", "Photography Lighting Barn Door Frame Type", "Items Included/Retail Packaging", ",", "Compatible Models", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Brand", "Assembled Product Width", "Color"],
+          "aliases": ["photography lighting barn door frame", "barn door frame"],
+          "title_keywords": ["photography lighting barn door frame", "barn door frame"],
+          "context_keywords": ["for nova p300c led panel"],
+          "negative_keywords": ["photography lighting barn doors", "photography flash heads", "door frame", "window frame", "camera cage", "light stand"]
+        },
+        "photography_lighting_barn_doors": {
+          "display_name": "Photography Lighting Barn Doors",
+          "formula": ["Brand", "Model Name", "Features", "Photography Lighting Barn Door Type", "Items Included/Retail Packaging", ",", "Compatible Models", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Brand", "Count Per Pack", "Assembled Product Width"],
+          "aliases": ["photography lighting barn doors", "barn doors"],
+          "title_keywords": ["photography lighting barn doors", "barn doors"],
+          "context_keywords": ["for ad300pro flash head"],
+          "negative_keywords": ["photography lighting barn door frames", "door hardware", "cabinet doors", "window shutters", "camera matte box", "tripod accessory"]
+        },
+        "photography_lighting_mounting_hardware": {
+          "display_name": "Photography Lighting Mounting Hardware",
+          "formula": ["Brand", "Model Name OR Model", "Features", "Flash Type", "Connector Gender AND Thread Size", "Photography Lighting Mounting Hardware Type", "Items Included/Retail Packaging", ",", "Dimensions", ",", "Finish", ",", "Color", "(Count Per Pack)"],
+          "attributes": ["Brand", "Assembled Product Length", "Condition"],
+          "aliases": ["photography lighting mounting hardware", "lighting mount hardware", "grip head"],
+          "title_keywords": ["photography lighting mounting hardware", "lighting mount hardware", "grip head"],
+          "context_keywords": ["2.5 inch diameter", "powder-coated black", "for lights and accessories"],
+          "negative_keywords": ["photography lighting stands booms", "photography flash heads", "camera mount", "tripod head", "wall mount", "tool hardware"]
+        },
+        "photography_lighting_reflectors": {
+          "display_name": "Photography Lighting Reflectors",
+          "formula": ["Brand", "Model Name", "Features", "Product Multifunction Descriptor", "Shape", "Photography Lighting Reflector Type", "Items Included/Retail Packaging", ",", "Dimensions", ",", "Color", "(Count Per Pack)"],
+          "attributes": ["Brand", "Photography Lighting Reflector Type", "Assembled Product Width"],
+          "aliases": ["photography lighting reflector", "lighting reflector", "studio reflector"],
+          "title_keywords": ["photography lighting reflector", "lighting reflector", "studio reflector"],
+          "context_keywords": ["5-in-1", "47 x 71", "studio lighting reflector"],
+          "negative_keywords": ["reflective vest", "mirror", "safety reflector", "car reflector", "light tent", "softbox"]
+        },
+        "photography_lighting_stands_booms": {
+          "display_name": "Photography Lighting Stands & Booms",
+          "formula": ["Brand", "Model Name OR Model", "Features", "Assembled Product Height", "Material", "Photography Lighting Stand & Boom Type", "Items Included/Retail Packaging", "Color", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Brand", "Photography Lighting Stand And Boom Type", "Condition"],
+          "aliases": ["photography lighting stand", "boom stand", "light stand"],
+          "title_keywords": ["photography lighting stand", "boom stand", "light stand"],
+          "context_keywords": ["20 inch roller stand base with wheels", "black"],
+          "negative_keywords": ["tripod", "microphone stand", "floor lamp", "bicycle stand", "camera stabilizer", "coat rack"]
+        },
+        "photography_lighting_umbrellas": {
+          "display_name": "Photography Lighting Umbrellas",
+          "formula": ["Brand", "Model Name/Model", "Features", "Product Multifunction Descriptor", "Assembled Product Width", "Photography Lighting Umbrella Type", "Items Included/Retail Packaging", ",", "Compatible Models", ",", "Color", ",", "Count Per Pack", "(Condition)"],
+          "attributes": ["Brand", "Color", "Assembled Product Length"],
+          "aliases": ["photography lighting umbrella", "lighting umbrella", "studio umbrella"],
+          "title_keywords": ["photography lighting umbrella", "lighting umbrella", "studio umbrella"],
+          "context_keywords": ["24 inch", "beauty dish softbox combo", "with novatron speed ring"],
+          "negative_keywords": ["rain umbrella", "patio umbrella", "softbox", "camera umbrella rig", "golf umbrella", "sun umbrella"]
+        },
+        "photography_lighting_weight_bags": {
+          "display_name": "Photography Lighting Weight Bags",
+          "formula": ["Brand", "Features", "Photography Lighting Weight Bag Type", "Items Included/Retail Packaging", ",", "Assembled Product Weight", ",", "Color", "(Count Per Pack)"],
+          "attributes": ["Brand", "Assembled Product Width", "Photography Lighting Weight Bag Type"],
+          "aliases": ["photography lighting weight bag", "sandbag", "weight bag"],
+          "title_keywords": ["photography lighting weight bag", "sandbag", "weight bag"],
+          "context_keywords": ["filled saddle sandbag", "20 lbs", "black", "set of 2"],
+          "negative_keywords": ["camera bag", "dumbbell", "ankle weights", "shipping weight bag", "bean bag", "backpack"]
+        },
+        "photography_monolights": {
+          "display_name": "Photography Monolights",
+          "formula": ["Brand", "Model Name OR Model", "Features", "Watts", "Photography Monolight Type", "Items Included/Retail Packaging", ",", "Count Per Pack"],
+          "attributes": ["Brand", "Color Temperature", "Watts"],
+          "aliases": ["photography monolight", "monolight", "strobe monolight"],
+          "title_keywords": ["photography monolight", "monolight", "strobe monolight"],
+          "context_keywords": ["400ws", "strobe monolight set"],
+          "negative_keywords": ["photography flash heads", "constant lighting units", "flashlight", "camera flash", "lamp", "ceiling light"]
+        },
+        "photography_shooting_tables": {
+          "display_name": "Photography Shooting Tables",
+          "formula": ["Brand", "Model Name OR Model", "Features", "Finish", "Material", "Photography Shooting Table Type", "Items Included/Retail Packaging", ",", "Dimensions", ",", "Count"],
+          "attributes": ["Brand", "Color", "Condition"],
+          "aliases": ["photography shooting table", "shooting table", "product shooting table"],
+          "title_keywords": ["photography shooting table", "shooting table", "product shooting table"],
+          "context_keywords": ["desktop shooting table", "with translucent plexiglass sheet", "24 x 36"],
+          "negative_keywords": ["photo studio posing props", "light tent", "folding table", "desk", "camping table", "billiard table"]
+        },
+        "photography_softboxes": {
+          "display_name": "Photography Softboxes",
+          "formula": ["Brand", "Model Name", "Features", "Shape", "Photography Softbox Type", "Items Included/Retail Packaging", ",", "Compatible Models", ",", "Assembled Product Length OR Assembled Product Width", "Count"],
+          "attributes": ["Brand", "Photography Softbox Type", "Color"],
+          "aliases": ["photography softbox", "softbox"],
+          "title_keywords": ["photography softbox", "softbox"],
+          "context_keywords": ["quick collapsible octagon softbox", "with bowens mount & grid", "36 inch"],
+          "negative_keywords": ["light tent", "umbrella", "camera bag", "tent", "storage box", "speaker box"]
+        },
+        "stock_photographs": {
+          "display_name": "Stock Photographs",
+          "formula": ["Brand", "Product Name Type", "Digital Image Format", "Items Included/Retail Packaging", ",", "Type of License", ",", "Resolution OR Photo Size", "Count"],
+          "attributes": ["Color", "Condition", "Multipack Quantity"],
+          "aliases": ["stock photograph", "stock photographs", "licensed photo"],
+          "title_keywords": ["stock photograph", "stock photographs", "licensed photo"],
+          "context_keywords": ["posterazzi", "licensed image", "photo size"],
+          "negative_keywords": ["photography slides", "photo print", "picture frame", "camera photo", "poster print", "art print"]
+        },
+        "transparency_lightboxes_light_tables": {
+          "display_name": "Transparency Lightboxes & Light Tables",
+          "formula": ["Brand", "Model", "Features", "Watts", "Transparency Lightboxes & Light Table Type", "Items Included/Retail Packaging", ",", "Dimensions", ",", "Count"],
+          "attributes": ["Transparency Lightbox And Light Table Type", "Brand", "Light Bulb Type"],
+          "aliases": ["transparency lightbox", "light table", "light pad box"],
+          "title_keywords": ["transparency lightbox", "light table", "light pad box"],
+          "context_keywords": ["electric", "slim edge transparent light pad box", "4 x 5"],
+          "negative_keywords": ["darkroom safelights", "photo enlarger", "tablet", "drawing tablet", "desk lamp", "tracing pad general"]
+        }
+      }
+    }
+
+}
+
+
+}

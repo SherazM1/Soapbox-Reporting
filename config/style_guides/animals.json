@@ -1,0 +1,1969 @@
+{
+  "category": "Animals",
+  "status": "complete",
+  "source": "AnimalsContentStyleGuide.pdf",
+  "families": {
+    "animal_feeding_and_watering":{
+        "display_name": "Animal Feeding & Watering",
+        "product_types": {
+        "other_pet_feeding_and_watering_supplies":{
+          "display_name": "Other Pet Feeding & Watering Supplies",
+          "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Size", "Count/Pack", "Net Content UOM"],
+          "attributes": ["Product Net Content Uom", "Product Net Content Quantity", "Condition"],
+          "aliases": ["other pet feeding and watering supply", "other pet feeding and watering supplies", "pet feeding and watering supplies", "pet feeding and watering accessory"],
+          "title_keywords": ["pet feeding and watering supply", "pet feeding and watering supplies", "pet feeding tool", "pet watering accessory"],
+          "context_keywords": ["pet feeding", "pet watering", "pet care", "animal care", "net content", "multipack"],
+          "negative_keywords": ["bowl", "feeder", "fountain", "waterer", "dispenser", "accessory"]
+        },
+        
+          "automatic_pet_feeders": {
+            "display_name": "Automatic Pet Feeders",
+            "formula": ["Brand", "Product Line", "Features", "Volume Capacity *or* Water Capacity *or* Number of Trays \"-Tray\"", "Automatic Pet Feeder Type", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "\"for\" Pet Size", "Animal Type", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Animal Type", "Automatic Pet Feeder Type", "Brand"],
+            "aliases": ["automatic pet feeder", "automatic pet feeders", "automatic feeder", "smart pet feeder", "programmable pet feeder"],
+            "title_keywords": ["automatic pet feeder", "automatic feeder", "smart feeder", "programmable feeder", "automatic water dispenser"],
+            "context_keywords": ["voice reminder", "6-tray", "gravity feeder", "water dispenser", "for medium dogs", "for small cats"],
+            "negative_keywords": ["pet bowl", "pet food mat", "pet food storage", "pet water bottle", "pet water fountain", "feed scoop"]
+          },
+          "bee_guards": {
+            "display_name": "Bee Guards",
+            "formula": ["Brand", "Product Line", "Model", "Features", "\"Bee Guards\"", "Count Per Pack \"Count\"", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Animal Type", "Color Category", "Multipack Quantity"],
+            "aliases": ["bee guard", "bee guards", "replacement bee guards", "hummingbird feeder bee guards"],
+            "title_keywords": ["bee guard", "bee guards", "replacement bee guards"],
+            "context_keywords": ["replacement", "10 count", "3 pack", "hummingbird feeder"],
+            "negative_keywords": ["bird feeder dome", "bird feeder baffle", "bird feeder", "hummingbird feeder", "pet water fountain", "feed scoop"]
+          },
+          "bird_feeder_domes_baffles": {
+            "display_name": "Bird Feeder Domes & Baffles",
+            "formula": ["Brand", "Product Line", "Features", "Diameter \"Diameter\" *or* Assembled Product Height \"Tall\"", "Bird Feeder Dome & Baffle Type", "\"with\" Items Included *or* Accessories Included", "Color", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Animal Type", "Bird Feeder Dome And Baffle Type", "Material"],
+            "aliases": ["bird feeder dome", "bird feeder baffle", "bird feeder dome cover", "wrap-around bird feeder baffle", "torpedo bird feeder baffle"],
+            "title_keywords": ["bird feeder dome", "bird feeder baffle", "bird feeder dome cover", "wrap-around bird feeder baffle", "torpedo bird feeder baffle"],
+            "context_keywords": ["diameter", "tall", "hanging clip", "clear", "black", "sage green"],
+            "negative_keywords": ["bird feeder", "bird bath", "bird bath stand", "bee guards", "squirrel feeder", "butterfly feeder"]
+          },
+          "bird_feeders": {
+            "display_name": "Bird Feeders",
+            "formula": ["Brand", "Product Line", "Features *or* Product Multifunction Descriptor", "Number of Perches \"-Perch\" *or* Number of Cakes \"-Cake\"", "Bird Type", "Bird Feeder Type", "\"with\" Items Included *or* Accessories Included", "Volume Capacity \"Capacity\" *or* Water Capacity \"Capacity\"", "Color", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Bird Feeder Type", "Recommended Location", "Brand"],
+            "aliases": ["bird feeder", "bird feeders", "platform feeder", "tube feeder", "suet feeder"],
+            "title_keywords": ["bird feeder", "platform feeder", "tube feeder", "suet feeder", "wild bird feeder"],
+            "context_keywords": ["4-perch", "4-cake", "multi-bird", "capacity", "with funnel", "with roof"],
+            "negative_keywords": ["bird feeder dome", "bird feeder baffle", "bird bath", "bird bath stand", "squirrel feeder", "bee guards"]
+          },
+          "butterfly_feeders": {
+            "display_name": "Butterfly Feeders",
+            "formula": ["Brand", "Product Line", "Features", "Mount Type", "Material", "\"Butterfly Feeder\"", "\"with\" Items Included *and/or* Accessories Included", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Animal Type", "Assembled Product Width", "Condition"],
+            "aliases": ["butterfly feeder", "butterfly feeders"],
+            "title_keywords": ["butterfly feeder", "butterfly feeders"],
+            "context_keywords": ["freestanding", "hanging", "metal", "with stand", "with sponge"],
+            "negative_keywords": ["bird feeder", "hummingbird feeder", "bird bath", "squirrel feeder", "bee guards", "feed scoop"]
+          },
+          "feed_scoops": {
+            "display_name": "Feed Scoops",
+            "formula": ["Brand", "Product Line", "Features", "Material", "Animal Type", "\"Food Scoop *or* Feed Scoop\"", "\"with\" Items Included *or* Accessories Included", "Color", "Volume Capacity \"Capacity\"", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Volume Capacity", "Animal Type", "Material"],
+            "aliases": ["feed scoop", "feed scoops", "food scoop", "pet food scoop"],
+            "title_keywords": ["feed scoop", "feed scoops", "food scoop", "pet food scoop"],
+            "context_keywords": ["measuring spoon", "stainless steel", "1 cup capacity", "3 quart capacity", "dog food scoop", "livestock feed scoop"],
+            "negative_keywords": ["automatic pet feeder", "pet bowl", "pet food mat", "pet food storage", "pet water bottle", "pet water fountain"]
+          },
+          "hay_nets": {
+            "display_name": "Hay Nets",
+            "formula": ["Brand", "Product Line", "Features", "Recommended Use", "Material", "Hay Net Type", "Retail Packaging", "\"with\" Hole Size \"Holes\"", "Color *or* Net Color", "Pattern *and/or* Theme", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Count Per Pack", "Animal Type", "Ib", "Retail Packaging"],
+            "aliases": ["hay net", "hay nets", "hay bag", "hay bags", "hay bale net"],
+            "title_keywords": ["hay net", "hay nets", "hay bag", "hay bags", "hay bale net"],
+            "context_keywords": ["slow feed", "mesh", "nylon", "with 1.5\" holes", "black", "purple flowers"],
+            "negative_keywords": ["feed scoop", "hog feeder", "hog watering nipples", "pet food storage", "pet bowl", "automatic pet feeder"]
+          },
+          "hog_feeders": {
+            "display_name": "Hog Feeders",
+            "formula": ["Brand", "Product Line", "Features", "Recommended Location", "Number of Doors \"-Door\"", "\"Hog Feeder\"", "Container Type", "Volume Capacity", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Material", "Brand", "Mount Type"],
+            "aliases": ["hog feeder", "hog feeders", "pig feeder", "swine feeder"],
+            "title_keywords": ["hog feeder", "hog feeders", "pig feeder", "swine feeder"],
+            "context_keywords": ["outdoor", "2-door", "tray", "weatherproof", "bu", "lb"],
+            "negative_keywords": ["hog watering nipples", "feed scoop", "pet bowl", "automatic pet feeder", "pet food storage", "pet water bottle"]
+          },
+          "hog_watering_nipples": {
+            "display_name": "Hog Watering Nipples",
+            "formula": ["Brand", "Product Line", "Features", "Material", "\"Hog Watering Nipples\"", "Retail Packaging", "Count \"Count\"", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Material", "Animal Type", "Brand"],
+            "aliases": ["hog watering nipple", "hog watering nipples", "pig watering nipple", "swine watering nipple"],
+            "title_keywords": ["hog watering nipple", "hog watering nipples", "pig watering nipple", "swine watering nipple"],
+            "context_keywords": ["threaded", "stainless steel", "20 count", "replacement", "watering"],
+            "negative_keywords": ["hog feeder", "pet water bottle", "pet water fountain", "bird feeder", "feed scoop", "automatic pet feeder"]
+          },
+          "hummingbird_feeders": {
+            "display_name": "Hummingbird Feeders",
+            "formula": ["Brand", "Product Line", "Features", "Piece Count \"-Piece\"", "Material", "Bird Feeder Type", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "Color", "Volume Capacity \"Capacity\"", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Condition", "Brand", "Animal Type"],
+            "aliases": ["hummingbird feeder", "hummingbird feeders", "hummingbird ring feeder"],
+            "title_keywords": ["hummingbird feeder", "hummingbird feeders", "hummingbird ring feeder"],
+            "context_keywords": ["starter kit", "window tray", "glass", "plastic", "ant moat", "16 oz capacity"],
+            "negative_keywords": ["bird feeder", "butterfly feeder", "bee guards", "bird feeder dome", "bird feeder baffle", "pet water fountain"]
+          },
+          "outdoor_bird_bath_stands": {
+            "display_name": "Outdoor Bird Bath Stands",
+            "formula": ["Brand", "Product Line", "Assembled Product Height \"Tall\"", "Features", "Home Décor Style *and/or* Pattern *and/or* Theme", "Finish", "\"Outdoor Bird Bath Stand\"", "Color", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Brand", "Material", "Mount Type"],
+            "aliases": ["outdoor bird bath stand", "outdoor bird bath stands", "bird bath stand"],
+            "title_keywords": ["outdoor bird bath stand", "bird bath stand", "bird bath stands"],
+            "context_keywords": ["23\" tall", "foldable", "rustic", "antique bronze", "gold"],
+            "negative_keywords": ["outdoor bird bath", "bird feeder", "bird house", "bird feeder dome", "bird feeder baffle", "squirrel feeder"]
+          },
+          "outdoor_bird_baths": {
+            "display_name": "Outdoor Bird Baths",
+            "formula": ["Brand", "Product Line", "Features", "Power Type", "Mount Type", "Material", "Outdoor Bird Bath Type", "\"with\" Items Included *or* Accessories Included", "Home Décor Style *and/or* Pattern *and/or* Theme", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Material", "Brand", "Outdoor Bird Bath Type"],
+            "aliases": ["outdoor bird bath", "outdoor bird baths", "bird bath", "bird bath basin", "pedestal bird bath"],
+            "title_keywords": ["outdoor bird bath", "bird bath", "bird bath basin", "pedestal bird bath"],
+            "context_keywords": ["heated", "electric", "freestanding", "hanging", "ceramic", "glass", "with bubbler", "with hook"],
+            "negative_keywords": ["outdoor bird bath stand", "bird feeder", "bird feeder dome", "bird feeder baffle", "squirrel feeder", "butterfly feeder"]
+          },
+          "pet_bowls": {
+            "display_name": "Pet Bowls",
+            "formula": ["Brand", "Product Line", "Features", "Mounting Location \"Mounted\"", "Size Descriptor", "Material", "Pet Bowl Type", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "\"for\" Animal Type", "Color", "Pattern *or* Theme", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Animal Type", "Brand", "Pet Size"],
+            "aliases": ["pet bowl", "pet bowls", "food bowl", "water bowl", "slow feeder bowl"],
+            "title_keywords": ["pet bowl", "food bowl", "water bowl", "slow feeder bowl", "mounted bowl"],
+            "context_keywords": ["cage mounted", "ceramic", "stainless steel", "for dogs", "for birds", "set"],
+            "negative_keywords": ["pet food mat", "pet food storage", "pet water bottle", "pet water fountain", "automatic pet feeder", "feed scoop"]
+          },
+          "pet_food_mats": {
+            "display_name": "Pet Food Mats",
+            "formula": ["Brand", "Product Line", "Features", "Material", "Animal Type", "Pet Food Mat Type", "Retail Packaging", "\"with\" Items Included *and/or* Accessories Included", "Color", "Pattern *and/or* Theme", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Animal Type", "Pet Food Mat Type", "Material"],
+            "aliases": ["pet food mat", "pet food mats", "pet placemat", "lick mat"],
+            "title_keywords": ["pet food mat", "pet food mats", "pet placemat", "lick mat"],
+            "context_keywords": ["silicone", "plastic", "raised edge", "with spatula", "with suction cups", "red paws"],
+            "negative_keywords": ["pet bowl", "pet food storage", "pet water bottle", "pet water fountain", "automatic pet feeder", "feed scoop"]
+          },
+          "pet_food_storage": {
+            "display_name": "Pet Food Storage",
+            "formula": ["Brand", "Product Line", "Features", "Piece Count \"-Piece\"", "Animal Type", "\"Food Storage\"", "Container Type", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "Color", "Volume Capacity \"Capacity\"", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Animal Type", "Container Type", "Brand"],
+            "aliases": ["pet food storage", "pet food storage container", "pet food bin", "pet food container"],
+            "title_keywords": ["pet food storage", "pet food storage container", "pet food bin", "pet food container"],
+            "context_keywords": ["stackable", "airtight", "3-piece", "with scoop", "35 lb capacity", "cat food storage"],
+            "negative_keywords": ["pet food mat", "pet bowl", "automatic pet feeder", "feed scoop", "pet water bottle", "pet water fountain"]
+          },
+          "pet_live_animals": {
+            "display_name": "Pet Live Animals",
+            "formula": ["Brand", "Product Line", "\"Live\"", "Pattern", "Pet Live Animal Type *and/or* Fish Species", "Color", "Count \"Count\"", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Pet Live Animal Type", "Animal Type", "Multipack Quantity"],
+            "aliases": ["pet live animal", "pet live animals", "live fish", "live pet fish"],
+            "title_keywords": ["live fish", "pet live animal", "pet live animals", "live pet fish"],
+            "context_keywords": ["community betta", "dario fish", "tiger barb", "dragon blood cichlid", "assorted colors", "10 count"],
+            "negative_keywords": ["fish food", "aquarium", "aquatic plants", "pet water fountain", "pet bowl", "bird feeders"]
+          },
+          "pet_water_bottles": {
+            "display_name": "Pet Water Bottles",
+            "formula": ["Brand", "Product Line", "Features", "Water Capacity", "Color", "Material", "Mounting Location \"Mounted\"", "Animal Type", "\"Water Bottle\"", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Animal Type", "Brand", "Material"],
+            "aliases": ["pet water bottle", "pet water bottles", "animal water bottle", "cage water bottle"],
+            "title_keywords": ["pet water bottle", "pet water bottles", "animal water bottle", "cage water bottle"],
+            "context_keywords": ["12 oz", "20 oz", "glass", "stainless steel", "cage mounted", "portable"],
+            "negative_keywords": ["pet water fountain", "pet bowl", "automatic pet feeder", "pet food mat", "pet food storage", "hog watering nipples"]
+          },
+          "pet_water_fountains": {
+            "display_name": "Pet Water Fountains",
+            "formula": ["Brand", "Product Line", "Water Capacity", "Material", "Animal Type", "\"Water Fountain\"", "Retail Packaging", "\"with\" Items Included *and/or* Accessories Included", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Animal Type", "Brand", "Water Capacity"],
+            "aliases": ["pet water fountain", "pet water fountains", "cat water fountain", "dog water fountain"],
+            "title_keywords": ["pet water fountain", "pet water fountains", "cat water fountain", "dog water fountain"],
+            "context_keywords": ["2.4 l", "stainless steel", "replacement filters", "mat", "cat fountain"],
+            "negative_keywords": ["pet water bottle", "pet bowl", "automatic pet feeder", "pet food mat", "pet food storage", "hog watering nipples"]
+          },
+          "squirrel_feeders": {
+            "display_name": "Squirrel Feeders",
+            "formula": ["Brand", "Product Line", "Material", "Mount Type", "Shape", "Nut Type *and/or* Seed Type", "Squirrel Feeder Type", "\"with\" Items Included *or* Accessories Included", "(Multipack Quantity + \"Pack\")"],
+            "attributes": ["Animal Type", "Mount Type", "Installation Required"],
+            "aliases": ["squirrel feeder", "squirrel feeders", "nut feeder", "corn cob squirrel feeder"],
+            "title_keywords": ["squirrel feeder", "squirrel feeders", "peanut squirrel feeder", "corn cob squirrel feeder"],
+            "context_keywords": ["wooden", "metal", "plastic", "hanging", "picnic table", "horse head", "with umbrella"],
+            "negative_keywords": ["bird feeder", "bird feeder dome", "bird feeder baffle", "outdoor bird bath", "outdoor bird bath stand", "butterfly feeder"]
+          }
+    }
+
+},"animal_food": {
+  "display_name": "Animal Food",
+  "product_types": {
+    "poultry_treats": {
+      "display_name": "Poultry Treats",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Size"],
+      "attributes": ["Condition", "Ingredients", "Animal Lifestage"],
+      "aliases": ["poultry treat", "poultry treats", "chicken treat", "hen treat"],
+      "title_keywords": ["poultry treat", "poultry treats", "chicken treat", "hen treat"],
+      "context_keywords": ["small", "condition", "animal lifestage", "treat"],
+      "negative_keywords": ["poultry feed", "animal feed", "bird treats", "small animal treats", "dog treats", "cat treats"]
+    },
+    "animal_feed": {
+      "display_name": "Animal Feed",
+      "formula": ["Brand", "Product Line", "Nutrient Content Claims", "Pet Food Form + Animal Type", "\"Feed,\"", "Pet Food Flavor", "Size", "Container Type", "(Count \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Animal Lifestage"],
+      "aliases": ["animal feed", "feed", "livestock feed", "farm feed"],
+      "title_keywords": ["animal feed", "livestock feed", "farm feed"],
+      "context_keywords": ["grain", "40 lb", "bag", "pellet", "crumbles"],
+      "negative_keywords": ["bird food", "poultry feed", "dog food", "cat food", "small animal food", "wild bird feed"]
+    },
+    "bird_food": {
+      "display_name": "Bird Food",
+      "formula": ["Brand", "Product Line", "Pet Food Form", "Bird Type", "\"Bird Food,\"", "Pet Food Flavor", "Size", "Container Type", "(Count \"Pack\")"],
+      "attributes": ["Brand", "Animal Type", "Bird Type"],
+      "aliases": ["bird food", "bird seed", "pet bird food"],
+      "title_keywords": ["bird food", "bird seed", "pet bird food"],
+      "context_keywords": ["seed", "40 lb", "bag", "bird type"],
+      "negative_keywords": ["wild bird feed", "bird treats", "bird seed cakes", "poultry feed", "animal feed", "hummingbird nectar"]
+    },
+    "bird_seed_cakes": {
+      "display_name": "Bird Seed Cakes",
+      "formula": ["Brand", "Product Line", "Pet Food Form", "Bird Type", "\"Bird Seed Cake(s),\"", "Pet Food Flavor", "Size", "Container Type", "(Count \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Size"],
+      "aliases": ["bird seed cake", "bird seed cakes", "seed cake", "suet cake"],
+      "title_keywords": ["bird seed cake", "bird seed cakes", "seed cake", "suet cake"],
+      "context_keywords": ["2 lb", "pouch", "bird type", "seed cake"],
+      "negative_keywords": ["bird food", "bird treats", "wild bird feed", "hummingbird nectar", "butterfly nectar", "poultry treats"]
+    },
+    "bird_treats": {
+      "display_name": "Bird Treats",
+      "formula": ["Brand", "Product Line", "Pet Food Form", "Bird Type", "\"Bird Treat(s),\"", "Pet Food Flavor", "Size", "Container Type", "(Count \"Pack\")"],
+      "attributes": ["Brand", "Animal Type", "Bird Type"],
+      "aliases": ["bird treat", "bird treats", "pet bird treat"],
+      "title_keywords": ["bird treat", "bird treats", "pet bird treat"],
+      "context_keywords": ["pineapple", "3 oz", "bag", "bird type"],
+      "negative_keywords": ["bird food", "bird seed cakes", "wild bird feed", "poultry treats", "cat treats", "dog treats"]
+    },
+    "butterfly_nectar": {
+      "display_name": "Butterfly Nectar",
+      "formula": ["Brand", "Product Line", "\"Hummingbird/Butterfly Nectar,\"", "Size", "Container Type", "(Count \"Pack\")"],
+      "attributes": ["Condition", "Animal Lifestage", "Multipack Quantity"],
+      "aliases": ["butterfly nectar", "nectar for butterflies", "hummingbird butterfly nectar"],
+      "title_keywords": ["butterfly nectar", "hummingbird butterfly nectar", "nectar"],
+      "context_keywords": ["16 fl oz", "bottle", "nectar"],
+      "negative_keywords": ["hummingbird nectar", "bird food", "bird treats", "wild bird feed", "pet water fountain", "butterfly feeder"]
+    },
+    "cat_food": {
+      "display_name": "Cat Food",
+      "formula": ["Brand", "Product Line", "Pet Food Flavor", "Pet Food Condition", "Pet Food Form", "\"Dry Cat Food\"", "Animal Lifestage", "Nutrient Content Claims", "Size", "Container Type"],
+      "attributes": ["Brand", "Animal Type", "Pet Food Form"],
+      "aliases": ["cat food", "dry cat food", "kitten food", "senior cat food"],
+      "title_keywords": ["cat food", "dry cat food", "kitten food", "senior cat food"],
+      "context_keywords": ["for kittens", "for senior cats", "grain-free", "whole grain", "10 lb"],
+      "negative_keywords": ["cat treats", "dog food", "dog treats", "small animal food", "bird food", "animal feed"]
+    },
+    "cat_treats": {
+      "display_name": "Cat Treats",
+      "formula": ["Brand", "Product Line", "Pet Food Flavor", "Pet Treat Variety", "\"for\" + \"Animal Type\"", "Size", "Container Type"],
+      "attributes": ["Brand", "Animal Type", "Ib", "Pet Treat Variety"],
+      "aliases": ["cat treat", "cat treats", "kitty treats"],
+      "title_keywords": ["cat treat", "cat treats", "kitty treats"],
+      "context_keywords": ["treat variety", "for cats", "box", "bag", "tubes"],
+      "negative_keywords": ["cat food", "dog treats", "dog food", "bird treats", "small animal treats", "poultry treats"]
+    },
+    "dog_food": {
+      "display_name": "Dog Food",
+      "formula": ["Brand", "Product Line", "Pet Food Flavor", "Pet Food Condition", "Pet Food Form", "\"Dry Dog Food\"", "Animal Lifestage", "Nutrient Content Claims", "Size", "Container Type"],
+      "attributes": ["Brand", "Animal Type", "Pet Food Form"],
+      "aliases": ["dog food", "dry dog food", "puppy food", "senior dog food"],
+      "title_keywords": ["dog food", "dry dog food", "puppy food", "senior dog food"],
+      "context_keywords": ["for puppies", "for senior dogs", "grain-free", "whole grain", "16 lb"],
+      "negative_keywords": ["dog treats", "cat food", "cat treats", "animal feed", "small animal food", "bird food"]
+    },
+    "dog_treats": {
+      "display_name": "Dog Treats",
+      "formula": ["Brand", "Product Line", "Pet Food Flavor", "Pet Treat Variety", "\"for\" + \"Animal Type\"", "Size", "Container Type"],
+      "attributes": ["Brand", "Animal Type", "Ib", "Pet Treat Variety"],
+      "aliases": ["dog treat", "dog treats", "puppy treats"],
+      "title_keywords": ["dog treat", "dog treats", "puppy treats", "biscuit treats"],
+      "context_keywords": ["for dogs", "box", "bag", "tubes", "treat variety"],
+      "negative_keywords": ["dog food", "cat treats", "cat food", "bird treats", "small animal treats", "poultry treats"]
+    },
+    "fish_food": {
+      "display_name": "Fish Food",
+      "formula": ["Brand", "Product Line", "Fish Species", "\"Fish Food\" Pet Food Form,", "Pet Food Flavor", "Size", "Container Type", "(Count \"Pack\")"],
+      "attributes": ["Animal Type", "Fish Species", "Pet Food Form"],
+      "aliases": ["fish food", "tropical fish food", "aquarium fish food"],
+      "title_keywords": ["fish food", "tropical fish food", "aquarium fish food"],
+      "context_keywords": ["flakes", "3 oz", "jar", "fish species"],
+      "negative_keywords": ["pet live animals", "reptile food", "bird food", "cat food", "dog food", "aquarium water treatments"]
+    },
+    "hummingbird_nectar": {
+      "display_name": "Hummingbird Nectar",
+      "formula": ["Brand", "Product Line", "\"Hummingbird/Butterfly Nectar,\"", "Size", "Container Type", "(Count \"Pack\")"],
+      "attributes": ["Animal Type", "Animal Lifestage", "Condition"],
+      "aliases": ["hummingbird nectar", "nectar for hummingbirds"],
+      "title_keywords": ["hummingbird nectar", "nectar for hummingbirds", "nectar"],
+      "context_keywords": ["16 fl oz", "bottle", "nectar"],
+      "negative_keywords": ["butterfly nectar", "bird food", "bird treats", "wild bird feed", "hummingbird feeder", "butterfly feeder"]
+    },
+    "poultry_feed": {
+      "display_name": "Poultry Feed",
+      "formula": ["Brand", "Product Line", "Pet Food Form", "Bird Type", "\"Feed,\"", "Pet Food Flavor", "Size", "Container Type", "(Count \"Pack\")"],
+      "attributes": ["Animal Type", "Animal Lifestage", "Pet Food Form"],
+      "aliases": ["poultry feed", "chicken feed", "hen feed"],
+      "title_keywords": ["poultry feed", "chicken feed", "hen feed"],
+      "context_keywords": ["crumble", "40 lb", "bag", "egg maker", "bird type"],
+      "negative_keywords": ["poultry treats", "animal feed", "bird food", "wild bird feed", "cat food", "dog food"]
+    },
+    "reptile_food": {
+      "display_name": "Reptile Food",
+      "formula": ["Brand", "Product Line", "Pet Food Form", "\"Reptile Food,\"", "Pet Food Flavor", "Size", "Container Type", "(Count \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Food Form", "Brand"],
+      "aliases": ["reptile food", "lizard food", "turtle food"],
+      "title_keywords": ["reptile food", "lizard food", "turtle food"],
+      "context_keywords": ["gourmet", "grasshopper", "1.2 oz", "can"],
+      "negative_keywords": ["fish food", "small animal food", "bird food", "dog food", "cat food", "other_reptile_amphibian_supplies"]
+    },
+    "small_animal_food": {
+      "display_name": "Small Animal Food",
+      "formula": ["Brand", "Product Line", "Nutrient Content Claims", "Pet Food Form + Animal Type", "\"Food,\"", "Pet Food Flavor", "Size", "Container Type", "(Count \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Size"],
+      "aliases": ["small animal food", "rabbit food", "hamster food", "guinea pig food"],
+      "title_keywords": ["small animal food", "rabbit food", "hamster food", "guinea pig food"],
+      "context_keywords": ["timothy hay", "35 oz", "bag", "small animal", "critter"],
+      "negative_keywords": ["small animal treats", "squirrel critter food", "animal feed", "cat food", "dog food", "bird food"]
+    },
+    "small_animal_treats": {
+      "display_name": "Small Animal Treats",
+      "formula": ["Brand", "Product Line", "Nutrient Content Claims", "Pet Food Form + Animal Type", "\"Treat(s),\"", "Pet Food Flavor", "Size", "Container Type", "(Count \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Size"],
+      "aliases": ["small animal treat", "small animal treats", "rabbit treats", "hamster treats"],
+      "title_keywords": ["small animal treat", "small animal treats", "rabbit treats", "hamster treats"],
+      "context_keywords": ["vegetable", "6 oz", "bag", "3 pack", "small animal"],
+      "negative_keywords": ["small animal food", "squirrel critter food", "cat treats", "dog treats", "bird treats", "poultry treats"]
+    },
+    "squirrel_critter_food": {
+      "display_name": "Squirrel & Critter Food",
+      "formula": ["Brand", "Product Line", "Nutrient Content Claims", "Pet Food Form + Animal Type", "\"Food,\"", "Pet Food Flavor", "Size", "Container Type", "(Count \"Pack\")"],
+      "attributes": ["Brand", "Animal Type", "Ingredients"],
+      "aliases": ["squirrel food", "critter food", "squirrel and critter food"],
+      "title_keywords": ["squirrel food", "critter food", "squirrel and critter food"],
+      "context_keywords": ["small animal", "critter", "food", "bag", "timothy hay"],
+      "negative_keywords": ["small animal food", "small animal treats", "wild bird feed", "bird food", "dog food", "cat food"]
+    },
+    "wild_bird_feed": {
+      "display_name": "Wild Bird Feed",
+      "formula": ["Brand", "Product Line", "Pet Food Form", "Bird Type", "\"Bird Food,\"", "Pet Food Flavor", "Size", "Container Type", "(Count \"Pack\")"],
+      "attributes": ["Pet Food Form", "Animal Type", "Brand"],
+      "aliases": ["wild bird feed", "wild bird food", "bird seed"],
+      "title_keywords": ["wild bird feed", "wild bird food", "bird seed"],
+      "context_keywords": ["seed", "40 lb", "bag", "wild bird"],
+      "negative_keywords": ["bird food", "bird treats", "bird seed cakes", "hummingbird nectar", "poultry feed", "animal feed"]
+    }
+  }
+}, "pet_toys": {
+  "display_name": "Pet Toys",
+  "product_types": {
+    "other_dog_supplies": {
+      "display_name": "Other Dog Supplies",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Count/Pack"],
+      "attributes": ["Condition", "Power Type", "Assembly Required"],
+      "aliases": ["dog supply", "dog supplies", "other dog supply", "other dog supplies"],
+      "title_keywords": ["dog supply", "dog supplies", "other dog supply", "other dog supplies"],
+      "context_keywords": ["dog", "lightweight", "white", "count", "pack"],
+      "negative_keywords": ["dog toy", "cat toy", "cat supply", "pet training", "pet transport", "pet apparel"]
+    },
+    "other_cat_supplies": {
+      "display_name": "Other Cat Supplies",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Color", "Count/Pack", "Retail Packaging"],
+      "attributes": ["Ib", "Retail Packaging", "Condition", "Assembly Required"],
+      "aliases": ["cat supply", "cat supplies", "other cat supply", "other cat supplies"],
+      "title_keywords": ["cat supply", "cat supplies", "other cat supply", "other cat supplies"],
+      "context_keywords": ["cat", "portable", "gray", "count", "pack", "each"],
+      "negative_keywords": ["cat toy", "dog toy", "dog supply", "pet training", "pet transport", "pet apparel"]
+    },
+    "cat_toys": {
+      "display_name": "Cat Toys",
+      "formula": ["Brand", "Product Line", "Features", "Piece Count \"-Piece\"", "Cat Toy Type", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "Color", "Pattern *and/or* Theme *and/or* Shape", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Animal Type", "Cat Toy Type", "Animal Lifestage"],
+      "aliases": ["cat toy", "cat toys", "interactive cat toy", "plush cat toy", "laser cat toy"],
+      "title_keywords": ["cat toy", "cat toys", "interactive cat toy", "plush cat toy", "laser cat toy"],
+      "context_keywords": ["motion activated", "laser", "feathers", "24-piece", "variety pack", "striped mice"],
+      "negative_keywords": ["dog toy", "dog supplies", "cat supplies", "pet training clicker", "pet collar", "pet leash"]
+    },
+    "dog_toys": {
+      "display_name": "Dog Toys",
+      "formula": ["Brand", "Product Line", "Features", "Piece Count \"-Piece\"", "Dog Toy Type", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "\"for\" Resistance", "Color", "Pattern *and/or* Theme *and/or* Shape", "Size Descriptor", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Dog Toy Type"],
+      "aliases": ["dog toy", "dog toys", "chew toy", "plush dog toy", "ball launcher"],
+      "title_keywords": ["dog toy", "dog toys", "chew toy", "plush dog toy", "ball launcher", "treat fillable dog toy"],
+      "context_keywords": ["tennis balls", "aggressive chewers", "4-piece", "variety pack", "large", "squeaky"],
+      "negative_keywords": ["cat toy", "dog supplies", "cat supplies", "pet training", "pet leash", "pet collar"]
+    }
+  }
+},
+"pet_training": {
+  "display_name": "Pet Training",
+  "product_types": {
+    "bark_control_training_aids": {
+      "display_name": "Bark Control Training Aids",
+      "formula": ["Brand", "Product Line", "Features", "Primary Ingredient", "Bark Control Training Aid Type", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "Color", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Animal Type", "Bark Control Training Aid Type", "Brand"],
+      "aliases": ["bark control training aid", "bark control aid", "spray bark collar", "bark control device"],
+      "title_keywords": ["bark control training aid", "spray bark collar", "bark control device", "ultrasonic bark control device"],
+      "context_keywords": ["rechargeable", "handheld", "citronella", "waterproof", "with refill can", "canary yellow"],
+      "negative_keywords": ["pet training collar", "dog whistle", "pet repellent", "pet doorbell", "training clicker", "dog toy"]
+    },
+    "dog_agility_equipment": {
+      "display_name": "Dog Agility Equipment",
+      "formula": ["Brand", "Product Line", "Features", "Piece Count \"-Piece\"", "\"Dog Agility\"", "Dog Agility Equipment Type", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Material"],
+      "aliases": ["dog agility equipment", "agility equipment", "dog agility starter kit", "dog agility chute"],
+      "title_keywords": ["dog agility equipment", "dog agility starter kit", "dog agility chute", "agility equipment"],
+      "context_keywords": ["7-piece", "starter kit", "carrying case", "lightweight", "dog agility"],
+      "negative_keywords": ["dog whistle", "pet training collar", "training clicker", "bark control training aid", "pet doorbell", "dog toy"]
+    },
+    "dog_whistles": {
+      "display_name": "Dog Whistles",
+      "formula": ["Brand", "Product Line", "Features", "\"Dog Whistle\"", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "Color", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Material"],
+      "aliases": ["dog whistle", "dog whistles", "training whistle", "pet whistle"],
+      "title_keywords": ["dog whistle", "dog whistles", "training whistle", "pet whistle"],
+      "context_keywords": ["adjustable pitch", "with lanyard", "tu-tone black", "2 pack"],
+      "negative_keywords": ["training clicker", "pet training collar", "bark control training aid", "pet doorbell", "pet repellent", "dog toy"]
+    },
+    "pet_doorbells": {
+      "display_name": "Pet Doorbells",
+      "formula": ["Brand", "Product Line", "Features", "Mount Type *or* Mounting Location \"Mounted\"", "Pet Doorbell Type", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "Color", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Doorbell Type", "Brand"],
+      "aliases": ["pet doorbell", "pet doorbells", "dog doorbell", "training doorbell"],
+      "title_keywords": ["pet doorbell", "pet doorbells", "dog doorbell", "training doorbell"],
+      "context_keywords": ["portable", "hanging", "wall mounted", "touch button", "with 2 receivers", "blue", "white"],
+      "negative_keywords": ["dog whistle", "training clicker", "pet training collar", "bark control training aid", "pet repellent", "pet door"]
+    },
+    "pet_repellents": {
+      "display_name": "Pet Repellents",
+      "formula": ["Brand", "Product Line", "Features *or* Primary Ingredient", "Animal Type", "Activity", "Power Type", "Pet Repellent Type", "Form", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "Flavor \"Flavor\" *or* Scent \"Scent\"", "Size", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Repellent Type", "Brand"],
+      "aliases": ["pet repellent", "pet repellents", "deterrent spray", "ultrasonic pet repellent"],
+      "title_keywords": ["pet repellent", "pet repellents", "deterrent spray", "ultrasonic pet repellent", "dog attack deterrent spray"],
+      "context_keywords": ["bitter apple flavor", "citronella", "motion activated", "solar", "flashing light", "8 fl oz", "2.4 oz"],
+      "negative_keywords": ["bark control training aid", "pet training collar", "dog whistle", "training clicker", "pet doorbell", "pet flea tick treatment"]
+    },
+    "pet_training_clickers": {
+      "display_name": "Pet Training Clickers",
+      "formula": ["Brand", "Product Line", "Features", "Animal Type", "\"Training Clicker\"", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "Color", "Piece Count \"Count\"", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Color"],
+      "aliases": ["pet training clicker", "training clicker", "dog training clicker", "clicker"],
+      "title_keywords": ["pet training clicker", "training clicker", "dog training clicker", "clicker"],
+      "context_keywords": ["handheld", "with lanyard", "assorted colors", "4 count", "2 pack"],
+      "negative_keywords": ["dog whistle", "pet training collar", "bark control training aid", "pet doorbell", "pet repellent", "dog toy"]
+    },
+    "pet_training_collars": {
+      "display_name": "Pet Training Collars",
+      "formula": ["Brand", "Product Line", "Features", "Pet Training Collar Type", "Retail Packaging", "\"with\" Items Included *or* Accessories Included *or* Alert Type \"Mode\"", "\"for\" Pet Size", "Animal Type", "Color", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Pet Training Collar Type"],
+      "aliases": ["pet training collar", "training collar", "e-collar", "dog training collar"],
+      "title_keywords": ["pet training collar", "training collar", "e-collar", "dog training collar"],
+      "context_keywords": ["for small", "for large", "mode", "modes", "alert type", "retail packaging"],
+      "negative_keywords": ["bark control training aid", "dog whistle", "training clicker", "pet repellent", "pet doorbell", "pet collar"]
+    }
+  }
+},
+"animal_grooming": {
+  "display_name": "Animal Grooming",
+  "product_types": {
+    "other_pet_grooming_supplies": {
+      "display_name": "Other Pet Grooming Supplies",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Size", "Count/Pack", "Net Content UOM"],
+      "attributes": ["Product Net Content Uom", "Product Net Content Quantity", "Condition"],
+      "aliases": ["pet grooming supply", "pet grooming supplies", "grooming supply", "grooming supplies"],
+      "title_keywords": ["pet grooming supply", "pet grooming supplies", "grooming supply", "grooming supplies"],
+      "context_keywords": ["portable", "8\"", "2 count", "16 oz", "grooming"],
+      "negative_keywords": ["pet grooming brush", "pet grooming wipes", "pet deodorizers", "pet claw care", "animal shampoos", "animal conditioners"]
+    },
+    "animal_conditioners": {
+      "display_name": "Animal Conditioners",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Ingredient Claims *or* Ingredient Preference *or* Ingredient Properties *or* Features", "Animal Shampoo & Conditioner Type", "Form", "Retail Packaging", "\"for\" Animal Type", "Scent \"Scent\"", "Size", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Animal Shampoo And Conditioner Type", "Brand"],
+      "aliases": ["animal conditioner", "pet conditioner", "coat conditioner", "pet coat conditioner"],
+      "title_keywords": ["animal conditioner", "pet conditioner", "coat conditioner", "pet coat conditioner"],
+      "context_keywords": ["2-in-1", "medicated", "coat whitening", "spray", "lavender scent", "4 fl oz bottle"],
+      "negative_keywords": ["animal shampoos", "pet deodorizers", "pet grooming wipes", "pet dander reducers", "pet colognes", "pet styptic gels"]
+    },
+    "animal_grooming_electric_clipper_blades": {
+      "display_name": "Animal Grooming Electric Clipper Blades",
+      "formula": ["Brand", "Product Line", "Features", "Blade Material", "Animal Grooming Electric Clipper Blade Type", "Retail Packaging", "Size", "Count \"Count\"", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Size"],
+      "aliases": ["clipper blade", "clipper blades", "grooming clipper blade", "animal clipper blade"],
+      "title_keywords": ["clipper blade", "clipper blades", "grooming clipper blade", "animal clipper blade"],
+      "context_keywords": ["rustproof", "stainless steel", "skip tooth", "0.5 mm", "#3", "5 count"],
+      "negative_keywords": ["electric clippers", "grooming scissors", "pet claw care", "pet grooming brushes", "pet grooming dryers", "pet dematting tools"]
+    },
+    "animal_grooming_electric_clippers": {
+      "display_name": "Animal Grooming Electric Clippers",
+      "formula": ["Brand", "Product Line", "Number of Speeds \"-Speed\"", "Features", "Power Type", "Recommended Use", "Animal Type", "Animal Grooming Electric Clipper Type", "Retail Packaging", "\"with\" Accessories Included *or* Items Included", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Animal Grooming Electric Clipper Type"],
+      "aliases": ["animal grooming clippers", "electric pet clippers", "dog clippers", "cat clippers"],
+      "title_keywords": ["animal grooming clippers", "electric pet clippers", "dog clippers", "cat clippers"],
+      "context_keywords": ["3-speed", "waterproof", "cordless", "professional", "clipper kit", "with guard comb"],
+      "negative_keywords": ["clipper blades", "grooming scissors", "pet claw care", "pet grooming dryers", "pet dematting tools", "pet grooming brushes"]
+    },
+    "animal_grooming_scissors": {
+      "display_name": "Animal Grooming Scissors",
+      "formula": ["Brand", "Product Line", "Material", "Tip Style \"Tip\"", "Piece Count \"-Piece\"", "Animal Type", "Animal Grooming Scissors Type", "Retail Packaging", "\"with\" Accessories Included *and/or* Items Included", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Animal Grooming Scissors Type"],
+      "aliases": ["grooming scissors", "pet grooming scissors", "animal grooming scissors", "dog grooming scissors"],
+      "title_keywords": ["grooming scissors", "pet grooming scissors", "animal grooming scissors", "dog grooming scissors"],
+      "context_keywords": ["stainless steel", "rounded tip", "5-piece", "set", "with comb", "with case"],
+      "negative_keywords": ["electric clippers", "clipper blades", "pet claw care", "pet dematting tools", "pet grooming brushes", "pet grooming dryers"]
+    },
+    "animal_shampoos": {
+      "display_name": "Animal Shampoos",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Ingredient Claims *or* Ingredient Preference *or* Ingredient Properties *or* Features", "Animal Shampoo & Conditioner Type", "Form", "Retail Packaging", "\"for\" Animal Type", "Scent", "Size", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Animal Shampoo And Conditioner Type"],
+      "aliases": ["animal shampoo", "pet shampoo", "dog shampoo", "cat shampoo"],
+      "title_keywords": ["animal shampoo", "pet shampoo", "dog shampoo", "cat shampoo"],
+      "context_keywords": ["2-in-1", "hypoallergenic", "natural", "gel", "oatmeal scent", "16.9 oz bottle"],
+      "negative_keywords": ["animal conditioners", "pet deodorizers", "pet grooming wipes", "pet dander reducers", "pet colognes", "pet styptic gels"]
+    },
+    "pet_claw_care": {
+      "display_name": "Pet Claw Care",
+      "formula": ["Brand", "Product Line", "Features", "Power Type", "Piece Count \"-Piece\"", "Animal Type", "Pet Claw Care Type", "Retail Packaging", "\"with\" Accessories Included *and/or* Items Included", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Claw Care Type", "Brand"],
+      "aliases": ["pet claw care", "pet nail grinder", "pet claw clipper", "pet nail trimmer"],
+      "title_keywords": ["pet claw care", "pet nail grinder", "pet claw clipper", "pet nail trimmer"],
+      "context_keywords": ["waterproof", "cordless", "electric", "3-piece", "with led light", "with replacement bits", "with carrying case"],
+      "negative_keywords": ["animal grooming scissors", "animal grooming electric clippers", "clipper blades", "pet grooming brushes", "pet dematting tools", "pet styptic gels"]
+    },
+    "pet_colognes": {
+      "display_name": "Pet Colognes",
+      "formula": ["Brand", "Product Line", "Activity", "Features", "Piece Count \"-Piece\"", "Animal Type", "\"Cologne\"", "Form", "Retail Packaging", "Scent \"Scent\"", "Size", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Scent"],
+      "aliases": ["pet cologne", "pet colognes", "dog cologne", "cat cologne"],
+      "title_keywords": ["pet cologne", "pet colognes", "dog cologne", "cat cologne"],
+      "context_keywords": ["calming", "odor eliminating", "mist", "travel set", "raspberry scent", "6 oz bottle"],
+      "negative_keywords": ["pet deodorizers", "animal shampoos", "animal conditioners", "pet grooming wipes", "pet dander reducers", "pet styptic gels"]
+    },
+    "pet_dander_reducers": {
+      "display_name": "Pet Dander Reducers",
+      "formula": ["Brand", "Product Line", "Animal Type", "\"Dander Reducer\"", "Retail Packaging", "\"with\" Accessories Included *and/or* Items Included", "Size", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Container Type"],
+      "aliases": ["pet dander reducer", "pet dander reducers", "dander reducer"],
+      "title_keywords": ["pet dander reducer", "pet dander reducers", "dander reducer"],
+      "context_keywords": ["application mitt", "spray nozzle", "12 oz bottle", "2 pack", "dog dander reducer"],
+      "negative_keywords": ["pet deodorizers", "pet colognes", "animal shampoos", "animal conditioners", "pet grooming wipes", "pet ear care"]
+    },
+    "pet_dematting_tools": {
+      "display_name": "Pet Dematting Tools",
+      "formula": ["Brand", "Product Line", "Features", "Product Multifunction Descriptor", "Power Type", "Animal Type", "Pet Dematting Tool Type", "Retail Packaging", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Pet Grooming Brush Type"],
+      "aliases": ["pet dematting tool", "pet dematting tools", "dematting comb", "dematting brush"],
+      "title_keywords": ["pet dematting tool", "pet dematting tools", "dematting comb", "dematting brush"],
+      "context_keywords": ["ergonomic design", "3-in-1", "electric", "dog dematting comb", "blue"],
+      "negative_keywords": ["pet grooming brushes", "pet hair removal grooming mitts", "animal grooming scissors", "electric clippers", "pet claw care", "pet grooming dryers"]
+    },
+    "pet_deodorizers": {
+      "display_name": "Pet Deodorizers",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Animal Type", "\"Deodorizing\"", "Form", "Retail Packaging", "Scent \"Scent\"", "Size", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Ib", "Retail Packaging"],
+      "aliases": ["pet deodorizer", "pet deodorizers", "dog deodorizer", "cat deodorizer"],
+      "title_keywords": ["pet deodorizer", "pet deodorizers", "dog deodorizer", "cat deodorizer", "deodorizing spray"],
+      "context_keywords": ["multipurpose", "long-lasting", "spray", "citrus scent", "24 oz bottle"],
+      "negative_keywords": ["pet colognes", "animal shampoos", "animal conditioners", "pet dander reducers", "pet grooming wipes", "pet styptic gels"]
+    },
+    "pet_grooming_baths": {
+      "display_name": "Pet Grooming Baths",
+      "formula": ["Brand", "Product Line", "Assembled Product Width", "Features", "Material", "Power Type", "Animal Type", "\"Grooming Tub\"", "\"with\" Accessories Included *and/or* Items Included", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Brand", "Animal Type", "Material"],
+      "aliases": ["pet grooming bath", "pet grooming baths", "grooming tub", "pet bath tub"],
+      "title_keywords": ["pet grooming bath", "pet grooming baths", "grooming tub", "pet bath tub"],
+      "context_keywords": ["50\"", "adjustable stand", "stainless steel", "electric", "dog grooming tub", "with shower head", "with drain"],
+      "negative_keywords": ["pet shower bath accessories", "pet grooming dryers", "pet grooming tables", "animal shampoos", "pet grooming wipes", "pet deodorizers"]
+    },
+    "pet_grooming_brushes": {
+      "display_name": "Pet Grooming Brushes",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Pet Grooming Brush Type", "Retail Packaging", "\"for\" Animal Type", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Pet Grooming Brush Type"],
+      "aliases": ["pet grooming brush", "pet grooming brushes", "slicker brush", "deshedding brush"],
+      "title_keywords": ["pet grooming brush", "pet grooming brushes", "slicker brush", "deshedding brush"],
+      "context_keywords": ["3-in-1", "self-cleaning", "for dogs and cats", "blue", "2 pack"],
+      "negative_keywords": ["pet dematting tools", "pet hair removal grooming mitts", "animal grooming scissors", "clipper blades", "pet grooming dryers", "pet claw care"]
+    },
+    "pet_grooming_dryers": {
+      "display_name": "Pet Grooming Dryers",
+      "formula": ["Brand", "Model *or* Product Line", "Product Multifunction Descriptor", "Features", "Power Type", "Amps *or* Watts *or* Volts", "Animal Type", "Hair Dryer Type", "Retail Packaging", "\"with\" Accessories Included *and/or* Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Brand", "Animal Type", "Pet Grooming Brush Type"],
+      "aliases": ["pet grooming dryer", "pet grooming dryers", "pet dryer", "dog grooming dryer"],
+      "title_keywords": ["pet grooming dryer", "pet grooming dryers", "pet dryer", "dog grooming dryer"],
+      "context_keywords": ["portable", "cordless electric", "110v", "dryer brush", "vacuum", "with case", "with flexible hose"],
+      "negative_keywords": ["pet grooming baths", "pet grooming tables", "pet grooming brushes", "pet dematting tools", "animal grooming electric clippers", "animal grooming scissors"]
+    },
+    "pet_grooming_tables": {
+      "display_name": "Pet Grooming Tables",
+      "formula": ["Brand", "Product Line", "Power Type", "Features", "Animal Type", "Pet Grooming Table Type", "\"with\" Accessories Included *or* Items Included", "Maximum Load Weight \"Limit\"", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Pet Grooming Table Type"],
+      "aliases": ["pet grooming table", "pet grooming tables", "dog grooming table", "grooming table"],
+      "title_keywords": ["pet grooming table", "pet grooming tables", "dog grooming table", "grooming table"],
+      "context_keywords": ["hydraulic", "adjustable", "with clamp-on arm", "with straps", "250 lb limit"],
+      "negative_keywords": ["pet grooming baths", "pet grooming dryers", "pet shower bath accessories", "animal grooming electric clippers", "pet grooming brushes", "pet claw care"]
+    },
+    "pet_grooming_wipes": {
+      "display_name": "Pet Grooming Wipes",
+      "formula": ["Brand", "Product Line", "Ingredient Claims *or* Ingredient Preference *or* Ingredient Properties *or* Features", "Animal Type", "\"Grooming Wipes\"", "Retail Packaging", "Scent \"Scent\"", "Count \"Count\"", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Container Type"],
+      "aliases": ["pet grooming wipe", "pet grooming wipes", "dog grooming wipes", "cat grooming wipes"],
+      "title_keywords": ["pet grooming wipes", "dog grooming wipes", "cat grooming wipes", "grooming wipes"],
+      "context_keywords": ["plant-based", "latex-free", "travel pack", "lavender scent", "100 count", "carton"],
+      "negative_keywords": ["animal shampoos", "animal conditioners", "pet deodorizers", "pet colognes", "pet dander reducers", "pet styptic gels"]
+    },
+    "pet_hair_removal_grooming_mitts": {
+      "display_name": "Pet Hair Removal & Grooming Mitts",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Animal Type", "Pet Hair Removal & Grooming Mitt Type", "\"with\" Accessories Included *or* Items Included", "Color", "Count", "Retail Packaging", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Pet Hair Removal And Grooming Mitt Type"],
+      "aliases": ["pet grooming mitt", "pet hair removal mitt", "grooming glove", "deshedding mitt"],
+      "title_keywords": ["pet grooming mitt", "pet hair removal mitt", "grooming glove", "deshedding mitt"],
+      "context_keywords": ["2-in-1", "reversible", "with deshedding brush", "with pet hair roller", "blue", "red", "pair"],
+      "negative_keywords": ["pet grooming brushes", "pet dematting tools", "pet grooming wipes", "animal grooming scissors", "pet claw care", "pet grooming dryers"]
+    },
+    "pet_shower_bath_accessories": {
+      "display_name": "Pet Shower & Bath Accessories",
+      "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Piece Count \"-Piece\"", "Pet Shower & Bath Accessory Type", "Retail Packaging", "\"for\" Animal Type", "\"with\" Accessories Included *and/or* Items Included", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Condition"],
+      "aliases": ["pet shower accessory", "pet bath accessory", "pet shower and bath accessory", "dog bath accessory"],
+      "title_keywords": ["pet shower accessory", "pet bath accessory", "pet shower and bath accessory", "dog bath accessory"],
+      "context_keywords": ["3-piece", "scrubber", "spray wand", "with hose", "with hanging clip", "for dogs"],
+      "negative_keywords": ["pet grooming baths", "pet grooming tables", "pet grooming dryers", "animal shampoos", "pet grooming wipes", "pet deodorizers"]
+    },
+    "pet_styptic_gels_powders": {
+      "display_name": "Pet Styptic Gels & Powders",
+      "formula": ["Brand", "Product Line", "Features", "\"Styptic\"", "Form", "Retail Packaging", "\"for\" Animal Type", "\"with\" Accessories Included *and/or* Items Included", "Size", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Size"],
+      "aliases": ["pet styptic gel", "pet styptic powder", "styptic gel", "styptic powder"],
+      "title_keywords": ["pet styptic gel", "pet styptic powder", "styptic gel", "styptic powder"],
+      "context_keywords": ["veterinary grade", "gel kit", "with applicator", "4 oz", "for cows"],
+      "negative_keywords": ["pet claw care", "pet grooming wipes", "animal shampoos", "animal conditioners", "pet deodorizers", "pet colognes"]
+    }
+  }
+},
+"animal_health": {
+  "display_name": "Animal Health",
+  "product_types": {
+    "other_pet_health_supplies": {
+      "display_name": "Other Pet Health Supplies",
+      "formula": ["Brand", "Model", "Product Line", "Product/Type", "Key Feature", "Count/Pack"],
+      "attributes": ["Condition", "Topical Medication Form", "Activity"],
+      "aliases": ["pet health supply", "pet health supplies", "animal health supply", "animal health supplies"],
+      "title_keywords": ["pet health supply", "pet health supplies", "animal health supply", "animal health supplies"],
+      "context_keywords": ["heavy-duty", "model", "count", "pack", "health"],
+      "negative_keywords": ["pet ear care", "pet eye care", "pet flea comb", "pet thermometer", "pet toothbrush", "pet toothpaste"]
+    },
+    "animal_acupuncture_models": {
+      "display_name": "Animal Acupuncture Models",
+      "formula": ["Brand", "Product Line", "Recommended Use", "Feature", "Animal Type", "Animal Acupuncture Model Type", "Retail Packaging", "\"with\" Items Included", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Ib", "Retail Packaging", "Activity"],
+      "aliases": ["animal acupuncture model", "animal acupuncture models", "acupuncture model", "veterinary acupuncture model"],
+      "title_keywords": ["animal acupuncture model", "acupuncture model", "veterinary acupuncture model"],
+      "context_keywords": ["professional", "anatomically correct", "horse", "with stand"],
+      "negative_keywords": ["animal dental care tool", "pet thermometer", "pet wheelchair", "pet recovery collar", "pet nursing kit", "pet toothbrush"]
+    },
+    "animal_dental_care_tools": {
+      "display_name": "Animal Dental Care Tools",
+      "formula": ["Brand", "Product Line", "Recommended Use", "Feature", "Material", "Piece Count \"-Piece\"", "Animal Dental Care Tool Type", "Retail Packaging", "\"with\" Accessories Included", "\"for\" Animal Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Activity"],
+      "aliases": ["animal dental care tool", "animal dental care tools", "pet dental tool", "dental scraper tool"],
+      "title_keywords": ["animal dental care tool", "pet dental tool", "dental scraper tool", "periodontal tool kit"],
+      "context_keywords": ["professional", "at-home", "stainless steel", "titanium", "6-piece", "with storage case"],
+      "negative_keywords": ["pet toothbrush", "pet toothpaste", "pet ear care", "pet eye care", "pet thermometer", "pet nursing syringe"]
+    },
+    "animal_dewormers": {
+      "display_name": "Animal Dewormers",
+      "formula": ["Brand", "Product Line", "Feature", "Pet Live Animal Type", "Parasite Type", "Active Ingredient Name", "Animal Dewormer Type", "Enteral Medication & Supplement Form", "Size *or* Count \"Count\"", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Parasite Type"],
+      "aliases": ["animal dewormer", "animal dewormers", "pet dewormer", "worm treatment", "worm prevention"],
+      "title_keywords": ["animal dewormer", "pet dewormer", "worm treatment", "worm prevention", "dewormer"],
+      "context_keywords": ["fenbendazole", "ivermectin", "granules", "solution", "3 count", "4 oz bottle"],
+      "negative_keywords": ["animal supplements vitamins", "pet digestive remedies", "pet itch remedies", "pet flea tick treatments", "pet milk replacers", "pet relaxants"]
+    },
+    "animal_supplements_vitamins": {
+      "display_name": "Animal Supplements & Vitamins",
+      "formula": ["Brand", "Product Line", "Animal Health Concern", "Animal Supplement & Vitamin Type", "Enteral Medication & Supplement Form", "\"for\" Animal Type", "Flavor \"Flavor\"", "Size *or* Count \"Count\"", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Animal Health Concern", "Brand"],
+      "aliases": ["animal supplement", "animal supplements", "animal vitamin", "pet vitamin", "pet supplement"],
+      "title_keywords": ["animal supplement", "animal supplements", "animal vitamin", "pet vitamin", "pet supplement"],
+      "context_keywords": ["hip joint health", "heart health", "multivitamin", "chews", "drops", "90 count", "1 fl oz bottle"],
+      "negative_keywords": ["animal dewormers", "pet digestive remedies", "pet itch remedies", "pet milk replacers", "poultry conditioner", "pet flea tick treatments"]
+    },
+    "cat_hairball_remedies": {
+      "display_name": "Cat Hairball Remedies",
+      "formula": ["Brand", "Product Line", "Ingredient Preference", "\"Hairball Remedy\"", "Enteral Medication & Supplement Form", "\"with\" Primary Ingredient", "\"for\" Animal Lifestage", "Animal Type", "Flavor \"Flavor\"", "Size *or* Count \"Count\"", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Animal Health Concern", "Brand"],
+      "aliases": ["cat hairball remedy", "cat hairball remedies", "hairball remedy", "hairball paste", "hairball chews"],
+      "title_keywords": ["cat hairball remedy", "hairball remedy", "hairball paste", "hairball chews"],
+      "context_keywords": ["with olive oil", "with omega 3", "for kittens", "for cats", "salmon flavor", "chicken flavor", "10 oz tube", "60 count bag"],
+      "negative_keywords": ["pet digestive remedies", "pet itch remedies", "animal supplements vitamins", "pet milk replacers", "pet toothpaste", "pet ear care"]
+    },
+    "flea_tick_collars": {
+      "display_name": "Flea & Tick Collars",
+      "formula": ["Brand", "Product Line", "Feature", "Protection Period *or* Product Multifunction Descriptor", "Flea & Tick Collar Type", "\"for\" Animal Type", "Size Descriptor", "Color", "Count \"Count\"", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Flea And Tick Treatment Type", "Brand"],
+      "aliases": ["flea and tick collar", "flea tick collar", "flea collar", "tick collar"],
+      "title_keywords": ["flea and tick collar", "flea tick collar", "flea collar", "tick collar"],
+      "context_keywords": ["7-month", "4-in-1", "break-away", "reflective", "for puppies and dogs", "for cats", "large", "blue", "white"],
+      "negative_keywords": ["pet flea tick treatments", "pet flea combs", "pet itch remedies", "pet recovery collars", "pet training collars", "pet diapers"]
+    },
+    "pet_diapers": {
+      "display_name": "Pet Diapers",
+      "formula": ["Brand", "Product Line", "Feature", "Gender", "Animal Type", "Pet Diaper Type", "\"with\" Items Included *or* Accessories Included", "Color", "Pattern *or* Theme", "Diaper Size", "Count \"Count\"", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Pet Diaper Type"],
+      "aliases": ["pet diaper", "pet diapers", "dog diaper", "cat diaper", "belly band"],
+      "title_keywords": ["pet diaper", "pet diapers", "dog diaper", "cat diaper", "belly band"],
+      "context_keywords": ["reusable", "disposable", "female dog", "male cat", "cloth diaper", "xs", "m/l", "30 count"],
+      "negative_keywords": ["pet training pads", "pet training pad trays", "pet recovery collars", "pet relaxants", "pet bedding litter", "pet waste bags"]
+    },
+    "pet_digestive_remedies": {
+      "display_name": "Pet Digestive Remedies",
+      "formula": ["Brand", "Product Line", "Animal Health Concern", "Pet Digestive Remedy Type", "Enteral Medication & Supplement Form", "\"for\" Animal Type", "Flavor \"Flavor\"", "Size *or* Count \"Count\"", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Animal Lifestage", "Animal Health Concern"],
+      "aliases": ["pet digestive remedy", "pet digestive remedies", "digestive support", "probiotic pet supplement"],
+      "title_keywords": ["pet digestive remedy", "pet digestive remedies", "digestive support", "probiotic", "prebiotic chews"],
+      "context_keywords": ["gut health", "gummies", "chews", "for cats", "for dogs", "beef flavor", "duck flavor", "120 count jar"],
+      "negative_keywords": ["cat hairball remedies", "animal supplements vitamins", "pet itch remedies", "animal dewormers", "pet milk replacers", "pet toothpastes"]
+    },
+    "pet_ear_care": {
+      "display_name": "Pet Ear Care",
+      "formula": ["Brand", "Product Line", "Feature *and/or* Ingredient Preference *and/or* Active Ingredients", "Pet Ear Care Type", "Topical Medication Form", "\"with\" Primary Ingredient", "\"for\" Animal Type", "Size *or* Count \"Count\"", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Ear Care Type", "Brand"],
+      "aliases": ["pet ear care", "dog ear care", "cat ear care", "ear cleanser wipes", "ear rinse"],
+      "title_keywords": ["pet ear care", "dog ear care", "cat ear care", "ear cleanser wipes", "ear rinse"],
+      "context_keywords": ["premoistened", "antibacterial", "antiseptic", "1% hydrocortisone", "with aloe", "100 count jar", "1.25 fl oz bottle"],
+      "negative_keywords": ["pet eye care", "pet flea tick treatments", "pet itch remedies", "pet thermometers", "pet toothbrushes", "pet toothpastes"]
+    },
+    "pet_eye_care": {
+      "display_name": "Pet Eye Care",
+      "formula": ["Brand", "Product Line", "Feature *and/or* Ingredient Preference *and/or* Active Ingredients", "Pet Ear Care Type", "Topical Medication Form", "\"with\" Primary Ingredient", "\"for\" Animal Type", "Size *or* Count \"Count\"", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Eye Care Type", "Brand"],
+      "aliases": ["pet eye care", "dog eye care", "cat eye care", "tear stain remover wipes", "eye lubricant ointment"],
+      "title_keywords": ["pet eye care", "dog eye care", "cat eye care", "tear stain remover wipes", "eye lubricant ointment"],
+      "context_keywords": ["premoistened", "antibacterial", "antibiotic", "3% zinc", "100 count jar", "2.25 oz tube", "for horses", "for dogs"],
+      "negative_keywords": ["pet ear care", "pet flea tick treatments", "pet itch remedies", "pet thermometers", "pet toothbrushes", "pet toothpastes"]
+    },
+    "pet_flea_tick_treatments": {
+      "display_name": "Pet Flea & Tick Treatments",
+      "formula": ["Brand", "Product Line", "Feature *and/or* Ingredient Preference", "Pet Flea & Tick Treatment Type", "Recommended Location", "Enteral Medication & Supplement Form *or* Topical Medication Form", "\"for\" Pet Size", "Animal Type", "Minimum Weight \"-\" Maximum Weight", "Count per Pack \"Doses\" *or* Size *or* Count \"Count\"", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Flea And Tick Treatment Type", "Brand"],
+      "aliases": ["pet flea and tick treatment", "flea and tick treatment", "flea tick prevention chews", "flea tick spray", "flea tick shampoo"],
+      "title_keywords": ["pet flea and tick treatment", "flea and tick treatment", "flea tick prevention chews", "flea tick spray", "flea tick shampoo"],
+      "context_keywords": ["for large dogs", "45-88 lbs", "6 doses", "32 fl oz bottle", "18 oz bottle", "prevention chews", "bedding spray", "shampoo"],
+      "negative_keywords": ["flea tick collars", "pet flea combs", "pet itch remedies", "pet ear care", "pet eye care", "pet deodorizers"]
+    },
+    "pet_flea_combs": {
+      "display_name": "Pet Flea Combs",
+      "formula": ["Brand", "Product Line", "Feature", "Count \"-Piece\"", "Material", "Power Type", "\"Flea Comb\"", "Retail Packaging", "\"for\" Animal Type", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Parasite Type"],
+      "aliases": ["pet flea comb", "pet flea combs", "flea comb", "electric flea comb"],
+      "title_keywords": ["pet flea comb", "pet flea combs", "flea comb", "electric flea comb"],
+      "context_keywords": ["waterproof", "electric", "double row", "ergonomic", "3-piece", "stainless steel", "white", "blue"],
+      "negative_keywords": ["pet flea tick treatments", "flea tick collars", "pet grooming brushes", "pet dematting tools", "pet hair removal grooming mitts", "pet toothbrushes"]
+    },
+    "pet_itch_remedies": {
+      "display_name": "Pet Itch Remedies",
+      "formula": ["Brand", "Product Line", "Feature *and/or* Ingredient Preference *and/or* Skin Care Key Benefits", "Pet itch Remedy Type", "Enteral Medication & Supplement Form *or* Topical Medication Form", "\"with\" Primary Ingredient", "\"for\" Animal Type", "Size *or* Count \"Count\"", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Brand", "Animal Type", "Animal Health Concern"],
+      "aliases": ["pet itch remedy", "pet itch remedies", "anti-itch remedy", "hot spot relief"],
+      "title_keywords": ["pet itch remedy", "pet itch remedies", "anti-itch remedy", "hot spot relief"],
+      "context_keywords": ["spray", "balm", "tablet", "with coconut oil", "12 oz bottle", "2 oz tub", "100 count jar"],
+      "negative_keywords": ["pet ear care", "pet eye care", "pet flea tick treatments", "animal shampoos", "pet deodorizers", "pet digestive remedies"]
+    },
+    "pet_milk_replacers": {
+      "display_name": "Pet Milk Replacers",
+      "formula": ["Brand", "Product Line", "Food Condition *or* Feature", "\"Milk Replacement\"", "Enteral Medication & Supplement Form", "\"for\" Animal Lifestage", "Size", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Animal Lifestage", "Brand"],
+      "aliases": ["pet milk replacer", "pet milk replacers", "milk replacement", "puppy milk replacer", "kitten milk replacer"],
+      "title_keywords": ["pet milk replacer", "pet milk replacers", "milk replacement", "puppy milk replacer", "kitten milk replacer"],
+      "context_keywords": ["powdered", "dissolvable", "liquid", "for puppies", "for foals", "12 oz can", "25 lb tub", "4 lb pouch"],
+      "negative_keywords": ["pet nursing bottles", "pet nursing kits", "pet nursing replacement teats", "pet nursing syringes", "animal supplements vitamins", "pet digestive remedies"]
+    },
+    "pet_nursing_bottles_bottle_sets": {
+      "display_name": "Pet Nursing Bottles & Bottle Sets",
+      "formula": ["Brand", "Product Line", "Feature", "Ingredient Preference", "Count \"-Piece\"", "Material", "Pet Nursing Bottle or Bottle Set Type", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "\"for\" Animal Lifestage", "Volume Capacity", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Nursing Bottle And Bottle Set Type", "Activity"],
+      "aliases": ["pet nursing bottle", "pet nursing bottles", "nursing bottle set", "pet nursing bottle set", "livestock nursing bucket"],
+      "title_keywords": ["pet nursing bottle", "pet nursing bottles", "nursing bottle set", "pet nursing bottle set", "livestock nursing bucket"],
+      "context_keywords": ["reusable", "bpa-free", "3-piece", "glass", "plastic", "with brush", "with nipple", "for kittens puppies", "4 oz", "2 gal"],
+      "negative_keywords": ["pet nursing kits", "pet nursing replacement teats", "pet nursing syringes", "pet milk replacers", "pet baby bottles", "pet digestive remedies"]
+    },
+    "pet_nursing_kits": {
+      "display_name": "Pet Nursing Kits",
+      "formula": ["Brand", "Product Line", "Feature *or* Ingredient Preference", "Count \"-Piece\"", "\"Nursing Kit\"", "\"with\" Items Included *or* Accessories Included", "\"for\" Animal Lifestage", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Pet Size"],
+      "aliases": ["pet nursing kit", "pet nursing kits", "animal nursing kit"],
+      "title_keywords": ["pet nursing kit", "pet nursing kits", "animal nursing kit"],
+      "context_keywords": ["latex-free", "multi-species", "24-piece", "96-piece", "with bottles syringes and formula", "with bucket teats and holder", "for kittens puppies", "for calves"],
+      "negative_keywords": ["pet nursing bottles", "pet nursing replacement teats", "pet nursing syringes", "pet milk replacers", "pet digestive remedies", "pet wheelchairs"]
+    },
+    "pet_nursing_replacement_teats": {
+      "display_name": "Pet Nursing Replacement Teats",
+      "formula": ["Brand", "Product Line", "Feature *or* Ingredient Preference", "Material", "Mount Type", "\"Nursing Replacement Teat\"", "Retail Packaging", "\"for\" Animal Lifestage", "Count \"Count\"", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Count Per Pack", "Animal Type", "Material"],
+      "aliases": ["nursing replacement teat", "nursing replacement teats", "replacement teat", "nursing teat"],
+      "title_keywords": ["nursing replacement teat", "nursing replacement teats", "replacement teat", "nursing teat"],
+      "context_keywords": ["vented", "rubber", "latex-free", "silicone", "snap-on", "for piglets lambs", "for foals", "50 count", "20 count"],
+      "negative_keywords": ["pet nursing bottles", "pet nursing kits", "pet nursing syringes", "pet milk replacers", "pet pacifier", "pet digestive remedies"]
+    },
+    "pet_nursing_syringes": {
+      "display_name": "Pet Nursing Syringes",
+      "formula": ["Brand", "Product Line", "Feature *or* Ingredient Preference", "\"Nursing Syringe\"", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "\"for\" Animal Lifestage", "Count \"Count\"", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Brand", "Animal Type", "Material"],
+      "aliases": ["pet nursing syringe", "pet nursing syringes", "nursing syringe"],
+      "title_keywords": ["pet nursing syringe", "pet nursing syringes", "nursing syringe"],
+      "context_keywords": ["disposable", "bpa-free", "with assorted teats", "with medicine dropper", "for puppies kittens", "for gerbils hamsters", "100 count"],
+      "negative_keywords": ["pet nursing bottles", "pet nursing kits", "pet nursing replacement teats", "pet milk replacers", "pet digestive remedies", "pet toothpastes"]
+    },
+    "pet_recovery_collars_cones": {
+      "display_name": "Pet Recovery Collars & Cones",
+      "formula": ["Brand", "Product Line", "Feature", "Material", "Pet Recovery Collar & Cone Type", "Retail Packaging", "\"for\" Animal Type", "Color", "Pattern *or* Theme", "Size Descriptor", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Recovery Collar And Cone Type", "Material"],
+      "aliases": ["pet recovery collar", "pet recovery cone", "e-collar", "recovery collar", "recovery cone"],
+      "title_keywords": ["pet recovery collar", "pet recovery cone", "e-collar", "recovery collar", "recovery cone"],
+      "context_keywords": ["adjustable", "plastic", "inflatable", "fabric", "for dogs and cats", "for pets", "blue", "orange flower", "one size", "small"],
+      "negative_keywords": ["pet relaxants", "pet training collars", "flea tick collars", "pet diapers", "pet wheelchairs", "pet apparel"]
+    },
+    "pet_relaxants": {
+      "display_name": "Pet Relaxants",
+      "formula": ["Brand", "Product Line", "Activity", "Feature", "Pet Relaxant Type", "\"for\" Animal Type", "Color", "Pattern *or* Theme", "Size Descriptor", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Pet Relaxant Type"],
+      "aliases": ["pet relaxant", "pet relaxants", "anti-anxiety garment", "relaxation collar", "relaxation pendant"],
+      "title_keywords": ["pet relaxant", "pet relaxants", "anti-anxiety garment", "relaxation collar", "relaxation pendant"],
+      "context_keywords": ["calming", "stress relieving", "for cats", "for dogs", "army green", "purple flowers", "small", "one size"],
+      "negative_keywords": ["pet recovery collars", "pet training collars", "flea tick collars", "pet diapers", "pet itch remedies", "pet wheelchairs"]
+    },
+    "pet_thermometers": {
+      "display_name": "Pet Thermometers",
+      "formula": ["Brand", "Product Line", "Feature", "Display Technology \"Display\"", "Body Part", "Pet Thermometer Type", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "\"for\" Animal Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Pet Thermometer Type"],
+      "aliases": ["pet thermometer", "pet thermometers", "animal thermometer", "rectal pet thermometer", "infrared pet thermometer"],
+      "title_keywords": ["pet thermometer", "pet thermometers", "animal thermometer", "rectal pet thermometer", "infrared pet thermometer"],
+      "context_keywords": ["digital display", "led display", "rectal", "ear", "infrared", "contactless", "for livestock", "for dogs and cats"],
+      "negative_keywords": ["pet ear care", "pet eye care", "pet toothbrushes", "pet toothpastes", "animal acupuncture models", "pet nursing syringes"]
+    },
+    "pet_toothbrushes": {
+      "display_name": "Pet Toothbrushes",
+      "formula": ["Brand", "Product Line", "Feature", "Power Type", "Pet Toothbrush Type", "Retail Packaging", "\"with\" Items Included *and/or* Accessories Included", "\"for\" + Pet Size", "Animal Type", "Color", "Count \"Count\"", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Toothbrush Type", "Brand"],
+      "aliases": ["pet toothbrush", "pet toothbrushes", "dog toothbrush", "cat toothbrush", "finger brush"],
+      "title_keywords": ["pet toothbrush", "pet toothbrushes", "dog toothbrush", "cat toothbrush", "finger brush"],
+      "context_keywords": ["disposable", "electric", "finger brush", "with replacement heads", "with toothpaste", "for small dogs and cats", "for large dogs", "white", "4 count"],
+      "negative_keywords": ["animal dental care tools", "pet toothpaste", "pet ear care", "pet eye care", "pet flea combs", "pet thermometers"]
+    },
+    "pet_toothpaste": {
+      "display_name": "Pet Toothpaste",
+      "formula": ["Brand", "Product Line", "Ingredient Preference", "Animal Health Concern", "\"Pet Tooth\" Form", "Retail Packaging", "\"for\" Animal Type", "Flavor \"Flavor\"", "Size", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Pet Toothpaste Type"],
+      "aliases": ["pet toothpaste", "pet toothpowder", "dog toothpaste", "cat toothpaste"],
+      "title_keywords": ["pet toothpaste", "pet toothpowder", "dog toothpaste", "cat toothpaste"],
+      "context_keywords": ["enzymatic", "teeth whitening", "organic", "dental care", "peanut butter flavor", "beef flavor", "6 oz tube", "1 oz jar"],
+      "negative_keywords": ["pet toothbrushes", "animal dental care tools", "pet ear care", "pet eye care", "pet digestive remedies", "pet flea combs"]
+    },
+    "pet_wheelchairs": {
+      "display_name": "Pet Wheelchairs",
+      "formula": ["Brand", "Product Line", "Feature", "Number of Wheels \"-Wheel\"", "Pet Wheelchair Type", "\"with\" Items Included *and/or* Accessories Included", "\"for\" + Pet Size", "Animal Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Wheelchair Type", "Animal Lifestage"],
+      "aliases": ["pet wheelchair", "pet wheelchairs", "dog wheelchair", "cat wheelchair", "pet mobility cart"],
+      "title_keywords": ["pet wheelchair", "pet wheelchairs", "dog wheelchair", "cat wheelchair", "pet mobility cart"],
+      "context_keywords": ["4-wheel", "with harness", "with support straps", "for small dogs", "for large dogs", "mobility support"],
+      "negative_keywords": ["pet recovery collars", "pet relaxants", "pet training collars", "pet transport", "pet stairs steps", "pet containment"]
+    },
+    "poultry_conditioner": {
+      "display_name": "Poultry Conditioner",
+      "formula": ["Brand", "Product Line", "Food Condition *and/or* Feature *and/or* Ingredient Preference", "\"Poultry Conditioner\"", "Enteral Medication & Supplement Form *or* Topical Medication Form", "Size", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Brand", "Animal Type", "Size"],
+      "aliases": ["poultry conditioner", "chicken conditioner", "bird conditioner"],
+      "title_keywords": ["poultry conditioner", "chicken conditioner", "bird conditioner"],
+      "context_keywords": ["powdered", "liquid", "topical", "enteral", "oz", "fl oz", "lb"],
+      "negative_keywords": ["poultry feed", "poultry treats", "animal supplements vitamins", "pet digestive remedies", "animal dewormers", "pet milk replacers"]
+    }
+  }
+}, "small_animal_supplies": {
+  "display_name": "Small Animal Supplies",
+  "product_types": {
+    "other_small_animal_supplies": {
+      "display_name": "Other Small Animal Supplies",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Material", "Color", "Size", "Net Content UOM"],
+      "attributes": ["Product Net Content Quantity", "Condition", "Product Net Content Uom"],
+      "aliases": ["small animal supply", "small animal supplies", "small pet supply", "small pet supplies"],
+      "title_keywords": ["small animal supply", "small animal supplies", "small pet supply", "small pet supplies"],
+      "context_keywords": ["portable", "stainless steel", "blue", "medium", "2 lb", "small animal"],
+      "negative_keywords": ["small animal exercise wheel", "small animal habitat decor", "small animal habitat cage", "small animal toy", "small animal tube", "small animal tunnel"]
+    },
+    "small_animal_exercise_wheels": {
+      "display_name": "Small Animal Exercise Wheels",
+      "formula": ["Brand", "Product Line", "Feature", "Diameter", "Material", "Animal Type", "Small Animal Exercise Wheel Type", "\"with\" Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Size Descriptor", "Small Animal Exercise Wheel Type"],
+      "aliases": ["small animal exercise wheel", "exercise wheel", "hamster wheel", "gerbil wheel", "exercise ball"],
+      "title_keywords": ["small animal exercise wheel", "exercise wheel", "hamster wheel", "gerbil wheel", "exercise ball"],
+      "context_keywords": ["8.5\"", "6\"", "plastic", "wooden", "hamster", "gerbil", "with snap cap", "clear and blue"],
+      "negative_keywords": ["small animal toy", "small animal tube", "small animal tunnel", "small animal habitat decor", "small animal habitat cage", "pet wheelchairs"]
+    },
+    "small_animal_habitat_decor": {
+      "display_name": "Small Animal Habitat Decor",
+      "formula": ["Brand", "Product Line", "Feature", "Animal Type", "Size Descriptor", "Small Animal Habitat Decor Type", "Retail Packaging", "\"with\" Item Included", "Color", "Pattern *or* Theme", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Size Descriptor", "Material"],
+      "aliases": ["small animal habitat decor", "small animal decor", "habitat decor", "small pet decor"],
+      "title_keywords": ["small animal habitat decor", "habitat decor", "small animal decor", "small pet decor"],
+      "context_keywords": ["decorative", "waterproof", "artificial", "mini", "hamster", "guinea pig", "with ladder", "with base and rocks"],
+      "negative_keywords": ["small animal habitat cage", "small animal toy", "small animal tube", "small animal tunnel", "small animal exercise wheel", "small animal supply"]
+    },
+    "small_animal_habitats_cages": {
+      "display_name": "Small Animal Habitats & Cages",
+      "formula": ["Brand", "Product Line", "Feature", "Recommended Location", "Number of Levels \"-Story\"", "Size Descriptor", "Material", "Animal Type", "Small Animal Habitat & Cage Type", "Retail Packaging", "\"with\" Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Small Animal Habitats And Cage Type", "Brand"],
+      "aliases": ["small animal habitat", "small animal cage", "hamster cage", "rabbit hutch", "small animal starter kit"],
+      "title_keywords": ["small animal habitat", "small animal cage", "hamster cage", "rabbit hutch", "small animal starter kit"],
+      "context_keywords": ["outdoor", "3-story", "wooden", "metal", "plastic", "with ladder", "with food tray", "with water bottle", "clear and yellow", "gray and white"],
+      "negative_keywords": ["small animal habitat decor", "small animal exercise wheel", "small animal toy", "small animal tube", "small animal tunnel", "pet containment"]
+    },
+    "small_animal_toys": {
+      "display_name": "Small Animal Toys",
+      "formula": ["Brand", "Product Line", "Feature", "Count \"-Piece\"", "Material", "Small Animal Toy Type", "Retail Packaging", "\"with\" Items Included", "\"for\" + Animal Type", "Flavor \"Flavor\"", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Material", "Brand"],
+      "aliases": ["small animal toy", "small animal toys", "hamster toy", "rabbit toy", "guinea pig toy"],
+      "title_keywords": ["small animal toy", "small animal toys", "hamster toy", "rabbit toy", "guinea pig toy"],
+      "context_keywords": ["10-piece", "wooden", "bamboo", "activity ball", "playhouse set", "fruit flavor", "for rabbits and guinea pigs", "for hamsters"],
+      "negative_keywords": ["small animal exercise wheel", "small animal habitat decor", "small animal habitat cage", "small animal tube", "small animal tunnel", "cat toys"]
+    },
+    "small_animal_tubes_tunnels": {
+      "display_name": "Small Animal Tubes & Tunnels",
+      "formula": ["Brand", "Product Line", "Feature", "Count \"-Piece\"", "Material", "Small Animal Tube & Tunnel Type", "Retail Packaging", "\"with\" Items Included", "\"for\" + Animal Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Small Animal Tube And Tunnel Type", "Material"],
+      "aliases": ["small animal tube", "small animal tunnel", "small animal tubes", "small animal tunnels", "habitat tunnel"],
+      "title_keywords": ["small animal tube", "small animal tunnel", "small animal tubes", "small animal tunnels", "habitat tunnel"],
+      "context_keywords": ["lightweight", "plastic", "telescopic", "6-piece", "with connectors", "with straps", "for hamsters and gerbils", "for small animals"],
+      "negative_keywords": ["small animal habitat decor", "small animal habitat cage", "small animal exercise wheel", "small animal toy", "small animal supply", "pet transport"]
+    }
+  }
+},"bird_supplies": {
+  "display_name": "Bird Supplies",
+  "product_types": {
+    "other_bird_supplies": {
+      "display_name": "Other Bird Supplies",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature"],
+      "attributes": ["Condition", "Piece Count", "Animal Type"],
+      "aliases": ["bird supply", "bird supplies", "bird accessory", "bird accessories"],
+      "title_keywords": ["bird supply", "bird supplies", "bird accessory", "bird accessories"],
+      "context_keywords": ["lightweight", "bird", "supply"],
+      "negative_keywords": ["bird ladder", "bird perch", "bird swing", "bird toy", "birdcage", "egg incubator"]
+    },
+    "bird_ladders": {
+      "display_name": "Bird Ladders",
+      "formula": ["Brand", "Product Line", "Assembled Product Height *or* Number of Steps \"-Step\"", "Mount Type *or* Feature", "Material *or* Fabric Content", "Bird Type", "Bird Ladder Type", "Retail Packaging", "\"with\" Items Included", "Color", "Count \"pcs\"", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Material", "Brand", "Animal Type"],
+      "aliases": ["bird ladder", "bird ladders", "parrot ladder", "bird bridge ladder"],
+      "title_keywords": ["bird ladder", "bird ladders", "parrot ladder", "bird bridge ladder"],
+      "context_keywords": ["30\"", "7-step", "hanging", "detachable", "wooden", "plastic", "with shredder toys", "bright blue", "neon orange"],
+      "negative_keywords": ["bird perch", "bird swing", "bird toy", "birdcage stand", "bird nest", "bird seed catcher"]
+    },
+    "bird_nests_nesting_material": {
+      "display_name": "Bird Nests & Nesting Material",
+      "formula": ["Brand", "Product Line", "Feature", "Material", "Bird Type", "Bird Nest & Nesting Material Type", "Retail Packaging", "\"with\" Item Included", "Size", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Bird Nest And Nesting Material Type", "Animal Type", "Material"],
+      "aliases": ["bird nest", "bird nesting material", "bird nest material", "nesting material"],
+      "title_keywords": ["bird nest", "bird nesting material", "bird nest material", "nesting material"],
+      "context_keywords": ["natural", "woven twig", "canary", "finch", "hummingbird", "with ladder", "with holder", "2 oz ball"],
+      "negative_keywords": ["bird ladder", "bird perch", "bird swing", "bird toy", "birdcage bath", "birdcage cover"]
+    },
+    "bird_perches": {
+      "display_name": "Bird Perches",
+      "formula": ["Brand", "Product Line", "Feature", "Material", "Bird Type", "Bird Perch Type", "Retail Packaging", "\"with\" Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Bird Type", "Brand"],
+      "aliases": ["bird perch", "bird perches", "parrot perch", "bird perch platform"],
+      "title_keywords": ["bird perch", "bird perches", "parrot perch", "bird perch platform"],
+      "context_keywords": ["u-shaped", "connectable", "wooden", "plastic", "parakeet", "canary", "parrot", "with stand", "with hardware", "multi-color"],
+      "negative_keywords": ["bird ladder", "bird swing", "bird toy", "birdcage stand", "bird nest", "bird seed catcher"]
+    },
+    "bird_seed_guards_catchers": {
+      "display_name": "Bird Seed Guards & Catchers",
+      "formula": ["Brand", "Product Line", "Feature", "Size Descriptor", "Material *or* Fabric Content", "Bird Seed Guard & Catcher Type", "Retail Packaging", "\"with\" Items Included", "Pattern *or* Theme", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Size Descriptor", "Animal Type", "Material"],
+      "aliases": ["bird seed guard", "bird seed catcher", "bird seed skirt", "seed catching platform"],
+      "title_keywords": ["bird seed guard", "bird seed catcher", "bird seed skirt", "seed catching platform"],
+      "context_keywords": ["breathable", "extra large", "mesh", "small", "nylon", "wooden", "with chain", "blue", "daisies", "cosmic black"],
+      "negative_keywords": ["bird ladder", "bird perch", "bird swing", "bird toy", "birdcage cover", "birdcage bath"]
+    },
+    "bird_swings": {
+      "display_name": "Bird Swings",
+      "formula": ["Brand", "Product Line", "Feature", "Material *or* Fabric Content", "Bird Type", "Bird Swing Type", "Retail Packaging", "\"with\" Item Included", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Bird Type", "Animal Type", "Material"],
+      "aliases": ["bird swing", "bird swings", "parrot swing", "trapeze swing"],
+      "title_keywords": ["bird swing", "bird swings", "parrot swing", "trapeze swing"],
+      "context_keywords": ["lightweight", "rotating", "elevated", "wooden", "plastic", "parakeet", "parrot", "with bells", "with blocks", "multi-color", "light blue"],
+      "negative_keywords": ["bird ladder", "bird perch", "bird toy", "birdcage bath", "birdcage stand", "bird nest"]
+    },
+    "bird_toys": {
+      "display_name": "Bird Toys",
+      "formula": ["Brand", "Product Line", "Feature", "Bird Type", "\"Toy\"", "Form", "Retail Packaging", "\"with\" Items Included", "Piece Count \"pcs\"", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Bird Type", "Material"],
+      "aliases": ["bird toy", "bird toys", "parrot toy", "bird chime toy"],
+      "title_keywords": ["bird toy", "bird toys", "parrot toy", "bird chime toy"],
+      "context_keywords": ["flexible", "multi-level", "bell", "chain", "set", "with ladder", "with swings", "8 pcs", "4 pack", "parakeet", "macaw"],
+      "negative_keywords": ["bird ladder", "bird swing", "bird perch", "birdcage bath", "birdcage cover", "bird nest"]
+    },
+    "birdcage_baths": {
+      "display_name": "Birdcage Baths",
+      "formula": ["Brand", "Product Line", "Feature", "Bird Type", "Birdcage Bath Type", "Retail Packaging", "\"with\" Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Birdcage Bath Type", "Material"],
+      "aliases": ["birdcage bath", "birdcage baths", "bird bath box", "bird cage bath"],
+      "title_keywords": ["birdcage bath", "birdcage baths", "bird bath box", "bird cage bath"],
+      "context_keywords": ["leakproof", "fully enclosed", "stationary", "canary", "parakeet", "parrot", "macaw", "with mirror", "clear and blue", "red"],
+      "negative_keywords": ["birdcage cover", "birdcage stand", "birdcage", "bird swing", "bird perch", "bird ladder"]
+    },
+    "birdcage_covers": {
+      "display_name": "Birdcage Covers",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Feature", "Birdcage Cover Type", "Retail Packaging", "\"with\" Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Birdcage Cover Type", "Animal Type", "Material"],
+      "aliases": ["birdcage cover", "birdcage covers", "bird cage cover", "birdcage day shade"],
+      "title_keywords": ["birdcage cover", "birdcage covers", "bird cage cover", "birdcage day shade"],
+      "context_keywords": ["extra large", "small", "lightweight", "breathable", "ventilated", "waterproof", "with handles", "black", "emerald green"],
+      "negative_keywords": ["birdcage bath", "birdcage stand", "birdcage", "bird seed catcher", "bird swing", "bird perch"]
+    },
+    "birdcage_stands": {
+      "display_name": "Birdcage Stands",
+      "formula": ["Brand", "Product Line", "Feature", "Material", "Birdcage Stand Type", "Retail Packaging", "\"with\" Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Birdcage Stand Type", "Material"],
+      "aliases": ["birdcage stand", "birdcage stands", "birdcage holder", "bird cage stand"],
+      "title_keywords": ["birdcage stand", "birdcage stands", "birdcage holder", "bird cage stand"],
+      "context_keywords": ["portable", "heavy duty", "steel", "metal", "with storage shelf", "with casters", "black", "silver"],
+      "negative_keywords": ["birdcage cover", "birdcage bath", "birdcage", "bird perch", "bird swing", "bird ladder"]
+    },
+    "birdcages": {
+      "display_name": "Birdcages",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Assembled Product Height", "Feature", "Material", "Birdcage Type", "Retail Packaging", "\"with\" Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Brand", "Animal Type", "Bird Type"],
+      "aliases": ["birdcage", "birdcages", "breeder cage", "bird cage"],
+      "title_keywords": ["birdcage", "birdcages", "breeder cage", "bird cage"],
+      "context_keywords": ["medium", "large", "30\"", "64\"", "stackable", "stationary", "metal", "wrought iron", "with stand", "with perches", "with cover", "white", "black"],
+      "negative_keywords": ["birdcage stand", "birdcage cover", "birdcage bath", "bird perch", "bird swing", "egg incubator"]
+    },
+    "chicken_coop_accessories": {
+      "display_name": "Chicken Coop Accessories",
+      "formula": ["Brand", "Product Line", "Feature *and/or* Ingredient Preference", "\"Chicken\"", "Chicken Coop Accessory Type", "Retail Packaging", "\"with\" Items Included", "Size", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Material", "Chicken Coop Accessory Type"],
+      "aliases": ["chicken coop accessory", "chicken coop accessories", "coop accessory", "chicken accessory"],
+      "title_keywords": ["chicken coop accessory", "chicken coop accessories", "coop accessory", "chicken accessory"],
+      "context_keywords": ["natural", "non-toxic", "odor neutralizer", "handcrafted", "waterproof", "swing set", "with bells", "2 lb bag"],
+      "negative_keywords": ["egg incubator", "birdcage", "bird perch", "bird ladder", "bird swing", "poultry conditioner"]
+    },
+    "egg_incubators": {
+      "display_name": "Egg Incubators",
+      "formula": ["Brand", "Product Line", "Feature", "Holding Capacity", "Animal Type", "\"Egg Incubator\"", "Retail Packaging", "\"with\" Items Included", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Maximum Humidity", "Brand"],
+      "aliases": ["egg incubator", "egg incubators", "reptile egg incubator", "duck egg incubator"],
+      "title_keywords": ["egg incubator", "egg incubators", "reptile egg incubator", "duck egg incubator"],
+      "context_keywords": ["dual chamber", "fully automatic", "digital display", "humidity controlled", "24 duck egg", "6 reptile egg", "kit", "with candler"],
+      "negative_keywords": ["chicken coop accessories", "birdcage", "birdcage stand", "birdcage cover", "bird nest", "poultry conditioner"]
+    }
+  }
+}, "fish_aquarium_terrarium_supplies": {
+  "display_name": "Fish, Aquarium & Terrarium Supplies",
+  "product_types": {
+    "other_reptile_amphibian_supplies": {
+      "display_name": "Other Reptile & Amphibian Supplies",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Material", "Color", "Size", "Count/Pack"],
+      "attributes": ["Count Per Pack", "Multipack Quantity", "Number Of Pieces"],
+      "aliases": ["reptile supply", "amphibian supply", "reptile and amphibian supply", "reptile accessory"],
+      "title_keywords": ["reptile supply", "amphibian supply", "reptile and amphibian supply", "reptile accessory"],
+      "context_keywords": ["portable", "wood", "black", "12\"", "6 pack", "reptile"],
+      "negative_keywords": ["terrarium", "reptile thermometer", "terrarium cover", "terrarium lamp", "aquarium supply", "fish bowl"]
+    },
+    "other_aquatic_pet_supplies": {
+      "display_name": "Other Aquatic Pet Supplies",
+      "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Material", "Color", "Size", "Count/Pack", "Net Content UOM"],
+      "attributes": ["Condition", "Multipack Quantity", "Product Net Content Quantity"],
+      "aliases": ["aquatic pet supply", "aquatic pet supplies", "aquarium supply", "aquarium accessory"],
+      "title_keywords": ["aquatic pet supply", "aquatic pet supplies", "aquarium supply", "aquarium accessory"],
+      "context_keywords": ["lightweight", "plastic", "blue", "medium", "4 count", "16 oz"],
+      "negative_keywords": ["aquarium filter", "aquarium decor", "aquarium heater", "aquarium hood", "aquarium water treatment", "fish bowl"]
+    },
+    "aquarium_terrarium_substrate": {
+      "display_name": "Aquarium & Terrarium Substrate",
+      "formula": ["Brand", "Product Line", "Animal Type", "Ingredient Preference", "Feature and/or Recommended Use", "Aquarium and Terrarium Substrate Type", "Material", "Form", "\"for up to\" or \"for\" Volume Capacity", "\"Gallon Tank\"", "Color", "Assembled Product Weight or Assembled Product Width x Assembled Product Length", "Count per Pack \"Count\"", "Multipack Quantity \"Pack\""],
+      "attributes": ["Material", "Aquarium And Terrarium Substrate Type", "Color"],
+      "aliases": ["aquarium substrate", "terrarium substrate", "aquarium gravel", "reef sand", "coco coir substrate"],
+      "title_keywords": ["aquarium substrate", "terrarium substrate", "aquarium gravel", "reef sand", "coco coir substrate"],
+      "context_keywords": ["sand", "gravel", "coconut fiber mat", "burrowing", "for up to 20 gallon tank", "4.4 lbs", "11\" x 4'"],
+      "negative_keywords": ["aquarium decor", "aquarium filter media", "aquarium water treatment", "terrarium habitat decor", "aquarium gravel cleaner", "aquarium cleaning tool"]
+    },
+    "aquarium_air_pumps": {
+      "display_name": "Aquarium Air Pumps",
+      "formula": ["Brand", "Product Line", "\"CC/M\" or \"L/M\"", "Recommended Use", "Size Descriptor", "Features", "Watts", "\"W\"", "Gallons Per Hour", "\"GPH\" \"or\" Volumetric Flow Rate Unit", "Aquarium Air Pump Outlets", "\"Outlets\"", "\"Aquarium Air Pump\"", "Retail Packaging", "\"with\" Accessories Included", "\"for up to\" or \"for\" Volume Capacity", "\"Gallon\"", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Aquarium Air Pump Outlet", "Brand", "Condition"],
+      "aliases": ["aquarium air pump", "air pump", "fish tank air pump", "multiple outlet air pump"],
+      "title_keywords": ["aquarium air pump", "air pump", "fish tank air pump", "multiple outlet air pump"],
+      "context_keywords": ["2800 cc/m", "4 l/m", "18w", "602 gph", "double outlet", "with airline tubing", "for up to 60 gallon"],
+      "negative_keywords": ["aquarium water pump", "aquarium filter", "aquarium heater", "aquarium hood", "aquarium light", "automatic fish feeder"]
+    },
+    "aquarium_breeder_tanks": {
+      "display_name": "Aquarium Breeder Tanks",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Features and/or Recommended Use", "Fish Species", "Material", "Aquarium Breeder Tank Type", "Retail Packaging", "\"with\" Accessories Incldued", "Assembled Product Width x Assembled Product Length", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Aquarium Breeder Tank Type", "Brand", "Material"],
+      "aliases": ["aquarium breeder tank", "breeder tank", "fish breeder tank", "breeder bag", "breeder incubator"],
+      "title_keywords": ["aquarium breeder tank", "breeder tank", "fish breeder tank", "breeder bag", "breeder incubator"],
+      "context_keywords": ["mesh breeder bag", "mini", "shrimp", "acrylic breeding tube", "glass breeder incubator", "12.9\" x 16.5\"", "3 count"],
+      "negative_keywords": ["aquarium tank divider", "aquarium", "fish bowl", "aquarium starter kit", "aquarium net", "aquarium decor"]
+    },
+    "aquarium_cleaning_tools": {
+      "display_name": "Aquarium Cleaning Tools",
+      "formula": ["Brand", "Product Line", "Features and/or Recommended Use", "Aquarium Cleaning Tool Type", "Retail Packaging", "\"with\" Accessories Included", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Brand", "Aquarium Cleaning Tool Type", "Condition"],
+      "aliases": ["aquarium cleaning tool", "aquarium cleaning tools", "tank cleaning tool", "aquarium brush"],
+      "title_keywords": ["aquarium cleaning tool", "aquarium cleaning tools", "tank cleaning tool", "aquarium brush"],
+      "context_keywords": ["double-sided", "cleaning brush", "tool set", "holder", "9 count", "with accessories included"],
+      "negative_keywords": ["aquarium gravel cleaner", "aquarium net", "aquarium filter media", "aquarium decor", "aquarium water treatment", "aquarium parts"]
+    },
+    "aquarium_decor": {
+      "display_name": "Aquarium Decor",
+      "formula": ["Brand or Global Brand", "Product Line", "Size Descriptor", "Feature", "Theme or Character or Character Group or Occassion", "Aquarium Décor Type", "Retail Packaging", "\"with\" Accessories Included", "Color", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Aquarium Decor Type", "Color", "Condition"],
+      "aliases": ["aquarium decor", "aquarium decoration", "fish tank decor", "aquarium plant decoration"],
+      "title_keywords": ["aquarium decor", "aquarium decoration", "fish tank decor", "aquarium plant decoration"],
+      "context_keywords": ["elf house", "glow-in-the-dark", "plant decoration set", "spongebob pineapple home", "yellow and green", "multi-color"],
+      "negative_keywords": ["terrarium habitat decor", "aquarium substrate", "aquarium filter media", "aquarium stands", "aquariums", "fish bowls"]
+    },
+    "aquarium_filter_media": {
+      "display_name": "Aquarium Filter Media",
+      "formula": ["Brand", "Product Line", "Aquarium Water Type", "Compatible Brand", "Compatible Model \"or\" Model", "Manufacturing Model Number", "Features", "Material", "Aquarium Filter Media Type", "Form", "Retail Packaging", "\"with\" Accessories Included", "Color", "Assembled Product Width x Assembled Product Length", "Count per Pack \"Count\"", "Multipack Quantity \"Pack\""],
+      "attributes": ["Brand", "Material", "Form"],
+      "aliases": ["aquarium filter media", "filter media", "filter cartridge", "filter media rings", "biological filter media"],
+      "title_keywords": ["aquarium filter media", "filter media", "filter cartridge", "filter media rings", "biological filter media"],
+      "context_keywords": ["freshwater", "saltwater", "carbon", "ceramic", "bio sponge", "roll", "bag", "6 count", "100 count", "12\" x 36\""],
+      "negative_keywords": ["aquarium filter", "aquarium water treatment", "aquarium cleaning tool", "aquarium gravel cleaner", "aquarium parts", "aquarium decor"]
+    },
+    "aquarium_filters": {
+      "display_name": "Aquarium Filters",
+      "formula": ["Brand or Global Brand", "Product Line", "Character or Character Group", "Size Descriptor", "Recommended Use \"and/or\" Features", "Aquarium Water Type", "Number of Stages", "Gallons Per Hour", "\"GPH\" or Volumetric Flow Rate Unit", "\"GPD\"", "Aquarium Filter Type", "Retail Packaging", "\"with\" Accessories Included", "\"for up to\" or \"for\" Volume Capacity", "Gallon Tank", "Count per Pack \"Count\"", "Multipack Quantity \"Pack\""],
+      "attributes": ["Aquarium Filter Type", "Brand", "Count Per Pack"],
+      "aliases": ["aquarium filter", "aquarium filters", "fish tank filter", "under gravel filter", "reverse osmosis water filter system"],
+      "title_keywords": ["aquarium filter", "aquarium filters", "fish tank filter", "under gravel filter", "reverse osmosis water filter system"],
+      "context_keywords": ["multi-stage", "75 gph", "350 gph", "75 gpd", "freshwater", "saltwater", "for up to 60 gallon tank", "for 20 gallon tank", "bio-wheel"],
+      "negative_keywords": ["aquarium filter media", "aquarium water pump", "aquarium air pump", "aquarium water treatment", "aquarium cleaning tool", "aquarium parts"]
+    },
+    "aquarium_gravel_cleaners": {
+      "display_name": "Aquarium Gravel Cleaners",
+      "formula": ["Brand", "Product Line", "Features", "Recommended Use", "Aquarium Gravel Cleaner Type", "Retail Packaging", "\"with\" Accessories Included", "Size or Assembled Product Width x Assembled Product Length", "Count per Pack \"Count\"", "Multipack Quantity \"Pack\""],
+      "attributes": ["Aquarium Gravel Cleaner Type", "Brand", "Multipack Quantity"],
+      "aliases": ["aquarium gravel cleaner", "gravel cleaner", "gravel vacuum cleaner", "substrate cleaner"],
+      "title_keywords": ["aquarium gravel cleaner", "gravel cleaner", "gravel vacuum cleaner", "substrate cleaner"],
+      "context_keywords": ["vacuum cleaner", "kit", "8 fl oz", "1.68\" x 14\"", "6 count", "with accessories included"],
+      "negative_keywords": ["aquarium cleaning tools", "aquarium filter", "aquarium water treatment", "aquarium substrate", "aquarium net", "aquarium parts"]
+    },
+    "aquarium_heaters": {
+      "display_name": "Aquarium Heaters",
+      "formula": ["Brand", "Product Line", "Features", "Material", "Aquarium Water Heater Type", "Retail Packaging", "\"with\" Accessories Included", "\"for up to\" or \"for\" Volume Capacity", "Assembled Product Length", "\"Long\"", "Count per Pack \"Count\"", "Multipack Quantity \"Pack\""],
+      "attributes": ["Aquarium Heater Type", "Brand", "Material"],
+      "aliases": ["aquarium heater", "aquarium heaters", "submersible aquarium heater", "heater guard"],
+      "title_keywords": ["aquarium heater", "aquarium heaters", "submersible aquarium heater", "heater guard"],
+      "context_keywords": ["glass", "plastic", "submersible", "protective guard", "for up to 20 gallon tank", "13\" long", "12\" long"],
+      "negative_keywords": ["aquarium air pump", "aquarium water pump", "aquarium filter", "aquarium hood", "aquarium lights", "aquarium thermometers"]
+    },
+    "aquarium_hoods": {
+      "display_name": "Aquarium Hoods",
+      "formula": ["Brand", "Product Line", "Features", "Light Bulb Type", "Volume Capacity", "\"Gallon\"", "Material", "\"Aquarium Hood\"", "Assembled Product Width x Assembled Product Length", "Count per Pack \"Count\"", "Multipack Quantity \"Pack\""],
+      "attributes": ["Number Of Pieces", "Brand", "Material"],
+      "aliases": ["aquarium hood", "aquarium hoods", "fish tank hood", "aquarium canopy"],
+      "title_keywords": ["aquarium hood", "aquarium hoods", "fish tank hood", "aquarium canopy"],
+      "context_keywords": ["led", "fluorescent", "hinged", "glass", "plastic", "10 gallon", "8\" x 12\"", "8\" x 16\"", "5\" x 30\""],
+      "negative_keywords": ["aquarium lights", "terrarium covers", "aquarium heaters", "aquarium filters", "aquarium stand", "aquariums"]
+    },
+    "aquarium_hydrometers": {
+      "display_name": "Aquarium Hydrometers",
+      "formula": ["Brand", "Product Line", "Aquarium Water Type", "Size Descriptor", "Features \"and/or\" Recommended Use", "Material", "Aquarium Hydrometer Type", "\"with\" Accessories Included", "Count per Pack \"Count\"", "Multipack Quantity \"Pack\""],
+      "attributes": ["Brand", "Material", "Aquarium Hydrometer Type"],
+      "aliases": ["aquarium hydrometer", "aquarium hydrometers", "aquarium refractometer", "salinity tester"],
+      "title_keywords": ["aquarium hydrometer", "aquarium hydrometers", "aquarium refractometer", "salinity tester"],
+      "context_keywords": ["saltwater", "mini", "glass", "aluminum", "plastic", "with thermometer", "with case", "compact"],
+      "negative_keywords": ["aquarium thermometer", "aquarium test kit", "aquarium water treatment", "aquarium filter", "reptile thermometer", "aquarium light"]
+    },
+    "aquarium_lights": {
+      "display_name": "Aquarium Lights",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Features \"and/or\" Recommended Use", "Light Bulb Type", "Shape", "Aquarium Light Type", "Form", "\"with\" Accessories Included", "Number of Lights", "Light Bulb Color", "\"Lights\"", "Assembled Product Length", "\"Long\"", "Count per Pack \"Count\"", "Multipack Quantity \"Pack\""],
+      "attributes": ["Aquarium Light Type", "Brand", "Condition"],
+      "aliases": ["aquarium light", "aquarium lights", "led aquarium light", "aquarium lighting roll", "uv sterilization lamp"],
+      "title_keywords": ["aquarium light", "aquarium lights", "led aquarium light", "aquarium lighting roll", "uv sterilization lamp"],
+      "context_keywords": ["6 blue lights", "12 rgb lights", "36 multi-color lights", "6\" long", "11\" long", "22\" long", "16' long", "round", "roll"],
+      "negative_keywords": ["aquarium hood", "terrarium habitat lighting", "terrarium heat lamp", "aquarium heater", "aquarium air pump", "aquarium thermometer"]
+    },
+    "aquarium_nets": {
+      "display_name": "Aquarium Nets",
+      "formula": ["Brand", "Product Line", "Features", "Material", "Handle Length", "\"Handle\"", "\"Aquarium Net\"", "Retail Packaging", "\"with\" Accessories Included", "Count per Pack \"Count\"", "Multipack Quantity \"Pack\""],
+      "attributes": ["Condition", "Material", "Brand"],
+      "aliases": ["aquarium net", "aquarium nets", "fish net", "tank net"],
+      "title_keywords": ["aquarium net", "aquarium nets", "fish net", "tank net"],
+      "context_keywords": ["mesh", "stainless steel", "12\" handle", "16.5\" handle", "set", "12 count"],
+      "negative_keywords": ["aquarium cleaning tools", "aquarium gravel cleaners", "aquarium parts", "aquarium filter media", "fish bowls", "aquariums"]
+    },
+    "aquarium_parts": {
+      "display_name": "Aquarium Parts",
+      "formula": ["Brand", "Product Line", "Features", "Model", "Manufacturer Part Number \"or\" Compatible Brand", "Compatible Model", "Aquarium Parts Type", "Retail Packaging", "\"with\" Accessories Included", "Count per Pack \"Count\"", "Multipack Quantity \"Pack\""],
+      "attributes": ["Aquarium Part Type", "Count Per Pack", "Brand"],
+      "aliases": ["aquarium part", "aquarium parts", "aquarium impeller", "inflow tube part", "water pipe"],
+      "title_keywords": ["aquarium part", "aquarium parts", "aquarium impeller", "inflow tube part", "water pipe"],
+      "context_keywords": ["penguin 550", "amlpr1273", "sunsun", "eheim", "hw-603b", "602b", "inflow", "outflow", "lily water pipe"],
+      "negative_keywords": ["aquarium filter media", "aquarium filters", "aquarium cleaning tools", "aquarium water pump", "aquarium air pump", "aquarium stand"]
+    },
+    "aquarium_stands": {
+      "display_name": "Aquarium Stands",
+      "formula": ["Brand", "Product Line", "Home Décor Style", "Features", "Shape", "Material", "\"Aquarium Stand\"", "Color", "Assembled Product Length + \"L\" x + Assembled Product Width + \"W\" x + Assembled Product Height + \"H\"", "Count per Pack \"Count\"", "Multipack Quantity \"Pack\""],
+      "attributes": ["Aquarium Stand Type", "Brand", "Material"],
+      "aliases": ["aquarium stand", "aquarium stands", "fish tank stand"],
+      "title_keywords": ["aquarium stand", "aquarium stands", "fish tank stand"],
+      "context_keywords": ["metal", "wooden", "modern", "black", "brown and black", "14.25l x 48.75w x 27.75h", "15l x 3.5w x 30h"],
+      "negative_keywords": ["aquariums", "aquarium starter kits", "aquarium hoods", "aquarium lights", "fish bowls", "terrariums"]
+    },
+    "aquarium_starter_kits": {
+      "display_name": "Aquarium Starter Kits",
+      "formula": ["Brand or Global Brand", "Product Line", "Size Descriptor", "Character or Character Group or Theme", "Features", "Fish Species", "Shape", "Volume Capacity", "\"Gallon\"", "Material", "\"Aquarium Starter Kit\"", "\"with\" Accessories Included", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Capacity", "Volume Capacity", "Material"],
+      "aliases": ["aquarium starter kit", "starter kit", "fish tank starter kit", "betta starter kit"],
+      "title_keywords": ["aquarium starter kit", "starter kit", "fish tank starter kit", "betta starter kit"],
+      "context_keywords": ["desktop", "hexagon", "10 gallon", "1.5 gallon", "glass", "acrylic", "with lighting", "with filter", "with bubble curtain", "with food", "with net"],
+      "negative_keywords": ["aquariums", "fish bowls", "aquarium stands", "aquarium tank divider", "aquarium hood", "aquarium light"]
+    },
+    "aquarium_tank_dividers": {
+      "display_name": "Aquarium Tank Dividers",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Features \"and/or\" Recommended Use", "Material", "\"Aquarium Tank Divider\"", "\"with\" Accessories Included", "\"for up to\" or \"for\" Volume Capacity", "\"Gallon Tank\"", "Assembled Product Width x Assembled Product Length", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Brand", "Material", "Condition"],
+      "aliases": ["aquarium tank divider", "tank divider", "aquarium divider"],
+      "title_keywords": ["aquarium tank divider", "tank divider", "aquarium divider"],
+      "context_keywords": ["acrylic", "plastic", "medium", "for up to 20 gallon tank", "11 3/8\" x 11 3/8\"", "9 3/8\" x 9 3/8\""],
+      "negative_keywords": ["aquarium breeder tank", "aquariums", "fish bowls", "aquarium starter kit", "aquarium parts", "aquarium decor"]
+    },
+    "aquarium_test_kits": {
+      "display_name": "Aquarium Test Kits",
+      "formula": ["Brand", "Product Line", "Aquarium Water Type", "Features \"and/or\" Recommended Use", "Chemical Water Treater Type", "\"Aquarium Test Kit\"", "\"with\" Accessories Included", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Brand", "Number Of Pieces", "Multipack Quantity"],
+      "aliases": ["aquarium test kit", "aquarium test kits", "water test kit", "ph nitrate test kit"],
+      "title_keywords": ["aquarium test kit", "aquarium test kits", "water test kit", "ph nitrate test kit"],
+      "context_keywords": ["5-in-1", "6-in-1", "freshwater", "saltwater", "easystrips", "nitrate", "ph", "nitrites", "with testing solutions", "with color card", "with glass tubes"],
+      "negative_keywords": ["aquarium hydrometer", "aquarium thermometer", "aquarium water treatment", "aquarium filter media", "aquarium cleaning tools", "reptile thermometer"]
+    },
+    "aquarium_thermometers": {
+      "display_name": "Aquarium Thermometers",
+      "formula": ["Brand", "Product Line", "Features", "Material", "\"Aquarium Thermometer\"", "\"with\" Accessories Included", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Material", "Brand", "Maximum Temperature"],
+      "aliases": ["aquarium thermometer", "aquarium thermometers", "fish tank thermometer"],
+      "title_keywords": ["aquarium thermometer", "aquarium thermometers", "fish tank thermometer"],
+      "context_keywords": ["digital", "led display", "floating", "glass", "with thermometer guard"],
+      "negative_keywords": ["aquarium hydrometer", "reptile thermometer", "aquarium heater", "aquarium test kit", "aquarium water treatment", "pet thermometer"]
+    },
+    "aquarium_water_pumps": {
+      "display_name": "Aquarium Water Pumps",
+      "formula": ["Brand", "Product Line", "Watts", "\"W\"", "Gallon Per Hour", "\"GPH\"", "Features \"and/or\"", "Recommended Use", "\"Aquarium Water Pump\"", "\"with\" Accessories Included", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Condition", "Brand", "Gallons Per Hour"],
+      "aliases": ["aquarium water pump", "aquarium water pumps", "submersible aquarium water pump", "water pump"],
+      "title_keywords": ["aquarium water pump", "aquarium water pumps", "submersible aquarium water pump", "water pump"],
+      "context_keywords": ["3w", "6w", "25w", "80 gph", "150 gph", "450 gph", "submersible"],
+      "negative_keywords": ["aquarium air pump", "aquarium filter", "aquarium heater", "aquarium hydrometer", "aquarium thermometer", "aquarium cleaning tools"]
+    },
+    "aquarium_water_treatments": {
+      "display_name": "Aquarium Water Treatments",
+      "formula": ["Brand", "Product Line", "Aquarium Water Type", "Animal Type", "Material", "Contaminants Removed", "Features \"and/or\" Recommended Use", "Aquarium Water Treatment Type", "Form", "Size", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Aquarium Water Treatment Type", "Brand", "Multipack Quantity"],
+      "aliases": ["aquarium water treatment", "water conditioner", "aquarium water conditioner", "aquarium water treatment crystals"],
+      "title_keywords": ["aquarium water treatment", "water conditioner", "aquarium water conditioner", "aquarium water treatment crystals"],
+      "context_keywords": ["freshwater", "saltwater", "nitrifying bacteria", "sea salt", "ph and alkalinity", "algae", "16.9 fl oz", "5 lbs", "8 count"],
+      "negative_keywords": ["aquarium test kit", "aquarium hydrometer", "aquarium thermometer", "aquarium filter media", "aquarium substrate", "aquarium decor"]
+    },
+    "aquariums": {
+      "display_name": "Aquariums",
+      "formula": ["Brand", "Global Brand", "Product Line", "Character or Character Group", "Features \"and/or\" Recommended Use", "Mount Type", "Material", "Shape", "Volume Capacity", "\"Gallon\"", "Aquarium Type", "\"with\" Accessories Included", "Color", "Assembled Product Length + \"L\" x + Assembled Product Width + \"W\" x + Assembled Product Height + \"H\"", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Capacity", "Volume Capacity", "Brand"],
+      "aliases": ["aquarium", "aquariums", "fish tank", "wall mount fish tank"],
+      "title_keywords": ["aquarium", "aquariums", "fish tank", "wall mount fish tank"],
+      "context_keywords": ["desktop", "glass", "acrylic", "wall mount", "4 gallon", "5 gallon", "50 gallon", "black", "matte white", "22l x 12w x 13.5h"],
+      "negative_keywords": ["fish bowl", "aquarium starter kit", "aquarium stand", "aquarium hood", "terrarium", "terrarium cover"]
+    },
+    "aquatic_plants": {
+      "display_name": "Aquatic Plants",
+      "formula": ["Brand", "Product Line", "Aquarium Water Type", "Features and/or Recommended Use", "Plant Name", "\"Live Aquatic Aquarium Plant\"", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Count Per Pack", "Plant Name", "Aquarium Water Type"],
+      "aliases": ["aquatic plant", "aquatic plants", "live aquarium plant", "live aquatic aquarium plant"],
+      "title_keywords": ["aquatic plant", "aquatic plants", "live aquarium plant", "live aquatic aquarium plant"],
+      "context_keywords": ["freshwater", "saltwater", "alternanthera reineckii", "assorted live aquatic aquarium plants", "red mangrove seedlings", "6 count", "10 count"],
+      "negative_keywords": ["aquarium decor", "terrarium habitat decor", "aquarium substrate", "aquarium water treatment", "fish bowls", "aquariums"]
+    },
+    "automatic_fish_feeders": {
+      "display_name": "Automatic Fish Feeders",
+      "formula": ["Brand", "Product Line", "Features", "Small Animal Food Type", "\"Automatic Fish Feeder\"", "\"for\" Recommended Use", "Compatible Devices", "Assembled Product Length + \"L\" x + Assembled Product Width + \"W\" x + Assembled Product Height + \"H\"", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Brand", "Has Written Warranty", "Condition"],
+      "aliases": ["automatic fish feeder", "automatic fish feeders", "fish feeder", "digital fish feeder"],
+      "title_keywords": ["automatic fish feeder", "automatic fish feeders", "fish feeder", "digital fish feeder"],
+      "context_keywords": ["battery operated", "app and voice controlled", "for weekends", "for vacation", "for holidays", "compatible with echo", "4.72l x 4.33w x 3.03h"],
+      "negative_keywords": ["aquarium air pump", "aquarium water pump", "aquarium filter", "fish food", "aquarium starter kit", "fish bowl"]
+    },
+    "fish_bowls": {
+      "display_name": "Fish Bowls",
+      "formula": ["Brand", "Global Brand", "Product Line", "Size Descriptor", "Mount Type", "Character or Character Group", "Ingredient Preference", "Features \"and/or\" Recommended Use", "Fish Species", "Material", "Shape", "Volume Capacity + \"Gallon\"", "\"Fish Bowl\"", "Retail Packaging", "\"with\" Accessories Included", "Assembled Product Length + \"L\" x + Assembled Product Width + \"W\" x + Assembled Product Height + \"H\"", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Material", "Volume Capacity", "Capacity"],
+      "aliases": ["fish bowl", "fish bowls", "betta bowl", "wall mounted fish bowl"],
+      "title_keywords": ["fish bowl", "fish bowls", "betta bowl", "wall mounted fish bowl"],
+      "context_keywords": ["1.2 gallon", "1.7 gallon", "1 gallon", "acrylic", "glass", "wall mounted", "with fish net and plant and gravel", "with glass marbles and plastic plant"],
+      "negative_keywords": ["aquariums", "aquarium starter kit", "aquarium hood", "aquarium stand", "terrarium", "automatic fish feeder"]
+    },
+    "reptile_thermometers": {
+      "display_name": "Reptile Thermometers",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Features", "Animal Type", "Reptile Thermometer Type", "Retail Packaging", "\"with\" Accessories Included", "Assembled Width x Assembled Length", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Reptile Thermometer Type", "Brand", "Condition"],
+      "aliases": ["reptile thermometer", "reptile thermometers", "reptile hygrometer", "terrarium thermometer"],
+      "title_keywords": ["reptile thermometer", "reptile thermometers", "reptile hygrometer", "terrarium thermometer"],
+      "context_keywords": ["digital", "analog", "hygrometer", "4.5\" x 6.5\"", "4\" x 7\"", "4.15\" x 7\""],
+      "negative_keywords": ["aquarium thermometer", "pet thermometer", "terrarium heat lamp", "terrarium habitat lighting", "terrarium cover", "aquarium hydrometer"]
+    },
+    "terrarium_covers": {
+      "display_name": "Terrarium Covers",
+      "formula": ["Brand", "Product Line", "Features", "Material", "Volume Capacity + \"Gallon\"", "Terrarium Cover Type", "\"with\" Accessories Included", "Assembled Width + \"W\" x Assembled Length + \"L\"", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Terrarium Cover Type", "Number Of Pieces", "Material"],
+      "aliases": ["terrarium cover", "terrarium covers", "terrarium screen cover", "terrarium canopy"],
+      "title_keywords": ["terrarium cover", "terrarium covers", "terrarium screen cover", "terrarium canopy"],
+      "context_keywords": ["double hinged door", "40 gallon", "plastic", "metal", "black", "12w x 36l", "18w x 36l"],
+      "negative_keywords": ["aquarium hood", "terrarium habitat lighting", "terrarium heat lamp", "terrariums", "fish bowl", "aquariums"]
+    },
+    "terrarium_feeding_dishes": {
+      "display_name": "Terrarium Feeding Dishes",
+      "formula": ["Brand", "Product Line", "Ingredient Preference", "Size Descriptor", "Theme", "Animal Type", "Features \"and/or\" Recommended Use", "Small Animal Food Type", "Terrarium Feeding Dish Type", "Retail Packaging", "\"with\" Accessories Included", "Color", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Terrarium Feeding Dish Type", "Count Per Pack", "Brand"],
+      "aliases": ["terrarium feeding dish", "terrarium feeding dishes", "terrarium food dish", "reptile feeding dish", "terrarium water dish"],
+      "title_keywords": ["terrarium feeding dish", "terrarium feeding dishes", "terrarium food dish", "reptile feeding dish", "terrarium water dish"],
+      "context_keywords": ["non-toxic", "large", "cactus pool", "corner worm", "food and water dish", "feeding tweezers", "natural", "multi-color", "3 count"],
+      "negative_keywords": ["terrarium habitat decor", "terrarium cover", "terrarium heat lamp", "terrariums", "aquarium decor", "small animal food"]
+    },
+    "terrarium_habitat_decor": {
+      "display_name": "Terrarium Habitat Decor",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Animal Type", "Features", "Theme", "Plant Name", "Material", "Terrarium Habitat Décor Type", "Retail Packaging", "\"with\" Accessories Included", "Color", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Terrarium Habitat Decor Type", "Color", "Count Per Pack"],
+      "aliases": ["terrarium habitat decor", "terrarium decor", "reptile decor", "terrarium plant decor", "hideout cave decor"],
+      "title_keywords": ["terrarium habitat decor", "terrarium decor", "reptile decor", "terrarium plant decor", "hideout cave decor"],
+      "context_keywords": ["reptiles and amphibian", "plant decor", "hideout cave", "realistic", "waterfall decor kit", "with pump and hydrobells and mesh", "pink", "green", "multi-color"],
+      "negative_keywords": ["aquarium decor", "terrarium feeding dish", "terrarium cover", "terrarium habitat lighting", "terrarium heat lamp", "terrariums"]
+    },
+    "terrarium_habitat_lighting": {
+      "display_name": "Terrarium Habitat Lighting",
+      "formula": ["Brand", "Product Line", "Model", "Animal Type", "Features", "\"Terrarium Hood\"/\"Terrarium Clamp Dome Lamp\"/\"Terrarium Lamp Stand\"/\"Terrarium Lamp\"", "Assembled Product Length + \"L\" x + Assembled Product Width + \"W\" x + Assembled Product Height + \"H\"", "Color", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Terrarium Habitat Lighting Type", "Brand", "Multipack Quantity"],
+      "aliases": ["terrarium habitat lighting", "terrarium hood", "terrarium lamp", "terrarium clamp dome lamp", "terrarium lamp stand"],
+      "title_keywords": ["terrarium habitat lighting", "terrarium hood", "terrarium lamp", "terrarium clamp dome lamp", "terrarium lamp stand"],
+      "context_keywords": ["uva uvb", "heat and light", "adjustable", "black", "silver", "34l x 6w x 1.25h", "6.5l x 8.5w x 6h", "5.91l x 2.76w x 14.17h"],
+      "negative_keywords": ["terrarium heat lamp", "terrarium cover", "terrariums", "aquarium lights", "aquarium hood", "reptile thermometers"]
+    },
+    "terrarium_heat_lamps_mats": {
+      "display_name": "Terrarium Heat Lamps & Mats",
+      "formula": ["Brand", "Product Line", "Animal Type", "Size Descriptor", "Watts", "\"W\"", "Material", "Features", "Light Bulb Type", "\"Terrarium Heat Lamp\"", "Retail Packaging", "\"with\" Accessories Included", "Light Bulb Color or Color", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Terrarium Heat Lamp And Mat Type", "Brand", "Condition"],
+      "aliases": ["terrarium heat lamp", "terrarium heat lamps", "reptile heat lamp", "basking lamp", "infrared ceramic heat lamp"],
+      "title_keywords": ["terrarium heat lamp", "terrarium heat lamps", "reptile heat lamp", "basking lamp", "infrared ceramic heat lamp"],
+      "context_keywords": ["100w", "60w", "75w", "night time no-light infrared ceramic", "day time basking uvb incandescent", "halogen", "heat lighting kit", "with dome lamp fixture and halogen heat bulb and uvb bulb", "black", "white"],
+      "negative_keywords": ["terrarium habitat lighting", "terrarium cover", "terrariums", "aquarium heater", "aquarium lights", "reptile thermometers"]
+    },
+    "terrariums": {
+      "display_name": "Terrariums",
+      "formula": ["Brand", "Product Line", "Animal Type", "Features", "Material", "Volume Capacity", "Terrarium", "Retail Packaging", "\"with\" Accessories included", "Assembled Product Length + \"L\" x + Assembled Product Width + \"W\" x + Assembled Product Height + \"H\"", "Count per Pack", "\"Count\"", "Multipack Quantity", "\"Pack\""],
+      "attributes": ["Terrarium Type", "Material", "Condition"],
+      "aliases": ["terrarium", "terrariums", "reptile terrarium", "glass terrarium"],
+      "title_keywords": ["terrarium", "terrariums", "reptile terrarium", "glass terrarium"],
+      "context_keywords": ["64 gallon", "glass", "starter kit", "with accessories included", "9 count", "48l x 18w x 18h"],
+      "negative_keywords": ["aquariums", "fish bowls", "terrarium cover", "terrarium habitat lighting", "terrarium heat lamp", "reptile thermometers"]
+    }
+  }
+},"outdoor_animal_housing": {
+  "display_name": "Outdoor Animal Housing",
+  "product_types": {
+    "other_backyard_wildlife_supplies": {
+      "display_name": "Other Backyard Wildlife Supplies",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Material", "Color", "Count/Pack", "Retail Packaging"],
+      "attributes": ["Ib", "Retail Packaging", "Condition", "Piece Count"],
+      "aliases": ["backyard wildlife supply", "backyard wildlife supplies", "wildlife supply", "wildlife supplies"],
+      "title_keywords": ["backyard wildlife supply", "backyard wildlife supplies", "wildlife supply", "wildlife supplies"],
+      "context_keywords": ["lightweight", "nylon", "green", "2 count", "box", "backyard"],
+      "negative_keywords": ["backyard birding supply", "bat shelter", "bee house", "bird house", "butterfly hibernation box", "egg incubator"]
+    },
+    "other_backyard_birding_supplies": {
+      "display_name": "Other Backyard Birding Supplies",
+      "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Material", "Color", "Count/Pack"],
+      "attributes": ["Recommended Location", "Condition", "Animal Type"],
+      "aliases": ["backyard birding supply", "backyard birding supplies", "birding supply", "birding supplies"],
+      "title_keywords": ["backyard birding supply", "backyard birding supplies", "birding supply", "birding supplies"],
+      "context_keywords": ["professional", "nylon", "white", "6 pack", "birding"],
+      "negative_keywords": ["backyard wildlife supply", "bird house", "bat shelter", "bee house", "butterfly hibernation box", "chicken coop accessory"]
+    },
+    "bat_shelters": {
+      "display_name": "Bat Shelters",
+      "formula": ["Brand", "Product Line", "Feature", "Finish", "Material", "Bat Shelter Type", "Retail Packaging", "\"with\" Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Recommended Location", "Bat Shelter Type"],
+      "aliases": ["bat shelter", "bat shelters", "bat house", "bat houses"],
+      "title_keywords": ["bat shelter", "bat shelters", "bat house", "bat houses"],
+      "context_keywords": ["insulated", "painted", "unpainted", "wooden", "metal", "kit", "with pup catcher", "with landing pad", "black and brown"],
+      "negative_keywords": ["bee house", "bird house", "butterfly hibernation box", "cat house", "dog house", "chicken coop"]
+    },
+    "bee_houses": {
+      "display_name": "Bee Houses",
+      "formula": ["Brand", "Product Line", "Feature", "Material", "Animal Type", "Bee House Type", "Retail Packaging", "\"with\" Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Condition", "Animal Type", "Bee House Type"],
+      "aliases": ["bee house", "bee houses", "mason bee house", "solitary bee house", "beehive starter kit"],
+      "title_keywords": ["bee house", "bee houses", "mason bee house", "solitary bee house", "beehive starter kit"],
+      "context_keywords": ["eco-friendly", "wax coated", "cedarwood", "mason", "solitary bee", "with metal roof", "with frames", "with nesting tubes"],
+      "negative_keywords": ["bat shelter", "bird house", "butterfly hibernation box", "chicken coop", "egg incubator", "backyard birding supply"]
+    },
+    "bird_houses": {
+      "display_name": "Bird Houses",
+      "formula": ["Brand", "Product Line", "Feature *and/or* Mount Type *and/or* Pattern *and/or* Theme *and/or* Home Décor Style", "Finish", "Material", "Bird Type", "Bird House Type", "Retail Packaging", "\"with\" Items Included", "Count \"Count\"", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Bird Type", "Recommended Location", "Animal Type"],
+      "aliases": ["bird house", "bird houses", "wild bird house", "hummingbird house"],
+      "title_keywords": ["bird house", "bird houses", "wild bird house", "hummingbird house"],
+      "context_keywords": ["assembled", "striped", "handwoven", "hanging", "decorative", "unassembled", "unfinished", "with perch", "with stand", "with paint", "with stickers", "12 count"],
+      "negative_keywords": ["bat shelter", "bee house", "butterfly hibernation box", "birdcage", "bird nest", "chicken coop"]
+    },
+    "butterfly_hibernation_boxes": {
+      "display_name": "Butterfly Hibernation Boxes",
+      "formula": ["Brand", "Product Line", "Feature", "Material", "Butterfly Hibernation Box Type", "Retail Packaging", "\"with\" Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Brand", "Material", "Color"],
+      "aliases": ["butterfly hibernation box", "butterfly hibernation boxes", "butterfly house", "butterfly shelter"],
+      "title_keywords": ["butterfly hibernation box", "butterfly hibernation boxes", "butterfly house", "butterfly shelter"],
+      "context_keywords": ["handmade", "decorative", "cedarwood", "plastic", "set", "with feeder", "with plant box", "green and white", "brown"],
+      "negative_keywords": ["bird house", "bee house", "bat shelter", "butterfly feeder", "cat house", "dog house"]
+    },
+    "cat_houses": {
+      "display_name": "Cat Houses",
+      "formula": ["Brand", "Product Line", "Number of Levels \"-Story\"", "Features", "Size Descriptor", "Recommended Location", "Cat House Type", "\"with\" Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Brand", "Animal Type", "Recommended Location"],
+      "aliases": ["cat house", "cat houses", "outdoor cat house", "cat shelter"],
+      "title_keywords": ["cat house", "cat houses", "outdoor cat house", "cat shelter"],
+      "context_keywords": ["2-story", "1-story", "heated", "elevated", "waterproof", "insulated", "large", "small", "outdoor", "with balcony", "with ladder", "with scratching post"],
+      "negative_keywords": ["dog house", "pet house", "cat tree", "pet bed", "pet sofa", "pet containment"]
+    },
+    "chicken_coops": {
+      "display_name": "Chicken Coops",
+      "formula": ["Brand", "Product Line", "Feature", "Material", "Recommended Location", "Chicken Coop Type", "\"with\" Items Included", "Color", "\"Fits\" Number of Animals", "Animal Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Chicken Coop Type", "Number Of Animals"],
+      "aliases": ["chicken coop", "chicken coops", "hen house", "duck house"],
+      "title_keywords": ["chicken coop", "chicken coops", "hen house", "duck house"],
+      "context_keywords": ["weatherproof", "portable", "wooden", "metal", "outdoor", "with nesting box", "with attached run", "fits 15 chickens", "fits 6 ducks", "blue", "red and white"],
+      "negative_keywords": ["chicken run", "chicken coop accessory", "egg incubator", "dog house", "cat house", "bird house"]
+    },
+    "chicken_runs": {
+      "display_name": "Chicken Runs",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Feature", "Material", "Chicken Run Type", "\"with\" Items Included", "Assembled Product Width \"W\" + \"x\" + Assembled Product Length \"L\" + \"x\" + Assembled Product Height \"H\"", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Ib", "Retail Packaging", "Installation Required", "Brand"],
+      "aliases": ["chicken run", "chicken runs", "chicken pen", "hen run"],
+      "title_keywords": ["chicken run", "chicken runs", "chicken pen", "hen run"],
+      "context_keywords": ["small", "long", "covered", "portable", "walk-in", "wooden", "metal", "with lockable door", "with cover", "with door", "3'w x 5'l x 6'h", "10'w x 26'l x 8'h"],
+      "negative_keywords": ["chicken coop", "chicken coop accessory", "dog kennel", "pet playpen", "bird house", "egg incubator"]
+    },
+    "dog_houses": {
+      "display_name": "Dog Houses",
+      "formula": ["Brand", "Product Line", "Feature", "Size Descriptor", "Material", "Recommended Location", "Dog House Type", "\"with\" Items Included", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Pet Size", "Animal Type", "Recommended Location"],
+      "aliases": ["dog house", "dog houses", "dog shelter", "outdoor dog house"],
+      "title_keywords": ["dog house", "dog houses", "dog shelter", "outdoor dog house"],
+      "context_keywords": ["all-weather", "portable", "elevated", "heated", "large", "small", "plastic", "wooden", "outdoor", "with door flap", "taupe and black", "brown and green"],
+      "negative_keywords": ["cat house", "pet kennel", "pet crate", "pet playpen", "dog bed", "chicken coop"]
+    }
+  }
+},
+"pet_apparel_accessories": {
+  "display_name": "Pet Apparel & Accessories",
+  "product_types": {
+    "hiking_dog_packs": {
+      "display_name": "Hiking Dog Packs",
+      "formula": ["Brand", "Product Line", "Fabric Content", "Pattern/Theme/Character/Sports Team/Sports League/Occasion/Animal Lifestage", "Features", "Hiking Dog Pack", "Color", "Size", "(Minimum Chest Size \"to\" Maximum Chest Size \"Chest Size\")", "Piece Count \"Piece Set\"", "(Count \"Pack\")"],
+      "attributes": ["Brand", "Size", "Animal Type"],
+      "aliases": ["hiking dog pack", "dog hiking pack", "dog backpack", "pack harness"],
+      "title_keywords": ["hiking dog pack", "dog hiking pack", "dog backpack", "pack harness"],
+      "context_keywords": ["chest size", "size", "piece set", "pack", "fabric content"],
+      "negative_keywords": ["pet harness", "pet leash", "pet collar", "pet muzzle", "pet apparel", "pet id tag"]
+    },
+    "pet_apparel": {
+      "display_name": "Pet Apparel",
+      "formula": ["Brand", "Product Line", "Features", "Material", "Fabric Content", "Pattern/Theme/Character/Sports Team/Sports League/Occasion/Animal Lifestage", "Animal Type", "Pet Apparel Type", "Color", "Clothing Size", "Piece Count \"Piece Set\"", "(Count \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Apparel Type", "Brand"],
+      "aliases": ["pet apparel", "dog apparel", "cat apparel", "pet clothing", "pet outfit"],
+      "title_keywords": ["pet apparel", "dog apparel", "cat apparel", "pet clothing", "pet outfit"],
+      "context_keywords": ["hat", "sunglasses", "clothing size", "piece set", "color"],
+      "negative_keywords": ["pet harness", "pet collar", "pet leash", "pet muzzle", "pet id tag", "pet collar charm"]
+    },
+    "pet_collar_charms": {
+      "display_name": "Pet Collar Charms",
+      "formula": ["Brand", "Product Line", "Material", "Features", "Shape", "Pattern/Theme/Character/Sports Team/Sports League/Occasion/Animal Lifestage", "\"Pet Collar Charm\"", "Color", "Piece Count \"Piece Set\"", "(Count \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Color"],
+      "aliases": ["pet collar charm", "pet collar charms", "collar charm", "collar accessory"],
+      "title_keywords": ["pet collar charm", "pet collar charms", "collar charm", "collar accessory"],
+      "context_keywords": ["stainless steel", "light up", "paw print", "piece set", "black and white"],
+      "negative_keywords": ["pet id tag", "pet collar", "pet harness", "pet leash", "pet apparel", "pet muzzle"]
+    },
+    "pet_collars": {
+      "display_name": "Pet Collars",
+      "formula": ["Brand", "Product Line", "Fabric Content", "Pattern/Theme/Character/Sports Team/Sports League/Occasion/Animal Lifestage", "Features", "Pet Collar Type", "Color", "Size", "Piece Count \"Piece Set\"", "(Count \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Collar Type", "Brand"],
+      "aliases": ["pet collar", "pet collars", "dog collar", "cat collar", "training collar"],
+      "title_keywords": ["pet collar", "pet collars", "dog collar", "cat collar", "training collar"],
+      "context_keywords": ["leather", "spike", "xxl", "piece set", "black and silver"],
+      "negative_keywords": ["pet harness", "pet leash", "pet id tag", "pet collar charm", "pet muzzle", "pet apparel"]
+    },
+    "pet_harnesses": {
+      "display_name": "Pet Harnesses",
+      "formula": ["Brand", "Product Line", "Fabric Content", "Pattern/Theme/Character/Sports Team/Sports League/Occasion/Animal Lifestage", "Features", "Pet Harness Type", "Color", "Size", "(Minimum Chest Size \"to\" Maximum Chest Size \"Chest Size\")", "Piece Count \"Piece Set\"", "(Count \"Pack\")"],
+      "attributes": ["Animal Type", "Size", "Brand"],
+      "aliases": ["pet harness", "pet harnesses", "dog harness", "cat harness", "step-in harness"],
+      "title_keywords": ["pet harness", "pet harnesses", "dog harness", "cat harness", "step-in harness"],
+      "context_keywords": ["nylon", "step-in", "puppy harness", "chest size", "piece set"],
+      "negative_keywords": ["hiking dog pack", "pet collar", "pet leash", "pet muzzle", "pet apparel", "pet id tag"]
+    },
+    "pet_id_tags": {
+      "display_name": "Pet ID Tags",
+      "formula": ["Brand", "Product Line", "Material", "Features", "Shape", "Pattern/Theme/Character/Sports Team/Sports League/Occasion/Animal Lifestage", "\"Engraved\"", "\"Pet ID Tag\"", "Color", "Piece Count \"Piece Set\"", "(Count \"Pack\")"],
+      "attributes": ["Animal Type", "Engraved Pet Tag", "Size"],
+      "aliases": ["pet id tag", "pet id tags", "dog id tag", "cat id tag", "engraved pet tag"],
+      "title_keywords": ["pet id tag", "pet id tags", "dog id tag", "cat id tag", "engraved pet tag"],
+      "context_keywords": ["stainless steel", "engraved", "sports team", "piece set", "blue and orange"],
+      "negative_keywords": ["pet collar charm", "pet collar", "pet harness", "pet leash", "pet apparel", "pet muzzle"]
+    },
+    "pet_leashes": {
+      "display_name": "Pet Leashes",
+      "formula": ["Brand", "Product Line", "Assembled Product Length", "Fabric Content", "Material", "Pattern/Theme/Character/Sports Team/Sports League/Occasion/Animal Lifestage", "Features", "Pet Leash Type", "Color", "Piece Count \"Piece Set\"", "(Count \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Pet Leash Type"],
+      "aliases": ["pet leash", "pet leashes", "dog leash", "cat leash", "retractable leash"],
+      "title_keywords": ["pet leash", "pet leashes", "dog leash", "cat leash", "retractable leash"],
+      "context_keywords": ["6'", "nylon", "retractable", "piece set", "blue and green"],
+      "negative_keywords": ["pet harness", "pet collar", "pet id tag", "pet collar charm", "hiking dog pack", "pet muzzle"]
+    },
+    "pet_muzzles": {
+      "display_name": "Pet Muzzles",
+      "formula": ["Brand", "Product Line", "Material", "Fabric Content", "Pet Muzzle Type", "Color", "Size", "Piece Count \"Piece Set\"", "(Count \"Pack\")"],
+      "attributes": ["Size", "Animal Type", "Pet Muzzle Type"],
+      "aliases": ["pet muzzle", "pet muzzles", "dog muzzle", "soft dog muzzle"],
+      "title_keywords": ["pet muzzle", "pet muzzles", "dog muzzle", "soft dog muzzle"],
+      "context_keywords": ["padded", "nylon", "soft", "black and grey", "l", "piece set"],
+      "negative_keywords": ["pet harness", "pet collar", "pet leash", "pet apparel", "pet id tag", "pet collar charm"]
+    }
+  }
+},
+"pet_containment": {
+  "display_name": "Pet Containment",
+  "product_types": {
+    "pet_door_flaps": {
+      "display_name": "Pet Door Flaps",
+      "formula": ["Brand", "Product Line", "Features *and/or* Product Multifunction Descriptor", "Size Descriptor", "\"Pet Door Flap\"", "\"with\" Items Included *or* Accessories Included", "Assembled Product Width \"x\" Assembled Product Height", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Assembled Product Length", "Brand", "Material"],
+      "aliases": ["pet door flap", "pet door flaps", "replacement pet door flap", "door flap"],
+      "title_keywords": ["pet door flap", "pet door flaps", "replacement pet door flap", "door flap"],
+      "context_keywords": ["4-way lockable", "extra large", "with sensors", "8\" x 10\"", "flap"],
+      "negative_keywords": ["pet door", "pet gate", "pet kennel", "pet crate", "pet playpen", "pet tie-out"]
+    },
+    "pet_doors": {
+      "display_name": "Pet Doors",
+      "formula": ["Brand", "Product Line", "Features *and/or* Product Multifunction Descriptor", "Pet Door Type", "\"for\" Mounting Location", "\"with\" Items Included *or* Accessories Included", "Size Descriptor", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Pet Door Type", "Mounting Location", "Size Descriptor"],
+      "aliases": ["pet door", "pet doors", "smart pet door", "sliding door insert", "tunnel pet door"],
+      "title_keywords": ["pet door", "pet doors", "smart pet door", "sliding door insert", "tunnel pet door"],
+      "context_keywords": ["2-way", "telescoping", "tunnel", "smart", "for walls", "with collar tag", "extra large"],
+      "negative_keywords": ["pet door flap", "pet gate", "pet kennel", "pet crate", "pet playpen", "pet tie-out"]
+    },
+    "pet_gates": {
+      "display_name": "Pet Gates",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Features", "Material", "Pet Gate Type", "\"with\" Items Included *or* Accessories Included", "\"Expands to\" Fits Maximum Opening Width *or* Assembled Product Width \"Wide\"", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Pet Gate Type", "Material", "Brand"],
+      "aliases": ["pet gate", "pet gates", "walk-thru pet gate", "freestanding pet gate"],
+      "title_keywords": ["pet gate", "pet gates", "walk-thru pet gate", "freestanding pet gate"],
+      "context_keywords": ["extra wide", "extra tall", "folding", "adjustable", "wooden", "metal", "129.5\" wide", "expands to 49.5\""],
+      "negative_keywords": ["pet door", "pet door flap", "pet playpen", "pet kennel", "pet crate", "pet tie-out"]
+    },
+    "pet_kennel_crate_covers": {
+      "display_name": "Pet Kennel & Crate Covers",
+      "formula": ["Brand", "Product Line", "Features", "Assembled Product Length", "Animal Type", "\"Pet\" Pet Kennel & Crate Cover Type", "\"with\" Items Included *or* Accessories Included", "Color", "Pattern", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Pet Kennel And Crate Cover Type", "Material"],
+      "aliases": ["crate cover", "kennel cover", "pet crate cover", "dog crate cover"],
+      "title_keywords": ["crate cover", "kennel cover", "pet crate cover", "dog crate cover"],
+      "context_keywords": ["weatherproof", "36\"", "dog", "with mesh windows", "green camo"],
+      "negative_keywords": ["crate pad", "kennel mat", "pet kennel", "pet crate", "pet playpen", "pet bed cover"]
+    },
+    "pet_kennel_crate_pads": {
+      "display_name": "Pet Kennel & Crate Pads",
+      "formula": ["Brand", "Product Line", "Features", "Material", "Pet Kennel & Crate Pad Type", "\"with\" Items Included *or* Accessories Included", "Color", "Pattern", "Size Descriptor", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Size Descriptor", "Material"],
+      "aliases": ["crate pad", "crate pads", "kennel pad", "kennel mat", "crate mat"],
+      "title_keywords": ["crate pad", "crate pads", "kennel pad", "kennel mat", "crate mat"],
+      "context_keywords": ["heated", "bolstered", "cooling", "reversible", "fleece", "vinyl", "with corner slits", "small", "extra large", "pink bows", "black"],
+      "negative_keywords": ["crate cover", "pet bed", "pet bed liner", "pet bed cover", "pet kennel", "pet crate"]
+    },
+    "pet_kennels_crates": {
+      "display_name": "Pet Kennels & Crates",
+      "formula": ["Brand", "Product Line", "Features", "Number of Doors \"-Door\"", "Assembled Product Length", "Material", "Recommended Location", "Pet Kennel & Crate Type", "\"for\" Animal Type", "\"with\" Items Included *or* Accessories Included", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Pet Kennel And Crate Type", "Material", "Brand"],
+      "aliases": ["pet kennel", "pet crate", "dog crate", "travel taxi", "outdoor kennel"],
+      "title_keywords": ["pet kennel", "pet crate", "dog crate", "travel taxi", "outdoor kennel"],
+      "context_keywords": ["airline approved", "foldable", "2-door", "3-door", "36\"", "24\"", "8'", "plastic", "mesh", "chain link", "for pets", "for dogs and cats", "with water bottle", "with canopy"],
+      "negative_keywords": ["crate cover", "crate pad", "pet playpen", "pet gate", "pet door", "pet tie-out"]
+    },
+    "pet_playpens": {
+      "display_name": "Pet Playpens",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Features", "Number of Levels \"-Level\"", "Material", "Recommended Location", "Pet Playpen Type", "\"for\" Animal Type", "\"with\" Items Included *or* Accessories Included", "Color", "Pattern *or* Theme", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Pet Playpen Type", "Material"],
+      "aliases": ["pet playpen", "pet playpens", "pet pen", "pop-up playpen"],
+      "title_keywords": ["pet playpen", "pet playpens", "pet pen", "pop-up playpen"],
+      "context_keywords": ["small", "large", "portable", "foldable", "3-level", "mesh", "steel", "outdoor", "for dogs", "for ferrets", "with carrying case", "with ramps", "blue bones", "black"],
+      "negative_keywords": ["pet kennel", "pet crate", "pet gate", "pet door", "pet tie-out", "chicken run"]
+    },
+    "pet_radio_wireless_fences": {
+      "display_name": "Pet Radio & Wireless Fences",
+      "formula": ["Brand", "Product Line", "Features", "Pet Radio & Wireless Fence Type", "Retail Packaging", "\"for\" Animal Type", "\"Up to\" Coverage Area \"Coverage Area\"", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Pet Radio And Wireless Fence Type", "Power Type", "Brand"],
+      "aliases": ["wireless fence", "radio fence", "pet wireless fence", "in-ground fence system"],
+      "title_keywords": ["wireless fence", "radio fence", "pet wireless fence", "in-ground fence system"],
+      "context_keywords": ["expandable", "rechargeable", "wireless fence kit", "for dogs", "for pets", "up to 3,000 ft coverage area", "up to 5 acre coverage area"],
+      "negative_keywords": ["pet gate", "pet playpen", "pet kennel", "pet crate", "pet tie-out stake", "pet tie-out"]
+    },
+    "pet_tie_out_stakes": {
+      "display_name": "Pet Tie-Out Stakes",
+      "formula": ["Brand", "Product Line", "Assembled Product Length", "Features", "Material", "Pet Tie-Out Stake Type", "\"Up to\" Maximum Pet Weight", "Color", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Pet Tie Out Stake Type", "Brand", "Material"],
+      "aliases": ["tie-out stake", "tie-out stakes", "pet tie-out stake", "spiral tie-out stake"],
+      "title_keywords": ["tie-out stake", "tie-out stakes", "pet tie-out stake", "spiral tie-out stake"],
+      "context_keywords": ["18\"", "heavy duty", "stainless steel", "up to 250 lb", "blue"],
+      "negative_keywords": ["pet tie-out", "pet radio wireless fence", "pet gate", "pet playpen", "pet kennel", "pet crate"]
+    },
+    "pet_tie_outs": {
+      "display_name": "Pet Tie-Outs",
+      "formula": ["Brand", "Product Line", "Assembled Product Length", "Features", "Pet Tie-Out Type", "\"with\" Items Included *or* Accessories Included", "\"Up to\" Maximum Pet Weight", "Color", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Pet Tie Out Type", "Material"],
+      "aliases": ["tie-out", "tie-outs", "pet tie-out", "tie-out cable"],
+      "title_keywords": ["tie-out", "tie-outs", "pet tie-out", "tie-out cable"],
+      "context_keywords": ["100 ft", "chew-proof", "with stake", "up to 250 lb", "red", "2 pack"],
+      "negative_keywords": ["pet tie-out stake", "pet radio wireless fence", "pet gate", "pet playpen", "pet kennel", "pet crate"]
+    }
+  }
+},
+"pet_bedding_furniture": {
+  "display_name": "Pet Bedding & Furniture",
+  "product_types": {
+    "cat_hammocks": {
+      "display_name": "Cat Hammocks",
+      "formula": ["Brand", "Product Line", "Features", "Mount Type", "Cat Furniture & Scratch Post Type", "Retail Packaging", "\"with\" Items Included *and/or* Accessories Included", "Color", "Pattern *or* Theme", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Cat Furniture And Scratch Post Type", "Mount Type"],
+      "aliases": ["cat hammock", "cat hammocks", "grooming hammock"],
+      "title_keywords": ["cat hammock", "cat hammocks", "grooming hammock"],
+      "context_keywords": ["waterproof", "hanging", "freestanding", "reversible", "with adjustable straps", "with liner", "with pillow", "blue", "orange lions"],
+      "negative_keywords": ["cat perch", "cat tree", "cat scratching pad", "cat scratching post", "pet bed", "pet sofa"]
+    },
+    "cat_perches": {
+      "display_name": "Cat Perches",
+      "formula": ["Brand", "Product Line", "Features", "Recommended Location \"Mounted\"", "\"Cat Perch\"", "Retail Packaging", "\"with\" Items Included *and/or* Accessories Included", "Color", "Pattern *or* Theme", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Mount Type", "Brand"],
+      "aliases": ["cat perch", "cat perches", "window mounted cat perch", "wall mounted cat perch"],
+      "title_keywords": ["cat perch", "cat perches", "window mounted cat perch", "wall mounted cat perch"],
+      "context_keywords": ["collapsible", "multi-level", "padded", "window mounted", "wall mounted", "with blanket", "beige flowers", "aqua blue"],
+      "negative_keywords": ["cat hammock", "cat tree", "cat scratching post", "cat scratching pad", "pet bed", "pet sofa"]
+    },
+    "cat_scratching_pads": {
+      "display_name": "Cat Scratching Pads",
+      "formula": ["Brand", "Product Line", "Features", "Mount Type", "Material", "Cat Scratching Pad Type", "Retail Packaging", "\"with\" Items Included *and/or* Accessories Included", "Count \"Count\"", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Cat Scratching Pad Type"],
+      "aliases": ["cat scratching pad", "cat scratching pads", "scratching pad", "replacement scratching pad"],
+      "title_keywords": ["cat scratching pad", "cat scratching pads", "scratching pad", "replacement scratching pad"],
+      "context_keywords": ["eco-friendly", "corrugated cardboard", "catnip infused", "reversible", "hanging", "set", "with toy mouse", "3 count"],
+      "negative_keywords": ["cat scratching post", "cat tree", "cat hammock", "cat perch", "pet bed", "pet pillow"]
+    },
+    "cat_scratching_posts": {
+      "display_name": "Cat Scratching Posts",
+      "formula": ["Brand", "Product Line", "Features", "Material", "Cat Furniture & Scratch Post Type", "Retail Packaging", "\"with\" Items Included *and/or* Accessories Included", "Color", "Pattern *or* Theme", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Animal Lifestage"],
+      "aliases": ["cat scratching post", "cat scratching posts", "scratching post", "cat scratching replacement rope"],
+      "title_keywords": ["cat scratching post", "cat scratching posts", "scratching post", "cat scratching replacement rope"],
+      "context_keywords": ["multipurpose", "do-it-yourself", "sisal", "burlap", "carpet", "with toy ball", "with spinning toys", "green cactus", "gray and red", "white"],
+      "negative_keywords": ["cat scratching pad", "cat tree", "cat hammock", "cat perch", "pet bed", "pet sofa"]
+    },
+    "cat_trees": {
+      "display_name": "Cat Trees",
+      "formula": ["Brand", "Product Line", "Features", "Number of Levels \"-Level\"", "Assembled Product Height", "Cat Furniture & Scratch Post Type", "Retail Packaging", "\"with\" Items Included *and/or* Accessories Included", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Animal Lifestage"],
+      "aliases": ["cat tree", "cat trees", "cat activity center", "cat tower"],
+      "title_keywords": ["cat tree", "cat trees", "cat activity center", "cat tower"],
+      "context_keywords": ["upholstered", "stain resistant", "4-level", "3-level", "64\"", "48\"", "with scratching posts", "with perches", "with condos", "with hammocks", "gray", "blue and beige"],
+      "negative_keywords": ["cat perch", "cat hammock", "cat scratching post", "cat scratching pad", "pet bed", "pet sofa"]
+    },
+    "pet_bed_covers": {
+      "display_name": "Pet Bed Covers",
+      "formula": ["Brand", "Product Line", "Features", "Animal Type", "Pet Bed Cover Type", "\"with\" Items Included *and/or* Accessories Included", "Size Descriptor", "Color *and/or* Pattern", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Brand", "Shape"],
+      "aliases": ["pet bed cover", "pet bed covers", "bed duvet", "replacement bed cover"],
+      "title_keywords": ["pet bed cover", "pet bed covers", "bed duvet", "replacement bed cover"],
+      "context_keywords": ["reversible", "waterproof", "customizable", "dog and cat", "with pillow", "large", "small", "brown plaid", "glittery gray stripes"],
+      "negative_keywords": ["pet bed liner", "pet bed", "pet blanket", "pet pillow", "crate cover", "crate pad"]
+    },
+    "pet_bed_liners": {
+      "display_name": "Pet Bed Liners",
+      "formula": ["Brand", "Product Line", "Features", "Animal Type", "\"Bed Liner\"", "\"with\" Items Included *and/or* Accessories Included", "Size Descriptor", "Color", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Brand", "Animal Type", "Animal Lifestage"],
+      "aliases": ["pet bed liner", "pet bed liners", "bed liner"],
+      "title_keywords": ["pet bed liner", "pet bed liners", "bed liner"],
+      "context_keywords": ["fillable", "waterproof", "dog", "large", "white", "3 pack"],
+      "negative_keywords": ["pet bed cover", "pet bed", "crate pad", "crate cover", "pet blanket", "pet pillow"]
+    },
+    "pet_bedding_litter": {
+      "display_name": "Pet Bedding & Litter",
+      "formula": ["Brand", "Product Line", "Features *and/or* Ingredient Preference", "Material", "\"Pet\" Pet Bedding & Litter Type", "Form", "\"for\" Animal Type", "Color", "Size", "Container Type", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Bedding And Litter Type", "Brand"],
+      "aliases": ["pet bedding", "pet litter", "pet bedding and litter", "paper bedding", "wood pellets"],
+      "title_keywords": ["pet bedding", "pet litter", "pet bedding and litter", "paper bedding", "wood pellets"],
+      "context_keywords": ["natural", "absorbent", "dust-free", "wood", "paper", "pellets", "for horses", "for rabbits and hamsters", "brown", "purple", "25 lb bag", "7 lb bag"],
+      "negative_keywords": ["pet bed", "pet blanket", "pet pillow", "cat litter box", "cat litter mat", "pet training pad"]
+    },
+    "pet_beds": {
+      "display_name": "Pet Beds",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Number of Stages", "Pet Bed Feature", "Mattress Type", "Pet Bed Style", "\"Bed\"", "\"with\" Items Included *and/or* Accessories Included", "Animal Type", "Color", "Pattern *or* Theme", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Size", "Brand"],
+      "aliases": ["pet bed", "pet beds", "dog bed", "cat bed", "orthopedic bed", "elevated bed"],
+      "title_keywords": ["pet bed", "pet beds", "dog bed", "cat bed", "orthopedic bed", "elevated bed"],
+      "context_keywords": ["2-in-1", "memory foam", "orthopedic", "heated", "gel foam", "sofa-style", "portable", "cooling pad", "dog", "cat", "pet", "heather gray", "wine red", "forest green stripes"],
+      "negative_keywords": ["pet bed cover", "pet bed liner", "pet blanket", "pet pillow", "pet sofa", "crate pad"]
+    },
+    "pet_blankets": {
+      "display_name": "Pet Blankets",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Features", "Material", "Pet Blanket Type", "Retail Packaging", "\"for\" Animal Type", "Color", "Pattern *or* Theme", "Count \"Count\"", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Pet Blanket Type", "Animal Lifestage"],
+      "aliases": ["pet blanket", "pet blankets", "dog blanket", "cat blanket", "throw blanket"],
+      "title_keywords": ["pet blanket", "pet blankets", "dog blanket", "cat blanket", "throw blanket"],
+      "context_keywords": ["large", "small", "waterproof", "reversible", "fleece", "sherpa", "combo pack", "for dogs", "for cats", "pink bones", "green", "2 count"],
+      "negative_keywords": ["pet bed", "pet pillow", "pet sofa", "pet bed cover", "pet bed liner", "crate pad"]
+    },
+    "pet_pillows": {
+      "display_name": "Pet Pillows",
+      "formula": ["Brand", "Product Line", "Sports League", "Sports Team", "Size Descriptor", "Shape", "Features", "\"Pet Pillow\"", "\"for\" Animal Type", "Color", "Pattern *or* Theme", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Brand", "Ib", "Pet Bed Style", "Animal Type"],
+      "aliases": ["pet pillow", "pet pillows", "dog pillow", "cat pillow"],
+      "title_keywords": ["pet pillow", "pet pillows", "dog pillow", "cat pillow"],
+      "context_keywords": ["mlb", "texas rangers", "large", "medium", "round", "rectangular", "reversible", "waterproof", "for cats and dogs", "for dogs", "blue", "brown and khaki camo"],
+      "negative_keywords": ["pet bed", "pet blanket", "pet sofa", "pet bed cover", "pet bed liner", "crate pad"]
+    },
+    "pet_sofa_chair_protectors": {
+      "display_name": "Pet Sofa & Chair Protectors",
+      "formula": ["Brand", "Product Line", "Features", "Material", "Furniture Type", "Pet Sofa & Chair Protector Type", "Piece Count \"-Piece\"", "Retail Packaging", "Color", "Pattern *or* Theme", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Furniture Type", "Animal Type", "Pet Sofa And Chair Protector Type"],
+      "aliases": ["sofa protector", "chair protector", "pet sofa protector", "anti-scratch guard pad"],
+      "title_keywords": ["sofa protector", "chair protector", "pet sofa protector", "anti-scratch guard pad"],
+      "context_keywords": ["transparent", "self-adhesive", "plastic", "2-piece", "set", "reversible", "textured", "microfiber", "armchair", "clear", "burgundy and tan plaid"],
+      "negative_keywords": ["pet sofas", "pet chairs", "pet bed", "pet pillow", "pet blanket", "pet bed cover"]
+    },
+    "pet_sofas_chairs": {
+      "display_name": "Pet Sofas & Chairs",
+      "formula": ["Brand", "Product Line", "Features", "Size Descriptor", "Animal Type", "Pet Sofa & Chair Type", "\"with\" Items Included *and/or* Accessories Included", "Color", "Pattern *or* Theme", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Animal Type", "Material", "Animal Lifestage"],
+      "aliases": ["pet sofa", "pet sofas", "pet chair", "dog sofa", "pet couch"],
+      "title_keywords": ["pet sofa", "pet sofas", "pet chair", "dog sofa", "pet couch"],
+      "context_keywords": ["washable", "large", "dog", "with removable cover", "peacock teal stripes"],
+      "negative_keywords": ["pet sofa chair protectors", "pet bed", "pet pillow", "pet blanket", "cat tree", "crate pad"]
+    },
+    "pet_stairs_steps": {
+      "display_name": "Pet Stairs & Steps",
+      "formula": ["Brand", "Product Line", "Features", "Number of Steps \"-Step\"", "Material", "Pet Stair & Step Type", "\"with\" Items Included *or* Accessories Included", "Color", "Pattern *or* Theme", "(Multipack Quantity \"Pack\")"],
+      "attributes": ["Brand", "Animal Type", "Pet Stair And Step Type"],
+      "aliases": ["pet stairs", "pet steps", "pet stair", "pet step"],
+      "title_keywords": ["pet stairs", "pet steps", "pet stair", "pet step"],
+      "context_keywords": ["carpeted", "foldable", "3-step", "5-step", "foam", "metal", "with removable cover", "with non-slip pads", "blue plaid", "black"],
+      "negative_keywords": ["pet bed", "pet sofa", "pet pillow", "pet blanket", "pet ramp", "crate pad"]
+    }
+  }
+}, "pet_transport": {
+  "display_name": "Pet Transport",
+  "product_types": {
+    "pet_bicycle_carriers": {
+      "display_name": "Pet Bicycle Carriers",
+      "formula": ["Brand", "Product Line", "Features", "Pet Bicycle Carrier Type", "\"for\" + Animal Type", "\"with\" Items Included *or* Accessories Included", "Color", "Pattern *or* Theme", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Mounting Location", "Material"],
+      "aliases": ["pet bicycle carrier", "pet bike carrier", "bike carrier for pets", "dog bicycle carrier"],
+      "title_keywords": ["pet bicycle carrier", "pet bike carrier", "bike carrier for pets", "dog bicycle carrier"],
+      "context_keywords": ["collapsible", "carrier bag", "for dogs", "with safety leash", "black"],
+      "negative_keywords": ["pet bicycle trailer", "pet carrier", "pet stroller", "pet sling", "pet booster seat", "pet vehicle harness"]
+    },
+    "pet_bicycle_trailers": {
+      "display_name": "Pet Bicycle Trailers",
+      "formula": ["Brand", "Product Line", "Features *or* Product Multifunction Descriptor", "\"Bicycle Trailer\"", "\"for\" + Pet Size", "Animal Type", "\"with\" Items Included *or* Accessories Included", "Color", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Number Of Wheels", "Material"],
+      "aliases": ["pet bicycle trailer", "pet bike trailer", "dog bicycle trailer", "bike trailer for pets"],
+      "title_keywords": ["pet bicycle trailer", "pet bike trailer", "dog bicycle trailer", "bike trailer for pets"],
+      "context_keywords": ["foldable", "for large dogs", "with window", "orange"],
+      "negative_keywords": ["pet bicycle carrier", "pet carrier", "pet stroller", "pet booster seat", "pet sling", "pet ramps"]
+    },
+    "pet_booster_seats": {
+      "display_name": "Pet Booster Seats",
+      "formula": ["Brand", "Product Line", "Features *or* Product Multifunction Descriptor", "Mounting Location", "\"Booster Seat\"", "\"for\" + Pet Size", "Animal Type", "\"with\" Items Included *or* Accessories Included", "\"for\" + Maximum Load Weight \"Limit\"", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Pet Size", "Size Descriptor"],
+      "aliases": ["pet booster seat", "booster seat for pets", "dog booster seat", "car booster seat for pets"],
+      "title_keywords": ["pet booster seat", "booster seat for pets", "dog booster seat", "car booster seat for pets"],
+      "context_keywords": ["adjustable", "armrest", "for small dogs", "with safety leash", "25 lb limit"],
+      "negative_keywords": ["pet car seat cover", "pet carrier", "pet vehicle harness", "pet stroller", "pet sling", "pet bicycle trailer"]
+    },
+    "pet_car_seat_covers": {
+      "display_name": "Pet Car Seat Covers",
+      "formula": ["Brand", "Product Line *or* Character", "Features *and/or* Product Multifunction Descriptor", "Pet Car Seat Cover Type", "\"for Pets\"", "\"with\" Items Included *or* Accessories Included", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Pet Car Seat Cover Type", "Material"],
+      "aliases": ["pet car seat cover", "pet car seat covers", "car seat cover for pets", "hammock car seat cover"],
+      "title_keywords": ["pet car seat cover", "pet car seat covers", "car seat cover for pets", "hammock car seat cover"],
+      "context_keywords": ["waterproof", "4-in-1", "hammock", "for pets", "with anchors", "scooby-doo"],
+      "negative_keywords": ["pet booster seat", "pet carrier", "pet vehicle harness", "pet travel barrier", "pet stroller", "pet sling"]
+    },
+    "pet_carriers": {
+      "display_name": "Pet Carriers",
+      "formula": ["Brand", "Product Line *and/or* Sports League *and/or* Sports Team", "Size Descriptor", "Features *or* Product Multifunction Descriptor", "Pet Carrier Type", "\"with\" Items Included *or* Accessories Included", "Color", "Maximum Load Weight \"Limit\" *or* Volume Capacity \"Capacity\"", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Pet Carrier Type", "Pet Size", "Brand"],
+      "aliases": ["pet carrier", "pet carriers", "soft-sided pet carrier", "carrier backpack", "aquatic life carrier"],
+      "title_keywords": ["pet carrier", "pet carriers", "soft-sided pet carrier", "carrier backpack", "aquatic life carrier"],
+      "context_keywords": ["small", "medium", "soft-sided", "3-in-1", "backpack", "with mesh pockets", "15 lb limit", "20 lb limit", "1 gal capacity"],
+      "negative_keywords": ["pet bicycle carrier", "pet bicycle trailer", "pet sling", "pet stroller", "pet booster seat", "pet travel barrier"]
+    },
+    "pet_ramps": {
+      "display_name": "Pet Ramps",
+      "formula": ["Brand", "Product Line", "Features", "Assembled Product Length \"Long\"", "Material", "\"Pet Ramp\"", "Color", "Maximum Load Weight \"Limit\"", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Size Descriptor", "Maximum Elevated Height"],
+      "aliases": ["pet ramp", "pet ramps", "dog ramp", "folding pet ramp"],
+      "title_keywords": ["pet ramp", "pet ramps", "dog ramp", "folding pet ramp"],
+      "context_keywords": ["non-slip", "adjustable height", "48\" long", "60\" long", "wooden", "plastic", "espresso", "black", "100 lb limit", "200 lb limit"],
+      "negative_keywords": ["pet stairs", "pet stroller", "pet carrier", "pet sling", "pet booster seat", "pet bicycle trailer"]
+    },
+    "pet_slings": {
+      "display_name": "Pet Slings",
+      "formula": ["Brand", "Product Line", "Features", "Material", "Animal Type", "\"Pet Sling\"", "\"with\" Items Included *or* Accessories Included", "Color", "Pattern *or* Theme", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Pet Size", "Size Descriptor"],
+      "aliases": ["pet sling", "pet slings", "dog sling", "cat sling", "carrier sling"],
+      "title_keywords": ["pet sling", "pet slings", "dog sling", "cat sling", "carrier sling"],
+      "context_keywords": ["reversible", "cotton", "dog and cat", "with side pocket", "blue polka dots"],
+      "negative_keywords": ["pet carrier", "pet stroller", "pet bicycle carrier", "pet bicycle trailer", "pet booster seat", "pet vehicle harness"]
+    },
+    "pet_strollers": {
+      "display_name": "Pet Strollers",
+      "formula": ["Brand", "Product Line", "Number of Wheels \"-Wheeled\"", "Features *or* Product Multifunction Descriptor", "Animal Type", "\"Pet\" Pet Stroller Type", "\"with\" Items Included *or* Accessories Included", "Color", "Pattern *or* Theme", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Pet Size", "Brand", "Condition"],
+      "aliases": ["pet stroller", "pet strollers", "dog stroller", "cat stroller", "pet jogging stroller"],
+      "title_keywords": ["pet stroller", "pet strollers", "dog stroller", "cat stroller", "pet jogging stroller"],
+      "context_keywords": ["4-wheeled", "3-wheeled", "3-in-1", "all-terrain", "dog and cat", "with detachable carrier", "with storage", "brown cheetah", "blazin' berry"],
+      "negative_keywords": ["pet carrier", "pet sling", "pet bicycle trailer", "pet bicycle carrier", "pet booster seat", "pet ramps"]
+    },
+    "pet_travel_barriers": {
+      "display_name": "Pet Travel Barriers",
+      "formula": ["Brand", "Product Line", "Features", "Material", "Mounting Location", "\"Pet Barrier\"", "\"with\" Items Included *and/or* Accessories Included", "Color", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Material", "Mounting Location"],
+      "aliases": ["pet travel barrier", "pet barrier", "car pet barrier", "cargo area pet barrier", "back seat pet barrier"],
+      "title_keywords": ["pet travel barrier", "pet barrier", "car pet barrier", "cargo area pet barrier", "back seat pet barrier"],
+      "context_keywords": ["adjustable", "mesh", "back seat", "with pockets", "with organizer", "universal fit", "wire net", "cargo area", "black", "gray"],
+      "negative_keywords": ["pet vehicle harness", "pet car seat cover", "pet booster seat", "pet carrier", "pet stroller", "pet door"]
+    },
+    "pet_vehicle_harnesses": {
+      "display_name": "Pet Vehicle Harnesses",
+      "formula": ["Brand", "Product Line", "Features", "Pet Vehicle Harness Type", "\"with\" Items Included *or* Accessories Included", "\"for\" Animal Type", "Color", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Material", "Pet Vehicle Harness Type"],
+      "aliases": ["pet vehicle harness", "vehicle safety harness", "car harness for pets", "seatbelt tether"],
+      "title_keywords": ["pet vehicle harness", "vehicle safety harness", "car harness for pets", "seatbelt tether"],
+      "context_keywords": ["crash tested", "remote controlled", "safety harness", "with carabiner", "with vibration tone and shock modes", "for dogs", "for pets", "red", "pink"],
+      "negative_keywords": ["pet booster seat", "pet car seat cover", "pet travel barrier", "pet carrier", "pet collar", "pet training collar"]
+    }
+  }
+}, "pet_waste_management": {
+  "display_name": "Pet Waste Management",
+  "product_types": {
+    "cat_litter": {
+      "display_name": "Cat Litter",
+      "formula": ["Brand", "Product Line", "Pet Litter Feature", "\"Cat Litter,\"", "Scent \"Scent\"", "Size", "Container Type", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Ib", "Pet Litter Material", "Scent"],
+      "aliases": ["cat litter", "clumping cat litter", "low dust cat litter"],
+      "title_keywords": ["cat litter", "clumping cat litter", "low dust cat litter"],
+      "context_keywords": ["clumping", "low dust", "unscented", "18 lb", "pail"],
+      "negative_keywords": ["cat litter box", "cat litter mat", "cat litter scoop", "cat litter box liner", "pet bedding litter", "training pads"]
+    },
+    "cat_litter_box_liners": {
+      "display_name": "Cat Litter Box Liners",
+      "formula": ["Brand", "Product Line", "Features", "Size Descriptor", "Fastener Type", "\"Litter Box Liner\"", "Form", "Scent \"Scent\"", "Count \"Count\"", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Size Descriptor", "Material"],
+      "aliases": ["litter box liner", "litter box liners", "cat litter box liner", "litter liner bags"],
+      "title_keywords": ["litter box liner", "litter box liners", "cat litter box liner", "litter liner bags"],
+      "context_keywords": ["heavy duty", "jumbo", "drawstring", "bags", "unscented", "15 count"],
+      "negative_keywords": ["cat litter box", "cat litter", "cat litter mat", "cat litter scoop", "cat litter disposal system", "training pads"]
+    },
+    "cat_litter_boxes": {
+      "display_name": "Cat Litter Boxes",
+      "formula": ["Brand", "Product Line", "Size Descriptor *and/or* Features *and/or* Material", "Cat Litter Box Type", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "Color", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Cat Litter Box Type", "Brand", "Material"],
+      "aliases": ["cat litter box", "cat litter boxes", "self-cleaning litter box", "multi-cat litter box", "litter box furniture"],
+      "title_keywords": ["cat litter box", "cat litter boxes", "self-cleaning litter box", "multi-cat litter box", "litter box furniture"],
+      "context_keywords": ["extra large", "plastic", "sifting", "wooden", "multi-cat", "automatic", "starter kit", "with scoop", "with door", "with trays", "blue and white", "espresso", "white"],
+      "negative_keywords": ["cat litter", "cat litter mat", "cat litter scoop", "cat litter box liner", "cat litter disposal system", "pet bedding litter"]
+    },
+    "cat_litter_disposal_systems": {
+      "display_name": "Cat Litter Disposal Systems",
+      "formula": ["Brand", "Product Line", "Features", "\"Cat Litter Disposal System,\"", "Color", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Assembly Required", "Size Descriptor"],
+      "aliases": ["cat litter disposal system", "litter disposal system", "litter genie"],
+      "title_keywords": ["cat litter disposal system", "litter disposal system", "litter genie"],
+      "context_keywords": ["hands-free", "odor-neutralizing", "black"],
+      "negative_keywords": ["cat litter box", "cat litter", "cat litter mat", "cat litter scoop", "cat litter box liner", "waste bag dispenser"]
+    },
+    "cat_litter_mats": {
+      "display_name": "Cat Litter Mats",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Number of Layers \"-Layer\"", "Features", "\"Cat Litter Mat\"", "\"with\" Items Included *or* Accessories Included", "Color", "Pattern *or* Theme", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Size Descriptor", "Brand", "Material"],
+      "aliases": ["cat litter mat", "cat litter mats", "litter trapping mat", "honeycomb litter mat"],
+      "title_keywords": ["cat litter mat", "cat litter mats", "litter trapping mat", "honeycomb litter mat"],
+      "context_keywords": ["large", "small", "2-layer", "honeycomb", "sifting", "non-slip", "waterproof", "with handles", "gray paws", "blue plaid"],
+      "negative_keywords": ["cat litter", "cat litter box", "cat litter scoop", "cat litter box liner", "cat litter disposal system", "training pad tray"]
+    },
+    "cat_litter_scoops": {
+      "display_name": "Cat Litter Scoops",
+      "formula": ["Brand", "Product Line", "Features", "Material", "\"Cat Litter Scoop\"", "\"with\" Items Included *or* Accessories Included", "Color", "Pattern *or* Theme", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Material", "Brand", "Handle Length"],
+      "aliases": ["cat litter scoop", "cat litter scoops", "litter scoop"],
+      "title_keywords": ["cat litter scoop", "cat litter scoops", "litter scoop"],
+      "context_keywords": ["rubber grip", "aluminum", "with caddy", "silver", "2 pack"],
+      "negative_keywords": ["cat litter", "cat litter box", "cat litter mat", "cat litter box liner", "cat litter disposal system", "pooper scooper"]
+    },
+    "dog_waste_bag_dispensers": {
+      "display_name": "Dog Waste Bag Dispensers",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Features", "Mounting Location \"Mounted\"", "Animal Type", "Dog Waste Bag Dispenser Type", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "Color", "Shape *or* Pattern *or* Theme", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Material", "Fastener Type"],
+      "aliases": ["dog waste bag dispenser", "waste bag dispenser", "pet waste bag dispenser", "waste bag holder station"],
+      "title_keywords": ["dog waste bag dispenser", "waste bag dispenser", "pet waste bag dispenser", "waste bag holder station"],
+      "context_keywords": ["extra large", "portable", "freestanding", "wall mounted", "holder kit", "station", "with bags", "with sign", "red fire hydrant", "green paws", "white hexagon"],
+      "negative_keywords": ["dog waste bags", "pooper scooper", "training pads", "training pad tray", "cat litter", "cat litter scoop"]
+    },
+    "dog_waste_bags": {
+      "display_name": "Dog Waste Bags",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Features *or* Ingredient Claims", "Animal Type", "\"Waste Bags\"", "\"with\" Items Included *or* Accessories Included", "Scent \"Scent\"", "Count \"Count\"", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Scent", "Container Type"],
+      "aliases": ["dog waste bags", "pet waste bags", "poop bags"],
+      "title_keywords": ["dog waste bags", "pet waste bags", "poop bags"],
+      "context_keywords": ["large", "earth-friendly", "with dispenser", "lavender scent", "360 count"],
+      "negative_keywords": ["dog waste bag dispenser", "pooper scooper", "cat litter", "cat litter box", "training pads", "training pad tray"]
+    },
+    "pet_training_pad_trays": {
+      "display_name": "Pet Training Pad Trays",
+      "formula": ["Brand", "Product Line", "Features", "Material", "\"Pet Training Pad Tray\"", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "Assembled Product Width \"x\" Assembled Product Length", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Material", "Multipack Quantity"],
+      "aliases": ["training pad tray", "pet training pad tray", "pad holder tray", "grass pad tray"],
+      "title_keywords": ["training pad tray", "pet training pad tray", "pad holder tray", "grass pad tray"],
+      "context_keywords": ["reusable", "artificial grass", "splash guard", "leakproof", "plastic", "with simulation wall", "22\" x 36\"", "18\" x 24\""],
+      "negative_keywords": ["training pads", "dog waste bags", "dog waste bag dispenser", "pooper scooper", "cat litter mat", "cat litter box"]
+    },
+    "pet_training_pads": {
+      "display_name": "Pet Training Pads",
+      "formula": ["Brand", "Product Line", "Size Descriptor", "Number of Layers \"-Layer\"", "Features", "\"Pet Training Pads,\"", "Assembled Product Width \"x\" Assembled Product Length", "Count \"Count\"", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Brand", "Number Of Pieces", "Size Descriptor"],
+      "aliases": ["pet training pads", "puppy pads", "pee pads"],
+      "title_keywords": ["pet training pads", "puppy pads", "pee pads"],
+      "context_keywords": ["large", "6-layer", "odor-neutralizing", "22\" x 22\"", "100 count"],
+      "negative_keywords": ["training pad tray", "dog waste bags", "dog waste bag dispenser", "pooper scooper", "cat litter", "cat litter mat"]
+    },
+    "pooper_scoopers": {
+      "display_name": "Pooper Scoopers",
+      "formula": ["Brand", "Product Line", "Features", "Pooper Scooper Type", "Retail Packaging", "\"with\" Items Included *or* Accessories Included", "(Multipack Quantity + \"Pack\")"],
+      "attributes": ["Pooper Scooper Type", "Material", "Size Descriptor"],
+      "aliases": ["pooper scooper", "poop scoop", "waste scooper"],
+      "title_keywords": ["pooper scooper", "poop scoop", "waste scooper"],
+      "context_keywords": ["rake", "tray", "shovel", "bin", "set"],
+      "negative_keywords": ["dog waste bags", "dog waste bag dispenser", "training pads", "training pad tray", "cat litter scoop", "cat litter box"]
+    }
+  }
+}
+
+
+  }
+
+}

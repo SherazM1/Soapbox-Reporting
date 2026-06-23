@@ -1,0 +1,747 @@
+{
+  "category": "Animals",
+  "category_key": "animals",
+  "guide_key": "animalsimg",
+  "source": "FY27_Category_StyleGuide_Animals.pdf",
+  "last_updated": "Apr 21, 2026",
+  "status": "complete",
+  "global_guidance": {
+    "rules": [
+      "imagery should have high appetite appeal",
+      "silo images should be photographed consistently according to packaging or product type",
+      "minimize reflections on plastic, foil, and shiny packaging, especially when covering important product information",
+      "remove unnecessary stickers not part of package design, such as special promotion stickers or legal declarations",
+      "packaging and labels should be presented straight, not angled or crooked",
+      "photograph each unique and meaningful side of the product package",
+      "for round or irregular shapes, present sides so printed information and graphics are centered and legible",
+      "front view is the side with predominant brand and labeling, format, variant, and size/quantity",
+      "products should be evenly lit from side to side and top to bottom",
+      "exposure and color should correctly represent the item",
+      "maintain separation between product and background",
+      "clip products onto pure white background, RGB 255/255/255",
+      "retouch dirt, dust, fingerprints, damage, blemishes, expiration dates, lot numbers, and sample-only information",
+      "lifestyle images should be realistic, professionally lit, and styled appropriately to the item and brand",
+      "product being sold should remain the hero of the lifestyle image",
+      "packaging should be incorporated into lifestyle images when practical to connect lifestyle images to silo shots",
+      "items must display all indicated required images and conditionally required images and meet the minimum image count listed on each page"
+    ]
+  },
+  "slot_definitions": {
+    "main_image": {
+      "label": "Main Image",
+      "description": "Primary carousel image/hero image for the PDP.",
+      "detection_hints": [
+        "main",
+        "hero",
+        "primary",
+        "front",
+        "image 1",
+        "carousel 1"
+      ]
+    },
+    "silo_front": {
+      "label": "Silo, Front",
+      "guidance": "Show the product straight-on on a pure white background with full visibility and accessories empty unless needed to communicate scale.",
+      "recommendation": "Add a straight-on front silo image on pure white with the full product visible and accessories empty unless needed for scale.",
+      "detection_hints": [
+        "front",
+        "silo",
+        "main",
+        "hero",
+        "white background",
+        "full visibility",
+        "accessories empty"
+      ]
+    },
+    "silo_front_in_pack": {
+      "label": "Silo, Front, In Pack",
+      "guidance": "Show the complete product packaging from a straight-on, front-facing angle. Shoot on white with no shadow or keystoning.",
+      "recommendation": "Add a straight-on front packaging image on white with no shadow or keystoning.",
+      "detection_hints": [
+        "front in pack",
+        "in pack",
+        "packaging",
+        "package front",
+        "boxed",
+        "retail packaging",
+        "no shadow",
+        "straight-on"
+      ]
+    },
+    "lifestyle_in_use": {
+      "label": "Lifestyle, In-Use",
+      "guidance": "Show the product in a realistic, natural setting that reflects everyday use with the product as the focal point and minimal distraction.",
+      "recommendation": "Add a lifestyle image showing the product in realistic everyday use with the pet/product as the focal point.",
+      "detection_hints": [
+        "lifestyle",
+        "in-use",
+        "in use",
+        "pet",
+        "dog",
+        "cat",
+        "animal",
+        "home",
+        "outdoor",
+        "travel",
+        "natural setting"
+      ]
+    },
+    "lifestyle_active_play": {
+      "label": "Lifestyle, In-Use",
+      "guidance": "Show a pet actively playing with the toy in a natural setting with the product in sharp focus; motion blur on the pet is acceptable.",
+      "recommendation": "Add an active-play lifestyle image showing the pet interacting with the toy, with the product in sharp focus.",
+      "detection_hints": [
+        "active play",
+        "playing",
+        "toy",
+        "dog playing",
+        "cat playing",
+        "motion blur",
+        "pet active",
+        "enrichment"
+      ]
+    },
+    "dimensions": {
+      "label": "Dimensions",
+      "guidance": "Graphic showing product dimensions.",
+      "recommendation": "Add a dimensions graphic showing product size clearly.",
+      "detection_hints": [
+        "dimensions",
+        "height",
+        "width",
+        "depth",
+        "scale",
+        "size",
+        "measurements",
+        "inches",
+        "in."
+      ]
+    },
+    "dimensions_pet_size": {
+      "label": "Dimensions",
+      "guidance": "Overlay interior and exterior dimensions clearly on the product image, and for sizing-sensitive items include a breed or weight size guide or human scale reference.",
+      "recommendation": "Add a dimensions graphic with interior/exterior measurements plus breed, weight, or scale reference when size-sensitive.",
+      "detection_hints": [
+        "interior dimensions",
+        "exterior dimensions",
+        "breed size",
+        "weight guide",
+        "human scale",
+        "size guide",
+        "pet size",
+        "breed",
+        "weight"
+      ]
+    },
+    "dimensions_toy_size": {
+      "label": "Dimensions",
+      "guidance": "Show product dimensions overlaid on the silo or include a size comparison using a familiar object, and for breed-sized toys reference the intended dog size category.",
+      "recommendation": "Add a toy dimensions graphic using measurements or a familiar-object size comparison and intended dog size category when relevant.",
+      "detection_hints": [
+        "toy size",
+        "size comparison",
+        "familiar object",
+        "dog size",
+        "breed-sized",
+        "dimensions",
+        "measurement"
+      ]
+    },
+    "feature_graphic": {
+      "label": "Feature Graphic",
+      "guidance": "Highlight structural, functional, play, health, grooming, training, material, performance, odor-control, capacity, or safety benefits using clean callout graphics.",
+      "recommendation": "Add a clean feature graphic highlighting key benefits, function, performance, safety, durability, usage, capacity, or material claims.",
+      "detection_hints": [
+        "feature",
+        "callout",
+        "benefit",
+        "function",
+        "durability",
+        "ventilation",
+        "capacity",
+        "programmability",
+        "material safety",
+        "odor control",
+        "clumping",
+        "training",
+        "range",
+        "coverage"
+      ]
+    },
+    "graphic_supplement_fact": {
+      "label": "Graphic, Supplement Fact",
+      "guidance": "Show the Supplement Facts, ingredients, or usage instructions clearly legible in a straight-on shot with no glare or distortion.",
+      "recommendation": "Add a flat Supplement Facts, ingredients, or usage-instructions graphic with no glare or distortion.",
+      "detection_hints": [
+        "supplement facts",
+        "ingredients",
+        "usage instructions",
+        "directions",
+        "active ingredient",
+        "dosage",
+        "straight-on",
+        "no glare"
+      ]
+    },
+    "graphic_installation": {
+      "label": "Graphic, Installation",
+      "guidance": "Show installation or setup configuration, and for wireless fences or bark devices include a clear range or coverage area graphic with distance callouts.",
+      "recommendation": "Add an installation or setup graphic showing configuration, range, coverage, or distance callouts where relevant.",
+      "detection_hints": [
+        "installation",
+        "setup",
+        "configuration",
+        "range",
+        "coverage",
+        "distance",
+        "wireless fence",
+        "bark device"
+      ]
+    },
+    "graphic_breed_size_guide": {
+      "label": "Breed / Size Guide",
+      "guidance": "Include a breed or weight-based size guide to help customers select the correct size for their pet.",
+      "recommendation": "Add a breed or weight-based size guide to help customers select the correct size.",
+      "detection_hints": [
+        "breed guide",
+        "size guide",
+        "weight guide",
+        "breed",
+        "weight-based",
+        "pet size",
+        "dog size",
+        "cat size"
+      ]
+    },
+    "graphic_compatibility": {
+      "label": "Compatibility Graphic",
+      "guidance": "Call out compatible pet types, breeds, or life stages for this product.",
+      "recommendation": "Add a compatibility graphic showing compatible pet types, breeds, or life stages.",
+      "detection_hints": [
+        "compatibility",
+        "compatible",
+        "pet types",
+        "breeds",
+        "life stages",
+        "dog",
+        "cat",
+        "small animal",
+        "reptile"
+      ]
+    },
+    "graphic_use_occasion": {
+      "label": "Use Occasion Graphic",
+      "guidance": "Show the product?s ideal use context, such as travel, home, or outdoor, through a simple iconographic or lifestyle graphic.",
+      "recommendation": "Add a use-occasion graphic showing the ideal context such as travel, home, or outdoor use.",
+      "detection_hints": [
+        "use occasion",
+        "travel",
+        "home",
+        "outdoor",
+        "context",
+        "ideal use",
+        "iconographic"
+      ]
+    },
+    "graphic_safety_seal": {
+      "label": "Brand / Safety Seal",
+      "guidance": "Include the brand?s safety or quality certification graphic if applicable.",
+      "recommendation": "Add a brand safety or quality certification graphic when applicable.",
+      "detection_hints": [
+        "safety seal",
+        "quality certification",
+        "certification",
+        "brand seal",
+        "non-toxic",
+        "BPA-free",
+        "natural rubber",
+        "food-grade"
+      ]
+    },
+    "silo_components": {
+      "label": "Included Components",
+      "guidance": "Show all included components in a clean, organized flat-lay with labels or callouts highlighting key pieces.",
+      "recommendation": "Add a flat-lay image showing all included components with labels or callouts.",
+      "detection_hints": [
+        "included components",
+        "components",
+        "flat-lay",
+        "flat lay",
+        "included",
+        "kit contents",
+        "what's included",
+        "accessories"
+      ]
+    }
+  },
+  "pages": {
+    "pet_housing_habitats_travel": {
+      "display_name": "Pet Housing, Habitats & Travel",
+      "format": "General",
+      "product_types": [
+        "Pet Door Flaps",
+        "Pet Doors",
+        "Pet Gates",
+        "Pet Kennel & Crate Covers",
+        "Pet Kennel & Crate Pads",
+        "Pet Kennels & Crates",
+        "Pet Playpens",
+        "Pet Radio & Wireless Fences",
+        "Pet Tie-Out Stakes",
+        "Pet Tie-Outs",
+        "Pet Bicycle Carriers",
+        "Pet Bicycle Trailers",
+        "Pet Booster Seats",
+        "Pet Car Seat Covers",
+        "Pet Carriers",
+        "Pet Ramps",
+        "Pet Slings",
+        "Pet Strollers",
+        "Pet Travel Barriers",
+        "Pet Vehicle Harnesses",
+        "Other Small Animal Supplies",
+        "Small Animal Exercise Wheels",
+        "Small Animal Habitat Decor",
+        "Small Animal Habitats & Cages",
+        "Small Animal Toys",
+        "Small Animal Tubes & Tunnels",
+        "Aquarium & Terrarium Substrate",
+        "Other Reptile & Amphibian Supplies",
+        "Reptile Thermometers",
+        "Terrarium Covers",
+        "Terrarium Feeding Dishes",
+        "Terrarium Habitat Decor",
+        "Terrarium Habitat Lighting",
+        "Terrarium Heat Lamps & Mats",
+        "Terrariums"
+      ],
+      "required_slots": [
+        "silo_front",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "feature_graphic",
+        "silo_front_in_pack",
+        "dimensions_pet_size"
+      ],
+      "additional_recommendations": [
+        "Breed / Size Guide: Include a breed or weight-based size guide to help customers select the correct size for their pet.",
+        "Collection Image: Show the full product family or size range in a styled group arrangement.",
+        "Compatibility Graphic: Call out compatible pet types, breeds, or life stages for this product.",
+        "Brand / Safety Seal: Include the brand?s safety or quality certification graphic if applicable.",
+        "Use Occasion Graphic: Show the product?s ideal use context, such as travel, home, or outdoor, through a simple iconographic or lifestyle graphic."
+      ],
+      "notes": [
+        "Preserve repeated feature_graphic because the source page shows two separate feature graphics.",
+        "One feature graphic highlights structural or functional features such as mechanism, durability, ventilation, or capacity.",
+        "The other feature graphic shows the product assembled or ready-to-use, and displays a simple step graphic for assembly or fold-down when applicable.",
+        "Dimensions should overlay interior and exterior dimensions and include breed, weight, or human scale reference for sizing-sensitive items.",
+        "Maintain a consistent visual approach across product photography with consistent angles to ensure a unified presentation.",
+        "Individual brand guidelines should take precedence.",
+        "Animal imagery should clearly communicate pet type, breed/size fit, life stage, safe use, capacity, setup, and real use context when relevant.",
+        "Keep products as the focal point even when pets or people appear in lifestyle imagery."
+      ]
+    },
+    "pet_feeding_hydration_supplies": {
+      "display_name": "Pet Feeding & Hydration Supplies",
+      "format": "General",
+      "product_types": [
+        "Automatic Pet Feeders",
+        "Feed Scoops",
+        "Other Pet Feeding & Watering Supplies",
+        "Pet Bowls",
+        "Pet Food Mats",
+        "Pet Food Storage",
+        "Pet Water Bottles",
+        "Pet Water Fountains"
+      ],
+      "required_slots": [
+        "silo_front",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "feature_graphic",
+        "silo_front_in_pack",
+        "dimensions"
+      ],
+      "additional_recommendations": [
+        "Breed / Size Guide: Include a breed or weight-based size guide to help customers select the correct size for their pet.",
+        "Collection Image: Show the full product family or size range in a styled group arrangement.",
+        "Compatibility Graphic: Call out compatible pet types, breeds, or life stages for this product.",
+        "Brand / Safety Seal: Include the brand?s safety or quality certification graphic if applicable.",
+        "Use Occasion Graphic: Show the product?s ideal use context, such as travel, home, or outdoor, through a simple iconographic or lifestyle graphic."
+      ],
+      "notes": [
+        "Preserve repeated feature_graphic because the source page shows two separate feature graphics.",
+        "One feature graphic highlights functional benefits such as capacity, material safety, stability, or programmability.",
+        "The other feature graphic calls out material quality and safety certifications such as dishwasher-safe, non-toxic, or food-grade materials.",
+        "Maintain a consistent visual approach across product photography with consistent angles to ensure a unified presentation.",
+        "Individual brand guidelines should take precedence.",
+        "Animal imagery should clearly communicate pet type, breed/size fit, life stage, safe use, capacity, setup, and real use context when relevant.",
+        "Keep products as the focal point even when pets or people appear in lifestyle imagery."
+      ]
+    },
+    "pet_grooming_hygiene": {
+      "display_name": "Pet Grooming & Hygiene",
+      "format": "General",
+      "product_types": [
+        "Animal Conditioners",
+        "Animal Grooming Electric Clipper Blades",
+        "Animal Grooming Electric Clippers",
+        "Animal Grooming Scissors",
+        "Animal Shampoos",
+        "Other Pet Grooming Supplies",
+        "Pet Claw Care",
+        "Pet Colognes",
+        "Pet Dander Reducers",
+        "Pet Dematting Tools",
+        "Pet Deodorizers",
+        "Pet Grooming Baths",
+        "Pet Grooming Brushes",
+        "Pet Grooming Dryers",
+        "Pet Grooming Tables",
+        "Pet Grooming Wipes",
+        "Pet Hair Removal & Grooming Mitts",
+        "Pet Shower & Bath Accessories",
+        "Pet Styptic Gels & Powders"
+      ],
+      "required_slots": [
+        "silo_front",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "feature_graphic",
+        "silo_front_in_pack",
+        "feature_graphic",
+        "dimensions"
+      ],
+      "additional_recommendations": [
+        "Breed / Size Guide: Include a breed or weight-based size guide to help customers select the correct size for their pet.",
+        "Collection Image: Show the full product family or size range in a styled group arrangement.",
+        "Compatibility Graphic: Call out compatible pet types, breeds, or life stages for this product.",
+        "Brand / Safety Seal: Include the brand?s safety or quality certification graphic if applicable.",
+        "Use Occasion Graphic: Show the product?s ideal use context, such as travel, home, or outdoor, through a simple iconographic or lifestyle graphic."
+      ],
+      "notes": [
+        "Preserve repeated feature_graphic because the source page shows three separate feature graphics.",
+        "One feature graphic highlights the primary grooming benefit such as deshedding, blade precision, waterproof design, or gentle formula.",
+        "Another feature graphic shows all included components in a clean, organized flat-lay with labels or callouts highlighting key pieces.",
+        "Another feature graphic highlights the primary grooming benefit such as performance, precision, or formula.",
+        "Maintain a consistent visual approach across product photography with consistent angles to ensure a unified presentation.",
+        "Individual brand guidelines should take precedence.",
+        "Animal imagery should clearly communicate pet type, breed/size fit, life stage, safe use, capacity, setup, and real use context when relevant.",
+        "Keep products as the focal point even when pets or people appear in lifestyle imagery."
+      ]
+    },
+    "pet_health_wellness_medical_supplies": {
+      "display_name": "Pet Health, Wellness & Medical Supplies",
+      "format": "General",
+      "product_types": [
+        "Animal Acupuncture Models",
+        "Animal Dental Care Tools",
+        "Animal Dewormers",
+        "Animal Supplements & Vitamins",
+        "Cat Hairball Remedies",
+        "Flea & Tick Collars",
+        "Other Pet Health Supplies",
+        "Pet Diapers",
+        "Pet Digestive Remedies",
+        "Pet Ear Care",
+        "Pet Eye Care",
+        "Pet Flea & Tick Treatments",
+        "Pet Flea Combs",
+        "Pet Itch Remedies",
+        "Pet Milk Replacers",
+        "Pet Nursing Bottles & Bottle Sets",
+        "Pet Nursing Kits",
+        "Pet Nursing Replacement Teats",
+        "Pet Nursing Syringes",
+        "Pet Recovery Collars & Cones",
+        "Pet Relaxants",
+        "Pet Thermometers",
+        "Pet Toothbrushes",
+        "Pet Toothpaste",
+        "Pet Wheelchairs",
+        "Poultry Conditioner"
+      ],
+      "required_slots": [
+        "silo_front",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "feature_graphic",
+        "silo_front_in_pack",
+        "graphic_supplement_fact",
+        "dimensions"
+      ],
+      "additional_recommendations": [
+        "Breed / Size Guide: Include a breed or weight-based size guide to help customers select the correct size for their pet.",
+        "Collection Image: Show the full product family or size range in a styled group arrangement.",
+        "Compatibility Graphic: Call out compatible pet types, breeds, or life stages for this product.",
+        "Brand / Safety Seal: Include the brand?s safety or quality certification graphic if applicable.",
+        "Use Occasion Graphic: Show the product?s ideal use context, such as travel, home, or outdoor, through a simple iconographic or lifestyle graphic."
+      ],
+      "notes": [
+        "Preserve repeated feature_graphic because the source page shows two separate feature graphics.",
+        "One feature graphic highlights the primary health benefit, active ingredient, or veterinary recommendation using compliant graphic treatment.",
+        "The other feature graphic displays dosage or usage instructions by weight or species using simple iconography and legible text.",
+        "Graphic Supplement Fact should show Supplement Facts, ingredients, or usage instructions clearly with no glare or distortion.",
+        "Maintain a consistent visual approach across product photography with consistent angles to ensure a unified presentation.",
+        "Individual brand guidelines should take precedence.",
+        "Animal imagery should clearly communicate pet type, breed/size fit, life stage, safe use, capacity, setup, and real use context when relevant.",
+        "Keep products as the focal point even when pets or people appear in lifestyle imagery."
+      ]
+    },
+    "pet_toys_enrichment_single": {
+      "display_name": "Pet Toys & Enrichment",
+      "format": "Single",
+      "product_types": [
+        "Cat Toys",
+        "Dog Toys",
+        "Small Animal Toys"
+      ],
+      "required_slots": [
+        "silo_front",
+        "lifestyle_active_play",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "dimensions_toy_size",
+        "feature_graphic"
+      ],
+      "additional_recommendations": [
+        "Breed / Size Guide: Include a breed or weight-based size guide to help customers select the correct size for their pet.",
+        "Collection Image: Show the full product family or size range in a styled group arrangement.",
+        "Compatibility Graphic: Call out compatible pet types, breeds, or life stages for this product.",
+        "Brand / Safety Seal: Include the brand?s safety or quality certification graphic if applicable.",
+        "Use Occasion Graphic: Show the product?s ideal use context, such as travel, home, or outdoor, through a simple iconographic or lifestyle graphic."
+      ],
+      "notes": [
+        "Preserve repeated lifestyle_in_use and feature_graphic concepts because the source page shows separate lifestyle and feature images.",
+        "Lifestyle Active Play should show a pet actively playing with the toy in a natural setting, with product in sharp focus.",
+        "One feature graphic highlights primary play or enrichment benefit such as interaction, durability, or dispensing.",
+        "The other feature graphic highlights material safety and durability claims such as non-toxic, BPA-free, or natural rubber.",
+        "Dimensions should include size comparison and intended dog size category when relevant.",
+        "Maintain a consistent visual approach across product photography with consistent angles to ensure a unified presentation.",
+        "Individual brand guidelines should take precedence.",
+        "Animal imagery should clearly communicate pet type, breed/size fit, life stage, safe use, capacity, setup, and real use context when relevant.",
+        "Keep products as the focal point even when pets or people appear in lifestyle imagery."
+      ]
+    },
+    "pet_toys_enrichment_multipacks": {
+      "display_name": "Pet Toys & Enrichment",
+      "format": "Multipacks",
+      "product_types": [
+        "Multipacks"
+      ],
+      "required_slots": [
+        "silo_front",
+        "lifestyle_active_play",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "dimensions_toy_size",
+        "feature_graphic"
+      ],
+      "additional_recommendations": [
+        "Breed / Size Guide: Include a breed or weight-based size guide to help customers select the correct size for their pet.",
+        "Collection Image: Show the full product family or size range in a styled group arrangement.",
+        "Compatibility Graphic: Call out compatible pet types, breeds, or life stages for this product.",
+        "Brand / Safety Seal: Include the brand?s safety or quality certification graphic if applicable.",
+        "Use Occasion Graphic: Show the product?s ideal use context, such as travel, home, or outdoor, through a simple iconographic or lifestyle graphic."
+      ],
+      "notes": [
+        "The source page lists the product type as Multipacks.",
+        "Preserve repeated lifestyle_in_use and feature_graphic concepts because the source page shows separate lifestyle and feature images.",
+        "Lifestyle Active Play should show a pet actively playing with the toy in a natural setting, with product in sharp focus.",
+        "One feature graphic highlights primary play or enrichment benefit such as interaction, durability, or dispensing.",
+        "The other feature graphic highlights material safety and durability claims such as non-toxic, BPA-free, or natural rubber.",
+        "Dimensions should include size comparison and intended dog size category when relevant.",
+        "Maintain a consistent visual approach across product photography with consistent angles to ensure a unified presentation.",
+        "Individual brand guidelines should take precedence.",
+        "Animal imagery should clearly communicate pet type, breed/size fit, life stage, safe use, capacity, setup, and real use context when relevant.",
+        "Keep products as the focal point even when pets or people appear in lifestyle imagery."
+      ]
+    },
+    "pet_training_behavior": {
+      "display_name": "Pet Training & Behavior",
+      "format": "General",
+      "product_types": [
+        "Bark Control Training Aids",
+        "Dog Agility Equipment",
+        "Dog Whistles",
+        "Pet Doorbells",
+        "Pet Repellents",
+        "Pet Training Clickers",
+        "Pet Training Collars"
+      ],
+      "required_slots": [
+        "silo_front",
+        "graphic_installation",
+        "lifestyle_in_use",
+        "dimensions",
+        "feature_graphic",
+        "feature_graphic"
+      ],
+      "additional_recommendations": [
+        "Breed / Size Guide: Include a breed or weight-based size guide to help customers select the correct size for their pet.",
+        "Collection Image: Show the full product family or size range in a styled group arrangement.",
+        "Compatibility Graphic: Call out compatible pet types, breeds, or life stages for this product.",
+        "Brand / Safety Seal: Include the brand?s safety or quality certification graphic if applicable.",
+        "Use Occasion Graphic: Show the product?s ideal use context, such as travel, home, or outdoor, through a simple iconographic or lifestyle graphic."
+      ],
+      "notes": [
+        "Preserve repeated feature_graphic because the source page shows two separate feature graphics.",
+        "Graphic Installation should show installation or setup configuration, and for wireless fences or bark devices include range or coverage area with distance callouts.",
+        "One feature graphic displays the training mechanism using a simple step graphic or diagram.",
+        "The other feature graphic displays coverage or range using a clean diagram and highlights key features such as adjustability or control levels.",
+        "Maintain a consistent visual approach across product photography with consistent angles to ensure a unified presentation.",
+        "Individual brand guidelines should take precedence.",
+        "Animal imagery should clearly communicate pet type, breed/size fit, life stage, safe use, capacity, setup, and real use context when relevant.",
+        "Keep products as the focal point even when pets or people appear in lifestyle imagery."
+      ]
+    },
+    "pet_waste_litter_management": {
+      "display_name": "Pet Waste & Litter Management",
+      "format": "General",
+      "product_types": [
+        "Cat Litter",
+        "Cat Litter Box Liners",
+        "Cat Litter Boxes",
+        "Cat Litter Disposal Systems",
+        "Cat Litter Mats",
+        "Cat Litter Scoops",
+        "Dog Waste Bag Dispensers"
+      ],
+      "required_slots": [
+        "silo_front",
+        "feature_graphic",
+        "lifestyle_in_use",
+        "dimensions",
+        "feature_graphic",
+        "feature_graphic"
+      ],
+      "additional_recommendations": [
+        "Breed / Size Guide: Include a breed or weight-based size guide to help customers select the correct size for their pet.",
+        "Collection Image: Show the full product family or size range in a styled group arrangement.",
+        "Compatibility Graphic: Call out compatible pet types, breeds, or life stages for this product.",
+        "Brand / Safety Seal: Include the brand?s safety or quality certification graphic if applicable.",
+        "Use Occasion Graphic: Show the product?s ideal use context, such as travel, home, or outdoor, through a simple iconographic or lifestyle graphic."
+      ],
+      "notes": [
+        "Preserve repeated feature_graphic because the source page shows three separate feature graphics.",
+        "One feature graphic highlights a key functional feature such as odor control, clumping, self-cleaning, or bag capacity.",
+        "Another feature graphic highlights key functional features such as odor control, performance, or capacity.",
+        "Another feature graphic highlights odor-control or waste-management performance using clear, factual graphic treatment.",
+        "Maintain a consistent visual approach across product photography with consistent angles to ensure a unified presentation.",
+        "Individual brand guidelines should take precedence.",
+        "Animal imagery should clearly communicate pet type, breed/size fit, life stage, safe use, capacity, setup, and real use context when relevant.",
+        "Keep products as the focal point even when pets or people appear in lifestyle imagery."
+      ]
+    }
+  },
+  "product_type_index": {
+    "Pet Door Flaps": "pet_housing_habitats_travel",
+    "Pet Doors": "pet_housing_habitats_travel",
+    "Pet Gates": "pet_housing_habitats_travel",
+    "Pet Kennel & Crate Covers": "pet_housing_habitats_travel",
+    "Pet Kennel & Crate Pads": "pet_housing_habitats_travel",
+    "Pet Kennels & Crates": "pet_housing_habitats_travel",
+    "Pet Playpens": "pet_housing_habitats_travel",
+    "Pet Radio & Wireless Fences": "pet_housing_habitats_travel",
+    "Pet Tie-Out Stakes": "pet_housing_habitats_travel",
+    "Pet Tie-Outs": "pet_housing_habitats_travel",
+    "Pet Bicycle Carriers": "pet_housing_habitats_travel",
+    "Pet Bicycle Trailers": "pet_housing_habitats_travel",
+    "Pet Booster Seats": "pet_housing_habitats_travel",
+    "Pet Car Seat Covers": "pet_housing_habitats_travel",
+    "Pet Carriers": "pet_housing_habitats_travel",
+    "Pet Ramps": "pet_housing_habitats_travel",
+    "Pet Slings": "pet_housing_habitats_travel",
+    "Pet Strollers": "pet_housing_habitats_travel",
+    "Pet Travel Barriers": "pet_housing_habitats_travel",
+    "Pet Vehicle Harnesses": "pet_housing_habitats_travel",
+    "Other Small Animal Supplies": "pet_housing_habitats_travel",
+    "Small Animal Exercise Wheels": "pet_housing_habitats_travel",
+    "Small Animal Habitat Decor": "pet_housing_habitats_travel",
+    "Small Animal Habitats & Cages": "pet_housing_habitats_travel",
+    "Small Animal Toys": [
+      "pet_housing_habitats_travel",
+      "pet_toys_enrichment_single"
+    ],
+    "Small Animal Tubes & Tunnels": "pet_housing_habitats_travel",
+    "Aquarium & Terrarium Substrate": "pet_housing_habitats_travel",
+    "Other Reptile & Amphibian Supplies": "pet_housing_habitats_travel",
+    "Reptile Thermometers": "pet_housing_habitats_travel",
+    "Terrarium Covers": "pet_housing_habitats_travel",
+    "Terrarium Feeding Dishes": "pet_housing_habitats_travel",
+    "Terrarium Habitat Decor": "pet_housing_habitats_travel",
+    "Terrarium Habitat Lighting": "pet_housing_habitats_travel",
+    "Terrarium Heat Lamps & Mats": "pet_housing_habitats_travel",
+    "Terrariums": "pet_housing_habitats_travel",
+    "Automatic Pet Feeders": "pet_feeding_hydration_supplies",
+    "Feed Scoops": "pet_feeding_hydration_supplies",
+    "Other Pet Feeding & Watering Supplies": "pet_feeding_hydration_supplies",
+    "Pet Bowls": "pet_feeding_hydration_supplies",
+    "Pet Food Mats": "pet_feeding_hydration_supplies",
+    "Pet Food Storage": "pet_feeding_hydration_supplies",
+    "Pet Water Bottles": "pet_feeding_hydration_supplies",
+    "Pet Water Fountains": "pet_feeding_hydration_supplies",
+    "Animal Conditioners": "pet_grooming_hygiene",
+    "Animal Grooming Electric Clipper Blades": "pet_grooming_hygiene",
+    "Animal Grooming Electric Clippers": "pet_grooming_hygiene",
+    "Animal Grooming Scissors": "pet_grooming_hygiene",
+    "Animal Shampoos": "pet_grooming_hygiene",
+    "Other Pet Grooming Supplies": "pet_grooming_hygiene",
+    "Pet Claw Care": "pet_grooming_hygiene",
+    "Pet Colognes": "pet_grooming_hygiene",
+    "Pet Dander Reducers": "pet_grooming_hygiene",
+    "Pet Dematting Tools": "pet_grooming_hygiene",
+    "Pet Deodorizers": "pet_grooming_hygiene",
+    "Pet Grooming Baths": "pet_grooming_hygiene",
+    "Pet Grooming Brushes": "pet_grooming_hygiene",
+    "Pet Grooming Dryers": "pet_grooming_hygiene",
+    "Pet Grooming Tables": "pet_grooming_hygiene",
+    "Pet Grooming Wipes": "pet_grooming_hygiene",
+    "Pet Hair Removal & Grooming Mitts": "pet_grooming_hygiene",
+    "Pet Shower & Bath Accessories": "pet_grooming_hygiene",
+    "Pet Styptic Gels & Powders": "pet_grooming_hygiene",
+    "Animal Acupuncture Models": "pet_health_wellness_medical_supplies",
+    "Animal Dental Care Tools": "pet_health_wellness_medical_supplies",
+    "Animal Dewormers": "pet_health_wellness_medical_supplies",
+    "Animal Supplements & Vitamins": "pet_health_wellness_medical_supplies",
+    "Cat Hairball Remedies": "pet_health_wellness_medical_supplies",
+    "Flea & Tick Collars": "pet_health_wellness_medical_supplies",
+    "Other Pet Health Supplies": "pet_health_wellness_medical_supplies",
+    "Pet Diapers": "pet_health_wellness_medical_supplies",
+    "Pet Digestive Remedies": "pet_health_wellness_medical_supplies",
+    "Pet Ear Care": "pet_health_wellness_medical_supplies",
+    "Pet Eye Care": "pet_health_wellness_medical_supplies",
+    "Pet Flea & Tick Treatments": "pet_health_wellness_medical_supplies",
+    "Pet Flea Combs": "pet_health_wellness_medical_supplies",
+    "Pet Itch Remedies": "pet_health_wellness_medical_supplies",
+    "Pet Milk Replacers": "pet_health_wellness_medical_supplies",
+    "Pet Nursing Bottles & Bottle Sets": "pet_health_wellness_medical_supplies",
+    "Pet Nursing Kits": "pet_health_wellness_medical_supplies",
+    "Pet Nursing Replacement Teats": "pet_health_wellness_medical_supplies",
+    "Pet Nursing Syringes": "pet_health_wellness_medical_supplies",
+    "Pet Recovery Collars & Cones": "pet_health_wellness_medical_supplies",
+    "Pet Relaxants": "pet_health_wellness_medical_supplies",
+    "Pet Thermometers": "pet_health_wellness_medical_supplies",
+    "Pet Toothbrushes": "pet_health_wellness_medical_supplies",
+    "Pet Toothpaste": "pet_health_wellness_medical_supplies",
+    "Pet Wheelchairs": "pet_health_wellness_medical_supplies",
+    "Poultry Conditioner": "pet_health_wellness_medical_supplies",
+    "Cat Toys": "pet_toys_enrichment_single",
+    "Dog Toys": "pet_toys_enrichment_single",
+    "Multipacks": "pet_toys_enrichment_multipacks",
+    "Bark Control Training Aids": "pet_training_behavior",
+    "Dog Agility Equipment": "pet_training_behavior",
+    "Dog Whistles": "pet_training_behavior",
+    "Pet Doorbells": "pet_training_behavior",
+    "Pet Repellents": "pet_training_behavior",
+    "Pet Training Clickers": "pet_training_behavior",
+    "Pet Training Collars": "pet_training_behavior",
+    "Cat Litter": "pet_waste_litter_management",
+    "Cat Litter Box Liners": "pet_waste_litter_management",
+    "Cat Litter Boxes": "pet_waste_litter_management",
+    "Cat Litter Disposal Systems": "pet_waste_litter_management",
+    "Cat Litter Mats": "pet_waste_litter_management",
+    "Cat Litter Scoops": "pet_waste_litter_management",
+    "Dog Waste Bag Dispensers": "pet_waste_litter_management"
+  }
+}
