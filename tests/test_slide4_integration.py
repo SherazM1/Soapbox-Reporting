@@ -66,6 +66,26 @@ def _record(brand: str, images: list[dict], record_id: str) -> dict:
     }
 
 
+def _image_analysis(*, image_count: int, formats: list[str], signals: list[list[str]]) -> dict:
+    return {
+        "status": "complete",
+        "image_count": image_count,
+        "analyzed_image_count": len(formats),
+        "images": [
+            {
+                "status": "analyzed",
+                "position": index + 1,
+                "probable_format": fmt,
+                "white_background_ratio": 0.86 if index == 0 else 0.15,
+                "detected_signals": signals[index] if index < len(signals) else [],
+                "ocr_tokens": ["ingredient", "protein", "spread"] if index == 1 else [],
+            }
+            for index, fmt in enumerate(formats)
+        ],
+        "stack_signals": {"duplicate_image_count": 0},
+    }
+
+
 class Slide4IntegrationTest(unittest.TestCase):
     def test_slide4_uses_full_carousels_and_image_guide_recommendations(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -299,6 +319,96 @@ class Slide4IntegrationTest(unittest.TestCase):
         self.assertEqual(payload["columns"][2]["label"], "Competitor 2")
         self.assertEqual(payload["columns"][2]["ordered_images"], [])
         self.assertEqual(payload["columns"][2]["bullets"], [])
+
+    def test_slide4_uses_evidence_based_bullets_when_image_analysis_exists(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            temp_dir = Path(tmp)
+            client_record = _record(
+                "Client Brand", _make_images(temp_dir, "client-evidence", 6, (800, 800)), "client-1"
+            )
+            client_record["image_analysis"] = _image_analysis(
+                image_count=6,
+                formats=["product_silo", "text_heavy_graphic", "nutrition_or_ingredients"],
+                signals=[[], ["feature_or_benefit_claim"], ["nutrition_or_ingredients"]],
+            )
+            competitor_1 = _record(
+                "Competitor Alpha", _make_images(temp_dir, "comp-evidence", 6, (800, 800)), "comp-1"
+            )
+            competitor_1["image_analysis"] = _image_analysis(
+                image_count=6,
+                formats=["product_silo", "lifestyle_or_scene", "mixed_product_graphic"],
+                signals=[[], ["recipe_or_serving"], ["feature_or_benefit_claim"]],
+            )
+            primary_entry = {
+                "entry_id": "entry-client-1",
+                "record_id": "client-1",
+                "product_title": client_record["product_title"],
+                "item_id": client_record["item_id"],
+                "cached_record": client_record,
+                "selected_primary_image": {
+                    "record_id": "client-1",
+                    "image_index": 0,
+                    "url": client_record["images"][0]["url"],
+                },
+                "selected_primary_images": [
+                    {
+                        "record_id": "client-1",
+                        "image_index": 0,
+                        "url": client_record["images"][0]["url"],
+                    }
+                ],
+                "include_in_export": True,
+            }
+            plan = build_audit_export_plan(
+                audit_record={
+                    "client_name": "Client Company",
+                    "retailer": "Walmart",
+                    "audit_date": "2026-06-23",
+                    "status": "generated_mvp",
+                },
+                primary_entries=[primary_entry],
+                competitor_assignments=[],
+                competitor_records=[competitor_1],
+            )
+            self.assertEqual(plan["slide4_findings"]["client"]["analyzed_pdp_count"], 1)
+            payload = build_slide4_pdp_benchmark_payload(
+                plan, competitor_records=[competitor_1]
+            )
+            self.assertIn(
+                "Strong protein and ingredient-led benefit communication",
+                payload["columns"][0]["bullets"],
+            )
+            self.assertIn(
+                "Snack, breakfast, and recipe-based usage storytelling supports spread use cases",
+                payload["columns"][1]["bullets"],
+            )
+
+            deck_bytes = generate_new_audit_powerpoint_from_template(
+                export_plan=plan,
+                template_path=str(TEMPLATE),
+                include_slide_9=False,
+                competitor_records=[competitor_1],
+            )
+            presentation = Presentation(io.BytesIO(deck_bytes))
+            slide4 = next(
+                slide
+                for slide in presentation.slides
+                if any(
+                    "PDP Content Benchmarking" in (shape.text or "")
+                    for shape in slide.shapes
+                    if getattr(shape, "has_text_frame", False)
+                )
+            )
+            all_text = "\n".join(
+                shape.text
+                for shape in _walk_shapes(slide4.shapes)
+                if getattr(shape, "has_text_frame", False)
+            )
+            self.assertIn("Client Company", all_text)
+            self.assertIn("Competitor Alpha", all_text)
+            self.assertIn("Strong protein and ingredient-led benefit communication", all_text)
+            self.assertNotIn("Carousel: 6 ordered images", all_text)
+            self.assertGreaterEqual(len([shape for shape in slide4.shapes if hasattr(shape, "image")]), 12)
 
 
 if __name__ == "__main__":

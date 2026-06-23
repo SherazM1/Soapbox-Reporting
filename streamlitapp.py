@@ -9,6 +9,7 @@ from typing import Any
 import pandas as pd
 import streamlit as st
 
+from app.audit_helpers.image_analysis import analyze_pdp_records
 from audit_analyze import analyze_primary_record
 from audit_export import build_audit_export_plan
 from audit_generate import generate_mvp_outputs_for_primary_entry, is_output_shell_empty
@@ -604,6 +605,108 @@ def _extract_urls_from_df_v2(df_uploaded: pd.DataFrame, selected_col: str) -> li
     return urls_from_uploaded_dataframe(df_uploaded, selected_col)
 
 
+def _analyze_sheet_records_with_ui(records: list[dict[str, Any]]) -> dict[str, Any]:
+    progress = st.progress(0.0)
+    status = st.empty()
+
+    def update_progress(
+        pdp_index: int,
+        total_pdps: int,
+        image_index: int,
+        total_images: int,
+    ) -> None:
+        status.info(
+            f"Analyzing PDP {pdp_index} of {total_pdps} — "
+            f"image {image_index} of {total_images}"
+        )
+        completed_before = pdp_index - 1
+        pdp_fraction = (image_index / max(total_images, 1)) if total_images else 1.0
+        progress.progress(min(1.0, (completed_before + pdp_fraction) / max(total_pdps, 1)))
+
+    summary = analyze_pdp_records(records, progress_callback=update_progress)
+    progress.progress(1.0)
+    status.success(
+        f"{summary['pdp_count']} PDPs processed — "
+        f"{summary['analyzed_image_count']} images analyzed, "
+        f"{summary['failed_image_count']} could not be analyzed"
+    )
+    for warning in summary.get("warnings", []):
+        st.warning(warning)
+    return summary
+
+
+def _render_local_image_analysis(record: dict[str, Any]) -> None:
+    analysis = record.get("image_analysis", {}) or {}
+    if not analysis:
+        return
+    with st.expander("Local Image Analysis", expanded=False):
+        st.caption(
+            f"Status: {analysis.get('status', 'unknown')} | "
+            f"Guide page: {analysis.get('guide_page_key') or 'No match'} | "
+            f"Analyzed: {analysis.get('analyzed_image_count', 0)} | "
+            f"Failed: {analysis.get('failed_image_count', 0)}"
+        )
+        rows = []
+        for image in analysis.get("images", []) or []:
+            rows.append(
+                {
+                    "Position": image.get("position"),
+                    "Expected slot": image.get("expected_slot", ""),
+                    "Probable format": image.get("probable_format", ""),
+                    "OCR word count": image.get("ocr_word_count", 0),
+                    "Detected signals": ", ".join(image.get("detected_signals", []) or []),
+                    "Confidence": image.get("confidence", 0.0),
+                    "Error status": "; ".join(image.get("errors", []) or []),
+                }
+            )
+        if rows:
+            st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
+        else:
+            st.caption("No PDP images were available for local analysis.")
+
+
+def _render_slide4_finding_preview_v2(plan: dict[str, Any]) -> None:
+    findings_by_group = (plan or {}).get("slide4_findings", {}) or {}
+    if not findings_by_group:
+        return
+    with st.expander("Slide 4 Finding Preview", expanded=False):
+        for key, findings in findings_by_group.items():
+            if not isinstance(findings, dict):
+                continue
+            st.markdown(f"##### {findings.get('group_label') or key.replace('_', ' ').title()}")
+            st.caption(
+                f"Analyzed PDPs: {findings.get('analyzed_pdp_count', 0)} | "
+                f"Majority threshold: {findings.get('majority_threshold', 0)} | "
+                f"Category: {findings.get('category') or '-'} | "
+                f"Product type: {findings.get('product_type') or '-'}"
+            )
+            selected = []
+            all_findings = list(findings.get("strengths", []) or []) + list(
+                findings.get("opportunities", []) or []
+            )
+            for bullet in findings.get("slide4_bullets", []) or []:
+                matched = next(
+                    (
+                        item
+                        for item in all_findings
+                        if isinstance(item, dict) and item.get("text") == bullet
+                    ),
+                    {},
+                )
+                selected.append(
+                    {
+                        "Bullet": bullet,
+                        "Signal": matched.get("signal", ""),
+                        "Supporting PDPs": matched.get("supporting_pdps", 0),
+                        "Analyzed PDPs": matched.get("analyzed_pdps", findings.get("analyzed_pdp_count", 0)),
+                    }
+                )
+            if selected:
+                st.dataframe(pd.DataFrame(selected), hide_index=True, use_container_width=True)
+            else:
+                st.caption("No local image-analysis majority findings yet. Slide 4 will use fallback bullets.")
+
+
 def render_primary_pdp_upload_v2() -> None:
     with st.container(border=True):
         st.markdown("### Primary Audit Extract Upload")
@@ -640,6 +743,9 @@ def render_primary_pdp_upload_v2() -> None:
                             df_uploaded=df_uploaded,
                             client_name=st.session_state.get("audit_client_name", ""),
                             retailer=st.session_state.get("audit_retailer", ""),
+                        )
+                        _analyze_sheet_records_with_ui(
+                            [entry.get("cached_record", {}) for entry in entries]
                         )
                         st.session_state["audit_primary_entries"] = entries
                         st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
@@ -1147,6 +1253,7 @@ def render_extracted_primary_product_entries_v2() -> None:
                 st.caption("Extraction notes: " + "; ".join(extraction_errors[:3]))
 
             _render_style_guide_match_v2(entry, record)
+            _render_local_image_analysis(record)
 
             images = record.get("images", [])
             image_models = [img for img in images if isinstance(img, dict) and str(img.get("url", "") or "").strip()]
@@ -1331,6 +1438,7 @@ def render_competitor_pdp_upload_v2() -> None:
                             client_name=st.session_state.get("audit_client_name", ""),
                             retailer=st.session_state.get("audit_retailer", ""),
                         )
+                        _analyze_sheet_records_with_ui(records)
                         st.session_state["audit_competitor_entries"] = records
                         st.session_state.setdefault("audit_cached_pdp_records", {}).update(records_map)
                         st.session_state["audit_competitor_image_orders"] = {}
@@ -1678,6 +1786,7 @@ def render_extracted_competitor_entries_v2() -> None:
                 f"Key Features: {key_feature_count} | "
                 f"Reviews: {review_summary}"
             )
+            _render_local_image_analysis(record)
 
             img_cols = st.columns(min(6, max(1, len(image_models))))
             for i, image in enumerate(image_models):
@@ -1979,6 +2088,8 @@ def render_audit_powerpoint_export_v2() -> None:
                 "competitor_graphics_payload": plan.get("competitor_graphics_payload", {}),
             }
             st.json(compact)
+
+    _render_slide4_finding_preview_v2(plan)
 
     included_count = int((plan.get("summary", {}) or {}).get("included_primary_entry_count", 0))
     if included_count <= 0:

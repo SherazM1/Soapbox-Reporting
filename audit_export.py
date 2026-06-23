@@ -3,6 +3,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from app.audit_helpers.slide4_findings import build_slide4_group_findings
+
 
 def _text_has_value(value: Any) -> bool:
     return bool(str(value or "").strip())
@@ -216,6 +218,7 @@ def build_product_slide_pair(entry: dict[str, Any], pair_order: int) -> dict[str
         "image_count": int(record.get("image_count", 0) or 0),
         "style_guide_match": dict(entry.get("style_guide_match", {}) or {}),
         "ingest_metadata": dict(record.get("ingest_metadata", {}) or {}),
+        "image_analysis": dict(record.get("image_analysis", {}) or {}),
         "extraction_status": record.get("extraction_status", ""),
         "reviews_summary": record.get("reviews_summary", {}),
     }
@@ -471,6 +474,22 @@ def build_audit_export_plan(
         slide_mode=metadata_src.get("competitor_graphics_mode", "single_pdp"),
         mode_payload=metadata_src.get("competitor_graphics_mode_payload", {}) or {},
     )
+    competitor_records = list(competitor_records or [])
+    client_label = metadata_src.get("client_name", "") or "Client"
+    slide4_findings = {
+        "client": build_slide4_group_findings(
+            [entry.get("cached_record", {}) for entry in included_entries],
+            str(client_label),
+        ),
+        "competitor_1": build_slide4_group_findings(
+            [competitor_records[0]] if len(competitor_records) >= 1 else [],
+            "Competitor 1",
+        ),
+        "competitor_2": build_slide4_group_findings(
+            [competitor_records[1]] if len(competitor_records) >= 2 else [],
+            "Competitor 2",
+        ),
+    }
     return {
         "audit_metadata": {
             "audit_id": metadata_src.get("audit_id", ""),
@@ -487,4 +506,5 @@ def build_audit_export_plan(
         },
         "product_slide_pairs": product_pairs,
         "competitor_graphics_payload": competitor_payload,
+        "slide4_findings": slide4_findings,
     }

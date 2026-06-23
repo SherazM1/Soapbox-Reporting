@@ -16,6 +16,7 @@ from app.audit_helpers.image_guides import (
     load_image_guide,
     resolve_image_guide_category,
 )
+from app.audit_helpers.slide4_findings import build_slide4_group_findings
 from audit_powerpoint import _format_cover_date
 
 
@@ -426,7 +427,11 @@ def _build_slide4_bullets(images: list[dict[str, Any]], guide_match: dict[str, A
     return bullets[:5]
 
 
-def _build_slide4_column(record: dict[str, Any], fallback_label: str) -> dict[str, Any]:
+def _build_slide4_column(
+    record: dict[str, Any],
+    fallback_label: str,
+    findings: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     if not record:
         return {
             "label": fallback_label,
@@ -437,11 +442,18 @@ def _build_slide4_column(record: dict[str, Any], fallback_label: str) -> dict[st
             "image_count": 0,
             "image_guide_match": {"matched": False},
             "bullets": [],
+            "findings": findings or {},
         }
     images = _normalize_ordered_images(record)
     product_type = _safe_text(record.get("product_type") or record.get("subcategory"))
     category = _safe_text(record.get("category"))
     guide_match = _build_image_guide_match(category, product_type)
+    findings = findings or build_slide4_group_findings([record], fallback_label)
+    finding_bullets = [
+        _safe_text(bullet)
+        for bullet in (findings.get("slide4_bullets", []) if isinstance(findings, dict) else [])
+        if _safe_text(bullet)
+    ]
     return {
         "label": _safe_text(record.get("brand")) or fallback_label,
         "brand": _safe_text(record.get("brand")),
@@ -450,7 +462,8 @@ def _build_slide4_column(record: dict[str, Any], fallback_label: str) -> dict[st
         "ordered_images": images,
         "image_count": int(record.get("image_count", len(images)) or len(images)),
         "image_guide_match": guide_match,
-        "bullets": _build_slide4_bullets(images, guide_match),
+        "bullets": finding_bullets[:5] or _build_slide4_bullets(images, guide_match),
+        "findings": findings,
     }
 
 
@@ -473,7 +486,12 @@ def build_slide4_pdp_benchmark_payload(
         or _safe_text(client_record.get("brand"))
         or "Client"
     )
-    client_column = _build_slide4_column(client_record, client_fallback)
+    slide4_findings = export_plan.get("slide4_findings", {}) or {}
+    client_column = _build_slide4_column(
+        client_record,
+        client_fallback,
+        slide4_findings.get("client") if isinstance(slide4_findings, dict) else None,
+    )
     client_column["label"] = client_company_name or client_name or client_column["label"]
 
     competitor_records = list(competitor_records or [])
@@ -481,10 +499,15 @@ def build_slide4_pdp_benchmark_payload(
         _build_slide4_column(
             competitor_records[index] if index < len(competitor_records) else {},
             f"Competitor {index + 1}",
+            (
+                slide4_findings.get(f"competitor_{index + 1}")
+                if isinstance(slide4_findings, dict)
+                else None
+            ),
         )
         for index in range(2)
     ]
-    return {"columns": [client_column, *competitor_columns]}
+    return {"columns": [client_column, *competitor_columns], "slide4_findings": slide4_findings}
 
 
 def _slide4_label_shapes(slide: Any) -> list[Any]:
