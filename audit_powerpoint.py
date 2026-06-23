@@ -1235,7 +1235,7 @@ def _layout_competitor_slots(slide: Any, slots: list[Any], active_count: int) ->
     return active_slots
 
 
-def _populate_competitor_graphics(slide: Any, ordered_assignments: list[dict[str, Any]], notes: str) -> None:
+def _populate_competitor_graphics(slide: Any, ordered_assignments: list[dict[str, Any]]) -> None:
     slots = _sorted_competitor_slots(slide)
     valid_assignments = [
         a
@@ -1254,14 +1254,13 @@ def _populate_competitor_graphics(slide: Any, ordered_assignments: list[dict[str
 
     notes_shape = _find_shape_contains(slide, "(image placeholder)")
     if notes_shape:
-        _set_shape_text(notes_shape, _safe_text(notes) or "")
+        _set_shape_text(notes_shape, "")
 
 
 def _populate_competitor_graphics_slides(
     prs: Presentation,
     competitor_template_slide: Any,
     competitor_payload: dict[str, Any],
-    notes: str,
 ) -> None:
     if competitor_template_slide is None:
         return
@@ -1292,25 +1291,7 @@ def _populate_competitor_graphics_slides(
         _populate_competitor_graphics(
             target_slides[idx],
             list(spec.get("ordered_assignments", []) or []),
-            notes,
         )
-
-
-def _populate_shared_note_slide(slide: Any, heading: str, body_text: str) -> None:
-    body = _safe_text(body_text)
-    target = None
-    for shape in slide.shapes:
-        text = _shape_text(shape)
-        if text and heading.lower() not in text.lower() and "(retailer)" not in text.lower():
-            target = shape
-            break
-
-    if target and getattr(target, "has_text_frame", False):
-        _set_shape_text(target, body)
-        return
-
-    textbox = slide.shapes.add_textbox(Inches(0.8), Inches(1.5), Inches(11.8), Inches(5.5))
-    _set_shape_text(textbox, body)
 
 
 def _populate_retailer_tokens(prs: Presentation, retailer: str) -> None:
@@ -1383,8 +1364,6 @@ def generate_audit_powerpoint_from_template(*, export_plan: dict[str, Any], temp
     pdp_template = _find_slide_by_text(prs, "Image Recommendations")
     content_template = _find_slide_by_text(prs, "Content Optimizations")
     competitor_slide = _find_slide_by_text(prs, "Competitor Graphics")
-    retail_media_slide = _find_slide_by_text(prs, "Retail Media Optimizations")
-    competitor_ad_slide = _find_slide_by_text(prs, "Competitor Ad Graphics")
 
     if pdp_template is None or content_template is None:
         raise ValueError("Could not find required primary product template slides.")
@@ -1403,27 +1382,11 @@ def generate_audit_powerpoint_from_template(*, export_plan: dict[str, Any], temp
             _move_slide_before(prs, content_slide, shared_anchor)
 
     competitor_payload = export_plan.get("competitor_graphics_payload", {}) or {}
-    shared_sections = export_plan.get("shared_sections_payload", {}) or {}
     if competitor_slide is not None:
         _populate_competitor_graphics_slides(
             prs,
             competitor_slide,
             competitor_payload,
-            _safe_text(shared_sections.get("competitor_graphics_notes", "")),
-        )
-
-    if retail_media_slide is not None:
-        _populate_shared_note_slide(
-            retail_media_slide,
-            "Retail Media Optimizations",
-            _safe_text(shared_sections.get("retail_media_optimizations", "")),
-        )
-
-    if competitor_ad_slide is not None:
-        _populate_shared_note_slide(
-            competitor_ad_slide,
-            "Competitor Ad Graphics",
-            _safe_text(shared_sections.get("competitor_ad_graphics_notes", "")),
         )
 
     metadata = export_plan.get("audit_metadata", {}) or {}

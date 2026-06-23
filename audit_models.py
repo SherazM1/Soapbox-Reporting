@@ -182,9 +182,6 @@ def create_audit_result_record(
     status: str = "draft",
     product_audit_entries: list[dict[str, Any]] | None = None,
     competitor_graphics_assignments: list[dict[str, Any]] | None = None,
-    competitor_graphics_notes: str = "",
-    retail_media_optimizations: str = "",
-    competitor_ad_graphics_notes: str = "",
     audit_id: str | None = None,
 ) -> dict[str, Any]:
     return {
@@ -195,7 +192,4 @@ def create_audit_result_record(
         "status": status,
         "product_audit_entries": list(product_audit_entries or []),
         "competitor_graphics_assignments": list(competitor_graphics_assignments or []),
-        "competitor_graphics_notes": competitor_graphics_notes,
-        "retail_media_optimizations": retail_media_optimizations,
-        "competitor_ad_graphics_notes": competitor_ad_graphics_notes,
     }

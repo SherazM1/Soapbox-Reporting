@@ -505,12 +505,6 @@ def _seed_audit_output_state(payload: dict) -> None:
     st.session_state["audit_description_recommendations"] = payload["description_recommendations"]
     st.session_state["audit_key_features_recommendations"] = payload["key_features_recommendations"]
     st.session_state["audit_top_priority_fixes"] = payload["top_priority_fixes"]
-    if "audit_competitor_graphics_notes" not in st.session_state:
-        st.session_state["audit_competitor_graphics_notes"] = ""
-    if "audit_retail_media_optimizations" not in st.session_state:
-        st.session_state["audit_retail_media_optimizations"] = ""
-    if "audit_competitor_ad_graphics_notes" not in st.session_state:
-        st.session_state["audit_competitor_ad_graphics_notes"] = ""
 
 
 def render_audit_results() -> None:
@@ -548,19 +542,6 @@ def render_audit_results() -> None:
 
     st.subheader("Top Priority Fixes")
     st.text_area("Top Priority Fixes", key="audit_top_priority_fixes", height=120)
-
-    st.divider()
-    st.subheader("Competitor Graphics Notes")
-    st.caption("Manual/future section for competitor graphics notes.")
-    st.text_area("Competitor Graphics Notes", key="audit_competitor_graphics_notes", height=110)
-
-    st.subheader("Retail Media Optimizations")
-    st.caption("Manual/future section for retail media optimization ideas.")
-    st.text_area("Retail Media Optimizations", key="audit_retail_media_optimizations", height=110)
-
-    st.subheader("Competitor Ad Graphics Notes")
-    st.caption("Manual/future section for competitor ad creative observations.")
-    st.text_area("Competitor Ad Graphics Notes", key="audit_competitor_ad_graphics_notes", height=110)
 
 def render_content_auditing_legacy_prompt1() -> None:
     _init_audit_state()
@@ -1832,13 +1813,6 @@ def _seed_mock_results_for_products_v2(entries: list[dict]) -> None:
             }
         entry["status"] = "generated_mvp"
 
-    if "audit_competitor_graphics_notes" not in st.session_state:
-        st.session_state["audit_competitor_graphics_notes"] = ""
-    if "audit_retail_media_optimizations" not in st.session_state:
-        st.session_state["audit_retail_media_optimizations"] = ""
-    if "audit_competitor_ad_graphics_notes" not in st.session_state:
-        st.session_state["audit_competitor_ad_graphics_notes"] = ""
-
     st.session_state["audit_results_seeded_for"] = seeded_ids
 
 
@@ -1851,9 +1825,6 @@ def _refresh_audit_export_plan_v2() -> None:
     if audit_record:
         audit_record["product_audit_entries"] = entries
         audit_record["competitor_graphics_assignments"] = competitor_assignments
-        audit_record["competitor_graphics_notes"] = st.session_state.get("audit_competitor_graphics_notes", "")
-        audit_record["retail_media_optimizations"] = st.session_state.get("audit_retail_media_optimizations", "")
-        audit_record["competitor_ad_graphics_notes"] = st.session_state.get("audit_competitor_ad_graphics_notes", "")
         audit_record["competitor_graphics_mode"] = st.session_state.get("audit_competitor_slide_mode", "single_pdp")
         audit_record["competitor_graphics_has_multiple_pdps"] = bool(
             st.session_state.get("audit_competitor_has_multiple_pdps", False)
@@ -1893,9 +1864,6 @@ def render_generate_audit_v2() -> None:
                 status="generated_mvp",
                 product_audit_entries=entries,
                 competitor_graphics_assignments=st.session_state.get("audit_competitor_assignments", []),
-                competitor_graphics_notes=st.session_state.get("audit_competitor_graphics_notes", ""),
-                retail_media_optimizations=st.session_state.get("audit_retail_media_optimizations", ""),
-                competitor_ad_graphics_notes=st.session_state.get("audit_competitor_ad_graphics_notes", ""),
             )
             _refresh_audit_export_plan_v2()
             st.session_state["audit_generated"] = True
@@ -1973,20 +1941,6 @@ def render_mocked_audit_results_v2() -> None:
                 "key_features_recommendations": [ln.strip() for ln in st.session_state[key_feat].splitlines() if ln.strip()],
                 "top_priority_fixes": [ln.strip() for ln in st.session_state[key_fix].splitlines() if ln.strip()],
             }
-
-    st.divider()
-    st.subheader("Competitor Graphics Notes")
-    st.caption("Manual/future section. Ordered competitor images will later populate shared competitor graphics.")
-    st.text_area("Competitor Graphics Notes", key="audit_competitor_graphics_notes", height=110)
-
-    st.subheader("Retail Media Optimizations")
-    st.caption("Manual/future section for retail media optimization notes.")
-    st.text_area("Retail Media Optimizations", key="audit_retail_media_optimizations", height=110)
-
-    st.subheader("Competitor Ad Graphics Notes")
-    st.caption("Manual/future section for competitor ad creative observations.")
-    st.text_area("Competitor Ad Graphics Notes", key="audit_competitor_ad_graphics_notes", height=110)
-
 
 def render_audit_powerpoint_export_v2() -> None:
     if not st.session_state.get("audit_generated"):

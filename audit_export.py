@@ -487,9 +487,4 @@ def build_audit_export_plan(
         },
         "product_slide_pairs": product_pairs,
         "competitor_graphics_payload": competitor_payload,
-        "shared_sections_payload": {
-            "competitor_graphics_notes": metadata_src.get("competitor_graphics_notes", ""),
-            "retail_media_optimizations": metadata_src.get("retail_media_optimizations", ""),
-            "competitor_ad_graphics_notes": metadata_src.get("competitor_ad_graphics_notes", ""),
-        },
     }
