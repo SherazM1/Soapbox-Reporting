@@ -3,6 +3,7 @@ from __future__ import annotations
 import io
 import json
 import unittest
+from unittest.mock import patch
 
 from app.audit_helpers.combined_audit_extract import (
     attach_combined_evidence_to_record,
@@ -17,6 +18,7 @@ from audit_helpers import (
     process_competitor_audit_extract_sheet,
     process_primary_audit_extract_sheet,
 )
+from streamlitapp import _process_combined_pdp_records_v2
 
 
 class _Upload(io.BytesIO):
@@ -366,6 +368,92 @@ class CombinedAuditExtractTests(unittest.TestCase):
             plan["product_slide_pairs"][0]["pdp_slide"]["item_id"],
             "10451273",
         )
+
+    def test_streamlit_schema2_processing_bypasses_legacy_sheet_processors(self) -> None:
+        result = parse_combined_audit_html(_html(_nested_schema_payload()))
+        with patch(
+            "streamlitapp.process_primary_audit_extract_sheet",
+            side_effect=AssertionError("legacy primary processor must not be called"),
+        ), patch(
+            "streamlitapp.process_competitor_audit_extract_sheet",
+            side_effect=AssertionError("legacy competitor processor must not be called"),
+        ):
+            primary_entries, primary_map, primary_messages = _process_combined_pdp_records_v2(
+                result["client_pdps"],
+                role="Client",
+                schema_version="2.0",
+                client_name="Nutella",
+                retailer="Walmart",
+            )
+            competitor_entries, competitor_map, competitor_messages = _process_combined_pdp_records_v2(
+                result["competitor_pdps"],
+                role="Competitor",
+                schema_version="2.0",
+                client_name="Nutella",
+                retailer="Walmart",
+            )
+        self.assertEqual(len(primary_entries), 1)
+        self.assertEqual(len(primary_map), 1)
+        self.assertEqual(primary_messages, [])
+        self.assertEqual(len(competitor_entries), 1)
+        self.assertEqual(len(competitor_map), 1)
+        self.assertEqual(competitor_messages, [])
+        primary_record = primary_entries[0]["cached_record"]
+        competitor_record = competitor_entries[0]
+        self.assertEqual(primary_record["item_id"], "10451273")
+        self.assertEqual(primary_record["product_title"], "Nutella Hazelnut Spread")
+        self.assertEqual(primary_record["images"][0]["index"], 5)
+        self.assertEqual(primary_record["images"][0]["width"], 2200)
+        self.assertEqual(competitor_record["item_id"], "20000001")
+        self.assertEqual(competitor_record["product_title"], "Jif Peanut Butter")
+        for message in [*primary_messages, *competitor_messages]:
+            self.assertNotIn("missing Product ID", message)
+            self.assertNotIn("missing Product Title", message)
+            self.assertNotIn("No Image N columns", message)
+
+    def test_streamlit_legacy_flat_processing_still_uses_legacy_processor(self) -> None:
+        flat_record = {
+            "role": "Client",
+            "Product URL": "https://example.com/legacy",
+            "Product ID": "legacy-1",
+            "Product Title": "Legacy Product",
+        }
+        sentinel_entry = {"record_id": "legacy-record", "cached_record": {}}
+        with patch(
+            "streamlitapp.process_primary_audit_extract_sheet",
+            return_value=([sentinel_entry], {"legacy-record": {}}, []),
+        ) as legacy_processor:
+            entries, mapped, messages = _process_combined_pdp_records_v2(
+                [flat_record],
+                role="Client",
+                schema_version="",
+                client_name="Client",
+                retailer="Walmart",
+            )
+        legacy_processor.assert_called_once()
+        self.assertEqual(entries, [sentinel_entry])
+        self.assertEqual(mapped, {"legacy-record": {}})
+        self.assertEqual(messages, [])
+
+    def test_streamlit_schema2_malformed_record_does_not_abort_valid_records(self) -> None:
+        valid = parse_combined_audit_html(_html(_nested_schema_payload()))["client_pdps"][0]
+        malformed = {
+            "sourceRow": 99,
+            "role": "Client",
+            "status": "success",
+            "data": {"productId": "", "productTitle": ""},
+        }
+        entries, mapped, messages = _process_combined_pdp_records_v2(
+            [malformed, valid],
+            role="Client",
+            schema_version="2.0",
+            client_name="Nutella",
+            retailer="Walmart",
+        )
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(len(mapped), 1)
+        self.assertTrue(any("productId" in message for message in messages))
+        self.assertTrue(any("productTitle" in message for message in messages))
 
     def test_legacy_html_table_parser_remains_available(self) -> None:
         table_html = b"""

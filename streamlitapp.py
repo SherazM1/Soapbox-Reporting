@@ -10,8 +10,8 @@ import pandas as pd
 import streamlit as st
 
 from app.audit_helpers.combined_audit_extract import (
-    attach_combined_evidence_to_record,
     combined_pdp_to_dataframe,
+    map_schema2_pdp_to_cached_record,
     parse_combined_audit_html,
     reset_combined_audit_state,
 )
@@ -25,6 +25,7 @@ from audit_powerpoint_new import generate_new_audit_powerpoint_from_template
 from audit_style_guides import load_style_guides, match_style_guide_rule
 from audit_helpers import (
     build_competitor_assignments,
+    create_product_audit_entry_from_record,
     initialize_auditing_session_state,
     parse_audit_extract_upload_to_dataframe,
     process_competitor_audit_extract_sheet,
@@ -660,42 +661,72 @@ def _process_combined_pdp_records_v2(
     records: list[dict[str, Any]],
     *,
     role: str,
+    schema_version: str = "2.0",
+    client_name: str | None = None,
+    retailer: str | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]], list[str]]:
     processed: list[dict[str, Any]] = []
     records_by_id: dict[str, dict[str, Any]] = {}
     messages: list[str] = []
+    active_client_name = (
+        st.session_state.get("audit_client_name", "")
+        if client_name is None
+        else client_name
+    )
+    active_retailer = (
+        st.session_state.get("audit_retailer", "")
+        if retailer is None
+        else retailer
+    )
     for source_index, source_record in enumerate(records):
-        frame = combined_pdp_to_dataframe(source_record)
-        if role == "Client":
-            entries, mapped_records, row_messages = process_primary_audit_extract_sheet(
-                df_uploaded=frame,
-                client_name=st.session_state.get("audit_client_name", ""),
-                retailer=st.session_state.get("audit_retailer", ""),
-                schema_version="2.0",
-            )
-            for entry in entries:
-                cached_record = entry.get("cached_record", {}) or {}
-                attach_combined_evidence_to_record(cached_record, source_record)
+        source_row = source_record.get("sourceRow", source_index + 1)
+        is_schema2 = schema_version == "2.0" or isinstance(source_record.get("data"), dict)
+        if is_schema2:
+            try:
+                cached_record, row_messages = map_schema2_pdp_to_cached_record(
+                    source_record,
+                    role=role,
+                    client_name=active_client_name,
+                    retailer=active_retailer,
+                )
+            except Exception as exc:
+                cached_record = None
+                row_messages = [
+                    f"Row {source_row}: failed to map schema 2.0 PDP record ({exc})."
+                ]
+            messages.extend(row_messages)
+            if cached_record is None:
+                continue
+            records_by_id[cached_record["record_id"]] = cached_record
+            if role == "Client":
+                entry = create_product_audit_entry_from_record(cached_record)
                 entry["entry_id"] = (
                     f"primary-combined-{source_index + 1}-"
                     f"{entry.get('record_id', 'unknown')}"
                 )
                 processed.append(entry)
+            else:
+                processed.append(cached_record)
+            continue
+
+        frame = combined_pdp_to_dataframe(source_record)
+        if role == "Client":
+            entries, mapped_records, row_messages = process_primary_audit_extract_sheet(
+                df_uploaded=frame,
+                client_name=active_client_name,
+                retailer=active_retailer,
+            )
+            processed.extend(entries)
         else:
             entries, mapped_records, row_messages = process_competitor_audit_extract_sheet(
                 df_uploaded=frame,
-                client_name=st.session_state.get("audit_client_name", ""),
-                retailer=st.session_state.get("audit_retailer", ""),
-                schema_version="2.0",
+                client_name=active_client_name,
+                retailer=active_retailer,
             )
-            for cached_record in entries:
-                attach_combined_evidence_to_record(cached_record, source_record)
-                processed.append(cached_record)
-        for record_id, cached_record in mapped_records.items():
-            attach_combined_evidence_to_record(cached_record, source_record)
-            records_by_id[record_id] = cached_record
+            processed.extend(entries)
+        records_by_id.update(mapped_records)
         messages.extend(
-            f"{role} PDP source row {source_record.get('sourceRow', source_index + 1)}: {message}"
+            f"{role} PDP source row {source_row}: {message}"
             for message in row_messages
         )
     return processed, records_by_id, messages
@@ -870,10 +901,12 @@ def render_combined_strategic_audit_upload_v2() -> None:
                 primary_entries, primary_map, primary_messages = _process_combined_pdp_records_v2(
                     result.get("client_pdps", []) or [],
                     role="Client",
+                    schema_version=result.get("schema_version", ""),
                 )
                 competitor_entries, competitor_map, competitor_messages = _process_combined_pdp_records_v2(
                     result.get("competitor_pdps", []) or [],
                     role="Competitor",
+                    schema_version=result.get("schema_version", ""),
                 )
                 all_records = [
                     *(entry.get("cached_record", {}) for entry in primary_entries),

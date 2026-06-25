@@ -7,6 +7,13 @@ from typing import Any
 
 import pandas as pd
 
+from audit_models import (
+    create_cached_pdp_record,
+    make_image,
+    make_key_feature,
+    make_reviews_summary,
+)
+
 
 SUPPORTED_SCHEMA_VERSION = "2.0"
 
@@ -493,6 +500,182 @@ def combined_pdp_to_dataframe(record: dict[str, Any]) -> pd.DataFrame:
     for index, value in enumerate(features, start=1):
         row[f"Key Feature {index}"] = value
     return pd.DataFrame([row])
+
+
+def _number(value: Any, converter: Any) -> Any:
+    if value in (None, ""):
+        return None
+    try:
+        return converter(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def map_schema2_pdp_to_cached_record(
+    source_record: dict[str, Any],
+    *,
+    role: str,
+    client_name: str = "",
+    retailer: str = "",
+) -> tuple[dict[str, Any] | None, list[str]]:
+    """Map one schema 2.0 PDP envelope directly into the existing cached model."""
+    row = _first(source_record, "sourceRow", "rowNumber", default="?")
+    item_id = _safe_text(
+        _first(source_record, "productId", "productID", "itemId", "data.productId")
+    )
+    product_title = _safe_text(
+        _first(source_record, "productTitle", "title", "data.productTitle")
+    )
+    errors: list[str] = []
+    if not item_id:
+        errors.append(f"Row {row}: missing required schema 2.0 productId.")
+    if not product_title:
+        errors.append(f"Row {row}: missing required schema 2.0 productTitle.")
+    if errors:
+        return None, errors
+
+    raw_images = _first(source_record, "images", "data.images", default=[])
+    images: list[dict[str, Any]] = []
+    for position, raw_image in enumerate(_as_list(raw_images)):
+        image = raw_image if isinstance(raw_image, dict) else {}
+        url = _safe_text(
+            _first(image, "url", "src", "dataUrl", "dataURL")
+            if image
+            else raw_image
+        )
+        if not url:
+            continue
+        raw_index = image.get("index", position)
+        try:
+            image_index = int(raw_index)
+        except (TypeError, ValueError):
+            image_index = position
+        mapped = make_image(image_index, url, is_hero=bool(image.get("isHero", position == 0)))
+        mapped["width"] = _number(image.get("width"), int)
+        mapped["height"] = _number(image.get("height"), int)
+        if mapped["width"] and mapped["height"]:
+            mapped["dimensions"] = f"{mapped['width']} x {mapped['height']}"
+            mapped["dimensions_text"] = f"{mapped['width']} W x {mapped['height']} H"
+        else:
+            mapped["dimensions"] = ""
+            mapped["dimensions_text"] = ""
+        mapped["show_dimensions_in_powerpoint"] = False
+        images.append(mapped)
+
+    description_bullets = _text_values(
+        source_record,
+        "descriptionBullets",
+        "data.descriptionBullets",
+    )
+    key_feature_values = _text_values(
+        source_record,
+        "keyFeatures",
+        "data.keyFeatures",
+    )
+    key_features = [
+        make_key_feature(index + 1, text)
+        for index, text in enumerate(key_feature_values)
+    ]
+    source_type = "primary" if role == "Client" else "competitor"
+    status = _safe_text(
+        _first(source_record, "status", "extractionStatus", default="success")
+    )
+    row_errors = [
+        _safe_text(value)
+        for value in _as_list(source_record.get("errors"))
+        if _safe_text(value)
+    ]
+    record = create_cached_pdp_record(
+        client_name=client_name,
+        retailer=retailer,
+        source_url=_safe_text(_first(source_record, "url", "productUrl", "data.url")),
+        source_type=source_type,
+        item_id=item_id,
+        brand=_safe_text(
+            _first(
+                source_record,
+                "brand",
+                "data.brand",
+                "brandName",
+                "inputBrandName",
+            )
+        ),
+        product_title=product_title,
+        category=_safe_text(
+            _first(
+                source_record,
+                "categoryPathName",
+                "resolvedCategory",
+                "category",
+                "data.categoryPathName",
+            )
+        ),
+        subcategory=_safe_text(
+            _first(
+                source_record,
+                "productType",
+                "resolvedProductType",
+                "data.productType",
+            )
+        ),
+        current_title=product_title,
+        current_description_body=_safe_text(
+            _first(source_record, "descriptionBody", "data.descriptionBody")
+        ),
+        current_description_bullets=description_bullets,
+        current_key_features=key_features,
+        images=images,
+        reviews_summary=make_reviews_summary(
+            average_rating=_number(
+                _first(source_record, "averageRating", "data.averageRating", default=None),
+                float,
+            ),
+            ratings_count=_number(
+                _first(source_record, "ratingsCount", "data.ratingsCount", default=None),
+                int,
+            ),
+            review_count=_number(
+                _first(source_record, "reviewCount", "data.reviewCount", default=None),
+                int,
+            ),
+        ),
+        extraction_status=status or "success",
+        extraction_errors=row_errors,
+    )
+    attach_combined_evidence_to_record(record, source_record)
+    record.update(
+        {
+            "Product ID": item_id,
+            "Product Title": product_title,
+            "Product URL": record["source_url"],
+            "Brand": record["brand"],
+            "Category": record["category"],
+            "Product Type": record["subcategory"],
+            "Image Count": record["image_count"],
+            "Description Body": record["current_description_body"],
+            "Average Rating": record["reviews_summary"].get("average_rating"),
+            "Review Count": record["reviews_summary"].get("review_count"),
+            "Role": role,
+            "Input Brand Name": _safe_text(_first(source_record, "inputBrandName")),
+            "Seller Name": record["ingest_metadata"].get("seller"),
+            "Sold by Walmart": record["ingest_metadata"].get("sold_by_walmart"),
+            "Shipped by Walmart": record["ingest_metadata"].get("shipped_by_walmart"),
+            "Enhanced Brand Content": record["ingest_metadata"].get(
+                "enhanced_brand_content_status"
+            ),
+            "product_id": item_id,
+            "product_url": record["source_url"],
+            "product_type": record["subcategory"],
+            "description_body": record["current_description_body"],
+            "average_rating": record["reviews_summary"].get("average_rating"),
+            "review_count": record["reviews_summary"].get("review_count"),
+            "role": role,
+            "input_brand_name": _safe_text(_first(source_record, "inputBrandName")),
+        }
+    )
+    for position, image in enumerate(images, start=1):
+        record[f"Image {position}"] = image["url"]
+    return record, []
 
 
 def attach_combined_evidence_to_record(
