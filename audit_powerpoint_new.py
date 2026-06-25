@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import io
 import math
 import re
@@ -655,6 +656,227 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
             images=list(column.get("ordered_images", []) or []),
         )
 
+
+def _decode_data_image(value: Any) -> bytes | None:
+    data_url = _safe_text(value)
+    if not data_url.lower().startswith("data:image/") or "," not in data_url:
+        return None
+    header, encoded = data_url.split(",", 1)
+    if ";base64" not in header.lower():
+        return None
+    try:
+        image_bytes = base64.b64decode(encoded, validate=True)
+        with Image.open(io.BytesIO(image_bytes)) as image:
+            image.verify()
+        return image_bytes
+    except Exception as exc:
+        print(f"[audit_powerpoint_new] Slide 5 screenshot decode failed: {exc}")
+        return None
+
+
+def _slide5_side_shapes(prs: Any, slide: Any) -> dict[str, dict[str, Any]]:
+    midpoint = int(prs.slide_width) // 2
+    pictures = sorted(
+        [
+            shape
+            for shape in slide.shapes
+            if (hasattr(shape, "image") or "picture" in str(shape.shape_type).lower())
+            and int(getattr(shape, "top", 0) or 0) >= Inches(2.5)
+        ],
+        key=lambda shape: int(shape.left),
+    )
+    bullet_shapes = sorted(
+        [
+            shape
+            for shape in slide.shapes
+            if getattr(shape, "has_text_frame", False)
+            and int(getattr(shape, "top", 0) or 0) >= Inches(2.5)
+            and int(getattr(shape, "height", 0) or 0) >= Inches(2.0)
+            and len(shape.text_frame.paragraphs) >= 6
+        ],
+        key=lambda shape: int(shape.left),
+    )
+    left_header = next(
+        (
+            shape
+            for shape in slide.shapes
+            if getattr(shape, "has_text_frame", False)
+            and _shape_text(shape) == "Current Structure"
+        ),
+        None,
+    )
+    right_header = next(
+        (
+            shape
+            for shape in slide.shapes
+            if getattr(shape, "has_text_frame", False)
+            and _shape_text(shape) == "Competitive Benchmark"
+        ),
+        None,
+    )
+    lines = sorted(
+        [
+            shape
+            for shape in slide.shapes
+            if "LINE" in str(getattr(shape, "shape_type", "")).upper()
+            and int(getattr(shape, "top", 0) or 0) >= Inches(2.0)
+            and int(getattr(shape, "top", 0) or 0) <= Inches(3.0)
+        ],
+        key=lambda shape: int(shape.left),
+    )
+    return {
+        "client": {
+            "picture": next(
+                (shape for shape in pictures if int(shape.left) < midpoint),
+                None,
+            ),
+            "bullets": next(
+                (shape for shape in bullet_shapes if int(shape.left) < midpoint),
+                None,
+            ),
+            "header": left_header,
+            "divider": lines[0] if lines else None,
+        },
+        "competitor": {
+            "picture": next(
+                (shape for shape in pictures if int(shape.left) >= midpoint),
+                None,
+            ),
+            "bullets": next(
+                (shape for shape in bullet_shapes if int(shape.left) >= midpoint),
+                None,
+            ),
+            "header": right_header,
+            "divider": lines[-1] if lines else None,
+        },
+    }
+
+
+def _apply_slide5_no_brand_shop(
+    prs: Any,
+    slide: Any,
+    payload: dict[str, Any],
+    shapes: dict[str, dict[str, Any]],
+) -> None:
+    competitor = payload.get("competitor")
+    if not isinstance(competitor, dict):
+        print(
+            "[audit_powerpoint_new] Slide 5 No Brand Shop mode lacked valid "
+            "Competitor evidence; the slide was left unchanged."
+        )
+        return
+    competitor_picture = shapes["competitor"].get("picture")
+    competitor_bullets = shapes["competitor"].get("bullets")
+    competitor_header = shapes["competitor"].get("header")
+    competitor_divider = shapes["competitor"].get("divider")
+    if any(
+        shape is None
+        for shape in (
+            competitor_picture,
+            competitor_bullets,
+            competitor_header,
+            competitor_divider,
+        )
+    ):
+        print(
+            "[audit_powerpoint_new] Slide 5 No Brand Shop template shapes were "
+            "not resolved; the slide was left unchanged."
+        )
+        return
+    image_bytes = _decode_data_image(competitor.get("screenshot"))
+    bullets = [
+        _safe_text(value)
+        for value in (competitor.get("bullets", []) or [])
+        if _safe_text(value)
+    ]
+    if image_bytes is None or len(bullets) != 6:
+        print(
+            "[audit_powerpoint_new] Slide 5 No Brand Shop payload was incomplete; "
+            "the slide was left unchanged."
+        )
+        return
+
+    for key in ("header", "divider", "picture", "bullets"):
+        shape = shapes["client"].get(key)
+        if shape is not None:
+            _remove_shape(shape)
+
+    competitor_header.left = Inches(3.45)
+    competitor_header.width = Inches(3.2)
+    competitor_divider.left = Inches(1.4)
+    competitor_divider.width = Inches(11.2)
+
+    _remove_shape(competitor_picture)
+    _add_contained_picture(
+        slide,
+        left=Inches(1.4),
+        top=Inches(2.88),
+        width=Inches(7.4),
+        height=Inches(3.77),
+        image_bytes=image_bytes,
+    )
+    _replace_bullet_shape_text(competitor_bullets, bullets)
+
+
+def _apply_slide5_brand_shop(prs: Any, slide: Any, payload: dict[str, Any]) -> None:
+    if not payload:
+        return
+    shapes = _slide5_side_shapes(prs, slide)
+    if payload.get("mode") == "no_brand_shop":
+        _apply_slide5_no_brand_shop(prs, slide, payload, shapes)
+        return
+    for side in ("client", "competitor"):
+        side_payload = payload.get(side)
+        if not isinstance(side_payload, dict):
+            print(
+                f"[audit_powerpoint_new] Slide 5 {side} evidence was unavailable; "
+                "the template side was left unchanged."
+            )
+            continue
+        picture = shapes[side].get("picture")
+        bullet_shape = shapes[side].get("bullets")
+        if picture is None or bullet_shape is None:
+            print(
+                f"[audit_powerpoint_new] Slide 5 {side} template shapes were not resolved; "
+                "the template side was left unchanged."
+            )
+            continue
+        image_bytes = _decode_data_image(side_payload.get("screenshot"))
+        bullets = [
+            _safe_text(value)
+            for value in (side_payload.get("bullets", []) or [])
+            if _safe_text(value)
+        ]
+        if image_bytes is None:
+            print(
+                f"[audit_powerpoint_new] Slide 5 {side} screenshot was invalid; "
+                "the template picture was preserved."
+            )
+        else:
+            bounds = (
+                int(picture.left),
+                int(picture.top),
+                int(picture.width),
+                int(picture.height),
+            )
+            _remove_shape(picture)
+            _add_contained_picture(
+                slide,
+                left=bounds[0],
+                top=bounds[1],
+                width=bounds[2],
+                height=bounds[3],
+                image_bytes=image_bytes,
+            )
+        if len(bullets) == 6:
+            _replace_bullet_shape_text(bullet_shape, bullets)
+        else:
+            print(
+                f"[audit_powerpoint_new] Slide 5 {side} did not contain exactly six bullets; "
+                "the template bullet box was preserved."
+            )
+
+
 def _slide2_text_shapes(slide: Any) -> list[Any]:
     return [
         shape
@@ -898,6 +1120,7 @@ def generate_new_audit_powerpoint_from_template(
     # Handle Slide 9 removal if not included
     if not include_slide_9:
         _remove_slide_by_title(prs, "Walmart Cash Program Visibility")
+    _remove_slide_by_title(prs, "If they only have bandwidth for 5 things:")
     
     # Existing template strings are the replacement targets. Do not require manual placeholders.
     template_replacements = {
@@ -928,6 +1151,19 @@ def generate_new_audit_powerpoint_from_template(
             competitor_records,
         )
         _apply_slide4_content(prs, slide4, slide4_payload)
+
+    slide5 = _find_slide_by_title(prs, "Brand Shop Content Benchmarking")
+    if slide5 is None:
+        print(
+            "[audit_powerpoint_new] Slide 5 title was not found; "
+            "Brand Shop benchmarking was skipped."
+        )
+    else:
+        _apply_slide5_brand_shop(
+            prs,
+            slide5,
+            export_plan.get("slide5_brand_shop", {}) or {},
+        )
 
     slide6 = _find_slide_by_title(prs, "Digital Shelf Ownership")
     if slide6 is None:

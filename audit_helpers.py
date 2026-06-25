@@ -174,6 +174,7 @@ def create_empty_competitor_assignment(record_id: str = "", image_index: int = 0
 def initialize_auditing_session_state(state: dict[str, Any]) -> None:
     defaults = {
         "audit_generated": False,
+        "audit_client_has_brand_shop": True,
         "audit_primary_source_method": "Single PDP URL",
         "audit_competitor_source_method": "Single PDP URL",
         "audit_primary_entries": [],
@@ -187,6 +188,8 @@ def initialize_auditing_session_state(state: dict[str, Any]) -> None:
         "audit_competitor_make_multiple_slides": False,
         "audit_competitor_slide_mode": "single_pdp",
         "audit_cached_pdp_records": {},
+        "audit_search_evidence": {"current": [], "benchmark": [], "all": []},
+        "audit_brand_shop_evidence": {"client": [], "competitor": [], "all": []},
         "audit_results_seeded_for": [],
         "audit_result_record": create_empty_audit_result_record(),
         "audit_export_plan": {},

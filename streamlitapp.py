@@ -9,6 +9,12 @@ from typing import Any
 import pandas as pd
 import streamlit as st
 
+from app.audit_helpers.combined_audit_extract import (
+    attach_combined_evidence_to_record,
+    combined_pdp_to_dataframe,
+    parse_combined_audit_html,
+    reset_combined_audit_state,
+)
 from app.audit_helpers.image_analysis import analyze_pdp_records
 from audit_analyze import analyze_primary_record
 from audit_export import build_audit_export_plan
@@ -635,6 +641,284 @@ def _analyze_sheet_records_with_ui(records: list[dict[str, Any]]) -> dict[str, A
     return summary
 
 
+def _combined_message_text(message: Any) -> str:
+    if isinstance(message, dict):
+        prefix = " | ".join(
+            part
+            for part in (
+                str(message.get("source", "") or "").strip(),
+                f"Row {message.get('row')}" if message.get("row") not in (None, "") else "",
+            )
+            if part
+        )
+        body = str(message.get("message", "") or message).strip()
+        return f"{prefix}: {body}" if prefix else body
+    return str(message or "").strip()
+
+
+def _process_combined_pdp_records_v2(
+    records: list[dict[str, Any]],
+    *,
+    role: str,
+) -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]], list[str]]:
+    processed: list[dict[str, Any]] = []
+    records_by_id: dict[str, dict[str, Any]] = {}
+    messages: list[str] = []
+    for source_index, source_record in enumerate(records):
+        frame = combined_pdp_to_dataframe(source_record)
+        if role == "Client":
+            entries, mapped_records, row_messages = process_primary_audit_extract_sheet(
+                df_uploaded=frame,
+                client_name=st.session_state.get("audit_client_name", ""),
+                retailer=st.session_state.get("audit_retailer", ""),
+            )
+            for entry in entries:
+                cached_record = entry.get("cached_record", {}) or {}
+                attach_combined_evidence_to_record(cached_record, source_record)
+                entry["entry_id"] = (
+                    f"primary-combined-{source_index + 1}-"
+                    f"{entry.get('record_id', 'unknown')}"
+                )
+                processed.append(entry)
+        else:
+            entries, mapped_records, row_messages = process_competitor_audit_extract_sheet(
+                df_uploaded=frame,
+                client_name=st.session_state.get("audit_client_name", ""),
+                retailer=st.session_state.get("audit_retailer", ""),
+            )
+            for cached_record in entries:
+                attach_combined_evidence_to_record(cached_record, source_record)
+                processed.append(cached_record)
+        for record_id, cached_record in mapped_records.items():
+            attach_combined_evidence_to_record(cached_record, source_record)
+            records_by_id[record_id] = cached_record
+        messages.extend(
+            f"{role} PDP source row {source_record.get('sourceRow', source_index + 1)}: {message}"
+            for message in row_messages
+        )
+    return processed, records_by_id, messages
+
+
+def _evidence_value(record: dict[str, Any], *keys: str, default: Any = "") -> Any:
+    for key in keys:
+        current: Any = record
+        found = True
+        for part in key.split("."):
+            if not isinstance(current, dict) or part not in current:
+                found = False
+                break
+            current = current[part]
+        if found and current not in (None, "", [], {}):
+            return current
+    return default
+
+
+def _render_combined_evidence_preview_v2(result: dict[str, Any]) -> None:
+    if not result:
+        return
+    with st.expander("Combined Audit Evidence Preview", expanded=False):
+        pdp_rows = []
+        for role, records in (
+            ("Client", result.get("client_pdps", [])),
+            ("Competitor", result.get("competitor_pdps", [])),
+        ):
+            for record in records:
+                images = _evidence_value(record, "images", "imageUrls", default=[]) or []
+                if not isinstance(images, list):
+                    images = [images]
+                pdp_rows.append(
+                    {
+                        "Role": role,
+                        "Brand": _evidence_value(record, "inputBrandName", "brandName", "brand"),
+                        "Product Title": _evidence_value(record, "productTitle", "title", "name"),
+                        "Category": _evidence_value(record, "resolvedCategory", "category"),
+                        "Product Type": _evidence_value(record, "resolvedProductType", "productType"),
+                        "Image Count": len(images),
+                        "Seller": _evidence_value(record, "seller", "sellerName"),
+                        "Sold by Walmart": _evidence_value(record, "soldByWalmart", "fulfillment.soldByWalmart"),
+                        "Shipped by Walmart": _evidence_value(record, "shippedByWalmart", "fulfillment.shippedByWalmart"),
+                        "Enhanced Brand Content": _evidence_value(
+                            record,
+                            "enhancedBrandContentStatus",
+                            "enhancedContent.status",
+                        ),
+                    }
+                )
+        st.markdown("##### PDP Summary")
+        if pdp_rows:
+            st.dataframe(pd.DataFrame(pdp_rows), hide_index=True, use_container_width=True)
+        else:
+            st.caption("No valid PDP evidence.")
+
+        search_rows = []
+        for role, records in (
+            ("Current", result.get("current_searches", [])),
+            ("Benchmark", result.get("benchmark_searches", [])),
+        ):
+            for record in records:
+                products = _evidence_value(record, "products", "capturedProducts", default=[]) or []
+                search_rows.append(
+                    {
+                        "Role": role,
+                        "Search Term": _evidence_value(record, "searchTerm", "query", "term"),
+                        "Result Count": _evidence_value(record, "resultCount", "totalResults"),
+                        "Products Captured": len(products) if isinstance(products, list) else 0,
+                        "Sponsored Detected": _evidence_value(
+                            record,
+                            "sponsoredProductsDetected",
+                            "sponsoredDetected",
+                        ),
+                        "Screenshot Available": bool(
+                            _evidence_value(record, "screenshotDataUrl", "screenshot.dataUrl")
+                        ),
+                        "Extraction Status": _evidence_value(record, "extractionStatus", "status"),
+                    }
+                )
+        st.markdown("##### Search Summary")
+        if search_rows:
+            st.dataframe(pd.DataFrame(search_rows), hide_index=True, use_container_width=True)
+        else:
+            st.caption("No Search evidence was included.")
+
+        shop_rows = []
+        for role, records in (
+            ("Client", result.get("client_brand_shops", [])),
+            ("Competitor", result.get("competitor_brand_shops", [])),
+        ):
+            for record in records:
+                modules = _evidence_value(record, "modules", "structuredModules", default=[]) or []
+                module_types = [
+                    str(_evidence_value(module, "type", "moduleType") or "")
+                    for module in modules
+                    if isinstance(module, dict)
+                ]
+                products = _evidence_value(record, "products", "productTiles", default=[]) or []
+                navigation = _evidence_value(
+                    record,
+                    "categoryNavigation",
+                    "categoryNavigationItems",
+                    default=[],
+                ) or []
+                shop_rows.append(
+                    {
+                        "Role": role,
+                        "Brand Name": _evidence_value(record, "inputBrandName", "brandName", "brand"),
+                        "Module Count": len(modules) if isinstance(modules, list) else 0,
+                        "Module Types": ", ".join(value for value in module_types if value),
+                        "Category Navigation Count": len(navigation) if isinstance(navigation, list) else 0,
+                        "Video Present": _evidence_value(record, "videoPresent", "hasVideo"),
+                        "Product Count": len(products) if isinstance(products, list) else 0,
+                        "Screenshot Available": bool(
+                            _evidence_value(record, "screenshotDataUrl", "screenshot.dataUrl")
+                        ),
+                        "Extraction Status": _evidence_value(record, "extractionStatus", "status"),
+                    }
+                )
+        st.markdown("##### Brand Shop Summary")
+        if shop_rows:
+            st.dataframe(pd.DataFrame(shop_rows), hide_index=True, use_container_width=True)
+        else:
+            st.caption("No Brand Shop evidence was included.")
+
+
+def render_combined_strategic_audit_upload_v2() -> None:
+    with st.container(border=True):
+        st.markdown("### Combined Strategic Audit Extract")
+        st.caption("Upload the combined HTML report generated by the Soapbox Audit Extractor.")
+        uploaded = st.file_uploader(
+            "Upload Combined Strategic Audit Extract",
+            type=["html", "htm"],
+            accept_multiple_files=False,
+            key="audit_combined_extract_upload",
+        )
+        if st.button(
+            "Process Combined Audit Extract",
+            key="audit_process_combined_extract",
+            type="primary",
+        ):
+            result = parse_combined_audit_html(uploaded)
+            if result.get("is_legacy"):
+                for error in result.get("errors", []):
+                    st.error(_combined_message_text(error))
+                st.info(
+                    "Use the Current Audit Template to access the existing separate legacy upload workflow."
+                )
+            elif result.get("schema_version") != "2.0":
+                for error in result.get("errors", []):
+                    st.error(_combined_message_text(error))
+            else:
+                reset_combined_audit_state(st.session_state)
+                primary_entries, primary_map, primary_messages = _process_combined_pdp_records_v2(
+                    result.get("client_pdps", []) or [],
+                    role="Client",
+                )
+                competitor_entries, competitor_map, competitor_messages = _process_combined_pdp_records_v2(
+                    result.get("competitor_pdps", []) or [],
+                    role="Competitor",
+                )
+                all_records = [
+                    *(entry.get("cached_record", {}) for entry in primary_entries),
+                    *competitor_entries,
+                ]
+                if all_records:
+                    _analyze_sheet_records_with_ui(all_records)
+                st.session_state["audit_primary_entries"] = primary_entries
+                st.session_state["audit_competitor_entries"] = competitor_entries
+                st.session_state["audit_cached_pdp_records"] = {
+                    **primary_map,
+                    **competitor_map,
+                }
+                current_searches = list(result.get("current_searches", []) or [])
+                benchmark_searches = list(result.get("benchmark_searches", []) or [])
+                client_shops = list(result.get("client_brand_shops", []) or [])
+                competitor_shops = list(result.get("competitor_brand_shops", []) or [])
+                st.session_state["audit_search_evidence"] = {
+                    "current": current_searches,
+                    "benchmark": benchmark_searches,
+                    "all": [*current_searches, *benchmark_searches],
+                }
+                st.session_state["audit_brand_shop_evidence"] = {
+                    "client": client_shops,
+                    "competitor": competitor_shops,
+                    "all": [*client_shops, *competitor_shops],
+                }
+                result["ingestion_messages"] = [*primary_messages, *competitor_messages]
+                st.session_state["audit_combined_extract_result"] = result
+                _reset_competitor_graphics_mode_state_v2()
+                _reset_generated_audit_state_v2()
+
+                if not primary_entries:
+                    st.error("No valid Client PDPs were processed. Client PDPs are required.")
+                if not competitor_entries:
+                    st.error("No valid Competitor PDPs were processed. Competitor PDPs are required.")
+                if primary_entries and competitor_entries:
+                    st.success("Combined strategic audit ingestion complete.")
+
+        result = st.session_state.get("audit_combined_extract_result", {}) or {}
+        if result:
+            metric_values = (
+                ("Client PDPs", len(st.session_state.get("audit_primary_entries", []) or [])),
+                ("Competitor PDPs", len(st.session_state.get("audit_competitor_entries", []) or [])),
+                ("Current searches", len(result.get("current_searches", []) or [])),
+                ("Benchmark searches", len(result.get("benchmark_searches", []) or [])),
+                ("Client Brand Shops", len(result.get("client_brand_shops", []) or [])),
+                ("Competitor Brand Shops", len(result.get("competitor_brand_shops", []) or [])),
+                ("Warnings", len(result.get("warnings", []) or [])),
+                ("Errors", len(result.get("errors", []) or [])),
+            )
+            for row_start in range(0, len(metric_values), 4):
+                columns = st.columns(4)
+                for column, (label, value) in zip(columns, metric_values[row_start : row_start + 4]):
+                    column.metric(label, value)
+            for warning in result.get("warnings", []) or []:
+                st.warning(_combined_message_text(warning))
+            for error in result.get("errors", []) or []:
+                st.error(_combined_message_text(error))
+            for message in result.get("ingestion_messages", []) or []:
+                st.warning(message)
+            _render_combined_evidence_preview_v2(result)
+
+
 def _render_local_image_analysis(record: dict[str, Any]) -> None:
     analysis = record.get("image_analysis", {}) or {}
     if not analysis:
@@ -751,6 +1035,38 @@ def _render_slide2_summary_preview_v2(plan: dict[str, Any]) -> None:
                 st.caption("No Slide 2 bullet debug metadata available.")
 
 
+def _render_slide3_search_benchmark_preview_v2(plan: dict[str, Any]) -> None:
+    payload = (plan or {}).get("slide3_search_benchmark", {}) or {}
+    if not payload:
+        return
+    with st.expander("Slide 3 Search Benchmark Preview", expanded=False):
+        for side in ("current", "benchmark"):
+            side_payload = (payload.get(side) or {})
+            st.markdown(f"##### {side.title()}")
+            st.caption(
+                f"Selected source row: {side_payload.get('source_row') or '-'} | "
+                f"Resolved search term: {side_payload.get('search_term') or '-'} | "
+                f"Category phrase: {side_payload.get('category_phrase') or '-'}"
+            )
+            st.caption(
+                f"Screenshot available: {'Yes' if side_payload.get('screenshot') else 'No'} | "
+                f"Bullets: {len(side_payload.get('bullets', []) or [])}"
+            )
+            dimension_rows = []
+            for dimension, score in (side_payload.get("dimension_scores", {}) or {}).items():
+                dimension_rows.append({"Dimension": dimension.replace("_", " ").title(), "Score": score})
+            if dimension_rows:
+                st.dataframe(pd.DataFrame(dimension_rows), hide_index=True, use_container_width=True)
+            for bullet in side_payload.get("bullet_debug", []) or []:
+                st.caption(
+                    f"- {bullet.get('text', '')} [{bullet.get('dimension', '')} / {bullet.get('score', '')}]"
+                )
+            for warning in side_payload.get("warnings", []) or []:
+                st.warning(warning)
+        for warning in payload.get("warnings", []) or []:
+            st.warning(warning)
+
+
 def _render_slide6_visibility_preview_v2(plan: dict[str, Any]) -> None:
     visibility = (plan or {}).get("slide6_visibility", {}) or {}
     if not visibility:
@@ -799,6 +1115,131 @@ def _render_slide6_visibility_preview_v2(plan: dict[str, Any]) -> None:
         for warning in visibility.get("warnings", []) or []:
             st.warning(warning)
         st.write(visibility.get("takeaway", ""))
+
+
+def _render_slide5_brand_shop_preview_v2(plan: dict[str, Any]) -> None:
+    payload = (plan or {}).get("slide5_brand_shop", {}) or {}
+    if not payload:
+        return
+    with st.expander("Slide 5 Brand Shop Preview", expanded=False):
+        mode = payload.get("mode", "standard")
+        st.caption(
+            f"Selected mode: {'No Brand Shop' if mode == 'no_brand_shop' else 'Standard'} | "
+            f"Client has a Walmart Brand Shop: "
+            f"{'Yes' if payload.get('client_has_brand_shop', True) else 'No'}"
+        )
+        for warning in payload.get("warnings", []) or []:
+            st.warning(warning)
+        if mode == "no_brand_shop":
+            competitor = payload.get("competitor")
+            if not isinstance(competitor, dict):
+                st.warning(
+                    "No valid Competitor Brand Shop evidence is available; Slide 5 will remain unchanged."
+                )
+                return
+            st.markdown("##### Competitor-led Opportunity Layout")
+            st.caption(
+                f"Selected Competitor source row: {competitor.get('source_row')} | "
+                f"Brand: {competitor.get('brand_name') or '-'} | "
+                f"Screenshot available: {'Yes' if competitor.get('screenshot') else 'No'}"
+            )
+            dimension_rows = []
+            for dimension, score in (competitor.get("dimension_scores", {}) or {}).items():
+                debug = (competitor.get("dimension_debug", {}) or {}).get(dimension, {}) or {}
+                dimension_rows.append(
+                    {
+                        "Dimension": dimension.replace("_", " ").title(),
+                        "Score": score,
+                        "Supporting Signals": ", ".join(debug.get("signals", []) or []),
+                        "Reason": debug.get("reason", ""),
+                    }
+                )
+            st.dataframe(pd.DataFrame(dimension_rows), hide_index=True, use_container_width=True)
+            st.dataframe(
+                pd.DataFrame(
+                    [
+                        {
+                            "Bullet": item.get("text", ""),
+                            "Type": item.get("type", ""),
+                            "Dimension": item.get("dimension", ""),
+                            "Template ID": item.get("template_id", ""),
+                            "Reason": item.get("reason", ""),
+                        }
+                        for item in competitor.get("bullet_debug", []) or []
+                    ]
+                ),
+                hide_index=True,
+                use_container_width=True,
+            )
+            return
+        for side_key, side_label in (
+            ("client", "Client"),
+            ("competitor", "Competitor"),
+        ):
+            side = payload.get(side_key)
+            st.markdown(f"##### {side_label}")
+            if not isinstance(side, dict):
+                st.warning(
+                    f"No valid {side_label} Brand Shop capture was selected; "
+                    "that template side will remain unchanged."
+                )
+                continue
+            st.caption(
+                f"Source row: {side.get('source_row')} | "
+                f"Brand: {side.get('brand_name') or '-'} | "
+                f"Screenshot available: {'Yes' if side.get('screenshot') else 'No'}"
+            )
+            dimensions = side.get("dimension_scores", {}) or {}
+            dimension_debug = side.get("dimension_debug", {}) or {}
+            dimension_rows = []
+            for dimension in (
+                "brand_presentation",
+                "lifestyle_merchandising",
+                "category_segmentation",
+                "product_discovery",
+                "educational_storytelling",
+                "video_rich_media",
+                "cross_category_navigation",
+            ):
+                debug = dimension_debug.get(dimension, {}) or {}
+                dimension_rows.append(
+                    {
+                        "Dimension": dimension.replace("_", " ").title(),
+                        "Score": dimensions.get(dimension, ""),
+                        "Supporting Signals": ", ".join(debug.get("signals", []) or []),
+                        "Reason": debug.get("reason", ""),
+                    }
+                )
+            st.dataframe(
+                pd.DataFrame(dimension_rows),
+                hide_index=True,
+                use_container_width=True,
+            )
+            bullet_rows = [
+                {
+                    "Bullet": item.get("text", ""),
+                    "Type": item.get("type", ""),
+                    "Dimension": item.get("dimension", ""),
+                    "Template ID": item.get("template_id", ""),
+                    "Reason": item.get("reason", ""),
+                }
+                for item in side.get("bullet_debug", []) or []
+            ]
+            st.dataframe(
+                pd.DataFrame(bullet_rows),
+                hide_index=True,
+                use_container_width=True,
+            )
+            for warning in side.get("warnings", []) or []:
+                st.warning(warning)
+        debug = payload.get("debug", {}) or {}
+        unused_client = debug.get("unused_client_source_rows", []) or []
+        unused_competitor = debug.get("unused_competitor_source_rows", []) or []
+        if unused_client or unused_competitor:
+            st.caption(
+                f"Unused Client source rows: {unused_client or '-'} | "
+                f"Unused Competitor source rows: {unused_competitor or '-'}"
+            )
 
 
 def render_primary_pdp_upload_v2() -> None:
@@ -2036,12 +2477,17 @@ def _refresh_audit_export_plan_v2() -> None:
             st.session_state.get("audit_competitor_make_multiple_slides", False)
         )
         audit_record["competitor_graphics_mode_payload"] = st.session_state.get("audit_competitor_mode_payload", {})
+        audit_record["client_has_brand_shop"] = bool(
+            st.session_state.get("audit_client_has_brand_shop", True)
+        )
 
     st.session_state["audit_export_plan"] = build_audit_export_plan(
         audit_record=audit_record,
         primary_entries=entries,
         competitor_assignments=competitor_assignments,
         competitor_records=competitor_records,
+        search_evidence=st.session_state.get("audit_search_evidence", {}),
+        brand_shop_evidence=st.session_state.get("audit_brand_shop_evidence", {}),
     )
 
 
@@ -2184,18 +2630,20 @@ def render_audit_powerpoint_export_v2() -> None:
             st.json(compact)
 
     _render_slide2_summary_preview_v2(plan)
+    _render_slide3_search_benchmark_preview_v2(plan)
     _render_slide4_finding_preview_v2(plan)
+    _render_slide5_brand_shop_preview_v2(plan)
     _render_slide6_visibility_preview_v2(plan)
 
     included_count = int((plan.get("summary", {}) or {}).get("included_primary_entry_count", 0))
     if included_count <= 0:
         st.info("Include at least one primary product entry to generate the audit PowerPoint.")
         return
-    template_version = st.selectbox(
-        "Template Version",
-        ["Current Audit Template", "New Strategic Template"],
-        key="audit_template_version",
+    template_version = st.session_state.get(
+        "audit_template_version",
+        "Current Audit Template",
     )
+    st.caption(f"Template Version: {template_version}")
     
     # Slide 9 option for new strategic template
     include_slide_9 = False
@@ -2264,15 +2712,29 @@ def render_content_auditing() -> None:
 
     st.header("Audit Setup")
     render_audit_setup()
+    template_version = st.selectbox(
+        "Template Version",
+        ["Current Audit Template", "New Strategic Template"],
+        key="audit_template_version",
+    )
+    if template_version == "New Strategic Template":
+        st.checkbox(
+            "Client has a Walmart Brand Shop",
+            value=True,
+            key="audit_client_has_brand_shop",
+        )
     st.divider()
 
-    primary_upload_col, competitor_upload_col = st.columns(2)
-    with primary_upload_col:
-        st.header("Primary Products")
-        render_primary_pdp_upload_v2()
-    with competitor_upload_col:
-        st.header("Competitor Graphics")
-        render_competitor_pdp_upload_v2()
+    if template_version == "New Strategic Template":
+        render_combined_strategic_audit_upload_v2()
+    else:
+        primary_upload_col, competitor_upload_col = st.columns(2)
+        with primary_upload_col:
+            st.header("Primary Products")
+            render_primary_pdp_upload_v2()
+        with competitor_upload_col:
+            st.header("Competitor Graphics")
+            render_competitor_pdp_upload_v2()
 
     render_extracted_primary_product_entries_v2()
     st.divider()

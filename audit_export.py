@@ -4,7 +4,9 @@ import re
 from typing import Any
 
 from app.audit_helpers.slide2_summary import build_slide2_summary_payload
+from app.audit_helpers.slide3_search_benchmark import build_slide3_search_benchmark
 from app.audit_helpers.slide4_findings import build_slide4_group_findings
+from app.audit_helpers.slide5_brand_shop import build_slide5_brand_shop
 from app.audit_helpers.slide6_visibility import build_slide6_visibility
 
 
@@ -463,6 +465,8 @@ def build_audit_export_plan(
     primary_entries: list[dict[str, Any]],
     competitor_assignments: list[dict[str, Any]],
     competitor_records: list[dict[str, Any]] | None = None,
+    search_evidence: dict[str, Any] | list[dict[str, Any]] | None = None,
+    brand_shop_evidence: dict[str, Any] | list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     included_entries = [e for e in (primary_entries or []) if e.get("include_in_export", True)]
     product_pairs = [
@@ -520,6 +524,9 @@ def build_audit_export_plan(
         "retailer": metadata_src.get("retailer", ""),
         "audit_date": metadata_src.get("audit_date", ""),
         "status": metadata_src.get("status", ""),
+        "client_has_brand_shop": bool(
+            metadata_src.get("client_has_brand_shop", True)
+        ),
     }
     slide2_summary = build_slide2_summary_payload(
         primary_records=primary_records_for_summary,
@@ -533,6 +540,26 @@ def build_audit_export_plan(
         slide4_findings=slide4_findings,
         audit_metadata=audit_metadata,
     )
+    slide3_search_benchmark = build_slide3_search_benchmark(
+        search_evidence or {"current": [], "benchmark": [], "all": []},
+        client_name=audit_metadata.get("client_company_name") or audit_metadata.get("client_name") or "",
+    )
+    brand_shop_payload = brand_shop_evidence or {
+        "client": [],
+        "competitor": [],
+        "all": [],
+    }
+    if isinstance(brand_shop_payload, dict):
+        client_brand_shops = list(brand_shop_payload.get("client", []) or [])
+        competitor_brand_shops = list(brand_shop_payload.get("competitor", []) or [])
+    else:
+        client_brand_shops = []
+        competitor_brand_shops = []
+    slide5_brand_shop = build_slide5_brand_shop(
+        client_brand_shops,
+        competitor_brand_shops,
+        client_has_brand_shop=audit_metadata["client_has_brand_shop"],
+    )
     return {
         "audit_metadata": audit_metadata,
         "summary": {
@@ -544,6 +571,10 @@ def build_audit_export_plan(
         "product_slide_pairs": product_pairs,
         "competitor_graphics_payload": competitor_payload,
         "slide2_summary": slide2_summary,
+        "slide3_search_benchmark": slide3_search_benchmark,
         "slide4_findings": slide4_findings,
+        "slide5_brand_shop": slide5_brand_shop,
         "slide6_visibility": slide6_visibility,
+        "search_evidence": search_evidence or {"current": [], "benchmark": [], "all": []},
+        "brand_shop_evidence": brand_shop_payload,
     }
