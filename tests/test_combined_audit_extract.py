@@ -13,6 +13,7 @@ from app.audit_helpers.combined_audit_extract import (
 from audit_export import build_audit_export_plan
 from audit_helpers import (
     initialize_auditing_session_state,
+    parse_audit_extract_upload_to_dataframe,
     process_competitor_audit_extract_sheet,
     process_primary_audit_extract_sheet,
 )
@@ -119,6 +120,116 @@ def _valid_payload() -> dict:
     }
 
 
+def _nested_schema_payload() -> dict:
+    def pdp(role: str, row: int, product_id: str, title: str) -> dict:
+        return {
+            "sourceRow": row,
+            "evidenceType": "PDP",
+            "role": role,
+            "originalRole": role,
+            "inputBrandName": "Nutella" if role == "Client" else "Jif",
+            "brandName": "Nutella" if role == "Client" else "Jif",
+            "status": "success",
+            "warnings": [],
+            "errors": [],
+            "data": {
+                "url": f"https://example.com/{product_id}",
+                "productId": product_id,
+                "productTitle": title,
+                "brand": "Nutella" if role == "Client" else "Jif",
+                "categoryPathName": "Food / Nut Butters and Spreads",
+                "productType": "Nut Butters & Spreads",
+                "imageCount": 2,
+                "images": [
+                    {
+                        "index": 5,
+                        "url": f"https://images.example.com/{product_id}-1.jpg",
+                        "width": 2200,
+                        "height": 2200,
+                    },
+                    {
+                        "index": 7,
+                        "url": f"https://images.example.com/{product_id}-2.jpg",
+                        "width": 1800,
+                        "height": 1200,
+                    },
+                ],
+                "descriptionBody": f"{title} description",
+                "descriptionBullets": [],
+                "keyFeatures": ["Smooth spread", "Pantry staple"],
+                "averageRating": 4.7,
+                "ratingsCount": 41000,
+                "reviewCount": 39525,
+                "sellerName": "Walmart.com",
+                "soldByWalmart": True,
+                "shippedByWalmart": True,
+                "enhancedBrandContentPresent": True,
+            },
+        }
+
+    def search(role: str, row: int, term: str) -> dict:
+        return {
+            "sourceRow": row,
+            "role": role,
+            "originalRole": role,
+            "status": "success",
+            "warnings": [],
+            "errors": [],
+            "data": {
+                "url": f"https://walmart.com/search?q={term}",
+                "searchTerm": term,
+                "resultCount": 120,
+                "productsCaptured": 50,
+                "sponsoredProductsDetected": True,
+                "topBrands": ["Nutella", "Jif"],
+                "products": [{"title": "Product A"}],
+                "screenshotDataUrl": f"data:image/png;base64,{role.upper()}SEARCH",
+            },
+        }
+
+    def brand_shop(role: str, row: int, brand: str) -> dict:
+        return {
+            "sourceRow": row,
+            "role": role,
+            "originalRole": role,
+            "inputBrandName": brand,
+            "status": "success",
+            "warnings": [],
+            "errors": [],
+            "data": {
+                "url": f"https://walmart.com/brand/{brand.lower()}",
+                "brandName": brand,
+                "moduleCount": 2,
+                "moduleTypes": ["HeroPov", "ItemCarousel"],
+                "productCount": 34,
+                "videoPresent": False,
+                "screenshotDataUrl": f"data:image/png;base64,{role.upper()}SHOP",
+                "modules": [
+                    {"type": "HeroPov", "heading": f"{brand} hero"},
+                    {"type": "ItemCarousel"},
+                ],
+            },
+        }
+
+    return {
+        "schemaVersion": "2.0",
+        "pdpEvidence": [
+            pdp("Client", 2, "10451273", "Nutella Hazelnut Spread"),
+            pdp("Competitor", 3, "20000001", "Jif Peanut Butter"),
+        ],
+        "searchEvidence": [
+            search("Current", 4, "hazelnut spread"),
+            search("Benchmark", 5, "peanut butter"),
+        ],
+        "brandShopEvidence": [
+            brand_shop("Client", 6, "Nutella"),
+            brand_shop("Competitor", 7, "Jif"),
+        ],
+        "warnings": [],
+        "errors": [],
+    }
+
+
 class CombinedAuditExtractTests(unittest.TestCase):
     def test_brand_shop_control_defaults_checked_and_reaches_export_metadata(self) -> None:
         state: dict = {}
@@ -160,6 +271,113 @@ class CombinedAuditExtractTests(unittest.TestCase):
             result["client_brand_shops"][0]["modules"][1]["type"],
             "product-carousel",
         )
+
+    def test_nested_schema_2_envelopes_populate_existing_records_and_evidence(self) -> None:
+        result = parse_combined_audit_html(_html(_nested_schema_payload()))
+        self.assertEqual(len(result["client_pdps"]), 1)
+        self.assertEqual(len(result["competitor_pdps"]), 1)
+        self.assertEqual(len(result["current_searches"]), 1)
+        self.assertEqual(len(result["benchmark_searches"]), 1)
+        self.assertEqual(len(result["client_brand_shops"]), 1)
+        self.assertEqual(len(result["competitor_brand_shops"]), 1)
+        self.assertEqual(result["client_pdps"][0]["productId"], "10451273")
+        self.assertEqual(
+            result["client_pdps"][0]["productTitle"],
+            "Nutella Hazelnut Spread",
+        )
+        self.assertEqual(result["current_searches"][0]["searchTerm"], "hazelnut spread")
+        self.assertEqual(result["current_searches"][0]["productsCaptured"], 50)
+        self.assertTrue(result["current_searches"][0]["screenshotDataUrl"])
+        self.assertEqual(result["client_brand_shops"][0]["moduleCount"], 2)
+        self.assertEqual(
+            result["client_brand_shops"][0]["moduleTypes"],
+            ["HeroPov", "ItemCarousel"],
+        )
+        self.assertEqual(result["client_brand_shops"][0]["productCount"], 34)
+        self.assertTrue(result["client_brand_shops"][0]["screenshotDataUrl"])
+        self.assertEqual(result["errors"], [])
+
+        primary_entries, primary_map, primary_messages = process_primary_audit_extract_sheet(
+            df_uploaded=combined_pdp_to_dataframe(result["client_pdps"][0]),
+            client_name="Nutella",
+            retailer="Walmart",
+            schema_version="2.0",
+        )
+        competitor_records, competitor_map, competitor_messages = process_competitor_audit_extract_sheet(
+            df_uploaded=combined_pdp_to_dataframe(result["competitor_pdps"][0]),
+            client_name="Nutella",
+            retailer="Walmart",
+            schema_version="2.0",
+        )
+        self.assertEqual(primary_messages, [])
+        self.assertEqual(competitor_messages, [])
+        self.assertFalse(
+            any("No Image N columns" in message for message in [*primary_messages, *competitor_messages])
+        )
+        self.assertFalse(
+            any("missing required value" in message.lower() for message in [*primary_messages, *competitor_messages])
+        )
+        attach_combined_evidence_to_record(
+            primary_entries[0]["cached_record"],
+            result["client_pdps"][0],
+        )
+        attach_combined_evidence_to_record(
+            competitor_records[0],
+            result["competitor_pdps"][0],
+        )
+        client_record = primary_entries[0]["cached_record"]
+        self.assertEqual(client_record["item_id"], "10451273")
+        self.assertEqual(client_record["product_title"], "Nutella Hazelnut Spread")
+        self.assertEqual(client_record["subcategory"], "Nut Butters & Spreads")
+        self.assertEqual(client_record["extraction_status"], "success")
+        self.assertEqual(client_record["images"][0]["index"], 5)
+        self.assertEqual(client_record["images"][0]["width"], 2200)
+        self.assertEqual(client_record["images"][1]["height"], 1200)
+        self.assertEqual(client_record["ingest_metadata"]["seller"], "Walmart.com")
+        self.assertTrue(client_record["ingest_metadata"]["sold_by_walmart"])
+        self.assertTrue(client_record["ingest_metadata"]["shipped_by_walmart"])
+        self.assertTrue(
+            client_record["ingest_metadata"]["enhanced_brand_content_status"]
+        )
+        self.assertIn(client_record["record_id"], primary_map)
+        self.assertIn(competitor_records[0]["record_id"], competitor_map)
+
+        search_evidence = {
+            "current": result["current_searches"],
+            "benchmark": result["benchmark_searches"],
+            "all": [*result["current_searches"], *result["benchmark_searches"]],
+        }
+        brand_shop_evidence = {
+            "client": result["client_brand_shops"],
+            "competitor": result["competitor_brand_shops"],
+            "all": [*result["client_brand_shops"], *result["competitor_brand_shops"]],
+        }
+        plan = build_audit_export_plan(
+            audit_record={"client_name": "Nutella", "retailer": "Walmart"},
+            primary_entries=primary_entries,
+            competitor_assignments=[],
+            competitor_records=competitor_records,
+            search_evidence=search_evidence,
+            brand_shop_evidence=brand_shop_evidence,
+        )
+        self.assertEqual(plan["search_evidence"]["current"][0]["productsCaptured"], 50)
+        self.assertEqual(plan["brand_shop_evidence"]["client"][0]["moduleCount"], 2)
+        self.assertEqual(
+            plan["product_slide_pairs"][0]["pdp_slide"]["item_id"],
+            "10451273",
+        )
+
+    def test_legacy_html_table_parser_remains_available(self) -> None:
+        table_html = b"""
+        <html><body><table>
+        <tr><th>Product URL</th><th>Product ID</th><th>Product Title</th></tr>
+        <tr><td>https://example.com/legacy</td><td>legacy-1</td><td>Legacy Product</td></tr>
+        </table></body></html>
+        """
+        upload = _Upload(table_html)
+        dataframe, messages = parse_audit_extract_upload_to_dataframe(upload)
+        self.assertEqual(dataframe.iloc[0]["Product ID"], "legacy-1")
+        self.assertTrue(any("visible HTML table" in message for message in messages))
 
     def test_collection_wrappers_are_supported_without_role_guessing(self) -> None:
         payload = _valid_payload()

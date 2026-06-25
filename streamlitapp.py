@@ -671,6 +671,7 @@ def _process_combined_pdp_records_v2(
                 df_uploaded=frame,
                 client_name=st.session_state.get("audit_client_name", ""),
                 retailer=st.session_state.get("audit_retailer", ""),
+                schema_version="2.0",
             )
             for entry in entries:
                 cached_record = entry.get("cached_record", {}) or {}
@@ -685,6 +686,7 @@ def _process_combined_pdp_records_v2(
                 df_uploaded=frame,
                 client_name=st.session_state.get("audit_client_name", ""),
                 retailer=st.session_state.get("audit_retailer", ""),
+                schema_version="2.0",
             )
             for cached_record in entries:
                 attach_combined_evidence_to_record(cached_record, source_record)
@@ -730,16 +732,18 @@ def _render_combined_evidence_preview_v2(result: dict[str, Any]) -> None:
                     {
                         "Role": role,
                         "Brand": _evidence_value(record, "inputBrandName", "brandName", "brand"),
+                        "Product ID": _evidence_value(record, "productId", "itemId"),
                         "Product Title": _evidence_value(record, "productTitle", "title", "name"),
-                        "Category": _evidence_value(record, "resolvedCategory", "category"),
+                        "Category": _evidence_value(record, "resolvedCategory", "categoryPathName", "category"),
                         "Product Type": _evidence_value(record, "resolvedProductType", "productType"),
-                        "Image Count": len(images),
+                        "Image Count": _evidence_value(record, "imageCount", default=len(images)),
                         "Seller": _evidence_value(record, "seller", "sellerName"),
                         "Sold by Walmart": _evidence_value(record, "soldByWalmart", "fulfillment.soldByWalmart"),
                         "Shipped by Walmart": _evidence_value(record, "shippedByWalmart", "fulfillment.shippedByWalmart"),
                         "Enhanced Brand Content": _evidence_value(
                             record,
                             "enhancedBrandContentStatus",
+                            "enhancedBrandContentPresent",
                             "enhancedContent.status",
                         ),
                     }
@@ -762,7 +766,11 @@ def _render_combined_evidence_preview_v2(result: dict[str, Any]) -> None:
                         "Role": role,
                         "Search Term": _evidence_value(record, "searchTerm", "query", "term"),
                         "Result Count": _evidence_value(record, "resultCount", "totalResults"),
-                        "Products Captured": len(products) if isinstance(products, list) else 0,
+                        "Products Captured": _evidence_value(
+                            record,
+                            "productsCaptured",
+                            default=len(products) if isinstance(products, list) else 0,
+                        ),
                         "Sponsored Detected": _evidence_value(
                             record,
                             "sponsoredProductsDetected",
@@ -771,7 +779,7 @@ def _render_combined_evidence_preview_v2(result: dict[str, Any]) -> None:
                         "Screenshot Available": bool(
                             _evidence_value(record, "screenshotDataUrl", "screenshot.dataUrl")
                         ),
-                        "Extraction Status": _evidence_value(record, "extractionStatus", "status"),
+                        "Extraction Status": _evidence_value(record, "status", "extractionStatus"),
                     }
                 )
         st.markdown("##### Search Summary")
@@ -792,6 +800,9 @@ def _render_combined_evidence_preview_v2(result: dict[str, Any]) -> None:
                     for module in modules
                     if isinstance(module, dict)
                 ]
+                explicit_module_types = _evidence_value(record, "moduleTypes", default=[]) or []
+                if isinstance(explicit_module_types, list) and explicit_module_types:
+                    module_types = [str(value) for value in explicit_module_types]
                 products = _evidence_value(record, "products", "productTiles", default=[]) or []
                 navigation = _evidence_value(
                     record,
@@ -803,15 +814,23 @@ def _render_combined_evidence_preview_v2(result: dict[str, Any]) -> None:
                     {
                         "Role": role,
                         "Brand Name": _evidence_value(record, "inputBrandName", "brandName", "brand"),
-                        "Module Count": len(modules) if isinstance(modules, list) else 0,
+                        "Module Count": _evidence_value(
+                            record,
+                            "moduleCount",
+                            default=len(modules) if isinstance(modules, list) else 0,
+                        ),
                         "Module Types": ", ".join(value for value in module_types if value),
                         "Category Navigation Count": len(navigation) if isinstance(navigation, list) else 0,
                         "Video Present": _evidence_value(record, "videoPresent", "hasVideo"),
-                        "Product Count": len(products) if isinstance(products, list) else 0,
+                        "Product Count": _evidence_value(
+                            record,
+                            "productCount",
+                            default=len(products) if isinstance(products, list) else 0,
+                        ),
                         "Screenshot Available": bool(
                             _evidence_value(record, "screenshotDataUrl", "screenshot.dataUrl")
                         ),
-                        "Extraction Status": _evidence_value(record, "extractionStatus", "status"),
+                        "Extraction Status": _evidence_value(record, "status", "extractionStatus"),
                     }
                 )
         st.markdown("##### Brand Shop Summary")

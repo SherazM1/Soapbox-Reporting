@@ -126,10 +126,59 @@ def _ordered_records(payload: dict[str, Any], *keys: str) -> list[dict[str, Any]
     records: list[dict[str, Any]] = []
     for source_index, item in enumerate(_as_list(value)):
         if isinstance(item, dict):
-            copied = dict(item)
+            nested_data = item.get("data")
+            copied = dict(nested_data) if isinstance(nested_data, dict) else {}
+            copied.update({key: value for key, value in item.items() if key != "data"})
+            if isinstance(nested_data, dict):
+                copied["data"] = nested_data
             copied.setdefault("_combined_source_index", source_index)
             records.append(copied)
     return records
+
+
+def _drop_failed_empty_records(
+    records: list[dict[str, Any]],
+    *,
+    evidence_label: str,
+    warnings: list[Any],
+) -> list[dict[str, Any]]:
+    kept: list[dict[str, Any]] = []
+    for index, record in enumerate(records, start=1):
+        status = _safe_text(
+            _first(record, "status", "extractionStatus")
+        ).lower()
+        nested_data = record.get("data")
+        usable_data = isinstance(nested_data, dict) and any(
+            value not in (None, "", [], {})
+            for value in nested_data.values()
+        )
+        usable_data = usable_data or any(
+            _first(
+                record,
+                key,
+                default="",
+            )
+            not in (None, "", [], {})
+            for key in (
+                "productId",
+                "productTitle",
+                "searchTerm",
+                "brandName",
+                "modules",
+                "screenshotDataUrl",
+            )
+        )
+        if status in {"failed", "fail", "error"} and not usable_data:
+            warnings.append(
+                {
+                    "source": evidence_label,
+                    "row": _first(record, "sourceRow", "rowNumber", default=index),
+                    "message": f"{evidence_label} record failed with no usable nested data and was skipped.",
+                }
+            )
+            continue
+        kept.append(record)
+    return kept
 
 
 def _separate_by_role(
@@ -237,6 +286,21 @@ def parse_combined_audit_html(uploaded_file: Any) -> dict[str, Any]:
         "brandShopEvidence",
         "brand_shop_evidence",
     )
+    pdps = _drop_failed_empty_records(
+        pdps,
+        evidence_label="PDP",
+        warnings=result["warnings"],
+    )
+    searches = _drop_failed_empty_records(
+        searches,
+        evidence_label="Search",
+        warnings=result["warnings"],
+    )
+    brand_shops = _drop_failed_empty_records(
+        brand_shops,
+        evidence_label="Brand Shop",
+        warnings=result["warnings"],
+    )
     for evidence_label, records in (
         ("PDP", pdps),
         ("Search", searches),
@@ -343,6 +407,7 @@ def combined_pdp_to_dataframe(record: dict[str, Any]) -> pd.DataFrame:
             "url",
             "product.url",
             "productDetails.url",
+            "data.url",
         ),
         "Product ID": _first(
             record,
@@ -353,6 +418,7 @@ def combined_pdp_to_dataframe(record: dict[str, Any]) -> pd.DataFrame:
             "sku",
             "product.id",
             "productDetails.productId",
+            "data.productId",
         ),
         "Product Title": _first(
             record,
@@ -361,6 +427,7 @@ def combined_pdp_to_dataframe(record: dict[str, Any]) -> pd.DataFrame:
             "name",
             "product.title",
             "productDetails.title",
+            "data.productTitle",
         ),
         "Brand": _first(
             record,
@@ -369,6 +436,7 @@ def combined_pdp_to_dataframe(record: dict[str, Any]) -> pd.DataFrame:
             "product.brand",
             "inputBrandName",
             "input.brandName",
+            "data.brand",
         ),
         "Category": _first(
             record,
@@ -376,6 +444,8 @@ def combined_pdp_to_dataframe(record: dict[str, Any]) -> pd.DataFrame:
             "category",
             "product.category",
             "productDetails.category",
+            "categoryPathName",
+            "data.categoryPathName",
         ),
         "Product Type": _first(
             record,
@@ -385,6 +455,7 @@ def combined_pdp_to_dataframe(record: dict[str, Any]) -> pd.DataFrame:
             "resolvedFamily",
             "family",
             "productDetails.productType",
+            "data.productType",
         ),
         "Description Body": _first(
             record,
@@ -392,10 +463,12 @@ def combined_pdp_to_dataframe(record: dict[str, Any]) -> pd.DataFrame:
             "descriptionBody",
             "product.description",
             "productDetails.description",
+            "data.descriptionBody",
         ),
-        "Average Rating": _first(record, "averageRating", "ratings.average"),
-        "Ratings Count": _first(record, "ratingsCount", "ratings.count"),
-        "Review Count": _first(record, "reviewCount", "reviews.count"),
+        "Average Rating": _first(record, "averageRating", "ratings.average", "data.averageRating"),
+        "Ratings Count": _first(record, "ratingsCount", "ratings.count", "data.ratingsCount"),
+        "Review Count": _first(record, "reviewCount", "reviews.count", "data.reviewCount"),
+        "Image Count": _first(record, "imageCount", "data.imageCount"),
     }
     for index, image in enumerate(_image_values(record), start=1):
         row[f"Image {index}"] = image
@@ -405,6 +478,7 @@ def combined_pdp_to_dataframe(record: dict[str, Any]) -> pd.DataFrame:
         "bullets",
         "product.descriptionBullets",
         "productDetails.descriptionBullets",
+        "data.descriptionBullets",
     )
     features = _text_values(
         record,
@@ -412,6 +486,7 @@ def combined_pdp_to_dataframe(record: dict[str, Any]) -> pd.DataFrame:
         "features",
         "product.keyFeatures",
         "productDetails.keyFeatures",
+        "data.keyFeatures",
     )
     for index, value in enumerate(bullets, start=1):
         row[f"Description Bullet {index}"] = value
@@ -437,6 +512,7 @@ def attach_combined_evidence_to_record(
                 "sourceRole",
                 "input.role",
             ),
+            "original_role": _first(source_record, "originalRole"),
             "input_brand_name": _first(
                 source_record,
                 "inputBrandName",
@@ -444,34 +520,89 @@ def attach_combined_evidence_to_record(
                 "requestedBrand",
                 "input.brandName",
             ),
-            "seller": _first(source_record, "seller", "sellerName"),
+            "seller": _first(source_record, "seller", "sellerName", "data.sellerName"),
             "sold_by_walmart": _first(
                 source_record,
                 "soldByWalmart",
                 "fulfillment.soldByWalmart",
+                "data.soldByWalmart",
             ),
             "shipped_by_walmart": _first(
                 source_record,
                 "shippedByWalmart",
                 "fulfillment.shippedByWalmart",
+                "data.shippedByWalmart",
             ),
             "enhanced_brand_content_status": _first(
                 source_record,
                 "enhancedBrandContentStatus",
                 "enhancedContent.status",
+                "enhancedBrandContentPresent",
+                "data.enhancedBrandContentPresent",
             ),
+            "reported_image_count": _first(source_record, "imageCount", "data.imageCount"),
+            "row_warnings": list(_as_list(source_record.get("warnings"))),
+            "row_errors": list(_as_list(source_record.get("errors"))),
             "combined_structured_evidence": source_record,
         }
     )
     cached_record["resolved_category"] = _safe_text(
-        _first(source_record, "resolvedCategory")
+        _first(source_record, "resolvedCategory", "categoryPathName", "data.categoryPathName")
     )
     cached_record["resolved_family"] = _safe_text(
         _first(source_record, "resolvedFamily", "family")
     )
     cached_record["resolved_product_type"] = _safe_text(
-        _first(source_record, "resolvedProductType", "productType")
+        _first(source_record, "resolvedProductType", "productType", "data.productType")
     )
+    extraction_status = _safe_text(
+        _first(source_record, "status", "extractionStatus")
+    )
+    if extraction_status:
+        cached_record["extraction_status"] = extraction_status
+    cached_record["extraction_errors"] = [
+        _safe_text(value)
+        for value in _as_list(source_record.get("errors"))
+        if _safe_text(value)
+    ]
+    raw_images = _first(source_record, "images", "data.images", default=[])
+    normalized_images: list[dict[str, Any]] = []
+    for position, image in enumerate(_as_list(raw_images)):
+        if not isinstance(image, dict):
+            url = _safe_text(image)
+            image = {}
+        else:
+            url = _safe_text(_first(image, "url", "src", "dataUrl", "dataURL"))
+        if not url:
+            continue
+        raw_index = image.get("index", position)
+        try:
+            image_index = int(raw_index)
+        except (TypeError, ValueError):
+            image_index = position
+        normalized_images.append(
+            {
+                "index": image_index,
+                "url": url,
+                "is_hero": bool(image.get("isHero", image_index == 0)),
+                "width": image.get("width"),
+                "height": image.get("height"),
+                "dimensions": (
+                    f"{image.get('width')} x {image.get('height')}"
+                    if image.get("width") and image.get("height")
+                    else ""
+                ),
+                "dimensions_text": (
+                    f"{image.get('width')} W x {image.get('height')} H"
+                    if image.get("width") and image.get("height")
+                    else ""
+                ),
+                "show_dimensions_in_powerpoint": False,
+            }
+        )
+    if normalized_images:
+        cached_record["images"] = normalized_images
+        cached_record["image_count"] = len(normalized_images)
 
 
 def reset_combined_audit_state(state: dict[str, Any]) -> None:

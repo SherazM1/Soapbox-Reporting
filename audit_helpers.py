@@ -968,8 +968,18 @@ def process_primary_audit_extract_sheet(
     df_uploaded: pd.DataFrame,
     client_name: str = "",
     retailer: str = "",
+    schema_version: str = "",
 ) -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]], list[str]]:
-    errors, warnings = validate_audit_extract_sheet_columns(df_uploaded)
+    if schema_version == "2.0":
+        missing = [
+            column
+            for column in ("Product ID", "Product Title")
+            if column not in df_uploaded.columns
+        ]
+        errors = [f"Missing required column(s): {', '.join(missing)}"] if missing else []
+        warnings: list[str] = []
+    else:
+        errors, warnings = validate_audit_extract_sheet_columns(df_uploaded)
     all_messages = list(errors) + [f"Warning: {w}" for w in warnings]
     if errors or df_uploaded.empty:
         return [], {}, all_messages
@@ -978,7 +988,14 @@ def process_primary_audit_extract_sheet(
     records_by_id: dict[str, dict[str, Any]] = {}
     for idx, (_, row) in enumerate(df_uploaded.iterrows()):
         row_number = idx + 2
-        row_errors = _validate_required_sheet_row_fields(row, row_number)
+        if schema_version == "2.0":
+            row_errors = [
+                f"Row {row_number}: missing required value for '{column}'."
+                for column in ("Product ID", "Product Title")
+                if not _cell_as_text(row, column)
+            ]
+        else:
+            row_errors = _validate_required_sheet_row_fields(row, row_number)
         if row_errors:
             all_messages.extend(row_errors)
             continue
@@ -1005,8 +1022,18 @@ def process_competitor_audit_extract_sheet(
     df_uploaded: pd.DataFrame,
     client_name: str = "",
     retailer: str = "",
+    schema_version: str = "",
 ) -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]], list[str]]:
-    errors, warnings = validate_audit_extract_sheet_columns(df_uploaded)
+    if schema_version == "2.0":
+        missing = [
+            column
+            for column in ("Product ID", "Product Title")
+            if column not in df_uploaded.columns
+        ]
+        errors = [f"Missing required column(s): {', '.join(missing)}"] if missing else []
+        warnings: list[str] = []
+    else:
+        errors, warnings = validate_audit_extract_sheet_columns(df_uploaded)
     all_messages = list(errors) + [f"Warning: {w}" for w in warnings]
     if errors or df_uploaded.empty:
         return [], {}, all_messages
@@ -1015,7 +1042,14 @@ def process_competitor_audit_extract_sheet(
     records_by_id: dict[str, dict[str, Any]] = {}
     for idx, (_, row) in enumerate(df_uploaded.iterrows()):
         row_number = idx + 2
-        row_errors = _validate_required_sheet_row_fields(row, row_number)
+        if schema_version == "2.0":
+            row_errors = [
+                f"Row {row_number}: missing required value for '{column}'."
+                for column in ("Product ID", "Product Title")
+                if not _cell_as_text(row, column)
+            ]
+        else:
+            row_errors = _validate_required_sheet_row_fields(row, row_number)
         if row_errors:
             all_messages.extend(row_errors)
             continue
