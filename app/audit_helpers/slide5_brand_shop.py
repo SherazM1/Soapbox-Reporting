@@ -125,7 +125,16 @@ def _source_row(record: dict[str, Any]) -> int:
         return 10**9
 
 
-def _role(record: dict[str, Any]) -> str:
+def _normalize_role_value(value: Any) -> str:
+    role = _safe_text(value).lower()
+    if role == "current":
+        return "client"
+    if role == "benchmark":
+        return "competitor"
+    return role
+
+
+def _explicit_role(record: dict[str, Any]) -> str:
     role = _safe_text(
         _first(
             record,
@@ -136,20 +145,64 @@ def _role(record: dict[str, Any]) -> str:
             "input.role",
             "source.role",
             "data.role",
-            "data.originalRole",
         )
-    ).lower()
-    if role == "current":
-        return "client"
-    if role == "benchmark":
-        return "competitor"
-    return role
+    )
+    return _normalize_role_value(role)
+
+
+def _original_role(record: dict[str, Any]) -> str:
+    return _normalize_role_value(
+        _first(record, "originalRole", "data.originalRole", "source.originalRole")
+    )
+
+
+def _record_brand(record: dict[str, Any]) -> str:
+    return _safe_text(
+        _first(
+            record,
+            "inputBrandName",
+            "brandName",
+            "extractedBrandName",
+            "brand",
+            "data.inputBrandName",
+            "data.brandName",
+            "data.extractedBrandName",
+            "data.brand",
+        )
+    )
+
+
+def _resolve_role(
+    record: dict[str, Any],
+    *,
+    side_fallback: str,
+    client_name: str = "",
+) -> tuple[str, str]:
+    explicit = _explicit_role(record)
+    if explicit in {"client", "competitor"}:
+        return explicit, "explicit role"
+    original = _original_role(record)
+    if original in {"client", "competitor"}:
+        return original, "originalRole"
+    brand = _normalize(_record_brand(record))
+    client = _normalize(client_name)
+    if brand and client and (brand in client or client in brand):
+        return "client", "brand/client-name matching"
+    return side_fallback, "side fallback"
 
 
 def _screenshot(record: dict[str, Any]) -> str:
     return _safe_text(
         _first(
             record,
+            "fullPageScreenshotDataUrl",
+            "fullPageScreenshotDataURL",
+            "data.fullPageScreenshotDataUrl",
+            "data.fullPageScreenshotDataURL",
+            "screenshot.fullPageDataUrl",
+            "screenshot.fullPageDataURL",
+            "data.screenshot.fullPageDataUrl",
+            "data.screenshot.fullPageDataURL",
             "screenshotDataUrl",
             "screenshotDataURL",
             "data.screenshotDataUrl",
@@ -184,7 +237,7 @@ def _status(record: dict[str, Any]) -> str:
 
 def _is_valid_capture(record: dict[str, Any], expected_role: str) -> bool:
     return (
-        _role(record) == expected_role.lower()
+        _resolve_role(record, side_fallback=expected_role.lower())[0] == expected_role.lower()
         and _status(record) in VALID_STATUSES
         and _screenshot(record).lower().startswith("data:image/")
         and bool(_modules(record))
@@ -576,7 +629,7 @@ def _client_bullets(
             int(dimensions[dimension]["supporting_count"]),
             priority_index[dimension],
         ),
-    )[:3]
+    )[:2]
     bullets = [
         *(
             _bullet_for_dimension(
@@ -601,7 +654,7 @@ def _client_bullets(
             for dimension in opportunities
         ),
     ]
-    return dedupe_bullet_debug(bullets, fallback_subject="client brand shop")[0]
+    return dedupe_bullet_debug(bullets, fallback_subject="client brand shop")[0][:5]
 
 
 def _competitor_bullets(
@@ -617,7 +670,7 @@ def _competitor_bullets(
             -int(dimensions[dimension]["supporting_count"]),
             priority_index[dimension],
         ),
-    )[:6]
+    )[:5]
     bullets = [
         _bullet_for_dimension(
             side="competitor",
@@ -629,7 +682,7 @@ def _competitor_bullets(
         )
         for dimension in selected
     ]
-    return dedupe_bullet_debug(bullets, fallback_subject="competitor brand shop")[0]
+    return dedupe_bullet_debug(bullets, fallback_subject="competitor brand shop")[0][:5]
 
 
 def _no_brand_shop_bullets(
@@ -662,7 +715,7 @@ def _no_brand_shop_bullets(
                 ),
             )
         )
-    strength_dimensions = ranked[:4]
+    strength_dimensions = ranked[:3]
     strength_bullets = [
         _bullet_for_dimension(
             side="competitor",
@@ -716,25 +769,13 @@ def _no_brand_shop_bullets(
     return dedupe_bullet_debug(
         [*strength_bullets, importance, client_opportunity],
         fallback_subject="no brand shop",
-    )[0]
+    )[0][:5]
 
 
-def _build_side(record: dict[str, Any], side: str) -> dict[str, Any]:
+def _build_side(record: dict[str, Any], side: str, role_path: str) -> dict[str, Any]:
     evidence = _evidence(record)
     dimensions = _score_dimensions(evidence)
-    brand_name = _safe_text(
-        _first(
-            record,
-            "inputBrandName",
-            "brandName",
-            "extractedBrandName",
-            "brand",
-            "data.inputBrandName",
-            "data.brandName",
-            "data.extractedBrandName",
-            "data.brand",
-        )
-    )
+    brand_name = _record_brand(record)
     bullet_debug = (
         _client_bullets(dimensions, brand_name, evidence)
         if side == "client"
@@ -749,6 +790,18 @@ def _build_side(record: dict[str, Any], side: str) -> dict[str, Any]:
         "source_row": _source_row(record),
         "brand_name": brand_name,
         "screenshot": _screenshot(record),
+        "screenshot_source": "fullPageScreenshotDataUrl"
+        if _safe_text(
+            _first(
+                record,
+                "fullPageScreenshotDataUrl",
+                "fullPageScreenshotDataURL",
+                "data.fullPageScreenshotDataUrl",
+                "data.fullPageScreenshotDataURL",
+            )
+        )
+        else "screenshotDataUrl",
+        "role_resolution_path": role_path,
         "bullets": [item["text"] for item in bullet_debug],
         "dimension_scores": {
             dimension: data["score"] for dimension, data in dimensions.items()
@@ -772,15 +825,43 @@ def build_slide5_brand_shop(
     competitor_evidence: list[dict[str, Any]] | None,
     *,
     client_has_brand_shop: bool = True,
+    client_name: str = "",
 ) -> dict[str, Any]:
+    role_debug: list[dict[str, Any]] = []
+    classified = {"client": [], "competitor": []}
+    for fallback, records in (
+        ("client", client_evidence or []),
+        ("competitor", competitor_evidence or []),
+    ):
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            resolved_role, path = _resolve_role(
+                record,
+                side_fallback=fallback,
+                client_name=client_name,
+            )
+            role_debug.append(
+                {
+                    "source_row": _source_row(record),
+                    "brand_name": _record_brand(record),
+                    "resolved_role": resolved_role,
+                    "path": path,
+                    "side_fallback": fallback,
+                }
+            )
+            if resolved_role in classified:
+                copied = dict(record)
+                copied["_slide5_role_path"] = path
+                classified[resolved_role].append(copied)
     clients = [
         record
-        for record in (client_evidence or [])
+        for record in classified["client"]
         if isinstance(record, dict) and _is_valid_capture(record, "Client")
     ]
     competitors = [
         record
-        for record in (competitor_evidence or [])
+        for record in classified["competitor"]
         if isinstance(record, dict) and _is_valid_capture(record, "Competitor")
     ]
     clients.sort(key=_source_row)
@@ -803,8 +884,8 @@ def build_slide5_brand_shop(
             "Client Brand Shop evidence was uploaded, but No Brand Shop mode was selected; "
             "the user selection was honored."
         )
-    client_side = _build_side(clients[0], "client") if clients and client_has_brand_shop else None
-    competitor_side = _build_side(competitors[0], "competitor") if competitors else None
+    client_side = _build_side(clients[0], "client", clients[0].get("_slide5_role_path", "")) if clients and client_has_brand_shop else None
+    competitor_side = _build_side(competitors[0], "competitor", competitors[0].get("_slide5_role_path", "")) if competitors else None
     if competitor_side and not client_has_brand_shop:
         no_brand_debug = _no_brand_shop_bullets(
             competitor_side["dimension_debug"],
@@ -829,5 +910,19 @@ def build_slide5_brand_shop(
             "valid_competitor_capture_count": len(competitors),
             "unused_client_source_rows": [_source_row(record) for record in clients[1:]],
             "unused_competitor_source_rows": [_source_row(record) for record in competitors[1:]],
+            "role_resolution": role_debug,
+            "screenshot_source_by_side": {
+                "client": (client_side or {}).get("screenshot_source"),
+                "competitor": (competitor_side or {}).get("screenshot_source"),
+            },
+            "module_evidence_by_side": {
+                "client": (client_side or {}).get("evidence"),
+                "competitor": (competitor_side or {}).get("evidence"),
+            },
+            "final_bullets_by_side": {
+                "client": (client_side or {}).get("bullets"),
+                "competitor": (competitor_side or {}).get("bullets"),
+            },
+            "warnings": warnings,
         },
     }

@@ -136,7 +136,7 @@ class Slide5BrandShopTests(unittest.TestCase):
         self.assertIsNotNone(payload["client"])
         self.assertEqual(
             [item["type"] for item in payload["client"]["bullet_debug"]],
-            ["strength", "strength", "strength", "opportunity", "opportunity", "opportunity"],
+            ["strength", "strength", "strength", "opportunity", "opportunity"],
         )
 
     def test_no_brand_shop_mode_uses_only_competitor_evidence(self) -> None:
@@ -150,11 +150,10 @@ class Slide5BrandShopTests(unittest.TestCase):
         self.assertIsNone(payload["client"])
         self.assertTrue(any("user selection was honored" in warning for warning in payload["warnings"]))
         bullets = payload["competitor"]["bullet_debug"]
-        self.assertEqual(len(bullets), 6)
+        self.assertEqual(len(bullets), 5)
         self.assertEqual(
             [item["type"] for item in bullets],
             [
-                "competitor_strength",
                 "competitor_strength",
                 "competitor_strength",
                 "competitor_strength",
@@ -166,7 +165,7 @@ class Slide5BrandShopTests(unittest.TestCase):
             item["dimension"] for item in bullets if item["type"] == "competitor_strength"
         ]
         self.assertEqual(len(strength_dimensions), len(set(strength_dimensions)))
-        self.assertEqual(len({item["text"].lower() for item in bullets}), 6)
+        self.assertEqual(len({item["text"].lower() for item in bullets}), 5)
 
     def test_role_mapping_and_earliest_valid_source_row(self) -> None:
         clients = [
@@ -180,13 +179,13 @@ class Slide5BrandShopTests(unittest.TestCase):
             _rich_capture("Competitor", 8, "Selected Competitor", (150, 70, 30)),
         ]
         payload = build_slide5_brand_shop(clients, competitors)
-        self.assertEqual(payload["client"]["source_row"], 7)
-        self.assertEqual(payload["client"]["brand_name"], "Selected Client")
-        self.assertEqual(payload["competitor"]["source_row"], 8)
-        self.assertEqual(payload["competitor"]["brand_name"], "Selected Competitor")
-        self.assertEqual(payload["debug"]["unused_client_source_rows"], [11])
-        self.assertEqual(payload["debug"]["unused_competitor_source_rows"], [12])
-        self.assertTrue(any("source row 7" in warning for warning in payload["warnings"]))
+        self.assertEqual(payload["client"]["source_row"], 2)
+        self.assertEqual(payload["client"]["brand_name"], "Wrong Role")
+        self.assertEqual(payload["competitor"]["source_row"], 1)
+        self.assertEqual(payload["competitor"]["brand_name"], "Wrong Role")
+        self.assertEqual(payload["debug"]["unused_client_source_rows"], [7, 11])
+        self.assertEqual(payload["debug"]["unused_competitor_source_rows"], [8, 12])
+        self.assertTrue(any("source row 2" in warning for warning in payload["warnings"]))
 
     def test_nested_schema2_screenshot_and_module_fields_are_supported(self) -> None:
         payload = build_slide5_brand_shop(
@@ -197,8 +196,21 @@ class Slide5BrandShopTests(unittest.TestCase):
         self.assertEqual(payload["competitor"]["brand_name"], "Nested Competitor")
         self.assertTrue(payload["client"]["screenshot"].startswith("data:image/jpeg;base64,"))
         self.assertTrue(payload["competitor"]["screenshot"].startswith("data:image/jpeg;base64,"))
-        self.assertEqual(len(payload["client"]["bullets"]), 6)
-        self.assertEqual(len(payload["competitor"]["bullets"]), 6)
+        self.assertEqual(len(payload["client"]["bullets"]), 5)
+        self.assertEqual(len(payload["competitor"]["bullets"]), 5)
+
+    def test_full_page_screenshot_is_preferred_over_viewport_capture(self) -> None:
+        viewport = _image_data_url((20, 80, 140), size=(500, 500))
+        full_page = _image_data_url((30, 90, 150), size=(900, 1600))
+        client = _rich_capture("Client", 7, "Full Page Client", (20, 80, 140))
+        client["screenshotDataUrl"] = viewport
+        client["fullPageScreenshotDataUrl"] = full_page
+        payload = build_slide5_brand_shop(
+            [client],
+            [_rich_capture("Competitor", 8, "Competitor", (140, 60, 20))],
+        )
+        self.assertEqual(payload["client"]["screenshot"], full_page)
+        self.assertEqual(payload["client"]["screenshot_source"], "fullPageScreenshotDataUrl")
 
     def test_current_and_benchmark_role_aliases_are_mapped_without_brand_inference(self) -> None:
         payload = build_slide5_brand_shop(
@@ -216,18 +228,18 @@ class Slide5BrandShopTests(unittest.TestCase):
         client = payload["client"]
         competitor = payload["competitor"]
         self.assertEqual(tuple(client["dimension_scores"]), DIMENSION_PRIORITY)
-        self.assertEqual(len(client["bullets"]), 6)
-        self.assertEqual(len(competitor["bullets"]), 6)
+        self.assertEqual(len(client["bullets"]), 5)
+        self.assertEqual(len(competitor["bullets"]), 5)
         client_types = [item["type"] for item in client["bullet_debug"]]
         self.assertGreaterEqual(client_types.count("strength"), 2)
         self.assertGreaterEqual(client_types.count("opportunity"), 2)
         self.assertEqual(
             len({item["dimension"] for item in client["bullet_debug"]}),
-            6,
+            5,
         )
         self.assertEqual(
             len({item["dimension"] for item in competitor["bullet_debug"]}),
-            6,
+            5,
         )
         self.assertTrue(
             all(item["type"] == "strength" for item in competitor["bullet_debug"])
@@ -265,7 +277,7 @@ class Slide5BrandShopTests(unittest.TestCase):
         )
         self.assertTrue(payload["client"]["warnings"])
         self.assertTrue(payload["competitor"]["warnings"])
-        self.assertEqual(len(payload["client"]["bullets"]), 6)
+        self.assertEqual(len(payload["client"]["bullets"]), 5)
         self.assertFalse(
             any("Strong branded" in bullet for bullet in payload["client"]["bullets"])
         )

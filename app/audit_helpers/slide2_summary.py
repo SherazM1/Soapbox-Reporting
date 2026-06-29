@@ -74,9 +74,109 @@ FALLBACK_BULLET_IDS: dict[str, tuple[str, str, str]] = {
     ),
 }
 
+SLIDE2_MAX_BULLET_CHARS = 72
+
 
 def _safe_text(value: Any) -> str:
     return str(value or "").strip()
+
+
+def _shorten_slide2_bullet(text: str, *, hard_limit: int = SLIDE2_MAX_BULLET_CHARS) -> str:
+    clean = " ".join(_safe_text(text).split())
+    replacements = (
+        ("Opportunity to strengthen", "Strengthens"),
+        ("Opportunity to expand", "Expands"),
+        ("Opportunity to clarify", "Clarifies"),
+        ("Opportunity to", "Can"),
+        ("creates room for", "supports"),
+        ("conversion-focused", "conversion"),
+        ("Walmart shopper", "shopper"),
+        ("shopper confidence", "confidence"),
+        ("category discoverability", "discoverability"),
+        ("educational merchandising", "education"),
+    )
+    for old, new in replacements:
+        clean = clean.replace(old, new)
+    if len(clean) <= hard_limit:
+        return clean
+    words = clean.split()
+    while words and len(" ".join(words)) > hard_limit:
+        words.pop()
+    shortened = " ".join(words).rstrip(" ,;-")
+    return shortened or clean[:hard_limit].rsplit(" ", 1)[0].rstrip(" ,;-")
+
+
+def _dedupe_and_fit_slide2_sections(sections: dict[str, dict[str, Any]]) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
+    original: dict[str, list[str]] = {
+        key: list(section.get("bullets", []) or [])
+        for key, section in sections.items()
+        if isinstance(section, dict)
+    }
+    deduped: dict[str, list[str]] = {}
+    shortened: dict[str, list[str]] = {}
+    final: dict[str, list[str]] = {}
+    dropped: dict[str, list[str]] = {}
+    used: set[str] = set()
+
+    for section_key, section in sections.items():
+        if not isinstance(section, dict):
+            continue
+        deduped[section_key] = []
+        shortened[section_key] = []
+        final[section_key] = []
+        dropped[section_key] = []
+        for bullet in section.get("bullets", []) or []:
+            clean = _safe_text(bullet)
+            if not clean:
+                continue
+            normalized = normalize_bullet_text(clean)
+            if normalized in used or any(
+                normalized and (normalized in existing or existing in normalized)
+                for existing in used
+            ):
+                dropped[section_key].append(clean)
+                continue
+            used.add(normalized)
+            deduped[section_key].append(clean)
+            shortened_text = _shorten_slide2_bullet(clean)
+            shortened[section_key].append(shortened_text)
+            if len(final[section_key]) < 4:
+                final[section_key].append(shortened_text)
+            else:
+                dropped[section_key].append(clean)
+
+        section["bullets"] = final[section_key]
+        selected_debug = []
+        final_norms = [normalize_bullet_text(value) for value in final[section_key]]
+        for normalized in final_norms:
+            match = next(
+                (
+                    item
+                    for item in section.get("bullet_debug", []) or []
+                    if normalize_bullet_text(_shorten_slide2_bullet(item.get("text", ""))) == normalized
+                ),
+                None,
+            )
+            if match:
+                copied = dict(match)
+                copied["text"] = _shorten_slide2_bullet(copied.get("text", ""))
+                selected_debug.append(copied)
+        section["bullet_debug"] = selected_debug
+        section["bullet_fit_debug"] = {
+            "original_candidates": original.get(section_key, []),
+            "deduped_bullets": deduped[section_key],
+            "shortened_bullets": shortened[section_key],
+            "dropped_bullets": dropped[section_key],
+            "final_rendered_bullets": final[section_key],
+        }
+
+    return sections, {
+        "original_candidate_bullets": original,
+        "deduped_bullets": deduped,
+        "shortened_bullets": shortened,
+        "dropped_bullets": dropped,
+        "final_rendered_bullets": final,
+    }
 
 
 def _blob(records: list[dict[str, Any]]) -> str:
@@ -719,6 +819,7 @@ def build_slide2_summary_payload(
             warnings=competitive_warnings,
         ),
     }
+    sections, fit_debug = _dedupe_and_fit_slide2_sections(sections)
     debug_warnings = []
     for section in sections.values():
         debug_warnings.extend(section.get("debug_warnings", []) or [])
@@ -730,5 +831,6 @@ def build_slide2_summary_payload(
             "primary_record_count": len(primary_records),
             "competitor_record_count": len(competitor_records),
             "warnings": debug_warnings,
+            "bullet_fit": fit_debug,
         },
     }

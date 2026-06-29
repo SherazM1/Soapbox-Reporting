@@ -245,9 +245,9 @@ class Slide4IntegrationTest(unittest.TestCase):
             for sample in ("Honest", "CeraVe", "Jergens"):
                 self.assertNotIn(sample, all_text)
             self.assertNotIn("{{", all_text)
-            self.assertIn("10 PDP images create room for stronger story sequencing", all_text)
-            self.assertIn("High review volume strengthens shopper confidence", all_text)
+            self.assertIn("10 PDP images support stronger story sequencing", all_text)
             self.assertIn("Pack and nutrition details support fast comparison shopping", all_text)
+            self.assertIn("Peanut Butter cues connect to breakfast, snack, and pantry occasions", all_text)
 
             pictures = [shape for shape in slide4.shapes if hasattr(shape, "image")]
             self.assertEqual(len(pictures), 23)
@@ -324,7 +324,7 @@ class Slide4IntegrationTest(unittest.TestCase):
         )
         self.assertEqual(payload["columns"][1]["label"], "Only Competitor")
         self.assertFalse(payload["columns"][2]["active"])
-        self.assertIn("Competitor 2", payload["hidden_columns"])
+        self.assertIn("Competitor 2", [item["label"] for item in payload["hidden_columns"]])
         self.assertEqual(payload["columns"][2]["ordered_images"], [])
         self.assertEqual(payload["columns"][2]["bullets"], [])
 
@@ -375,14 +375,14 @@ class Slide4IntegrationTest(unittest.TestCase):
             payload = build_slide4_pdp_benchmark_payload(plan, competitor_records=[competitor_1])
             client_bullets = payload["columns"][0]["bullets"]
             competitor_bullets = payload["columns"][1]["bullets"]
-            self.assertEqual(len(client_bullets), 6)
-            self.assertEqual(len(competitor_bullets), 6)
+            self.assertEqual(len(client_bullets), 4)
+            self.assertEqual(len(competitor_bullets), 4)
             self.assertFalse(set(client_bullets) & set(competitor_bullets))
             self.assertEqual(len(client_bullets + competitor_bullets), len(set(client_bullets + competitor_bullets)))
             self.assertTrue(any("Hazelnut-and-cocoa" in bullet for bullet in client_bullets))
             self.assertTrue(any("breakfast" in bullet.lower() or "recipe" in bullet.lower() for bullet in client_bullets))
             self.assertTrue(any("peanut butter" in bullet.lower() for bullet in competitor_bullets))
-            self.assertTrue(any("review volume" in bullet for bullet in competitor_bullets))
+            self.assertTrue(any("PDP images support stronger story sequencing" in bullet for bullet in competitor_bullets))
             forbidden = " ".join(client_bullets + competitor_bullets).lower()
             for term in ("sales", "rank", "share of search", "best-in-class"):
                 self.assertNotIn(term, forbidden)

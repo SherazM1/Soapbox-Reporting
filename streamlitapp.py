@@ -21,7 +21,6 @@ from audit_analyze import analyze_primary_record
 from audit_export import build_audit_export_plan
 from audit_generate import generate_mvp_outputs_for_primary_entry, is_output_shell_empty
 from audit_models import create_audit_result_record
-from audit_powerpoint import generate_audit_powerpoint_from_template, resolve_audit_template_path
 from audit_powerpoint_new import build_slide4_pdp_benchmark_payload, generate_new_audit_powerpoint_from_template
 from audit_style_guides import load_style_guides, match_style_guide_rule
 from audit_helpers import (
@@ -892,7 +891,7 @@ def render_combined_strategic_audit_upload_v2() -> None:
                 for error in result.get("errors", []):
                     st.error(_combined_message_text(error))
                 st.info(
-                    "Use the Current Audit Template to access the existing separate legacy upload workflow."
+                    "This workflow supports only the combined strategic audit HTML report."
                 )
             elif result.get("schema_version") != "2.0":
                 for error in result.get("errors", []):
@@ -1000,6 +999,93 @@ def _render_local_image_analysis(record: dict[str, Any]) -> None:
             st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
         else:
             st.caption("No PDP images were available for local analysis.")
+
+
+def render_strategic_evidence_summary_v2() -> None:
+    primary_entries = st.session_state.get("audit_primary_entries", []) or []
+    competitor_entries = st.session_state.get("audit_competitor_entries", []) or []
+    search_evidence = st.session_state.get("audit_search_evidence", {}) or {}
+    brand_shop_evidence = st.session_state.get("audit_brand_shop_evidence", {}) or {}
+
+    with st.expander("Strategic Evidence Summary", expanded=False):
+        metric_values = (
+            ("Client PDPs", len(primary_entries)),
+            ("Competitor PDPs", len(competitor_entries)),
+            ("Current searches", len(search_evidence.get("current", []) or [])),
+            ("Benchmark searches", len(search_evidence.get("benchmark", []) or [])),
+            ("Client Brand Shops", len(brand_shop_evidence.get("client", []) or [])),
+            ("Competitor Brand Shops", len(brand_shop_evidence.get("competitor", []) or [])),
+        )
+        for row_start in range(0, len(metric_values), 3):
+            columns = st.columns(3)
+            for column, (label, value) in zip(columns, metric_values[row_start : row_start + 3]):
+                column.metric(label, value)
+
+        pdp_rows = []
+        for role, entries in (("Client", primary_entries), ("Competitor", competitor_entries)):
+            for entry in entries:
+                record = entry.get("cached_record", entry) or {}
+                reviews = record.get("reviews_summary", {}) or {}
+                pdp_rows.append(
+                    {
+                        "Role": role,
+                        "Product Title": entry.get("product_title") or record.get("product_title", ""),
+                        "Brand": record.get("brand", ""),
+                        "Item ID": entry.get("item_id") or record.get("item_id", ""),
+                        "Image Count": record.get("image_count", 0),
+                        "Average Rating": reviews.get("average_rating"),
+                        "Review Count": reviews.get("review_count") or reviews.get("ratings_count"),
+                        "Extraction Status": record.get("extraction_status", ""),
+                    }
+                )
+        if pdp_rows:
+            st.markdown("##### PDP Evidence")
+            st.dataframe(pd.DataFrame(pdp_rows), hide_index=True, use_container_width=True)
+        else:
+            st.caption("No PDP evidence has been loaded yet.")
+
+        search_rows = []
+        for group_key, label in (("current", "Current"), ("benchmark", "Benchmark")):
+            for record in search_evidence.get(group_key, []) or []:
+                results = _evidence_value(record, "results", "organicResults", default=[]) or []
+                search_rows.append(
+                    {
+                        "Group": label,
+                        "Source Row": _evidence_value(record, "sourceRow", "source_row"),
+                        "Query": _evidence_value(record, "query", "searchQuery"),
+                        "Results": len(results) if isinstance(results, list) else 0,
+                        "Screenshot Available": bool(
+                            _evidence_value(record, "screenshotDataUrl", "screenshot.dataUrl")
+                        ),
+                    }
+                )
+        if search_rows:
+            st.markdown("##### Search Evidence")
+            st.dataframe(pd.DataFrame(search_rows), hide_index=True, use_container_width=True)
+
+        brand_shop_rows = []
+        for group_key, label in (("client", "Client"), ("competitor", "Competitor")):
+            for record in brand_shop_evidence.get(group_key, []) or []:
+                modules = _evidence_value(record, "modules", "structuredModules", default=[]) or []
+                brand_shop_rows.append(
+                    {
+                        "Role": label,
+                        "Source Row": _evidence_value(record, "sourceRow", "source_row"),
+                        "Brand Name": _evidence_value(record, "inputBrandName", "brandName", "brand"),
+                        "Module Count": _evidence_value(
+                            record,
+                            "moduleCount",
+                            default=len(modules) if isinstance(modules, list) else 0,
+                        ),
+                        "Screenshot Available": bool(
+                            _evidence_value(record, "screenshotDataUrl", "screenshot.dataUrl")
+                        ),
+                        "Extraction Status": _evidence_value(record, "status", "extractionStatus"),
+                    }
+                )
+        if brand_shop_rows:
+            st.markdown("##### Brand Shop Evidence")
+            st.dataframe(pd.DataFrame(brand_shop_rows), hide_index=True, use_container_width=True)
 
 
 def _render_slide4_finding_preview_v2(plan: dict[str, Any]) -> None:
@@ -2596,7 +2682,7 @@ def _seed_mock_results_for_products_v2(entries: list[dict]) -> None:
 
 def _refresh_audit_export_plan_v2() -> None:
     entries = st.session_state.get("audit_primary_entries", []) or []
-    competitor_assignments = st.session_state.get("audit_competitor_assignments", []) or []
+    competitor_assignments: list[dict[str, Any]] = []
     competitor_records = st.session_state.get("audit_competitor_entries", []) or []
     audit_record = st.session_state.get("audit_result_record", {}) or {}
 
@@ -2629,7 +2715,7 @@ def render_generate_audit_v2() -> None:
     entries = st.session_state.get("audit_primary_entries", [])
     with st.container(border=True):
         st.markdown("### Generate Audit")
-        st.caption("Generate deterministic MVP audit outputs for each primary product entry.")
+        st.caption("Build the strategic audit export plan from the combined evidence.")
         generate = st.button(
             "Generate Audit",
             key="audit_v2_generate",
@@ -2646,7 +2732,7 @@ def render_generate_audit_v2() -> None:
                 audit_date=str(st.session_state.get("audit_date", date.today())),
                 status="generated_mvp",
                 product_audit_entries=entries,
-                competitor_graphics_assignments=st.session_state.get("audit_competitor_assignments", []),
+                competitor_graphics_assignments=[],
             )
             _refresh_audit_export_plan_v2()
             st.session_state["audit_generated"] = True
@@ -2739,27 +2825,27 @@ def render_audit_powerpoint_export_v2() -> None:
             summary = plan.get("summary", {})
             st.write(
                 f"Included primary entries: {summary.get('included_primary_entry_count', 0)} | "
-                f"Slide pairs: {summary.get('product_slide_pair_count', 0)} | "
-                f"Mapped slides: {summary.get('total_mapped_slides', 0)} | "
-                f"Competitor graphics assignments: {summary.get('competitor_graphics_assignment_count', 0)}"
+                f"Client PDPs: {len(st.session_state.get('audit_primary_entries', []) or [])} | "
+                f"Competitor PDPs: {len(st.session_state.get('audit_competitor_entries', []) or [])}"
             )
             st.caption(
-                "Each included primary product audit entry maps to one repeated slide pair "
-                "(PDP/Image/Info + Content Optimization). Competitor graphics remain shared/audit-level."
+                "The strategic deck uses combined HTML evidence for Slides 2, 3, 4, 5, and 6."
             )
             compact = {
                 "audit_metadata": plan.get("audit_metadata", {}),
-                "summary": summary,
-                "product_pair_overview": [
-                    {
-                        "pair_order": p.get("pair_order"),
-                        "product_entry_id": p.get("product_entry_id"),
-                        "record_id": p.get("record_id"),
-                        "selected_primary_image": p.get("pdp_slide", {}).get("selected_primary_image", {}),
-                    }
-                    for p in plan.get("product_slide_pairs", [])
-                ],
-                "competitor_graphics_payload": plan.get("competitor_graphics_payload", {}),
+                "summary": {
+                    "included_primary_entry_count": summary.get("included_primary_entry_count", 0),
+                    "client_pdp_count": len(st.session_state.get("audit_primary_entries", []) or []),
+                    "competitor_pdp_count": len(st.session_state.get("audit_competitor_entries", []) or []),
+                },
+                "search_evidence_counts": {
+                    "current": len((plan.get("search_evidence", {}) or {}).get("current", []) or []),
+                    "benchmark": len((plan.get("search_evidence", {}) or {}).get("benchmark", []) or []),
+                },
+                "brand_shop_evidence_counts": {
+                    "client": len((plan.get("brand_shop_evidence", {}) or {}).get("client", []) or []),
+                    "competitor": len((plan.get("brand_shop_evidence", {}) or {}).get("competitor", []) or []),
+                },
             }
             st.json(compact)
 
@@ -2773,47 +2859,29 @@ def render_audit_powerpoint_export_v2() -> None:
     if included_count <= 0:
         st.info("Include at least one primary product entry to generate the audit PowerPoint.")
         return
-    template_version = st.session_state.get(
-        "audit_template_version",
-        "Current Audit Template",
+    include_slide_9 = st.checkbox(
+        "Include Slide 9 (Walmart Cash Program Visibility)",
+        value=False,
+        key="audit_include_slide_9",
     )
-    st.caption(f"Template Version: {template_version}")
-    
-    # Slide 9 option for new strategic template
-    include_slide_9 = False
-    if template_version == "New Strategic Template":
-        include_slide_9 = st.checkbox(
-            "Include Slide 9 (Walmart Cash Program Visibility)",
-            value=False,
-            key="audit_include_slide_9",
-        )
     
     try:
-        if template_version == "New Strategic Template":
-            template_path = os.path.join("templates", "Audit_Template_New.pptx")
-            if not os.path.exists(template_path):
-                raise FileNotFoundError(template_path)
-        else:
-            template_path = resolve_audit_template_path()
+        template_path = os.path.join("templates", "Audit_Template_New.pptx")
+        if not os.path.exists(template_path):
+            raise FileNotFoundError(template_path)
     except Exception as exc:
         st.error(f"Audit template not found: {exc}")
         return
 
     if st.button("Generate Audit PowerPoint", key="audit_v2_generate_ppt", type="primary"):
         try:
-            if template_version == "New Strategic Template":
-                competitor_records = st.session_state.get("audit_competitor_entries", []) or []
-                ppt_bytes = generate_new_audit_powerpoint_from_template(
-                    export_plan=plan,
-                    template_path=template_path,
-                    include_slide_9=include_slide_9,
-                    competitor_records=competitor_records,
-                )
-            else:
-                ppt_bytes = generate_audit_powerpoint_from_template(
-                    export_plan=plan,
-                    template_path=template_path,
-                )
+            competitor_records = st.session_state.get("audit_competitor_entries", []) or []
+            ppt_bytes = generate_new_audit_powerpoint_from_template(
+                export_plan=plan,
+                template_path=template_path,
+                include_slide_9=include_slide_9,
+                competitor_records=competitor_records,
+            )
             st.session_state["audit_ppt_bytes"] = ppt_bytes
             st.session_state["audit_ppt_filename"] = (
                 f"audit_{st.session_state.get('audit_client_name', 'client').strip() or 'client'}"
@@ -2836,48 +2904,30 @@ def render_audit_powerpoint_export_v2() -> None:
 
 def render_content_auditing() -> None:
     _init_audit_state()
+    st.session_state["audit_template_version"] = "New Strategic Template"
 
     top_l, top_r = st.columns([1, 6])
     with top_l:
         st.button("Back to Hub", key="audit_back_home", on_click=go_home)
     with top_r:
         st.title("Content Auditing")
-        st.caption("Workspace for building first-pass PDP audits and recommendations.")
+        st.caption("Workspace for generating the strategic audit deck from the combined HTML report.")
 
     st.header("Audit Setup")
     render_audit_setup()
-    template_version = st.selectbox(
-        "Template Version",
-        ["Current Audit Template", "New Strategic Template"],
-        key="audit_template_version",
+    st.checkbox(
+        "Client has a Walmart Brand Shop",
+        value=True,
+        key="audit_client_has_brand_shop",
     )
-    if template_version == "New Strategic Template":
-        st.checkbox(
-            "Client has a Walmart Brand Shop",
-            value=True,
-            key="audit_client_has_brand_shop",
-        )
     st.divider()
 
-    if template_version == "New Strategic Template":
-        render_combined_strategic_audit_upload_v2()
-    else:
-        primary_upload_col, competitor_upload_col = st.columns(2)
-        with primary_upload_col:
-            st.header("Primary Products")
-            render_primary_pdp_upload_v2()
-        with competitor_upload_col:
-            st.header("Competitor Graphics")
-            render_competitor_pdp_upload_v2()
-
-    render_extracted_primary_product_entries_v2()
-    st.divider()
-
-    render_extracted_competitor_entries_v2()
+    st.header("Combined Audit Evidence Upload")
+    render_combined_strategic_audit_upload_v2()
+    render_strategic_evidence_summary_v2()
     st.divider()
 
     render_generate_audit_v2()
-    render_mocked_audit_results_v2()
     st.divider()
 
     st.header("PowerPoint Export")

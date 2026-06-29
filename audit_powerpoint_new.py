@@ -18,6 +18,7 @@ from app.audit_helpers.image_guides import (
     load_image_guide,
     resolve_image_guide_category,
 )
+from app.audit_helpers.bullet_uniqueness import normalize_bullet_text
 from app.audit_helpers.slide4_findings import build_slide4_group_findings
 from audit_powerpoint import _format_cover_date
 
@@ -538,7 +539,7 @@ def _append_unique_bullet(
     used: set[str],
 ) -> None:
     clean = _safe_text(text)
-    key = clean.lower()
+    key = normalize_bullet_text(clean)
     if not clean or key in used:
         return
     used.add(key)
@@ -599,6 +600,50 @@ def _build_slide4_evidence_bullets(
             reason="Product title, description, or features reference peanut butter/protein cues.",
             used=used,
         )
+    if facts["image_count"] >= 6:
+        _append_unique_bullet(
+            bullets,
+            debug,
+            text=f"{facts['image_count']} PDP images support stronger story sequencing",
+            bullet_type="opportunity",
+            dimension="image_sequence",
+            signals=[f"{facts['image_count']}_images"],
+            reason="Image count indicates enough carousel depth to sequence shopper education.",
+            used=used,
+        )
+    if _has_any(blob, "nutrition", "calories", "protein", "ingredients") or _has_any(image_blob, "nutrition", "ingredient"):
+        _append_unique_bullet(
+            bullets,
+            debug,
+            text="Pack and nutrition details support fast comparison shopping",
+            bullet_type="strength",
+            dimension="nutrition_detail",
+            signals=["nutrition", "ingredients"],
+            reason="Nutrition, ingredient, or pack-detail terms were detected in PDP evidence.",
+            used=used,
+        )
+    if _has_any(blob, "breakfast", "snack", "recipe", "toast", "pantry"):
+        _append_unique_bullet(
+            bullets,
+            debug,
+            text=f"{product_phrase.title()} cues connect to breakfast, snack, and pantry occasions",
+            bullet_type="strength",
+            dimension="usage_occasions",
+            signals=["breakfast/snack/pantry"],
+            reason="Usage occasion language was present in title, description, or features.",
+            used=used,
+        )
+    else:
+        _append_unique_bullet(
+            bullets,
+            debug,
+            text=f"{product_phrase.title()} can connect to clearer usage occasions",
+            bullet_type="opportunity",
+            dimension="usage_occasions",
+            signals=["limited_usage_language"],
+            reason="No clear breakfast, snack, recipe, or pantry use-case language was detected.",
+            used=used,
+        )
     if facts["review_count"] >= 100:
         _append_unique_bullet(
             bullets,
@@ -632,55 +677,11 @@ def _build_slide4_evidence_bullets(
             reason="Sold/shipped by Walmart signals were present in PDP evidence.",
             used=used,
         )
-    if facts["image_count"] >= 6:
-        _append_unique_bullet(
-            bullets,
-            debug,
-            text=f"{facts['image_count']} PDP images create room for stronger story sequencing",
-            bullet_type="opportunity",
-            dimension="image_sequence",
-            signals=[f"{facts['image_count']}_images"],
-            reason="Image count indicates enough carousel depth to sequence shopper education.",
-            used=used,
-        )
-    if _has_any(blob, "nutrition", "calories", "protein", "ingredients") or _has_any(image_blob, "nutrition", "ingredient"):
-        _append_unique_bullet(
-            bullets,
-            debug,
-            text="Pack and nutrition details support fast comparison shopping",
-            bullet_type="strength",
-            dimension="nutrition_detail",
-            signals=["nutrition", "ingredients"],
-            reason="Nutrition, ingredient, or pack-detail terms were detected in PDP evidence.",
-            used=used,
-        )
-    if _has_any(blob, "breakfast", "snack", "recipe", "toast", "pantry"):
-        _append_unique_bullet(
-            bullets,
-            debug,
-            text=f"{product_phrase.title()} cues connect to breakfast, snack, and pantry occasions",
-            bullet_type="strength",
-            dimension="usage_occasions",
-            signals=["breakfast/snack/pantry"],
-            reason="Usage occasion language was present in title, description, or features.",
-            used=used,
-        )
-    else:
-        _append_unique_bullet(
-            bullets,
-            debug,
-            text=f"Opportunity to connect {product_phrase} with clearer usage occasions",
-            bullet_type="opportunity",
-            dimension="usage_occasions",
-            signals=["limited_usage_language"],
-            reason="No clear breakfast, snack, recipe, or pantry use-case language was detected.",
-            used=used,
-        )
     if not _has_any(image_blob, "recipe", "serving", "lifestyle", "breakfast", "snack"):
         _append_unique_bullet(
             bullets,
             debug,
-            text="Opportunity to expand recipe and lifestyle imagery",
+            text="Recipe and lifestyle imagery can strengthen usage cues",
             bullet_type="opportunity",
             dimension="visual_storytelling",
             signals=["limited_recipe_lifestyle_image_hints"],
@@ -691,7 +692,7 @@ def _build_slide4_evidence_bullets(
         _append_unique_bullet(
             bullets,
             debug,
-            text="Opportunity to strengthen enhanced brand storytelling",
+            text="Enhanced brand storytelling can add shopper education",
             bullet_type="opportunity",
             dimension="enhanced_content",
             signals=["ebc_not_present"],
@@ -708,14 +709,14 @@ def _build_slide4_evidence_bullets(
             "Fallback used brand/product-type evidence to avoid generic duplicate wording.",
         ),
         (
-            "Opportunity to clarify the opening product sequence",
+            "Opening product sequence can clarify shopper priorities",
             "opportunity",
             "opening_sequence",
             ["opening_sequence"],
             "Controlled fallback opportunity used when richer evidence was limited.",
         ),
         (
-            "Opportunity to strengthen shopper education across the carousel",
+            "Carousel education can strengthen shopper guidance",
             "opportunity",
             "shopper_education",
             ["carousel_education"],
@@ -749,8 +750,8 @@ def _build_slide4_evidence_bullets(
             reason=reason,
             used=used,
         )
-    if len(bullets) < 6:
-        for index in range(len(bullets), 6):
+    if len(bullets) < 4:
+        for index in range(len(bullets), 4):
             _append_unique_bullet(
                 bullets,
                 debug,
@@ -761,9 +762,9 @@ def _build_slide4_evidence_bullets(
                 reason="Last-resort side-specific fallback used to fill the existing template bullet structure without duplicates.",
                 used=used,
             )
-    if len(bullets) < 6:
+    if len(bullets) < 4:
         warnings.append("Slide 4 used restrained fallback bullets because PDP evidence was sparse.")
-    return bullets[:6], debug[:6], warnings
+    return bullets[:4], debug[:4], warnings
 
 
 def _build_slide4_bullets(images: list[dict[str, Any]], guide_match: dict[str, Any]) -> list[str]:
@@ -835,7 +836,7 @@ def _build_slide4_column(
         ]
         for bullet in finding_bullets:
             existing_bullet_texts.add(bullet.lower())
-        evidence_bullets = finding_bullets[:6] or _build_slide4_bullets(images, guide_match)
+        evidence_bullets = finding_bullets[:4] or _build_slide4_bullets(images, guide_match)
     return {
         "label": _safe_text(_first_value(record, "brand", "Brand", "brandName")) or fallback_label,
         "brand": _safe_text(_first_value(record, "brand", "Brand", "brandName")),
@@ -851,7 +852,7 @@ def _build_slide4_column(
         "sold_by_walmart": _truthy_evidence(_first_value(record, "sold_by_walmart", "Sold by Walmart")),
         "shipped_by_walmart": _truthy_evidence(_first_value(record, "shipped_by_walmart", "Shipped by Walmart")),
         "image_guide_match": guide_match,
-        "bullets": evidence_bullets[:6],
+        "bullets": evidence_bullets[:4],
         "bullet_debug": bullet_debug,
         "warnings": warnings,
         "findings": findings,
@@ -904,19 +905,55 @@ def build_slide4_pdp_benchmark_payload(
         )
         for index in range(2)
     ]
+    active_competitors = [column for column in competitor_columns if column.get("active")]
+    layout_mode = "2-column" if len(active_competitors) == 1 else "3-column"
     hidden_columns = [
-        column["label"]
+        {
+            "label": column["label"],
+            "reason": "No PDP evidence was available.",
+        }
         for column in competitor_columns
         if not column.get("active")
     ]
+    columns = [client_column, *competitor_columns]
+    all_bullets: set[str] = set()
+    removed_duplicates: list[dict[str, str]] = []
+    for column in columns:
+        final_bullets = []
+        for bullet in column.get("bullets", []) or []:
+            normalized = normalize_bullet_text(bullet)
+            if normalized in all_bullets:
+                removed_duplicates.append({"column": column.get("label", ""), "bullet": bullet})
+                continue
+            all_bullets.add(normalized)
+            final_bullets.append(bullet)
+        column["bullets"] = final_bullets[:4]
     return {
-        "columns": [client_column, *competitor_columns],
+        "columns": columns,
         "slide4_findings": slide4_findings,
         "hidden_columns": hidden_columns,
+        "layout_mode": layout_mode,
         "warnings": [
-            f"{label} was cleared because no PDP evidence was available."
-            for label in hidden_columns
+            f"{item['label']} was cleared because no PDP evidence was available."
+            for item in hidden_columns
         ],
+        "debug": {
+            "layout_mode": layout_mode,
+            "hidden_columns": hidden_columns,
+            "resolved_labels": [column.get("label", "") for column in columns],
+            "resolved_category": client_column.get("category", ""),
+            "resolved_product_type": client_column.get("product_type", ""),
+            "evidence_used_per_bullet": {
+                column.get("label", f"column_{index + 1}"): column.get("bullet_debug", [])
+                for index, column in enumerate(columns)
+            },
+            "bullets_removed_for_duplication": removed_duplicates,
+            "ocr_usage": False,
+            "final_bullets": {
+                column.get("label", f"column_{index + 1}"): column.get("bullets", [])
+                for index, column in enumerate(columns)
+            },
+        },
     }
 
 
@@ -951,6 +988,28 @@ def _replace_bullet_shape_text(shape: Any, bullets: list[str]) -> None:
         _replace_paragraph_text_preserve_style(
             paragraph, bullets[index] if index < len(bullets) else ""
         )
+
+
+def _fit_bullet_shape_text(shape: Any, bullets: list[str], *, max_lines: int = 4) -> dict[str, Any]:
+    final_bullets = [bullet for bullet in bullets if _safe_text(bullet)][:max_lines]
+    font_fallback = None
+    if sum(len(bullet) for bullet in final_bullets) > 250:
+        dropped = final_bullets[-1:]
+        final_bullets = final_bullets[:-1]
+    else:
+        dropped = []
+    if sum(len(bullet) for bullet in final_bullets) > 220:
+        font_fallback = 10
+        shape.text_frame.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
+        for paragraph in shape.text_frame.paragraphs:
+            for run in paragraph.runs:
+                run.font.size = Pt(font_fallback)
+    _replace_bullet_shape_text(shape, final_bullets)
+    return {
+        "rendered": final_bullets,
+        "dropped": dropped,
+        "font_fallback": font_fallback,
+    }
 
 
 def _slide3_side_shapes(prs: Any, slide: Any) -> dict[str, dict[str, Any]]:
@@ -1166,6 +1225,8 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
     columns = list(payload.get("columns", []) or [])[:3]
     while len(columns) < 3:
         columns.append({"label": f"Competitor {len(columns)}", "ordered_images": [], "bullets": []})
+    active_indices = [index for index, column in enumerate(columns) if column.get("active", True)]
+    layout_mode = payload.get("layout_mode") or ("2-column" if len(active_indices) == 2 else "3-column")
 
     for shape in _walk_shapes(slide.shapes):
         if not getattr(shape, "has_text_frame", False):
@@ -1192,6 +1253,14 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
         (int(shape.left), int(shape.top), int(shape.width), int(shape.height))
         for shape in containers
     ]
+    label_bounds = [
+        (int(shape.left), int(shape.top), int(shape.width), int(shape.height))
+        for shape in labels
+    ]
+    bullet_bounds = [
+        (int(shape.left), int(shape.top), int(shape.width), int(shape.height))
+        for shape in bullets
+    ]
     for shape in containers:
         _remove_shape(shape)
     for shape in list(slide.shapes):
@@ -1205,16 +1274,27 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
         ):
             _remove_shape(shape)
 
-    for index, column in enumerate(columns):
+    if layout_mode == "2-column" and len(active_indices) == 2:
+        target_indices = [0, 2]
+        for inactive_index in range(3):
+            _replace_shape_text_preserve_style(labels[inactive_index], "")
+            _replace_bullet_shape_text(bullets[inactive_index], [])
+        render_pairs = list(zip(target_indices, [columns[index] for index in active_indices]))
+    else:
+        render_pairs = [(index, column) for index, column in enumerate(columns)]
+
+    for target_index, column in render_pairs:
         if not column.get("active", True):
-            _replace_shape_text_preserve_style(labels[index], "")
-            _replace_bullet_shape_text(bullets[index], [])
+            _replace_shape_text_preserve_style(labels[target_index], "")
+            _replace_bullet_shape_text(bullets[target_index], [])
             continue
-        _replace_shape_text_preserve_style(labels[index], column.get("label", ""))
-        _fit_slide4_label(labels[index])
-        _replace_bullet_shape_text(bullets[index], list(column.get("bullets", []) or []))
-        left, top, width, height = container_bounds[index]
-        bullet_top = int(bullets[index].top)
+        labels[target_index].left, labels[target_index].top, labels[target_index].width, labels[target_index].height = label_bounds[target_index]
+        bullets[target_index].left, bullets[target_index].top, bullets[target_index].width, bullets[target_index].height = bullet_bounds[target_index]
+        _replace_shape_text_preserve_style(labels[target_index], column.get("label", ""))
+        _fit_slide4_label(labels[target_index])
+        _fit_bullet_shape_text(bullets[target_index], list(column.get("bullets", []) or []), max_lines=4)
+        left, top, width, height = container_bounds[target_index]
+        bullet_top = int(bullets[target_index].top)
         height = max(1, min(height, bullet_top - Inches(0.05) - top))
         _populate_slide4_carousel(
             slide,
@@ -1355,7 +1435,7 @@ def _apply_slide5_no_brand_shop(
         for value in (competitor.get("bullets", []) or [])
         if _safe_text(value)
     ]
-    if image_bytes is None or len(bullets) != 6:
+    if image_bytes is None or len(bullets) != 5:
         print(
             "[audit_powerpoint_new] Slide 5 No Brand Shop payload was incomplete; "
             "the slide was left unchanged."
@@ -1447,11 +1527,11 @@ def _apply_slide5_brand_shop(prs: Any, slide: Any, payload: dict[str, Any]) -> N
                 )
             else:
                 _remove_shape(picture)
-        if len(bullets) == 6:
+        if len(bullets) == 5:
             _replace_bullet_shape_text(bullet_shape, bullets)
         else:
             print(
-                f"[audit_powerpoint_new] Slide 5 {side} did not contain exactly six bullets; "
+                f"[audit_powerpoint_new] Slide 5 {side} did not contain exactly five bullets; "
                 "the template bullet box was preserved."
             )
 
@@ -1473,37 +1553,39 @@ def _apply_slide2_summary(slide: Any, payload: dict[str, Any]) -> None:
     if not payload:
         return
     shapes = _slide2_text_shapes(slide)
-    intro_copy = _safe_text(payload.get("intro_copy"))
-    if intro_copy:
+    phrases = payload.get("phrases", {}) or {}
+    category_phrase = _safe_text(phrases.get("category_phrase"))
+    left_replaced = False
+    if category_phrase:
         intro_shape = next(
             (
                 shape
                 for shape in shapes
-                if _shape_contains_any(
+                if int(getattr(shape, "left", 0) or 0) < Inches(5.0)
+                and _shape_contains_any(
                     shape,
                     (
-                        "has built strong consumer trust",
-                        "the next opportunity is translating",
-                        "clean lifestyle categories",
+                        "baby care and clean lifestyle categories",
                     ),
                 )
             ),
             None,
         )
-        if intro_shape is None:
-            intro_candidates = [
-                shape
-                for shape in shapes
-                if int(getattr(shape, "left", 0) or 0) < Inches(5.0)
-                and int(getattr(shape, "top", 0) or 0) >= Inches(2.0)
-                and int(getattr(shape, "height", 0) or 0) >= Inches(1.0)
-            ]
-            intro_shape = sorted(
-                intro_candidates,
-                key=lambda shape: int(getattr(shape, "top", 0) or 0),
-            )[0] if intro_candidates else None
         if intro_shape is not None:
-            _replace_shape_text_preserve_style(intro_shape, intro_copy)
+            text = _shape_text(intro_shape)
+            updated = text.replace(
+                "baby care and clean lifestyle categories",
+                category_phrase,
+            )
+            if updated != text:
+                _replace_shape_text_preserve_style(intro_shape, updated)
+                left_replaced = True
+    payload.setdefault("debug", {})["left_category_phrase_replacement_succeeded"] = left_replaced
+    if category_phrase and not left_replaced:
+        print(
+            "[audit_powerpoint_new] Slide 2 category phrase anchor was not found; "
+            "left paragraph was left unchanged."
+        )
 
     sections = payload.get("sections", {}) or {}
     rating_shapes = sorted(
@@ -1550,7 +1632,8 @@ def _apply_slide2_summary(slide: Any, payload: dict[str, Any]) -> None:
             for bullet in ((sections.get(section_key, {}) or {}).get("bullets", []) or [])
             if _safe_text(bullet)
         ]
-        _replace_bullet_shape_text(bullet_shapes[index], bullets[:4])
+        fit_debug = _fit_bullet_shape_text(bullet_shapes[index], bullets[:4], max_lines=4)
+        payload.setdefault("debug", {}).setdefault("render_fit", {})[section_key] = fit_debug
 
 
 def _replace_cell_text_preserve_style(cell: Any, text: str) -> None:

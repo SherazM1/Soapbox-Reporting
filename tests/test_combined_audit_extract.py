@@ -591,8 +591,8 @@ class CombinedAuditExtractTests(unittest.TestCase):
         self.assertIn("slide4_findings", plan)
         self.assertIn("slide5_brand_shop", plan)
         self.assertIn("slide6_visibility", plan)
-        self.assertEqual(len(plan["slide5_brand_shop"]["client"]["bullets"]), 6)
-        self.assertEqual(len(plan["slide5_brand_shop"]["competitor"]["bullets"]), 6)
+        self.assertEqual(len(plan["slide5_brand_shop"]["client"]["bullets"]), 5)
+        self.assertEqual(len(plan["slide5_brand_shop"]["competitor"]["bullets"]), 5)
         self.assertEqual(len(plan["search_evidence"]["all"]), 2)
         self.assertEqual(len(plan["brand_shop_evidence"]["all"]), 2)
         self.assertEqual(
