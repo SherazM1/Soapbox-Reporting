@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import unicodedata
+import base64
 from datetime import date
 import io
 from typing import Any
@@ -21,7 +22,7 @@ from audit_export import build_audit_export_plan
 from audit_generate import generate_mvp_outputs_for_primary_entry, is_output_shell_empty
 from audit_models import create_audit_result_record
 from audit_powerpoint import generate_audit_powerpoint_from_template, resolve_audit_template_path
-from audit_powerpoint_new import generate_new_audit_powerpoint_from_template
+from audit_powerpoint_new import build_slide4_pdp_benchmark_payload, generate_new_audit_powerpoint_from_template
 from audit_style_guides import load_style_guides, match_style_guide_rule
 from audit_helpers import (
     build_competitor_assignments,
@@ -1006,6 +1007,50 @@ def _render_slide4_finding_preview_v2(plan: dict[str, Any]) -> None:
     if not findings_by_group:
         return
     with st.expander("Slide 4 Finding Preview", expanded=False):
+        slide4_payload = build_slide4_pdp_benchmark_payload(
+            plan or {},
+            competitor_records=st.session_state.get("audit_competitor_entries", []) or [],
+        )
+        for warning in slide4_payload.get("warnings", []) or []:
+            st.warning(warning)
+        hidden = slide4_payload.get("hidden_columns", []) or []
+        if hidden:
+            st.caption(f"Hidden competitor sections: {', '.join(hidden)}")
+        for index, column in enumerate(slide4_payload.get("columns", []) or [], start=1):
+            side_label = "Client" if index == 1 else f"Competitor {index - 1}"
+            st.markdown(f"##### {side_label}: {column.get('label') or '-'}")
+            if not column.get("active", True):
+                st.caption("This section will be cleared because no PDP evidence was selected.")
+                continue
+            st.caption(
+                f"Product: {column.get('product_title') or '-'} | "
+                f"Product ID: {column.get('product_id') or '-'} | "
+                f"Brand: {column.get('brand') or '-'} | "
+                f"Product type: {column.get('product_type') or '-'}"
+            )
+            st.caption(
+                f"Images: {column.get('image_count', 0)} | "
+                f"Rating: {column.get('average_rating') or '-'} | "
+                f"Reviews: {column.get('review_count') or 0} | "
+                f"EBC present: {'Yes' if column.get('ebc_present') else 'No'} | "
+                f"Sold by Walmart: {'Yes' if column.get('sold_by_walmart') else 'No'} | "
+                f"Shipped by Walmart: {'Yes' if column.get('shipped_by_walmart') else 'No'}"
+            )
+            bullet_rows = [
+                {
+                    "Bullet": item.get("text", ""),
+                    "Type": item.get("type", ""),
+                    "Dimension": item.get("dimension", ""),
+                    "Signals": ", ".join(item.get("signals", []) or []),
+                    "Reason": item.get("reason", ""),
+                }
+                for item in column.get("bullet_debug", []) or []
+            ]
+            if bullet_rows:
+                st.dataframe(pd.DataFrame(bullet_rows), hide_index=True, use_container_width=True)
+            for warning in column.get("warnings", []) or []:
+                st.warning(warning)
+        st.markdown("##### Majority image-analysis findings")
         for key, findings in findings_by_group.items():
             if not isinstance(findings, dict):
                 continue
@@ -1102,7 +1147,24 @@ def _render_slide3_search_benchmark_preview_v2(plan: dict[str, Any]) -> None:
             )
             st.caption(
                 f"Screenshot available: {'Yes' if side_payload.get('screenshot') else 'No'} | "
+                f"Products captured: {side_payload.get('product_count', 0) or 0} | "
+                f"Client brand used for matching: {side_payload.get('client_brand') or '-'} | "
                 f"Bullets: {len(side_payload.get('bullets', []) or [])}"
+            )
+            st.caption(
+                "Client products found: "
+                + (
+                    ", ".join(
+                        f"#{item.get('position')}: {item.get('title') or item.get('brand')}"
+                        for item in (side_payload.get("client_products", []) or [])
+                    )
+                    or "-"
+                )
+            )
+            st.caption(
+                f"Top brands: {', '.join(side_payload.get('top_brands', []) or []) or '-'} | "
+                f"Badges detected: {', '.join(side_payload.get('badges', []) or []) or '-'} | "
+                f"Review counts: {', '.join(str(value) for value in (side_payload.get('review_counts', []) or [])) or '-'}"
             )
             dimension_rows = []
             for dimension, score in (side_payload.get("dimension_scores", {}) or {}).items():
@@ -1173,6 +1235,22 @@ def _render_slide5_brand_shop_preview_v2(plan: dict[str, Any]) -> None:
     payload = (plan or {}).get("slide5_brand_shop", {}) or {}
     if not payload:
         return
+
+    def _screenshot_status(value: Any) -> str:
+        screenshot = str(value or "").strip()
+        if not screenshot:
+            return "Missing"
+        if not screenshot.lower().startswith("data:image/") or "," not in screenshot:
+            return "Invalid data URL"
+        header, encoded = screenshot.split(",", 1)
+        if ";base64" not in header.lower():
+            return "Invalid data URL"
+        try:
+            base64.b64decode(encoded, validate=True)
+        except Exception:
+            return "Decode failed"
+        return "Decodable"
+
     with st.expander("Slide 5 Brand Shop Preview", expanded=False):
         mode = payload.get("mode", "standard")
         st.caption(
@@ -1193,7 +1271,9 @@ def _render_slide5_brand_shop_preview_v2(plan: dict[str, Any]) -> None:
             st.caption(
                 f"Selected Competitor source row: {competitor.get('source_row')} | "
                 f"Brand: {competitor.get('brand_name') or '-'} | "
-                f"Screenshot available: {'Yes' if competitor.get('screenshot') else 'No'}"
+                f"Screenshot available: {'Yes' if competitor.get('screenshot') else 'No'} | "
+                f"Decoded image status: {_screenshot_status(competitor.get('screenshot'))} | "
+                "Placement: centered No Brand Shop competitor image area"
             )
             dimension_rows = []
             for dimension, score in (competitor.get("dimension_scores", {}) or {}).items():
@@ -1239,7 +1319,9 @@ def _render_slide5_brand_shop_preview_v2(plan: dict[str, Any]) -> None:
             st.caption(
                 f"Source row: {side.get('source_row')} | "
                 f"Brand: {side.get('brand_name') or '-'} | "
-                f"Screenshot available: {'Yes' if side.get('screenshot') else 'No'}"
+                f"Screenshot available: {'Yes' if side.get('screenshot') else 'No'} | "
+                f"Decoded image status: {_screenshot_status(side.get('screenshot'))} | "
+                f"Placement: {'left Current Structure' if side_key == 'client' else 'right Competitive Benchmark'}"
             )
             dimensions = side.get("dimension_scores", {}) or {}
             dimension_debug = side.get("dimension_debug", {}) or {}

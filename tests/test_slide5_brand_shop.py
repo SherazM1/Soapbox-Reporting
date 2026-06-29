@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import contextlib
 import io
 import unittest
 from pathlib import Path
@@ -93,6 +94,17 @@ def _weak_capture(role: str, row: int) -> dict:
     }
 
 
+def _nested_capture(role: str, row: int, brand: str, color: tuple[int, int, int]) -> dict:
+    data = _rich_capture(role, row, brand, color)
+    return {
+        "sourceRow": row,
+        "role": role,
+        "originalRole": role,
+        "status": "success",
+        "data": data,
+    }
+
+
 def _slide5(prs: Presentation):
     return next(
         slide
@@ -175,6 +187,26 @@ class Slide5BrandShopTests(unittest.TestCase):
         self.assertEqual(payload["debug"]["unused_client_source_rows"], [11])
         self.assertEqual(payload["debug"]["unused_competitor_source_rows"], [12])
         self.assertTrue(any("source row 7" in warning for warning in payload["warnings"]))
+
+    def test_nested_schema2_screenshot_and_module_fields_are_supported(self) -> None:
+        payload = build_slide5_brand_shop(
+            [_nested_capture("Client", 7, "Nested Client", (20, 80, 140))],
+            [_nested_capture("Competitor", 8, "Nested Competitor", (140, 60, 20))],
+        )
+        self.assertEqual(payload["client"]["brand_name"], "Nested Client")
+        self.assertEqual(payload["competitor"]["brand_name"], "Nested Competitor")
+        self.assertTrue(payload["client"]["screenshot"].startswith("data:image/jpeg;base64,"))
+        self.assertTrue(payload["competitor"]["screenshot"].startswith("data:image/jpeg;base64,"))
+        self.assertEqual(len(payload["client"]["bullets"]), 6)
+        self.assertEqual(len(payload["competitor"]["bullets"]), 6)
+
+    def test_current_and_benchmark_role_aliases_are_mapped_without_brand_inference(self) -> None:
+        payload = build_slide5_brand_shop(
+            [_rich_capture("Current", 7, "Current Alias", (20, 80, 140))],
+            [_rich_capture("Benchmark", 8, "Benchmark Alias", (140, 60, 20))],
+        )
+        self.assertEqual(payload["client"]["brand_name"], "Current Alias")
+        self.assertEqual(payload["competitor"]["brand_name"], "Benchmark Alias")
 
     def test_all_dimensions_and_exact_bullet_composition(self) -> None:
         payload = build_slide5_brand_shop(
@@ -333,6 +365,80 @@ class Slide5BrandShopTests(unittest.TestCase):
             if str(shape.shape_type).endswith("TEXT_BOX (17)")
         )
         self.assertEqual(text_box_count, source_text_box_count)
+
+    @unittest.skipUnless(NEW_TEMPLATE.exists(), "New strategic template is unavailable")
+    def test_powerpoint_inserts_nested_schema2_brand_shop_screenshots(self) -> None:
+        source = Presentation(str(NEW_TEMPLATE))
+        source_slide = _slide5(source)
+        source_picture_blobs = [
+            shape.image.blob
+            for shape in sorted(
+                [shape for shape in source_slide.shapes if hasattr(shape, "image")],
+                key=lambda shape: shape.left,
+            )
+        ]
+        payload = build_slide5_brand_shop(
+            [_nested_capture("Client", 7, "Nested Client", (20, 80, 140))],
+            [_nested_capture("Competitor", 8, "Nested Competitor", (140, 60, 20))],
+        )
+        generated = Presentation(
+            io.BytesIO(
+                generate_new_audit_powerpoint_from_template(
+                    export_plan={
+                        "audit_metadata": {"client_name": "Test"},
+                        "slide5_brand_shop": payload,
+                    },
+                    template_path=str(NEW_TEMPLATE),
+                    include_slide_9=True,
+                )
+            )
+        )
+        pictures = sorted(
+            [shape for shape in _slide5(generated).shapes if hasattr(shape, "image")],
+            key=lambda shape: shape.left,
+        )
+        self.assertEqual(len(pictures), 2)
+        self.assertNotEqual(pictures[0].image.blob, source_picture_blobs[0])
+        self.assertNotEqual(pictures[1].image.blob, source_picture_blobs[1])
+
+    @unittest.skipUnless(NEW_TEMPLATE.exists(), "New strategic template is unavailable")
+    def test_bad_screenshot_data_warns_and_preserves_template_picture(self) -> None:
+        source = Presentation(str(NEW_TEMPLATE))
+        source_slide = _slide5(source)
+        source_picture_blobs = [
+            shape.image.blob
+            for shape in sorted(
+                [shape for shape in source_slide.shapes if hasattr(shape, "image")],
+                key=lambda shape: shape.left,
+            )
+        ]
+        bad_client = _rich_capture("Client", 7, "Bad Client", (20, 80, 140))
+        bad_client["screenshotDataUrl"] = "data:image/png;base64,not-valid"
+        payload = build_slide5_brand_shop(
+            [bad_client],
+            [_rich_capture("Competitor", 8, "Good Competitor", (140, 60, 20))],
+        )
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            generated = Presentation(
+                io.BytesIO(
+                    generate_new_audit_powerpoint_from_template(
+                        export_plan={
+                            "audit_metadata": {"client_name": "Test"},
+                            "slide5_brand_shop": payload,
+                        },
+                        template_path=str(NEW_TEMPLATE),
+                        include_slide_9=True,
+                    )
+                )
+            )
+        self.assertIn("screenshot was invalid", output.getvalue())
+        pictures = sorted(
+            [shape for shape in _slide5(generated).shapes if hasattr(shape, "image")],
+            key=lambda shape: shape.left,
+        )
+        self.assertEqual(pictures[0].image.blob, source_picture_blobs[0])
+        self.assertNotEqual(pictures[1].image.blob, source_picture_blobs[1])
 
     @unittest.skipUnless(NEW_TEMPLATE.exists(), "New strategic template is unavailable")
     def test_missing_side_preserves_that_template_side(self) -> None:

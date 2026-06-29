@@ -3,6 +3,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from app.audit_helpers.bullet_uniqueness import dedupe_bullet_debug
+
 
 DIMENSION_PRIORITY = (
     "brand_presentation",
@@ -108,7 +110,15 @@ def _first(record: dict[str, Any], *keys: str, default: Any = "") -> Any:
 
 
 def _source_row(record: dict[str, Any]) -> int:
-    raw = _first(record, "sourceRow", "rowNumber", "_combined_source_index", default=10**9)
+    raw = _first(
+        record,
+        "sourceRow",
+        "rowNumber",
+        "data.sourceRow",
+        "data.rowNumber",
+        "_combined_source_index",
+        default=10**9,
+    )
     try:
         return int(raw)
     except (TypeError, ValueError):
@@ -116,9 +126,24 @@ def _source_row(record: dict[str, Any]) -> int:
 
 
 def _role(record: dict[str, Any]) -> str:
-    return _safe_text(
-        _first(record, "role", "inputRole", "sourceRole", "input.role")
+    role = _safe_text(
+        _first(
+            record,
+            "role",
+            "inputRole",
+            "sourceRole",
+            "originalRole",
+            "input.role",
+            "source.role",
+            "data.role",
+            "data.originalRole",
+        )
     ).lower()
+    if role == "current":
+        return "client"
+    if role == "benchmark":
+        return "competitor"
+    return role
 
 
 def _screenshot(record: dict[str, Any]) -> str:
@@ -127,20 +152,34 @@ def _screenshot(record: dict[str, Any]) -> str:
             record,
             "screenshotDataUrl",
             "screenshotDataURL",
+            "data.screenshotDataUrl",
+            "data.screenshotDataURL",
             "screenshot.dataUrl",
             "screenshot.dataURL",
+            "data.screenshot.dataUrl",
+            "data.screenshot.dataURL",
             "screenshot",
+            "data.screenshot",
         )
     )
 
 
 def _modules(record: dict[str, Any]) -> list[dict[str, Any]]:
-    raw = _first(record, "modules", "structuredModules", "moduleDetails", default=[])
+    raw = _first(
+        record,
+        "modules",
+        "structuredModules",
+        "moduleDetails",
+        "data.modules",
+        "data.structuredModules",
+        "data.moduleDetails",
+        default=[],
+    )
     return [item for item in _as_list(raw) if isinstance(item, dict)]
 
 
 def _status(record: dict[str, Any]) -> str:
-    return _normalize(_first(record, "extractionStatus", "status"))
+    return _normalize(_first(record, "extractionStatus", "status", "data.extractionStatus", "data.status"))
 
 
 def _is_valid_capture(record: dict[str, Any], expected_role: str) -> bool:
@@ -175,14 +214,28 @@ def _module_type(module: dict[str, Any]) -> str:
 def _evidence(record: dict[str, Any]) -> dict[str, Any]:
     modules = _modules(record)
     module_types = [_module_type(module) for module in modules if _module_type(module)]
+    explicit_module_types = _as_list(_first(record, "moduleTypes", "data.moduleTypes", default=[]))
+    module_types = list(dict.fromkeys([*module_types, *[_safe_text(value) for value in explicit_module_types if _safe_text(value)]]))
     normalized_types = [_normalize(value) for value in module_types]
-    headings = _record_texts(record, "editorialHeadings", "headings", "titles")
+    headings = _record_texts(
+        record,
+        "editorialHeadings",
+        "headings",
+        "titles",
+        "data.editorialHeadings",
+        "data.headings",
+        "data.titles",
+    )
     descriptions = _record_texts(
         record,
         "descriptions",
         "editorialDescriptions",
         "promotionalCopy",
         "copy",
+        "data.descriptions",
+        "data.editorialDescriptions",
+        "data.promotionalCopy",
+        "data.copy",
     )
     module_headings = [
         text
@@ -194,9 +247,21 @@ def _evidence(record: dict[str, Any]) -> dict[str, Any]:
         "categoryNavigation",
         "categoryNavigationItems",
         "categories",
+        "data.categoryNavigation",
+        "data.categoryNavigationItems",
+        "data.categories",
     )
     destination_links = _as_list(
-        _first(record, "destinationLinks", "links", "navigationLinks", default=[])
+        _first(
+            record,
+            "destinationLinks",
+            "links",
+            "navigationLinks",
+            "data.destinationLinks",
+            "data.links",
+            "data.navigationLinks",
+            default=[],
+        )
     )
     normalized_links: list[dict[str, str]] = []
     for link in destination_links:
@@ -208,23 +273,24 @@ def _evidence(record: dict[str, Any]) -> dict[str, Any]:
             url = _safe_text(link)
         if label or url:
             normalized_links.append({"label": label, "url": url})
-    videos = _record_texts(record, "videoTitles", "videos")
+    videos = _record_texts(record, "videoTitles", "videos", "data.videoTitles", "data.videos")
     for module in modules:
         if "video" in _normalize(_module_type(module)):
             title = _safe_text(_first(module, "title", "heading", "name"))
             if title:
                 videos.append(title)
-    product_count = _first(record, "productCount", default=None)
+    product_count = _first(record, "productCount", "data.productCount", default=None)
     if product_count in (None, ""):
-        products = _as_list(_first(record, "products", "productTiles", default=[]))
+        products = _as_list(_first(record, "products", "productTiles", "data.products", "data.productTiles", default=[]))
         product_count = len(products)
     try:
         product_count = int(product_count or 0)
     except (TypeError, ValueError):
         product_count = 0
-    video_present = bool(_first(record, "videoPresent", "hasVideo", default=False))
+    video_present = bool(_first(record, "videoPresent", "hasVideo", "data.videoPresent", "data.hasVideo", default=False))
     return {
         "modules": modules,
+        "module_count": int(_first(record, "moduleCount", "data.moduleCount", default=len(modules)) or len(modules)),
         "module_types": module_types,
         "normalized_types": normalized_types,
         "headings": list(dict.fromkeys([*headings, *module_headings])),
@@ -418,10 +484,13 @@ def _bullet_for_dimension(
     categories = _short_phrase(evidence["categories"])
     topic = _short_phrase([*evidence["headings"], *evidence["descriptions"]], 1)
     video_title = _short_phrase(evidence["videos"], 1)
+    module_count = int(evidence.get("module_count", 0) or len(evidence.get("module_types", []) or []))
+    product_count = int(evidence.get("product_count", 0) or 0)
+    module_phrase = _short_phrase(evidence.get("module_types", []) or [], 2)
     strength_templates = {
         "brand_presentation": (
             "brand_strength_01",
-            f"{brand_name} maintains a clear visual identity" if brand_name else "Strong branded hero presentation",
+            f"{brand_name} uses hero modules to anchor brand context" if brand_name and module_phrase else "Hero and module structure anchors brand context",
         ),
         "lifestyle_merchandising": (
             "lifestyle_strength_02",
@@ -433,7 +502,7 @@ def _bullet_for_dimension(
         ),
         "product_discovery": (
             "product_strength_01",
-            "Product carousels create clear discovery pathways",
+            f"Product modules organize {product_count} items into clearer shopper entry points" if product_count else "Product modules create clearer shopper entry points",
         ),
         "educational_storytelling": (
             "education_strength_02",
@@ -445,26 +514,26 @@ def _bullet_for_dimension(
         ),
         "cross_category_navigation": (
             "cross_strength_02",
-            "Multiple category pathways encourage brand exploration",
+            f"{categories} pathways encourage broader brand exploration" if categories else "Multiple pathways encourage broader brand exploration",
         ),
     }
     opportunity_templates = {
-        "brand_presentation": ("brand_opportunity_01", "Opportunity to strengthen branded hero storytelling"),
-        "lifestyle_merchandising": ("lifestyle_opportunity_01", "Opportunity to expand lifestyle-led merchandising"),
-        "category_segmentation": ("category_opportunity_02", "Opportunity to expand category segmentation"),
-        "product_discovery": ("product_opportunity_01", "Opportunity to expand product discovery pathways"),
-        "educational_storytelling": ("education_opportunity_01", "Opportunity to deepen educational storytelling"),
-        "video_rich_media": ("video_opportunity_01", "Opportunity to introduce video-led education"),
-        "cross_category_navigation": ("cross_opportunity_01", "Opportunity to expand cross-category pathways"),
+        "brand_presentation": ("brand_opportunity_01", "Hero structure can do more brand-storytelling work"),
+        "lifestyle_merchandising": ("lifestyle_opportunity_01", "Lifestyle modules could connect products to shopper occasions"),
+        "category_segmentation": ("category_opportunity_02", "Category navigation can make spread varieties easier to compare"),
+        "product_discovery": ("product_opportunity_01", "Product discovery can surface more variants and use cases"),
+        "educational_storytelling": ("education_opportunity_01", "Education modules can deepen benefit and usage storytelling"),
+        "video_rich_media": ("video_opportunity_01", "Rich-media gaps create room for deeper shopper education"),
+        "cross_category_navigation": ("cross_opportunity_01", "Cross-category paths can connect routines, needs, and basket ideas"),
     }
     restrained_benchmark_templates = {
-        "brand_presentation": ("brand_benchmark_basic", "Basic branded content establishes shop identity"),
-        "lifestyle_merchandising": ("lifestyle_benchmark_basic", "Static editorial content supports brand context"),
-        "category_segmentation": ("category_benchmark_basic", "Foundational category grouping supports exploration"),
-        "product_discovery": ("product_benchmark_basic", "Product presentation provides a discovery foundation"),
-        "educational_storytelling": ("education_benchmark_basic", "Available copy provides basic product context"),
-        "video_rich_media": ("video_benchmark_basic", "Static rich content supports product discovery"),
-        "cross_category_navigation": ("cross_benchmark_basic", "Available links provide a basic navigation path"),
+        "brand_presentation": ("brand_benchmark_basic", f"{module_count} modules establish a basic shop identity"),
+        "lifestyle_merchandising": ("lifestyle_benchmark_basic", "Static editorial modules provide light brand context"),
+        "category_segmentation": ("category_benchmark_basic", "Category grouping provides a basic exploration path"),
+        "product_discovery": ("product_benchmark_basic", "Product presentation gives shoppers a starting point"),
+        "educational_storytelling": ("education_benchmark_basic", "Available copy gives shoppers basic product context"),
+        "video_rich_media": ("video_benchmark_basic", "Static rich content supports product browsing"),
+        "cross_category_navigation": ("cross_benchmark_basic", "Available links create a basic navigation path"),
     }
     if bullet_type == "opportunity":
         template_id, text = opportunity_templates[dimension]
@@ -508,7 +577,7 @@ def _client_bullets(
             priority_index[dimension],
         ),
     )[:3]
-    return [
+    bullets = [
         *(
             _bullet_for_dimension(
                 side="client",
@@ -532,6 +601,7 @@ def _client_bullets(
             for dimension in opportunities
         ),
     ]
+    return dedupe_bullet_debug(bullets, fallback_subject="client brand shop")[0]
 
 
 def _competitor_bullets(
@@ -548,7 +618,7 @@ def _competitor_bullets(
             priority_index[dimension],
         ),
     )[:6]
-    return [
+    bullets = [
         _bullet_for_dimension(
             side="competitor",
             bullet_type="strength",
@@ -559,6 +629,7 @@ def _competitor_bullets(
         )
         for dimension in selected
     ]
+    return dedupe_bullet_debug(bullets, fallback_subject="competitor brand shop")[0]
 
 
 def _no_brand_shop_bullets(
@@ -642,14 +713,27 @@ def _no_brand_shop_bullets(
             "Selected because the user confirmed the Client does not have a Walmart Brand Shop."
         ),
     }
-    return [*strength_bullets, importance, client_opportunity]
+    return dedupe_bullet_debug(
+        [*strength_bullets, importance, client_opportunity],
+        fallback_subject="no brand shop",
+    )[0]
 
 
 def _build_side(record: dict[str, Any], side: str) -> dict[str, Any]:
     evidence = _evidence(record)
     dimensions = _score_dimensions(evidence)
     brand_name = _safe_text(
-        _first(record, "inputBrandName", "brandName", "extractedBrandName", "brand")
+        _first(
+            record,
+            "inputBrandName",
+            "brandName",
+            "extractedBrandName",
+            "brand",
+            "data.inputBrandName",
+            "data.brandName",
+            "data.extractedBrandName",
+            "data.brand",
+        )
     )
     bullet_debug = (
         _client_bullets(dimensions, brand_name, evidence)
@@ -673,6 +757,7 @@ def _build_side(record: dict[str, Any], side: str) -> dict[str, Any]:
         "bullet_debug": bullet_debug,
         "warnings": warnings,
         "evidence": {
+            "module_count": evidence["module_count"],
             "module_types": evidence["module_types"],
             "categories": evidence["categories"],
             "headings": evidence["headings"],

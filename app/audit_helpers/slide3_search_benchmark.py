@@ -5,6 +5,8 @@ from statistics import median
 from typing import Any
 from urllib.parse import parse_qsl, unquote_plus, urlparse
 
+from app.audit_helpers.bullet_uniqueness import make_unique_bullet_text
+
 
 CURRENT_BULLET_BANK = {
     "brand_presence": {
@@ -165,13 +167,20 @@ def _coerce_list(value: Any) -> list[Any]:
 
 def _get_first(record: dict[str, Any], *keys: str, default: Any = "") -> Any:
     for key in keys:
-        if key in record and record.get(key) not in (None, "", [], {}):
-            return record.get(key)
+        current: Any = record
+        found = True
+        for part in key.split("."):
+            if not isinstance(current, dict) or part not in current:
+                found = False
+                break
+            current = current[part]
+        if found and current not in (None, "", [], {}):
+            return current
     return default
 
 
 def _source_row(record: dict[str, Any]) -> int:
-    raw = _get_first(record, "sourceRow", "rowNumber", default=10**9)
+    raw = _get_first(record, "sourceRow", "rowNumber", "data.sourceRow", "data.rowNumber", default=10**9)
     try:
         return int(raw)
     except (TypeError, ValueError):
@@ -179,14 +188,30 @@ def _source_row(record: dict[str, Any]) -> int:
 
 
 def _role(record: dict[str, Any]) -> str:
-    return _safe_text(_get_first(record, "role", "inputRole", "sourceRole", default="")).strip()
+    role = _safe_text(
+        _get_first(
+            record,
+            "role",
+            "inputRole",
+            "sourceRole",
+            "originalRole",
+            "data.role",
+            "data.originalRole",
+            default="",
+        )
+    ).strip()
+    if role.lower() == "client":
+        return "Current"
+    if role.lower() == "competitor":
+        return "Benchmark"
+    return role
 
 
 def _is_valid_capture(record: dict[str, Any]) -> bool:
     role = _role(record)
     if role not in {"Current", "Benchmark"}:
         return False
-    if not any([_safe_text(_get_first(record, "searchTerm", "Search Term", "search term", "label", default="")), _safe_text(_get_first(record, "URL", "url", default="")), _safe_text(_get_first(record, "screenshotDataUrl", "screenshotDataURL", "screenshot", default=""))]):
+    if not any([_safe_text(_get_first(record, "searchTerm", "Search Term", "search term", "label", "data.searchTerm", "data.label", default="")), _safe_text(_get_first(record, "URL", "url", "searchUrl", "data.URL", "data.url", "data.searchUrl", default="")), _safe_text(_get_first(record, "screenshotDataUrl", "screenshotDataURL", "data.screenshotDataUrl", "data.screenshotDataURL", "screenshot.dataUrl", "data.screenshot.dataUrl", "screenshot", default=""))]):
         return False
     return True
 
@@ -208,17 +233,17 @@ def _select_earliest_valid(records: list[dict[str, Any]], role: str) -> tuple[di
     warnings: list[str] = []
     if len(valid) > 1:
         warnings.append(
-            f"{role} evidence included multiple valid captures; selected source row {_source_row(selected)} as the earliest valid row."
+        f"{role} evidence included multiple valid captures; selected source row {_source_row(selected)} as the earliest valid source row."
         )
     return selected, valid, warnings
 
 
 def _resolve_search_term(record: dict[str, Any]) -> str:
-    for key in ("searchTerm", "Search Term", "search term", "label"):
+    for key in ("searchTerm", "Search Term", "search term", "label", "data.searchTerm", "data.label", "data.search.term"):
         term = _normalize_term(_get_first(record, key, default=""))
         if term:
             return term
-    url = _safe_text(_get_first(record, "URL", "url", "searchUrl", default=""))
+    url = _safe_text(_get_first(record, "URL", "url", "searchUrl", "data.URL", "data.url", "data.searchUrl", default=""))
     if url:
         parsed = urlparse(url)
         for key in ("q", "query", "search"):
@@ -236,6 +261,11 @@ def _resolve_search_term(record: dict[str, Any]) -> str:
             "pageText",
             "extractedText",
             "text",
+            "data.ocrText",
+            "data.visibleText",
+            "data.pageText",
+            "data.extractedText",
+            "data.text",
             default="",
         )
     )
@@ -254,6 +284,8 @@ def _category_phrase(search_term: str) -> str:
     phrase_words = words[:]
     if phrase_words[-1] in {"products", "product", "items", "item", "categories", "category"}:
         phrase_words = phrase_words[:-1]
+    if not phrase_words:
+        return "category search"
     if phrase_words[-1] in {"spread", "product", "item", "butter"}:
         phrase_words[-1] = f"{phrase_words[-1]}s"
     if phrase_words[-1] in {"search", "results"}:
@@ -282,8 +314,19 @@ def _client_brand_matches(client_brand: str, product: dict[str, Any]) -> bool:
 
 
 def _main_products(record: dict[str, Any]) -> list[dict[str, Any]]:
-    for key in ("orderedMainResultProducts", "orderedMainResultProducts", "mainResultProducts", "products", "orderedProducts"):
-        raw = record.get(key, [])
+    for key in (
+        "orderedMainResultProducts",
+        "mainResultProducts",
+        "products",
+        "orderedProducts",
+        "capturedProducts",
+        "data.orderedMainResultProducts",
+        "data.mainResultProducts",
+        "data.products",
+        "data.orderedProducts",
+        "data.capturedProducts",
+    ):
+        raw = _get_first(record, key, default=[])
         if isinstance(raw, list) and raw:
             return [item for item in raw if isinstance(item, dict)]
     return []
@@ -414,6 +457,97 @@ def _select_bullets(side: str, scores: dict[str, str], products: list[dict[str, 
     bullets: list[str] = []
     bullet_debug: list[dict[str, Any]] = []
     seen_dimensions: set[str] = set()
+    used_texts: set[str] = set()
+    brands = _top_brands(products)
+    badges = _badges(products)
+    review_counts = _review_counts(products)
+    client_positions = [
+        _product_position(product, index)
+        for index, product in enumerate(products, start=1)
+        if _client_brand_matches(client_brand, product)
+    ]
+    search_brand_phrase = ", ".join(brands[:3])
+    median_reviews = int(median(review_counts)) if review_counts else 0
+
+    def add(text: str, dimension: str, score: str, signals: list[str], reason: str, template_id: str) -> None:
+        if len(bullets) >= 5:
+            return
+        unique_text, changed = make_unique_bullet_text(text, used_texts, fallback_subject=f"{side} search")
+        bullets.append(unique_text)
+        if changed:
+            signals = [*signals, "duplicate_bullet_reworded"]
+        bullet_debug.append(
+            {
+                "text": unique_text,
+                "side": side,
+                "dimension": dimension,
+                "score": score,
+                "template_id": template_id,
+                "signals": signals,
+                "supporting_count": len(products),
+                "reason": reason,
+            }
+        )
+        if dimension != "fallback":
+            seen_dimensions.add(dimension)
+
+    if side == "current":
+        if client_positions:
+            add(
+                f"{client_brand} appears around position {min(client_positions)} in captured results",
+                "client_brand_presence",
+                scores.get("client_brand_presence", "Unknown"),
+                [f"client_position={min(client_positions)}"],
+                "Selected because the client brand was found in captured search products.",
+                "current_client_position",
+            )
+        elif client_brand:
+            add(
+                f"{client_brand} is not visible in the captured leading results",
+                "client_brand_presence",
+                "Missing",
+                ["client_not_found"],
+                "Selected because the client brand was not found in captured products.",
+                "current_client_missing",
+            )
+        if badges:
+            add(
+                f"{badges[0]} badge visibility shapes the captured search shelf",
+                "badge_promotional_visibility",
+                scores.get("badge_promotional_visibility", "Limited"),
+                badges[:3],
+                "Selected because badges or promotional labels were detected.",
+                "current_badge_visibility",
+            )
+        if median_reviews:
+            add(
+                f"Median review count near {median_reviews} sets a shopper-confidence benchmark",
+                "review_authority",
+                scores.get("review_authority", "Limited"),
+                [f"median_reviews={median_reviews}"],
+                "Selected because review counts were captured in search results.",
+                "current_review_context",
+            )
+    else:
+        if search_brand_phrase:
+            add(
+                f"{search_brand_phrase} create a broader competitive search set",
+                "assortment_breadth",
+                scores.get("assortment_breadth", "Limited"),
+                brands[:3],
+                "Selected because multiple benchmark brands were captured.",
+                "benchmark_top_brands",
+            )
+        if median_reviews:
+            add(
+                f"Review counts around {median_reviews} show varied authority across benchmark results",
+                "review_authority",
+                scores.get("review_authority", "Limited"),
+                [f"median_reviews={median_reviews}"],
+                "Selected because benchmark products included review-count evidence.",
+                "benchmark_review_context",
+            )
+
     for dimension in order:
         if dimension in seen_dimensions:
             continue
@@ -428,38 +562,65 @@ def _select_bullets(side: str, scores: dict[str, str], products: list[dict[str, 
         value = bank.get(dimension, {}).get(score)
         if not value:
             continue
-        bullets.append(value)
-        bullet_debug.append(
-            {
-                "text": value,
-                "side": side,
-                "dimension": dimension,
-                "score": score,
-                "template_id": f"{side}_{dimension}",
-                "signals": [score],
-                "supporting_count": len(products),
-                "reason": f"Score {score} for {dimension.replace('_', ' ')} was selected from the controlled bullet bank.",
-            }
+        add(
+            value,
+            dimension,
+            score,
+            [score],
+            f"Score {score} for {dimension.replace('_', ' ')} was selected from the controlled bullet bank.",
+            f"{side}_{dimension}",
         )
         seen_dimensions.add(dimension)
         if len(bullets) >= 5:
             break
     while len(bullets) < 5:
-        fallback_text = "Opportunity to strengthen search discoverability" if side == "current" else "Broadening relevance across core search terms"
-        bullets.append(fallback_text)
-        bullet_debug.append(
-            {
-                "text": fallback_text,
-                "side": side,
-                "dimension": "fallback",
-                "score": "Unknown",
-                "template_id": f"{side}_fallback",
-                "signals": [],
-                "supporting_count": 0,
-                "reason": "Fallback bullet added to meet the five-bullet requirement.",
-            }
+        fallback_text = "Client search content can clarify benefit and usage cues" if side == "current" else "Benchmark results broaden category and product-type cues"
+        add(
+            fallback_text,
+            "fallback",
+            "Unknown",
+            ["controlled_fallback"],
+            "Fallback bullet added to meet the five-bullet requirement.",
+            f"{side}_fallback",
         )
     return bullets[:5], bullet_debug[:5]
+
+
+def _product_position(product: dict[str, Any], fallback: int) -> int:
+    raw = product.get("position") or product.get("rank") or product.get("index") or fallback
+    try:
+        return int(raw)
+    except (TypeError, ValueError):
+        return fallback
+
+
+def _top_brands(products: list[dict[str, Any]]) -> list[str]:
+    brands: list[str] = []
+    for product in products:
+        brand = _safe_text(product.get("brand") or product.get("productBrand") or product.get("brandName"))
+        if brand:
+            brands.append(brand)
+    return list(dict.fromkeys(brands))[:6]
+
+
+def _badges(products: list[dict[str, Any]]) -> list[str]:
+    badges: list[str] = []
+    for product in products:
+        for value in _coerce_list(product.get("badges") or product.get("badge") or product.get("badgeText")):
+            text = _safe_text(value.get("text") if isinstance(value, dict) else value)
+            if text:
+                badges.append(text)
+    return list(dict.fromkeys(badges))[:8]
+
+
+def _review_counts(products: list[dict[str, Any]]) -> list[int]:
+    counts: list[int] = []
+    for product in products:
+        try:
+            counts.append(int(product.get("reviewCount") or product.get("reviews") or product.get("ratingCount")))
+        except (TypeError, ValueError):
+            continue
+    return counts
 
 
 def _build_side_payload(record: dict[str, Any] | None, side: str, client_name: str) -> dict[str, Any]:
@@ -477,10 +638,31 @@ def _build_side_payload(record: dict[str, Any] | None, side: str, client_name: s
 
     search_term = _resolve_search_term(record)
     category_phrase = _category_phrase(search_term)
-    screenshot = _safe_text(_get_first(record, "screenshotDataUrl", "screenshotDataURL", "screenshot", default=""))
+    screenshot = _safe_text(
+        _get_first(
+            record,
+            "screenshotDataUrl",
+            "screenshotDataURL",
+            "data.screenshotDataUrl",
+            "data.screenshotDataURL",
+            "screenshot.dataUrl",
+            "data.screenshot.dataUrl",
+            "screenshot",
+            default="",
+        )
+    )
     products = _main_products(record)
     scores = _dimension_scores(search_term, products, client_name)
     bullets, bullet_debug = _select_bullets(side, scores, products, client_name)
+    client_products = [
+        {
+            "position": _product_position(product, index),
+            "title": _safe_text(product.get("title") or product.get("productTitle") or product.get("name")),
+            "brand": _safe_text(product.get("brand") or product.get("productBrand") or product.get("brandName")),
+        }
+        for index, product in enumerate(products, start=1)
+        if _client_brand_matches(client_name, product)
+    ]
     return {
         "source_row": _source_row(record),
         "search_term": search_term,
@@ -489,6 +671,12 @@ def _build_side_payload(record: dict[str, Any] | None, side: str, client_name: s
         "bullets": bullets,
         "dimension_scores": scores,
         "bullet_debug": bullet_debug,
+        "product_count": len(products),
+        "client_brand": client_name,
+        "client_products": client_products,
+        "top_brands": _top_brands(products),
+        "badges": _badges(products),
+        "review_counts": _review_counts(products),
         "warnings": [],
     }
 

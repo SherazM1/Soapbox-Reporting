@@ -225,6 +225,17 @@ def build_product_slide_pair(entry: dict[str, Any], pair_order: int) -> dict[str
         "image_analysis": dict(record.get("image_analysis", {}) or {}),
         "extraction_status": record.get("extraction_status", ""),
         "reviews_summary": record.get("reviews_summary", {}),
+        "description_body": record.get("description_body") or record.get("Description Body", ""),
+        "description_bullets": list(record.get("description_bullets", []) or record.get("Description Bullets", []) or []),
+        "key_features": list(record.get("key_features", []) or record.get("Key Features", []) or []),
+        "average_rating": record.get("average_rating") or record.get("Average Rating", ""),
+        "review_count": record.get("review_count") or record.get("Review Count", ""),
+        "seller_name": record.get("seller_name") or record.get("Seller Name", ""),
+        "sold_by_walmart": record.get("sold_by_walmart", record.get("Sold by Walmart", "")),
+        "shipped_by_walmart": record.get("shipped_by_walmart", record.get("Shipped by Walmart", "")),
+        "enhanced_brand_content": record.get("enhanced_brand_content")
+        or record.get("enhanced_brand_content_present")
+        or record.get("Enhanced Brand Content", ""),
     }
 
     content_slide = {

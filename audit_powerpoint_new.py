@@ -4,6 +4,7 @@ import base64
 import io
 import math
 import re
+import ssl
 from typing import Any
 from urllib.request import Request, urlopen
 
@@ -303,8 +304,19 @@ def _load_image_from_url(url: str) -> bytes | None:
                 )
             },
         )
-        with urlopen(request, timeout=10) as response:
-            return response.read()
+        try:
+            with urlopen(request, timeout=10) as response:
+                return response.read()
+        except Exception as first_exc:
+            if not str(url).lower().startswith("https://"):
+                raise
+            context = ssl._create_unverified_context()
+            with urlopen(request, timeout=10, context=context) as response:
+                print(
+                    "[audit_powerpoint_new] Slide 4 image download used SSL "
+                    f"fallback for {url} ({first_exc})"
+                )
+                return response.read()
     except Exception as exc:
         print(f"[audit_powerpoint_new] Slide 4 image download failed: {url} ({exc})")
         return None
@@ -318,19 +330,19 @@ def _add_contained_picture(
     width: int,
     height: int,
     image_bytes: bytes,
-) -> None:
+) -> Any:
     """Add an uncropped picture contained and centered within an EMU cell."""
     try:
         with Image.open(io.BytesIO(image_bytes)) as image:
             image_width, image_height = image.size
         if image_width <= 0 or image_height <= 0:
-            return
+            return None
         scale = min(width / image_width, height / image_height)
         rendered_width = max(1, int(image_width * scale))
         rendered_height = max(1, int(image_height * scale))
         rendered_left = left + (width - rendered_width) // 2
         rendered_top = top + (height - rendered_height) // 2
-        slide.shapes.add_picture(
+        return slide.shapes.add_picture(
             io.BytesIO(image_bytes),
             left=rendered_left,
             top=rendered_top,
@@ -338,7 +350,8 @@ def _add_contained_picture(
             height=rendered_height,
         )
     except Exception as exc:
-        print(f"[audit_powerpoint_new] Slide 4 image placement failed: {exc}")
+        print(f"[audit_powerpoint_new] Image placement failed: {exc}")
+        return None
 
 
 def _normalize_ordered_images(record: dict[str, Any]) -> list[dict[str, Any]]:
@@ -407,6 +420,352 @@ def _parse_image_dimensions(image: dict[str, Any]) -> tuple[int, int] | None:
     return None
 
 
+def _first_value(record: dict[str, Any], *keys: str, default: Any = "") -> Any:
+    for key in keys:
+        current: Any = record
+        found = True
+        for part in key.split("."):
+            if not isinstance(current, dict) or part not in current:
+                found = False
+                break
+            current = current[part]
+        if found and current not in (None, "", [], {}):
+            return current
+    return default
+
+
+def _as_text_list(value: Any) -> list[str]:
+    if isinstance(value, list):
+        items = value
+    elif value in (None, "", {}, []):
+        items = []
+    else:
+        items = [value]
+    texts: list[str] = []
+    for item in items:
+        if isinstance(item, dict):
+            text = _safe_text(
+                _first_value(item, "text", "title", "description", "value", "name")
+            )
+        else:
+            text = _safe_text(item)
+        if text:
+            texts.append(text)
+    return list(dict.fromkeys(texts))
+
+
+def _truthy_evidence(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    text = _safe_text(value).lower()
+    return text in {"true", "yes", "y", "1", "present", "available", "included"}
+
+
+def _number_value(value: Any) -> float:
+    try:
+        return float(str(value).replace(",", "").strip())
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _slide4_record_facts(record: dict[str, Any]) -> dict[str, Any]:
+    images = _normalize_ordered_images(record)
+    title = _safe_text(_first_value(record, "product_title", "Product Title", "title", "productTitle"))
+    brand = _safe_text(_first_value(record, "brand", "Brand", "brandName"))
+    category = _safe_text(_first_value(record, "category", "Category", "categoryPathName"))
+    product_type = _safe_text(_first_value(record, "product_type", "subcategory", "Product Type", "productType"))
+    description = _safe_text(_first_value(record, "description_body", "Description Body", "descriptionBody"))
+    description_bullets = _as_text_list(
+        _first_value(record, "description_bullets", "Description Bullets", "descriptionBullets", default=[])
+    )
+    key_features = _as_text_list(
+        _first_value(record, "key_features", "Key Features", "keyFeatures", default=[])
+    )
+    text_blob = " ".join(
+        [title, brand, category, product_type, description, *description_bullets, *key_features]
+    ).lower()
+    image_text = " ".join(
+        _safe_text(image.get("url"))
+        for image in images
+        if isinstance(image, dict)
+    ).lower()
+    review_count = int(
+        _number_value(_first_value(record, "review_count", "Review Count", "reviews_summary.review_count", "reviews_summary.count"))
+    )
+    average_rating = _number_value(_first_value(record, "average_rating", "Average Rating", "reviews_summary.average_rating", "reviews_summary.rating"))
+    return {
+        "title": title,
+        "brand": brand,
+        "category": category,
+        "product_type": product_type,
+        "description": description,
+        "description_bullets": description_bullets,
+        "key_features": key_features,
+        "text_blob": text_blob,
+        "image_text": image_text,
+        "images": images,
+        "image_count": int(_number_value(_first_value(record, "image_count", "Image Count", default=len(images))) or len(images)),
+        "review_count": review_count,
+        "average_rating": average_rating,
+        "seller_name": _safe_text(_first_value(record, "seller_name", "Seller Name")),
+        "sold_by_walmart": _truthy_evidence(_first_value(record, "sold_by_walmart", "Sold by Walmart")),
+        "shipped_by_walmart": _truthy_evidence(_first_value(record, "shipped_by_walmart", "Shipped by Walmart")),
+        "ebc_present": _truthy_evidence(
+            _first_value(
+                record,
+                "enhanced_brand_content",
+                "enhanced_brand_content_present",
+                "Enhanced Brand Content",
+                "enhancedBrandContentPresent",
+            )
+        ),
+    }
+
+
+def _has_any(text: str, *terms: str) -> bool:
+    return any(term in text for term in terms)
+
+
+def _append_unique_bullet(
+    bullets: list[str],
+    debug: list[dict[str, Any]],
+    *,
+    text: str,
+    bullet_type: str,
+    dimension: str,
+    signals: list[str],
+    reason: str,
+    used: set[str],
+) -> None:
+    clean = _safe_text(text)
+    key = clean.lower()
+    if not clean or key in used:
+        return
+    used.add(key)
+    bullets.append(clean)
+    debug.append(
+        {
+            "text": clean,
+            "type": bullet_type,
+            "dimension": dimension,
+            "signals": signals,
+            "reason": reason,
+        }
+    )
+
+
+def _build_slide4_evidence_bullets(
+    record: dict[str, Any],
+    *,
+    side: str,
+    existing_texts: set[str],
+) -> tuple[list[str], list[dict[str, Any]], list[str]]:
+    facts = _slide4_record_facts(record)
+    blob = facts["text_blob"]
+    image_blob = facts["image_text"]
+    bullets: list[str] = []
+    debug: list[dict[str, Any]] = []
+    warnings: list[str] = []
+    used = existing_texts
+    product_phrase = "product"
+    if _has_any(blob, "hazelnut", "nutella"):
+        product_phrase = "hazelnut-and-cocoa spread"
+    elif _has_any(blob, "peanut butter", "jif", "fresh roasted", "fresh-roasted"):
+        product_phrase = "peanut butter"
+    elif _has_any(blob, "almond butter"):
+        product_phrase = "almond butter"
+    elif _safe_text(facts["product_type"]):
+        product_phrase = facts["product_type"].lower()
+
+    if _has_any(blob, "hazelnut", "cocoa", "nutella"):
+        _append_unique_bullet(
+            bullets,
+            debug,
+            text="Hazelnut-and-cocoa positioning supports breakfast and snack relevance",
+            bullet_type="strength",
+            dimension="ingredient_positioning",
+            signals=["hazelnut", "cocoa"],
+            reason="Product title or PDP text references hazelnut/cocoa spread positioning.",
+            used=used,
+        )
+    if _has_any(blob, "peanut", "protein", "fresh roasted", "fresh-roasted", "jif"):
+        _append_unique_bullet(
+            bullets,
+            debug,
+            text="Peanut butter positioning reinforces protein and pantry usage cues",
+            bullet_type="strength",
+            dimension="ingredient_positioning",
+            signals=["peanut", "protein"],
+            reason="Product title, description, or features reference peanut butter/protein cues.",
+            used=used,
+        )
+    if facts["review_count"] >= 100:
+        _append_unique_bullet(
+            bullets,
+            debug,
+            text="High review volume strengthens shopper confidence",
+            bullet_type="strength",
+            dimension="review_authority",
+            signals=[f"{facts['review_count']}_reviews"],
+            reason="Review count evidence was available and materially high.",
+            used=used,
+        )
+    if facts["ebc_present"]:
+        _append_unique_bullet(
+            bullets,
+            debug,
+            text="Enhanced content supports brand storytelling",
+            bullet_type="strength",
+            dimension="enhanced_content",
+            signals=["enhanced_brand_content"],
+            reason="Enhanced Brand Content is marked present in the PDP evidence.",
+            used=used,
+        )
+    if facts["sold_by_walmart"] or facts["shipped_by_walmart"]:
+        _append_unique_bullet(
+            bullets,
+            debug,
+            text="Walmart fulfillment cues support purchase confidence",
+            bullet_type="strength",
+            dimension="retail_trust",
+            signals=["sold_by_walmart" if facts["sold_by_walmart"] else "", "shipped_by_walmart" if facts["shipped_by_walmart"] else ""],
+            reason="Sold/shipped by Walmart signals were present in PDP evidence.",
+            used=used,
+        )
+    if facts["image_count"] >= 6:
+        _append_unique_bullet(
+            bullets,
+            debug,
+            text=f"{facts['image_count']} PDP images create room for stronger story sequencing",
+            bullet_type="opportunity",
+            dimension="image_sequence",
+            signals=[f"{facts['image_count']}_images"],
+            reason="Image count indicates enough carousel depth to sequence shopper education.",
+            used=used,
+        )
+    if _has_any(blob, "nutrition", "calories", "protein", "ingredients") or _has_any(image_blob, "nutrition", "ingredient"):
+        _append_unique_bullet(
+            bullets,
+            debug,
+            text="Pack and nutrition details support fast comparison shopping",
+            bullet_type="strength",
+            dimension="nutrition_detail",
+            signals=["nutrition", "ingredients"],
+            reason="Nutrition, ingredient, or pack-detail terms were detected in PDP evidence.",
+            used=used,
+        )
+    if _has_any(blob, "breakfast", "snack", "recipe", "toast", "pantry"):
+        _append_unique_bullet(
+            bullets,
+            debug,
+            text=f"{product_phrase.title()} cues connect to breakfast, snack, and pantry occasions",
+            bullet_type="strength",
+            dimension="usage_occasions",
+            signals=["breakfast/snack/pantry"],
+            reason="Usage occasion language was present in title, description, or features.",
+            used=used,
+        )
+    else:
+        _append_unique_bullet(
+            bullets,
+            debug,
+            text=f"Opportunity to connect {product_phrase} with clearer usage occasions",
+            bullet_type="opportunity",
+            dimension="usage_occasions",
+            signals=["limited_usage_language"],
+            reason="No clear breakfast, snack, recipe, or pantry use-case language was detected.",
+            used=used,
+        )
+    if not _has_any(image_blob, "recipe", "serving", "lifestyle", "breakfast", "snack"):
+        _append_unique_bullet(
+            bullets,
+            debug,
+            text="Opportunity to expand recipe and lifestyle imagery",
+            bullet_type="opportunity",
+            dimension="visual_storytelling",
+            signals=["limited_recipe_lifestyle_image_hints"],
+            reason="Image metadata did not show recipe, serving, or lifestyle cues.",
+            used=used,
+        )
+    if not facts["ebc_present"]:
+        _append_unique_bullet(
+            bullets,
+            debug,
+            text="Opportunity to strengthen enhanced brand storytelling",
+            bullet_type="opportunity",
+            dimension="enhanced_content",
+            signals=["ebc_not_present"],
+            reason="Enhanced Brand Content was not marked present.",
+            used=used,
+        )
+
+    fallback_candidates = [
+        (
+            f"{facts['brand'] or side.title()} keeps {product_phrase} cues visible",
+            "strength",
+            "brand_specificity",
+            ["brand", product_phrase],
+            "Fallback used brand/product-type evidence to avoid generic duplicate wording.",
+        ),
+        (
+            "Opportunity to clarify the opening product sequence",
+            "opportunity",
+            "opening_sequence",
+            ["opening_sequence"],
+            "Controlled fallback opportunity used when richer evidence was limited.",
+        ),
+        (
+            "Opportunity to strengthen shopper education across the carousel",
+            "opportunity",
+            "shopper_education",
+            ["carousel_education"],
+            "Controlled fallback opportunity used to preserve template bullet count.",
+        ),
+        (
+            f"{facts['brand'] or side.title()} can broaden variant and occasion storytelling",
+            "opportunity",
+            "variant_storytelling",
+            ["variant_occasion_storytelling"],
+            "Brand-specific fallback used after duplicate bullets were removed.",
+        ),
+        (
+            f"{facts['brand'] or side.title()} can make shopper education more distinctive",
+            "opportunity",
+            "distinctive_education",
+            ["distinctive_shopper_education"],
+            "Brand-specific fallback used after duplicate bullets were removed.",
+        ),
+    ]
+    for text, bullet_type, dimension, signals, reason in fallback_candidates:
+        if len(bullets) >= 6:
+            break
+        _append_unique_bullet(
+            bullets,
+            debug,
+            text=text,
+            bullet_type=bullet_type,
+            dimension=dimension,
+            signals=signals,
+            reason=reason,
+            used=used,
+        )
+    if len(bullets) < 6:
+        for index in range(len(bullets), 6):
+            _append_unique_bullet(
+                bullets,
+                debug,
+                text=f"{facts['brand'] or side.title()} PDP evidence supports focused content cleanup {index + 1}",
+                bullet_type="opportunity",
+                dimension=f"controlled_fallback_{index + 1}",
+                signals=["controlled_fallback"],
+                reason="Last-resort side-specific fallback used to fill the existing template bullet structure without duplicates.",
+                used=used,
+            )
+    if len(bullets) < 6:
+        warnings.append("Slide 4 used restrained fallback bullets because PDP evidence was sparse.")
+    return bullets[:6], debug[:6], warnings
+
+
 def _build_slide4_bullets(images: list[dict[str, Any]], guide_match: dict[str, Any]) -> list[str]:
     bullets = [f"Carousel: {len(images)} ordered images"]
     dimensions = [dims for image in images if (dims := _parse_image_dimensions(image))]
@@ -436,39 +795,67 @@ def _build_slide4_column(
     record: dict[str, Any],
     fallback_label: str,
     findings: dict[str, Any] | None = None,
+    *,
+    side: str = "client",
+    existing_bullet_texts: set[str] | None = None,
 ) -> dict[str, Any]:
+    existing_bullet_texts = existing_bullet_texts if existing_bullet_texts is not None else set()
     if not record:
         return {
             "label": fallback_label,
             "brand": "",
+            "product_title": "",
+            "product_id": "",
             "category": "",
             "product_type": "",
             "ordered_images": [],
             "image_count": 0,
             "image_guide_match": {"matched": False},
             "bullets": [],
+            "bullet_debug": [],
+            "warnings": [],
             "findings": findings or {},
+            "active": False,
         }
     images = _normalize_ordered_images(record)
-    product_type = _safe_text(record.get("product_type") or record.get("subcategory"))
-    category = _safe_text(record.get("category"))
+    product_type = _safe_text(_first_value(record, "product_type", "subcategory", "Product Type", "productType"))
+    category = _safe_text(_first_value(record, "category", "Category", "categoryPathName"))
     guide_match = _build_image_guide_match(category, product_type)
     findings = findings or build_slide4_group_findings([record], fallback_label)
-    finding_bullets = [
-        _safe_text(bullet)
-        for bullet in (findings.get("slide4_bullets", []) if isinstance(findings, dict) else [])
-        if _safe_text(bullet)
-    ]
+    evidence_bullets, bullet_debug, warnings = _build_slide4_evidence_bullets(
+        record,
+        side=side,
+        existing_texts=existing_bullet_texts,
+    )
+    if not evidence_bullets:
+        finding_bullets = [
+            _safe_text(bullet)
+            for bullet in (findings.get("slide4_bullets", []) if isinstance(findings, dict) else [])
+            if _safe_text(bullet) and _safe_text(bullet).lower() not in existing_bullet_texts
+        ]
+        for bullet in finding_bullets:
+            existing_bullet_texts.add(bullet.lower())
+        evidence_bullets = finding_bullets[:6] or _build_slide4_bullets(images, guide_match)
     return {
-        "label": _safe_text(record.get("brand")) or fallback_label,
-        "brand": _safe_text(record.get("brand")),
+        "label": _safe_text(_first_value(record, "brand", "Brand", "brandName")) or fallback_label,
+        "brand": _safe_text(_first_value(record, "brand", "Brand", "brandName")),
+        "product_title": _safe_text(_first_value(record, "product_title", "Product Title", "title", "productTitle")),
+        "product_id": _safe_text(_first_value(record, "item_id", "product_id", "Product ID", "productId", "record_id")),
         "category": category,
         "product_type": product_type,
         "ordered_images": images,
-        "image_count": int(record.get("image_count", len(images)) or len(images)),
+        "image_count": int(_number_value(_first_value(record, "image_count", "Image Count", default=len(images))) or len(images)),
+        "review_count": int(_number_value(_first_value(record, "review_count", "Review Count", "reviews_summary.review_count", "reviews_summary.count"))),
+        "average_rating": _number_value(_first_value(record, "average_rating", "Average Rating", "reviews_summary.average_rating", "reviews_summary.rating")),
+        "ebc_present": _truthy_evidence(_first_value(record, "enhanced_brand_content", "enhanced_brand_content_present", "Enhanced Brand Content", "enhancedBrandContentPresent")),
+        "sold_by_walmart": _truthy_evidence(_first_value(record, "sold_by_walmart", "Sold by Walmart")),
+        "shipped_by_walmart": _truthy_evidence(_first_value(record, "shipped_by_walmart", "Shipped by Walmart")),
         "image_guide_match": guide_match,
-        "bullets": finding_bullets[:5] or _build_slide4_bullets(images, guide_match),
+        "bullets": evidence_bullets[:6],
+        "bullet_debug": bullet_debug,
+        "warnings": warnings,
         "findings": findings,
+        "active": True,
     }
 
 
@@ -492,10 +879,13 @@ def build_slide4_pdp_benchmark_payload(
         or "Client"
     )
     slide4_findings = export_plan.get("slide4_findings", {}) or {}
+    used_bullet_texts: set[str] = set()
     client_column = _build_slide4_column(
         client_record,
         client_fallback,
         slide4_findings.get("client") if isinstance(slide4_findings, dict) else None,
+        side="client",
+        existing_bullet_texts=used_bullet_texts,
     )
     client_column["label"] = client_company_name or client_name or client_column["label"]
 
@@ -509,10 +899,25 @@ def build_slide4_pdp_benchmark_payload(
                 if isinstance(slide4_findings, dict)
                 else None
             ),
+            side=f"competitor_{index + 1}",
+            existing_bullet_texts=used_bullet_texts,
         )
         for index in range(2)
     ]
-    return {"columns": [client_column, *competitor_columns], "slide4_findings": slide4_findings}
+    hidden_columns = [
+        column["label"]
+        for column in competitor_columns
+        if not column.get("active")
+    ]
+    return {
+        "columns": [client_column, *competitor_columns],
+        "slide4_findings": slide4_findings,
+        "hidden_columns": hidden_columns,
+        "warnings": [
+            f"{label} was cleared because no PDP evidence was available."
+            for label in hidden_columns
+        ],
+    }
 
 
 def _slide4_label_shapes(slide: Any) -> list[Any]:
@@ -546,6 +951,152 @@ def _replace_bullet_shape_text(shape: Any, bullets: list[str]) -> None:
         _replace_paragraph_text_preserve_style(
             paragraph, bullets[index] if index < len(bullets) else ""
         )
+
+
+def _slide3_side_shapes(prs: Any, slide: Any) -> dict[str, dict[str, Any]]:
+    midpoint = int(prs.slide_width) // 2
+    text_shapes = [
+        shape
+        for shape in _walk_shapes(slide.shapes)
+        if getattr(shape, "has_text_frame", False)
+    ]
+    labels = [
+        shape
+        for shape in text_shapes
+        if int(getattr(shape, "top", 0) or 0) >= Inches(1.8)
+        and int(getattr(shape, "top", 0) or 0) <= Inches(2.6)
+        and ("“" in _shape_text(shape) or '"' in _shape_text(shape))
+    ]
+    bullets = [
+        shape
+        for shape in text_shapes
+        if int(getattr(shape, "top", 0) or 0) >= Inches(2.6)
+        and int(getattr(shape, "height", 0) or 0) >= Inches(2.0)
+        and len(getattr(shape.text_frame, "paragraphs", []) or []) >= 5
+    ]
+    pictures = [
+        shape
+        for shape in slide.shapes
+        if hasattr(shape, "image") or "picture" in str(shape.shape_type).lower()
+    ]
+    pictures = [
+        shape
+        for shape in pictures
+        if int(getattr(shape, "top", 0) or 0) >= Inches(2.3)
+        and int(getattr(shape, "top", 0) or 0) <= Inches(5.8)
+    ]
+    pictures = sorted(pictures, key=lambda shape: int(getattr(shape, "left", 0) or 0))
+    return {
+        "current": {
+            "label": next((shape for shape in labels if int(shape.left) < midpoint), None),
+            "bullets": next((shape for shape in bullets if int(shape.left) < midpoint), None),
+            "picture": pictures[0] if len(pictures) >= 1 else None,
+        },
+        "benchmark": {
+            "label": next((shape for shape in labels if int(shape.left) >= midpoint), None),
+            "bullets": next((shape for shape in bullets if int(shape.left) >= midpoint), None),
+            "picture": pictures[1] if len(pictures) >= 2 else None,
+        },
+    }
+
+
+def _apply_slide3_search_benchmark(prs: Any, slide: Any, payload: dict[str, Any]) -> None:
+    if not payload:
+        return
+    current = payload.get("current")
+    benchmark = payload.get("benchmark")
+    if not isinstance(current, dict) and not isinstance(benchmark, dict):
+        print(
+            "[audit_powerpoint_new] Slide 3 search evidence was unavailable; "
+            "the slide was left unchanged."
+        )
+        return
+
+    intro_shape = next(
+        (
+            shape
+            for shape in _walk_shapes(slide.shapes)
+            if getattr(shape, "has_text_frame", False)
+            and "walmart search results within the" in _shape_text(shape).lower()
+        ),
+        None,
+    )
+    if intro_shape is not None:
+        text = _shape_text(intro_shape)
+        current_phrase = _safe_text((current or {}).get("category_phrase")) or "category search"
+        benchmark_phrase = _safe_text((benchmark or {}).get("category_phrase")) or "category search"
+        updated = text.replace("baby bath", current_phrase).replace(
+            "clean baby care",
+            benchmark_phrase,
+        )
+        _replace_shape_text_preserve_style(intro_shape, updated)
+    else:
+        print("[audit_powerpoint_new] Slide 3 intro shape was not found.")
+
+    shapes = _slide3_side_shapes(prs, slide)
+    for side in ("current", "benchmark"):
+        side_payload = payload.get(side)
+        if not isinstance(side_payload, dict) or not side_payload.get("source_row"):
+            print(
+                f"[audit_powerpoint_new] Slide 3 {side} evidence was unavailable; "
+                "that side was left unchanged."
+            )
+            continue
+        side_shapes = shapes.get(side, {})
+        label = side_shapes.get("label")
+        if label is not None:
+            term = _safe_text(side_payload.get("search_term")) or "category search"
+            _replace_shape_text_preserve_style(label, f"“{term}”")
+        else:
+            print(f"[audit_powerpoint_new] Slide 3 {side} search label was not found.")
+
+        bullets = [
+            _safe_text(value)
+            for value in (side_payload.get("bullets", []) or [])
+            if _safe_text(value)
+        ]
+        bullet_shape = side_shapes.get("bullets")
+        if bullet_shape is not None and len(bullets) == 5:
+            _replace_bullet_shape_text(bullet_shape, bullets)
+        elif bullet_shape is None:
+            print(f"[audit_powerpoint_new] Slide 3 {side} bullet box was not found.")
+        else:
+            print(
+                f"[audit_powerpoint_new] Slide 3 {side} did not contain exactly five bullets; "
+                "the template bullet box was preserved."
+            )
+
+        picture = side_shapes.get("picture")
+        image_bytes = _decode_data_image(side_payload.get("screenshot"))
+        if picture is None:
+            print(f"[audit_powerpoint_new] Slide 3 {side} screenshot placeholder was not found.")
+        elif image_bytes is None:
+            print(
+                f"[audit_powerpoint_new] Slide 3 {side} screenshot was invalid; "
+                "the template picture was preserved."
+            )
+        else:
+            bounds = (
+                int(picture.left),
+                int(picture.top),
+                int(picture.width),
+                int(picture.height),
+            )
+            inserted = _add_contained_picture(
+                slide,
+                left=bounds[0],
+                top=bounds[1],
+                width=bounds[2],
+                height=bounds[3],
+                image_bytes=image_bytes,
+            )
+            if inserted is None:
+                print(
+                    f"[audit_powerpoint_new] Slide 3 {side} screenshot could not be inserted; "
+                    "the template picture was preserved."
+                )
+            else:
+                _remove_shape(picture)
 
 
 def _fit_slide4_label(shape: Any) -> None:
@@ -616,6 +1167,17 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
     while len(columns) < 3:
         columns.append({"label": f"Competitor {len(columns)}", "ordered_images": [], "bullets": []})
 
+    for shape in _walk_shapes(slide.shapes):
+        if not getattr(shape, "has_text_frame", False):
+            continue
+        text = _shape_text(shape)
+        if "Best-in-class Walmart PDPs" in text:
+            _replace_shape_text_preserve_style(
+                shape,
+                text.replace("Best-in-class Walmart PDPs", "Strong Walmart PDP patterns"),
+            )
+            break
+
     labels = _slide4_label_shapes(slide)
     bullets = _slide4_bullet_shapes(slide)
     containers = _slide4_picture_containers(prs, slide)
@@ -644,6 +1206,10 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
             _remove_shape(shape)
 
     for index, column in enumerate(columns):
+        if not column.get("active", True):
+            _replace_shape_text_preserve_style(labels[index], "")
+            _replace_bullet_shape_text(bullets[index], [])
+            continue
         _replace_shape_text_preserve_style(labels[index], column.get("label", ""))
         _fit_slide4_label(labels[index])
         _replace_bullet_shape_text(bullets[index], list(column.get("bullets", []) or []))
@@ -796,6 +1362,21 @@ def _apply_slide5_no_brand_shop(
         )
         return
 
+    inserted = _add_contained_picture(
+        slide,
+        left=Inches(1.4),
+        top=Inches(2.88),
+        width=Inches(7.4),
+        height=Inches(3.77),
+        image_bytes=image_bytes,
+    )
+    if inserted is None:
+        print(
+            "[audit_powerpoint_new] Slide 5 No Brand Shop screenshot could not be "
+            "inserted; the slide was left unchanged."
+        )
+        return
+
     for key in ("header", "divider", "picture", "bullets"):
         shape = shapes["client"].get(key)
         if shape is not None:
@@ -807,14 +1388,6 @@ def _apply_slide5_no_brand_shop(
     competitor_divider.width = Inches(11.2)
 
     _remove_shape(competitor_picture)
-    _add_contained_picture(
-        slide,
-        left=Inches(1.4),
-        top=Inches(2.88),
-        width=Inches(7.4),
-        height=Inches(3.77),
-        image_bytes=image_bytes,
-    )
     _replace_bullet_shape_text(competitor_bullets, bullets)
 
 
@@ -859,8 +1432,7 @@ def _apply_slide5_brand_shop(prs: Any, slide: Any, payload: dict[str, Any]) -> N
                 int(picture.width),
                 int(picture.height),
             )
-            _remove_shape(picture)
-            _add_contained_picture(
+            inserted = _add_contained_picture(
                 slide,
                 left=bounds[0],
                 top=bounds[1],
@@ -868,6 +1440,13 @@ def _apply_slide5_brand_shop(prs: Any, slide: Any, payload: dict[str, Any]) -> N
                 height=bounds[3],
                 image_bytes=image_bytes,
             )
+            if inserted is None:
+                print(
+                    f"[audit_powerpoint_new] Slide 5 {side} screenshot could not be "
+                    "inserted; the template picture was preserved."
+                )
+            else:
+                _remove_shape(picture)
         if len(bullets) == 6:
             _replace_bullet_shape_text(bullet_shape, bullets)
         else:
@@ -1138,6 +1717,19 @@ def generate_new_audit_powerpoint_from_template(
         )
     else:
         _apply_slide2_summary(slide2, export_plan.get("slide2_summary", {}) or {})
+
+    slide3 = _find_slide_by_title(prs, "Search & Discoverability Benchmarking")
+    if slide3 is None:
+        print(
+            "[audit_powerpoint_new] Slide 3 title was not found; "
+            "Search & Discoverability Benchmarking was skipped."
+        )
+    else:
+        _apply_slide3_search_benchmark(
+            prs,
+            slide3,
+            export_plan.get("slide3_search_benchmark", {}) or {},
+        )
 
     slide4 = _find_slide_by_title(prs, "PDP Content Benchmarking")
     if slide4 is None:

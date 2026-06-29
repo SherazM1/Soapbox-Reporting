@@ -3,6 +3,8 @@ from __future__ import annotations
 from statistics import mean
 from typing import Any
 
+from app.audit_helpers.bullet_uniqueness import normalize_bullet_text
+
 
 # TODO: If this wording needs non-code tuning by strategists, move these banks to
 # a versioned JSON config. Keep them centralized here for this hardening pass.
@@ -38,16 +40,16 @@ BULLET_BANK: dict[str, dict[str, str]] = {
         "benefit_clarity_opportunity": "Opportunity to clarify {benefit_phrase} positioning",
     },
     "walmart_opportunity": {
-        "shelf_ownership": "Opportunity to strengthen {category_phrase} shelf ownership",
-        "conversion_optimization": "Conversion-focused PDP optimization opportunity",
+        "shelf_ownership": "{category_phrase} shelf ownership can be strengthened through PDP execution",
+        "conversion_optimization": "Content cleanup creates room for clearer Walmart shopper guidance",
         "visual_storytelling_gap": "Opportunity to expand {visual_phrase}",
-        "assortment_segmentation": "Enhanced assortment segmentation potential",
-        "shopper_guidance": "Opportunity to improve shopper guidance across PDP content",
+        "assortment_segmentation": "Sharper assortment cues can help shoppers compare variants faster",
+        "shopper_guidance": "PDP content can guide shoppers more directly from need state to product choice",
     },
     "competitive_benchmark": {
-        "broader_discoverability": "Competitors currently own broader {category_phrase} discoverability",
+        "broader_discoverability": "Competitor evidence shows broader {category_phrase} discoverability",
         "stronger_visual_storytelling": "Competitive PDPs show stronger {visual_phrase}",
-        "educational_merchandising": "Educational merchandising drives conversion within {category_phrase}",
+        "educational_merchandising": "Educational merchandising supports clearer {category_phrase} comparison",
         "benefit_education": "Category leaders use clearer {benefit_phrase} education",
         "search_visibility": "Search visibility is increasingly shaped by benefit and use-case language",
         "limited_competitor_evidence": "Limited competitor evidence available for benchmarking",
@@ -330,7 +332,7 @@ def _bullet(
 
 
 def _append_unique_bullet(target: list[dict[str, Any]], bullet: dict[str, Any]) -> None:
-    if bullet["text"] not in {item["text"] for item in target}:
+    if normalize_bullet_text(bullet["text"]) not in {normalize_bullet_text(item["text"]) for item in target}:
         target.append(bullet)
 
 

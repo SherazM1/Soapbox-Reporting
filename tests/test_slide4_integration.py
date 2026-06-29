@@ -63,6 +63,14 @@ def _record(brand: str, images: list[dict], record_id: str) -> dict:
         "image_count": len(images),
         "ingest_metadata": {"content_score": "95"},
         "reviews_summary": {},
+        "description_body": "Creamy peanut butter spread with protein for pantry snacks.",
+        "description_bullets": ["Great for breakfast, snacks, and recipes"],
+        "key_features": ["Protein", "Fresh roasted peanut taste"],
+        "review_count": 245,
+        "average_rating": 4.7,
+        "sold_by_walmart": True,
+        "shipped_by_walmart": True,
+        "enhanced_brand_content": "present",
     }
 
 
@@ -237,10 +245,9 @@ class Slide4IntegrationTest(unittest.TestCase):
             for sample in ("Honest", "CeraVe", "Jergens"):
                 self.assertNotIn(sample, all_text)
             self.assertNotIn("{{", all_text)
-            self.assertIn("Carousel: 10 ordered images", all_text)
-            self.assertIn("Dimensions: 2200 x 2200 throughout", all_text)
-            self.assertIn("Recommended opening:", all_text)
-            self.assertIn("Guide opportunity: Solutions Graphic", all_text)
+            self.assertIn("10 PDP images create room for stronger story sequencing", all_text)
+            self.assertIn("High review volume strengthens shopper confidence", all_text)
+            self.assertIn("Pack and nutrition details support fast comparison shopping", all_text)
 
             pictures = [shape for shape in slide4.shapes if hasattr(shape, "image")]
             self.assertEqual(len(pictures), 23)
@@ -248,14 +255,14 @@ class Slide4IntegrationTest(unittest.TestCase):
                 shape.top + shape.height
                 for shape in slide4.shapes
                 if getattr(shape, "has_text_frame", False)
-                and "Best-in-class Walmart PDPs" in (shape.text or "")
+                and "Strong Walmart PDP patterns" in (shape.text or "")
             )
             bullet_shapes = sorted(
                 (
                     shape
                     for shape in slide4.shapes
                     if getattr(shape, "has_text_frame", False)
-                    and "Carousel:" in (shape.text or "")
+                    and "story sequencing" in (shape.text or "")
                 ),
                 key=lambda shape: shape.left,
             )
@@ -316,9 +323,98 @@ class Slide4IntegrationTest(unittest.TestCase):
             competitor_records=[{"brand": "Only Competitor", "images": []}],
         )
         self.assertEqual(payload["columns"][1]["label"], "Only Competitor")
-        self.assertEqual(payload["columns"][2]["label"], "Competitor 2")
+        self.assertFalse(payload["columns"][2]["active"])
+        self.assertIn("Competitor 2", payload["hidden_columns"])
         self.assertEqual(payload["columns"][2]["ordered_images"], [])
         self.assertEqual(payload["columns"][2]["bullets"], [])
+
+    @unittest.skipUnless(TEMPLATE.exists(), "New strategic template is unavailable")
+    def test_one_competitor_clears_competitor_2_in_generated_deck(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            temp_dir = Path(tmp)
+            client_record = _record(
+                "Nutella", _make_images(temp_dir, "nutella", 8, (800, 800)), "client-1"
+            )
+            client_record.update(
+                {
+                    "product_title": "Nutella Hazelnut Spread with Cocoa, Breakfast Favorite",
+                    "description_body": "Hazelnut spread with cocoa for breakfast, snack, and recipe occasions.",
+                    "description_bullets": ["Great on toast", "Family snacking pantry staple"],
+                    "key_features": ["Hazelnut", "Cocoa", "Breakfast"],
+                    "review_count": 85,
+                }
+            )
+            competitor_1 = _record(
+                "Jif", _make_images(temp_dir, "jif", 7, (800, 800)), "comp-1"
+            )
+            competitor_1.update(
+                {
+                    "product_title": "Jif Creamy Peanut Butter, 16 oz Jar",
+                    "description_body": "Fresh roasted peanut taste with protein for snacks and pantry use.",
+                    "description_bullets": ["Protein per serving", "Creamy spreadability"],
+                    "key_features": ["Peanut butter", "Protein", "Pantry"],
+                    "review_count": 1200,
+                }
+            )
+            primary_entry = {
+                "entry_id": "entry-client-1",
+                "record_id": "client-1",
+                "product_title": client_record["product_title"],
+                "item_id": client_record["item_id"],
+                "cached_record": client_record,
+                "selected_primary_image": {"record_id": "client-1", "image_index": 0, "url": client_record["images"][0]["url"]},
+                "selected_primary_images": [{"record_id": "client-1", "image_index": 0, "url": client_record["images"][0]["url"]}],
+                "include_in_export": True,
+            }
+            plan = build_audit_export_plan(
+                audit_record={"client_name": "Nutella", "client_company_name": "Nutella"},
+                primary_entries=[primary_entry],
+                competitor_assignments=[],
+                competitor_records=[competitor_1],
+            )
+            payload = build_slide4_pdp_benchmark_payload(plan, competitor_records=[competitor_1])
+            client_bullets = payload["columns"][0]["bullets"]
+            competitor_bullets = payload["columns"][1]["bullets"]
+            self.assertEqual(len(client_bullets), 6)
+            self.assertEqual(len(competitor_bullets), 6)
+            self.assertFalse(set(client_bullets) & set(competitor_bullets))
+            self.assertEqual(len(client_bullets + competitor_bullets), len(set(client_bullets + competitor_bullets)))
+            self.assertTrue(any("Hazelnut-and-cocoa" in bullet for bullet in client_bullets))
+            self.assertTrue(any("breakfast" in bullet.lower() or "recipe" in bullet.lower() for bullet in client_bullets))
+            self.assertTrue(any("peanut butter" in bullet.lower() for bullet in competitor_bullets))
+            self.assertTrue(any("review volume" in bullet for bullet in competitor_bullets))
+            forbidden = " ".join(client_bullets + competitor_bullets).lower()
+            for term in ("sales", "rank", "share of search", "best-in-class"):
+                self.assertNotIn(term, forbidden)
+
+            deck_bytes = generate_new_audit_powerpoint_from_template(
+                export_plan=plan,
+                template_path=str(TEMPLATE),
+                include_slide_9=False,
+                competitor_records=[competitor_1],
+            )
+            presentation = Presentation(io.BytesIO(deck_bytes))
+            slide4 = next(
+                slide
+                for slide in presentation.slides
+                if any(
+                    "PDP Content Benchmarking" in (shape.text or "")
+                    for shape in slide.shapes
+                    if getattr(shape, "has_text_frame", False)
+                )
+            )
+            all_text = "\n".join(
+                shape.text
+                for shape in _walk_shapes(slide4.shapes)
+                if getattr(shape, "has_text_frame", False)
+            )
+            self.assertIn("Nutella", all_text)
+            self.assertIn("Jif", all_text)
+            self.assertNotIn("Competitor 2", all_text)
+            self.assertNotIn("CeraVe", all_text)
+            self.assertNotIn("Jergens", all_text)
+            self.assertIn("Hazelnut-and-cocoa", all_text)
+            self.assertIn("Peanut butter", all_text)
 
     def test_slide4_uses_evidence_based_bullets_when_image_analysis_exists(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -374,14 +470,9 @@ class Slide4IntegrationTest(unittest.TestCase):
             payload = build_slide4_pdp_benchmark_payload(
                 plan, competitor_records=[competitor_1]
             )
-            self.assertIn(
-                "Strong protein and ingredient-led benefit communication",
-                payload["columns"][0]["bullets"],
-            )
-            self.assertIn(
-                "Snack, breakfast, and recipe-based usage storytelling supports spread use cases",
-                payload["columns"][1]["bullets"],
-            )
+            self.assertTrue(any("peanut butter" in bullet.lower() for bullet in payload["columns"][0]["bullets"]))
+            self.assertTrue(any("competitor alpha" in bullet.lower() for bullet in payload["columns"][1]["bullets"]))
+            self.assertTrue(any("peanut butter" in bullet.lower() for bullet in payload["columns"][1]["bullets"]))
 
             deck_bytes = generate_new_audit_powerpoint_from_template(
                 export_plan=plan,
@@ -406,7 +497,7 @@ class Slide4IntegrationTest(unittest.TestCase):
             )
             self.assertIn("Client Company", all_text)
             self.assertIn("Competitor Alpha", all_text)
-            self.assertIn("Strong protein and ingredient-led benefit communication", all_text)
+            self.assertIn("Peanut butter positioning reinforces protein and pantry usage cues", all_text)
             self.assertNotIn("Carousel: 6 ordered images", all_text)
             self.assertGreaterEqual(len([shape for shape in slide4.shapes if hasattr(shape, "image")]), 12)
 
