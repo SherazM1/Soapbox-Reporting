@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from app.audit_helpers.bullet_uniqueness import dedupe_bullet_debug
+from app.audit_helpers.bullet_uniqueness import dedupe_bullet_debug, normalize_bullet_text
 
 
 DIMENSION_PRIORITY = (
@@ -524,6 +524,106 @@ def _fit_bullet(text: str) -> str:
     return text[:75].rsplit(" ", 1)[0].rstrip(" ,;-") + "..."
 
 
+def _mirrored_bullet_key(text: str) -> str:
+    normalized = normalize_bullet_text(text)
+    tokens = [
+        token
+        for token in normalized.split()
+        if token
+        and token
+        not in {
+            "client",
+            "competitor",
+            "brand",
+            "shop",
+            "shops",
+            "walmart",
+            "supports",
+            "support",
+            "shopper",
+            "shoppers",
+        }
+    ]
+    return " ".join(tokens)
+
+
+def _alternate_competitor_bullet(
+    item: dict[str, Any],
+    *,
+    brand_name: str,
+    evidence: dict[str, Any],
+) -> str:
+    brand = brand_name or "Competitor"
+    categories = _short_phrase(evidence.get("categories", []) or [], 2)
+    topic = _short_phrase([*evidence.get("headings", []), *evidence.get("descriptions", [])], 1)
+    video_title = _short_phrase(evidence.get("videos", []) or [], 1)
+    module_count = int(evidence.get("module_count", 0) or 0)
+    product_count = int(evidence.get("product_count", 0) or 0)
+    dimension = item.get("dimension")
+    alternatives = {
+        "brand_presentation": f"{brand} anchors the benchmark with {module_count or 'multiple'} shop modules",
+        "lifestyle_merchandising": f"{brand} frames competitive occasions through {topic or 'editorial'} content",
+        "category_segmentation": f"{brand} turns {categories or 'category'} navigation into benchmark entry points",
+        "product_discovery": f"{brand} gives shoppers {product_count or 'multiple'} product discovery paths",
+        "educational_storytelling": f"{brand} uses {topic or 'editorial copy'} as a competitor education cue",
+        "video_rich_media": f"{brand} adds rich-media depth through {video_title or 'video-capable modules'}",
+        "cross_category_navigation": f"{brand} links {categories or 'category'} paths for broader exploration",
+    }
+    return _fit_bullet(alternatives.get(dimension, f"{brand} evidence creates a distinct benchmark cue"))
+
+
+def _reduce_cross_side_mirroring(
+    client_side: dict[str, Any] | None,
+    competitor_side: dict[str, Any] | None,
+) -> None:
+    if not isinstance(client_side, dict) or not isinstance(competitor_side, dict):
+        return
+    client_keys = {
+        _mirrored_bullet_key(text)
+        for text in client_side.get("bullets", []) or []
+        if _mirrored_bullet_key(text)
+    }
+    used = set(client_keys)
+    rewritten: list[str] = []
+    competitor_debug = list(competitor_side.get("bullet_debug", []) or [])
+    evidence = {
+        "module_count": competitor_side.get("evidence", {}).get("module_count", 0),
+        "categories": competitor_side.get("evidence", {}).get("categories", []),
+        "headings": competitor_side.get("evidence", {}).get("headings", []),
+        "descriptions": [],
+        "videos": competitor_side.get("evidence", {}).get("video_titles", []),
+        "product_count": competitor_side.get("evidence", {}).get("product_count", 0),
+    }
+    for index, item in enumerate(competitor_debug):
+        text = _safe_text(item.get("text"))
+        key = _mirrored_bullet_key(text)
+        if key and key in used:
+            text = _alternate_competitor_bullet(
+                item,
+                brand_name=competitor_side.get("brand_name", ""),
+                evidence=evidence,
+            )
+            item["text"] = text
+            item["signals"] = list(item.get("signals", []) or []) + ["cross_side_mirror_reworded"]
+            item["reason"] = (
+                _safe_text(item.get("reason"))
+                + " Reworded to avoid mirroring the client Brand Shop bullets."
+            ).strip()
+        candidate_key = _mirrored_bullet_key(text)
+        suffix = 2
+        while candidate_key and candidate_key in used:
+            text = _fit_bullet(f"{text} ({competitor_side.get('brand_name') or 'benchmark'} cue {suffix})")
+            item["text"] = text
+            candidate_key = _mirrored_bullet_key(text)
+            suffix += 1
+        if candidate_key:
+            used.add(candidate_key)
+        rewritten.append(text)
+        competitor_debug[index] = item
+    competitor_side["bullet_debug"] = competitor_debug[:5]
+    competitor_side["bullets"] = rewritten[:5]
+
+
 def _bullet_for_dimension(
     *,
     side: str,
@@ -886,6 +986,8 @@ def build_slide5_brand_shop(
         )
     client_side = _build_side(clients[0], "client", clients[0].get("_slide5_role_path", "")) if clients and client_has_brand_shop else None
     competitor_side = _build_side(competitors[0], "competitor", competitors[0].get("_slide5_role_path", "")) if competitors else None
+    if client_has_brand_shop:
+        _reduce_cross_side_mirroring(client_side, competitor_side)
     if competitor_side and not client_has_brand_shop:
         no_brand_debug = _no_brand_shop_bullets(
             competitor_side["dimension_debug"],

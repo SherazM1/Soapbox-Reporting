@@ -247,6 +247,13 @@ class Slide5BrandShopTests(unittest.TestCase):
         self.assertTrue(
             all("opportunity" not in item["text"].lower() for item in competitor["bullet_debug"])
         )
+        self.assertFalse(set(client["bullets"]) & set(competitor["bullets"]))
+        self.assertTrue(
+            any(
+                "cross_side_mirror_reworded" in item.get("signals", [])
+                for item in competitor["bullet_debug"]
+            )
+        )
 
     def test_category_specific_language_and_traceability(self) -> None:
         payload = build_slide5_brand_shop(

@@ -263,6 +263,15 @@ class Slide2SummaryTest(unittest.TestCase):
         self.assertIn(plan["slide2_summary"]["sections"]["consumer_demand"]["rating"], all_text)
         self.assertIn(plan["slide2_summary"]["sections"]["walmart_opportunity"]["rating"], all_text)
         self.assertIn(plan["slide2_summary"]["sections"]["competitive_benchmark"]["rating"], all_text)
+        render_fit = plan["slide2_summary"]["debug"]["render_fit"]
+        self.assertEqual(
+            set(render_fit),
+            {"consumer_demand", "walmart_opportunity", "competitive_benchmark"},
+        )
+        self.assertEqual(
+            len({item["font_fallback"] for item in render_fit.values()}),
+            1,
+        )
 
     def test_old_current_powerpoint_export_still_generates(self) -> None:
         record = _record()

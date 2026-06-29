@@ -233,6 +233,12 @@ class Slide3SearchBenchmarkTests(unittest.TestCase):
         self.assertEqual(len(pictures), 2)
         self.assertNotEqual(pictures[0].image.blob, source_picture_blobs[0])
         self.assertNotEqual(pictures[1].image.blob, source_picture_blobs[1])
+        render_fit = payload["debug"]["render_fit"]
+        self.assertEqual(set(render_fit), {"current", "benchmark"})
+        self.assertEqual(
+            len({item["font_fallback"] for item in render_fit.values()}),
+            1,
+        )
 
     @unittest.skipUnless(TEMPLATE.exists(), "New strategic template is unavailable")
     def test_missing_current_preserves_left_side_and_populates_benchmark(self) -> None:
