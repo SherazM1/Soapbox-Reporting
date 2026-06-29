@@ -248,6 +248,9 @@ class Slide5BrandShopTests(unittest.TestCase):
             all("opportunity" not in item["text"].lower() for item in competitor["bullet_debug"])
         )
         self.assertFalse(set(client["bullets"]) & set(competitor["bullets"]))
+        all_bullet_text = " ".join(client["bullets"] + competitor["bullets"]).lower()
+        self.assertNotIn("uses hero modules", all_bullet_text)
+        self.assertNotIn("product modules organize", all_bullet_text)
         self.assertTrue(
             any(
                 "cross_side_mirror_reworded" in item.get("signals", [])
@@ -268,7 +271,7 @@ class Slide5BrandShopTests(unittest.TestCase):
             item for item in all_bullets if item["dimension"] == "category_segmentation"
         ]
         self.assertTrue(
-            any("Skin Care" in item["text"] and "Hair Care" in item["text"] for item in category_bullets)
+            any("skin care" in item["text"].lower() and "navigation" in item["text"].lower() for item in category_bullets)
         )
         for item in all_bullets:
             self.assertTrue(item["template_id"])

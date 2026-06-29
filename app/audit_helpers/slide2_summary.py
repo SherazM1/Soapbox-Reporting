@@ -29,52 +29,55 @@ COMPETITIVE_BENCHMARK_LABELS = set(RATING_SCALES["competitive_benchmark"]["allow
 
 BULLET_BANK: dict[str, dict[str, str]] = {
     "consumer_demand": {
-        "established_trust": "Established shopper trust across {category_phrase}",
-        "strong_benefit_positioning": "Strong {benefit_phrase} positioning",
-        "broad_relevance": "Broad {category_phrase} relevance across Walmart PDPs",
-        "positive_review_foundation": "Positive review foundation supports consumer confidence",
-        "clear_shopping_journey_fit": "Clear fit within Walmart's {category_phrase} shopping journey",
-        "growing_relevance": "Growing shopper relevance across {category_phrase}",
-        "review_confidence_opportunity": "Opportunity to strengthen review-backed consumer confidence",
-        "limited_review_evidence": "Limited review evidence creates room to build shopper confidence",
-        "benefit_clarity_opportunity": "Opportunity to clarify {benefit_phrase} positioning",
+        "established_trust": "Established shopper trust in {category_context_phrase}",
+        "strong_benefit_positioning": "Strong {product_positioning_phrase}",
+        "broad_relevance": "Fits high-frequency Walmart pantry routines",
+        "positive_review_foundation": "Reviews provide a trust base for conversion",
+        "clear_shopping_journey_fit": "Clear fit for the Walmart {shopping_journey_phrase}",
+        "growing_relevance": "Growing relevance for {shopper_phrase}",
+        "review_confidence_opportunity": "Review depth can further reduce purchase friction",
+        "limited_review_evidence": "Sparse reviews make trust-building more important",
+        "benefit_clarity_opportunity": "Clarify {benefit_phrase} benefits earlier",
     },
     "walmart_opportunity": {
-        "shelf_ownership": "{category_phrase} shelf ownership can be strengthened through PDP execution",
-        "conversion_optimization": "Content cleanup creates room for clearer Walmart shopper guidance",
-        "visual_storytelling_gap": "Opportunity to expand {visual_phrase}",
+        "shelf_ownership": "{product_type_phrase} PDP content can strengthen shelf ownership",
+        "conversion_optimization": "Content cleanup can sharpen shopper guidance",
+        "visual_storytelling_gap": "Expand {visual_phrase}",
         "assortment_segmentation": "Sharper assortment cues can help shoppers compare variants faster",
-        "shopper_guidance": "PDP content can guide shoppers more directly from need state to product choice",
+        "shopper_guidance": "Guide shoppers from need state to product choice",
     },
     "competitive_benchmark": {
-        "broader_discoverability": "Competitor evidence shows broader {category_phrase} discoverability",
-        "stronger_visual_storytelling": "Competitive PDPs show stronger {visual_phrase}",
-        "educational_merchandising": "Educational merchandising supports clearer {category_phrase} comparison",
+        "broader_discoverability": "Competitors broaden {discovery_phrase}",
+        "stronger_visual_storytelling": "Benchmark PDPs use stronger {visual_phrase}",
+        "educational_merchandising": "Education helps shoppers compare formats faster",
         "benefit_education": "Category leaders use clearer {benefit_phrase} education",
-        "search_visibility": "Search visibility is increasingly shaped by benefit and use-case language",
+        "search_visibility": "Benefit and use-case language shape {shelf_navigation_phrase}",
         "limited_competitor_evidence": "Limited competitor evidence available for benchmarking",
     },
 }
 
-FALLBACK_BULLET_IDS: dict[str, tuple[str, str, str]] = {
+FALLBACK_BULLET_IDS: dict[str, tuple[str, ...]] = {
     "consumer_demand": (
         "growing_relevance",
         "clear_shopping_journey_fit",
         "review_confidence_opportunity",
+        "benefit_clarity_opportunity",
     ),
     "walmart_opportunity": (
         "shelf_ownership",
         "conversion_optimization",
         "shopper_guidance",
+        "assortment_segmentation",
     ),
     "competitive_benchmark": (
         "limited_competitor_evidence",
         "search_visibility",
         "educational_merchandising",
+        "benefit_education",
     ),
 }
 
-SLIDE2_MAX_BULLET_CHARS = 72
+SLIDE2_MAX_BULLET_CHARS = 64
 
 
 def _safe_text(value: Any) -> str:
@@ -106,7 +109,10 @@ def _shorten_slide2_bullet(text: str, *, hard_limit: int = SLIDE2_MAX_BULLET_CHA
     return shortened or clean[:hard_limit].rsplit(" ", 1)[0].rstrip(" ,;-")
 
 
-def _dedupe_and_fit_slide2_sections(sections: dict[str, dict[str, Any]]) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
+def _dedupe_and_fit_slide2_sections(
+    sections: dict[str, dict[str, Any]],
+    phrases: dict[str, str],
+) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
     original: dict[str, list[str]] = {
         key: list(section.get("bullets", []) or [])
         for key, section in sections.items()
@@ -144,6 +150,29 @@ def _dedupe_and_fit_slide2_sections(sections: dict[str, dict[str, Any]]) -> tupl
                 final[section_key].append(shortened_text)
             else:
                 dropped[section_key].append(clean)
+
+        for template_id in FALLBACK_BULLET_IDS.get(section_key, ()):
+            if len(final[section_key]) >= 4:
+                break
+            fallback = _shorten_slide2_bullet(
+                BULLET_BANK[section_key][template_id].format(**phrases)
+            )
+            normalized = normalize_bullet_text(fallback)
+            if normalized and normalized not in used:
+                used.add(normalized)
+                final[section_key].append(fallback)
+                shortened[section_key].append(fallback)
+                section.setdefault("bullet_debug", []).append(
+                    {
+                        "text": fallback,
+                        "template_id": template_id,
+                        "section": section_key,
+                        "signals": ["dedupe_refill_controlled_bullet"],
+                        "supporting_count": 0,
+                        "analyzed_count": 0,
+                        "reason": "Controlled refill added after cross-section dedupe to preserve four bullets.",
+                    }
+                )
 
         section["bullets"] = final[section_key]
         selected_debug = []
@@ -202,6 +231,52 @@ def _first_value(records: list[dict[str, Any]], *keys: str) -> str:
     return ""
 
 
+def _clean_phrase(value: str) -> str:
+    cleaned = " ".join(_safe_text(value).replace("&", "and").split())
+    return cleaned.strip(" /-").lower()
+
+
+def _last_category_segment(category: str) -> str:
+    parts = [_clean_phrase(part) for part in _safe_text(category).split("/") if _clean_phrase(part)]
+    return parts[-1] if parts else ""
+
+
+def _phrase_set(
+    *,
+    category_phrase: str,
+    category: str,
+    product_type: str,
+    benefit_phrase: str,
+    visual_phrase: str,
+    shopper_phrase: str,
+) -> dict[str, str]:
+    category_label = _clean_phrase(_last_category_segment(category) or category_phrase or "the category")
+    product_label = _clean_phrase(product_type or category_phrase or category_label or "the product type")
+    if category_label.startswith("the "):
+        category_context = category_label
+    elif category_label == product_label:
+        category_context = f"the {category_label} category"
+    else:
+        category_context = f"the {category_label} and {product_label} category"
+    if category_label == product_label:
+        segment_phrase = f"the {product_label} segment"
+    else:
+        segment_phrase = f"the {product_label} segment within {category_label}"
+    return {
+        "category_phrase": category_phrase,
+        "category_context_phrase": category_context,
+        "product_type_phrase": product_label,
+        "product_positioning_phrase": f"{product_label} positioning",
+        "shopping_journey_phrase": f"{product_label} shopping journey",
+        "discovery_phrase": f"{category_label} discovery and comparison",
+        "shelf_navigation_phrase": f"{product_label} shelf navigation",
+        "segment_phrase": segment_phrase,
+        "benefit_phrase": benefit_phrase,
+        "visual_phrase": visual_phrase,
+        "shopper_phrase": shopper_phrase,
+    }
+
+
 def resolve_slide2_phrases(primary_records: list[dict[str, Any]]) -> dict[str, str]:
     records = [record for record in (primary_records or []) if isinstance(record, dict)]
     blob = _blob(records)
@@ -209,47 +284,60 @@ def resolve_slide2_phrases(primary_records: list[dict[str, Any]]) -> dict[str, s
     product_type = _first_value(records, "product_type", "subcategory")
 
     if any(term in blob for term in ("baby wash", "baby care", "infant", "toddler", "baby")):
-        return {
-            "category_phrase": "baby care",
-            "benefit_phrase": "gentle family-care",
-            "visual_phrase": "routine-based bath-time storytelling",
-            "shopper_phrase": "parents and family-care shoppers",
-        }
+        return _phrase_set(
+            category_phrase="baby care",
+            category=category or "baby care",
+            product_type=product_type or "baby care",
+            benefit_phrase="gentle family-care",
+            visual_phrase="routine-based bath-time storytelling",
+            shopper_phrase="parents and family-care shoppers",
+        )
     if any(term in blob for term in ("skin care", "skincare", "dermatolog", "body wash", "lotion", "serum")):
-        return {
-            "category_phrase": "skin care",
-            "benefit_phrase": "ingredient-led",
-            "visual_phrase": "regimen and usage education",
-            "shopper_phrase": "care-focused shoppers",
-        }
+        return _phrase_set(
+            category_phrase="skin care",
+            category=category or "skin care",
+            product_type=product_type or "skin care",
+            benefit_phrase="ingredient-led",
+            visual_phrase="regimen and usage education",
+            shopper_phrase="care-focused shoppers",
+        )
     if any(term in blob for term in ("nut butter", "peanut butter", "almond butter")):
-        return {
-            "category_phrase": "nut butter and spreads",
-            "benefit_phrase": "protein and ingredient-led",
-            "visual_phrase": "snack, breakfast, and recipe-based usage storytelling",
-            "shopper_phrase": "family pantry shoppers",
-        }
+        return _phrase_set(
+            category_phrase="nut butter and spreads",
+            category=category or "pantry spreads",
+            product_type=product_type or "nut butter spreads",
+            benefit_phrase="protein and ingredient-led",
+            visual_phrase="snack, breakfast, and recipe-based usage storytelling",
+            shopper_phrase="family pantry shoppers",
+        )
     if any(term in blob for term in ("jam", "jell", "preserve", "fruit spread")):
-        return {
-            "category_phrase": "jams and fruit spreads",
-            "benefit_phrase": "flavor-forward",
-            "visual_phrase": "recipe-led serving inspiration",
-            "shopper_phrase": "breakfast and snacking shoppers",
-        }
+        return _phrase_set(
+            category_phrase="jams and fruit spreads",
+            category=category or "fruit spreads",
+            product_type=product_type or "jams and preserves",
+            benefit_phrase="flavor-forward",
+            visual_phrase="recipe-led serving inspiration",
+            shopper_phrase="breakfast and snacking shoppers",
+        )
     if any(term in blob for term in ("household cleaning", "cleaner", "surface", "disinfect")):
-        return {
-            "category_phrase": "household cleaning",
-            "benefit_phrase": "efficacy-led",
-            "visual_phrase": "usage and surface-specific education",
-            "shopper_phrase": "solution-seeking household shoppers",
-        }
+        return _phrase_set(
+            category_phrase="household cleaning",
+            category=category or "household cleaning",
+            product_type=product_type or "cleaning products",
+            benefit_phrase="efficacy-led",
+            visual_phrase="usage and surface-specific education",
+            shopper_phrase="solution-seeking household shoppers",
+        )
 
-    return {
-        "category_phrase": product_type or category or "the category",
-        "benefit_phrase": "benefit-led",
-        "visual_phrase": "use-case and educational storytelling",
-        "shopper_phrase": "Walmart shoppers",
-    }
+    fallback = product_type or category or "the category"
+    return _phrase_set(
+        category_phrase=fallback,
+        category=category or fallback,
+        product_type=product_type or fallback,
+        benefit_phrase="benefit-led",
+        visual_phrase="use-case and educational storytelling",
+        shopper_phrase="Walmart shoppers",
+    )
 
 
 def _ratings(records: list[dict[str, Any]]) -> list[float]:
@@ -443,7 +531,7 @@ def _ensure_minimum_bullets(
     warnings: list[str],
 ) -> list[dict[str, Any]]:
     for template_id in FALLBACK_BULLET_IDS[section]:
-        if len(bullets) >= 3:
+        if len(bullets) >= 4:
             break
         _append_unique_bullet(
             bullets,
@@ -452,11 +540,11 @@ def _ensure_minimum_bullets(
                 template_id,
                 phrases,
                 signals=["fallback_controlled_bullet"],
-                reason="Selected as a safe controlled fallback because fewer than three evidence-backed bullets were available.",
+                reason="Selected as a safe controlled fallback because fewer than four evidence-backed bullets were available.",
             ),
         )
-    if len(bullets) < 3:
-        warnings.append(f"{section} had fewer than three unique controlled fallback bullets.")
+    if len(bullets) < 4:
+        warnings.append(f"{section} had fewer than four unique controlled fallback bullets.")
     return bullets[:4]
 
 
@@ -777,7 +865,7 @@ def build_slide2_summary_payload(
 
     intro_copy = (
         f"{client_name} has built a foundation of shopper relevance across "
-        f"{phrases['category_phrase']}, with the next opportunity centered on translating "
+        f"{phrases['category_context_phrase']}, with the next opportunity centered on translating "
         "that equity into stronger Walmart digital shelf ownership, category discoverability, "
         "and conversion-focused PDP execution."
     )
@@ -819,7 +907,7 @@ def build_slide2_summary_payload(
             warnings=competitive_warnings,
         ),
     }
-    sections, fit_debug = _dedupe_and_fit_slide2_sections(sections)
+    sections, fit_debug = _dedupe_and_fit_slide2_sections(sections, phrases)
     debug_warnings = []
     for section in sections.values():
         debug_warnings.extend(section.get("debug_warnings", []) or [])

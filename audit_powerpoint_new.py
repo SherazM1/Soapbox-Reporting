@@ -583,6 +583,20 @@ def _slide4_product_phrase(facts: dict[str, Any]) -> str:
     return category.replace("&", "and") or "product"
 
 
+def _slide4_content_phrases(facts: dict[str, Any]) -> dict[str, str]:
+    product_phrase = _slide4_product_phrase(facts)
+    category = _safe_text(facts.get("category")).split("/")[-1].replace("&", "and").strip().lower()
+    category = category or product_phrase
+    return {
+        "product": product_phrase,
+        "positioning": f"{product_phrase} positioning",
+        "discovery": f"{product_phrase} discovery",
+        "education": f"{product_phrase} shopper education",
+        "content": f"{product_phrase} PDP content",
+        "category_context": f"{category} category" if category != product_phrase else f"{product_phrase} space",
+    }
+
+
 def _build_slide4_evidence_bullets(
     record: dict[str, Any],
     *,
@@ -597,6 +611,7 @@ def _build_slide4_evidence_bullets(
     warnings: list[str] = []
     used = existing_texts
     product_phrase = _slide4_product_phrase(facts)
+    phrases = _slide4_content_phrases(facts)
     brand = facts["brand"] or side.replace("_", " ").title()
     is_client = side == "client"
 
@@ -605,9 +620,9 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                "Client hazelnut-cocoa cues support breakfast relevance"
+                "Client hazelnut-cocoa positioning supports breakfast relevance"
                 if is_client
-                else f"{brand} sets a hazelnut-cocoa benchmark"
+                else f"{brand} sets a hazelnut-cocoa comparison benchmark"
             ),
             bullet_type="strength",
             dimension="ingredient_positioning",
@@ -620,9 +635,9 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                "Client PDP reinforces peanut-butter pantry cues"
+                "Client peanut-butter PDP content reinforces pantry cues"
                 if is_client
-                else f"{brand} frames peanut-butter protein and pantry cues"
+                else f"{brand} frames peanut-butter protein cues for comparison"
             ),
             bullet_type="strength",
             dimension="ingredient_positioning",
@@ -635,9 +650,9 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                f"{facts['image_count']}-image carousel supports client education sequencing"
+                f"{facts['image_count']}-image carousel sequences client shopper education"
                 if is_client
-                else f"{brand} gives shoppers {facts['image_count']} carousel comparison points"
+                else f"{brand} gives shoppers {facts['image_count']} visual comparison points"
             ),
             bullet_type="opportunity",
             dimension="image_sequence",
@@ -650,9 +665,9 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                "Pack and nutrition cues clarify client comparison"
+                f"Pack and nutrition cues sharpen {phrases['education']}"
                 if is_client
-                else f"{brand} uses pack and nutrition as competitor proof points"
+                else f"{brand} uses pack and nutrition as proof points"
             ),
             bullet_type="strength",
             dimension="nutrition_detail",
@@ -665,9 +680,9 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                f"{product_phrase.title()} cues tie client PDPs to breakfast and snacks"
+                f"{product_phrase.title()} cues connect PDP content to breakfast"
                 if is_client
-                else f"{brand} ties {product_phrase} to breakfast and pantry occasions"
+                else f"{brand} ties {product_phrase} discovery to pantry occasions"
             ),
             bullet_type="strength",
             dimension="usage_occasions",
@@ -680,9 +695,9 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                f"Client {product_phrase} PDP can clarify usage occasions"
+                f"Client {phrases['content']} can clarify usage occasions"
                 if is_client
-                else f"{brand} can clarify {product_phrase} usage occasions"
+                else f"{brand} can make {product_phrase} occasions clearer"
             ),
             bullet_type="opportunity",
             dimension="usage_occasions",
@@ -695,9 +710,9 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                "Client review volume supports PDP confidence"
+                f"Client review volume supports {phrases['product']} confidence"
                 if is_client
-                else f"{brand} review volume raises the benchmark"
+                else f"{brand} review volume raises comparison expectations"
             ),
             bullet_type="strength",
             dimension="review_authority",
@@ -710,9 +725,9 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                "Enhanced content anchors client brand storytelling"
+                f"Enhanced content deepens client {phrases['education']}"
                 if is_client
-                else f"{brand} enhanced content strengthens education"
+                else f"{brand} enhanced content strengthens shopper education"
             ),
             bullet_type="strength",
             dimension="enhanced_content",
@@ -725,7 +740,7 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                "Walmart fulfillment cues support client confidence"
+                f"Walmart fulfillment cues support {phrases['product']} trust"
                 if is_client
                 else f"{brand} fulfillment cues support purchase confidence"
             ),
@@ -740,9 +755,9 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                "Client recipe/lifestyle imagery can strengthen usage cues"
+                f"Client recipe imagery can strengthen {phrases['positioning']}"
                 if is_client
-                else f"{brand} can expand recipe/lifestyle context"
+                else f"{brand} can add recipe context to {product_phrase} discovery"
             ),
             bullet_type="opportunity",
             dimension="visual_storytelling",
@@ -755,7 +770,7 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                "Enhanced storytelling can add client education"
+                f"Enhanced storytelling can add client {phrases['education']}"
                 if is_client
                 else f"{brand} can add richer shopper education"
             ),
@@ -768,28 +783,28 @@ def _build_slide4_evidence_bullets(
 
     fallback_candidates = [
         (
-            f"{brand} keeps {product_phrase} cues visible",
+            f"{brand} keeps {phrases['positioning']} visible",
             "strength",
             "brand_specificity",
             ["brand", product_phrase],
             "Fallback used brand/product-type evidence to avoid generic duplicate wording.",
         ),
         (
-            "Opening product sequence can clarify shopper priorities",
+            "Opening image sequence can clarify shopper priorities",
             "opportunity",
             "opening_sequence",
             ["opening_sequence"],
             "Controlled fallback opportunity used when richer evidence was limited.",
         ),
         (
-            "Carousel education can strengthen shopper guidance",
+            f"Carousel education can strengthen {phrases['content']}",
             "opportunity",
             "shopper_education",
             ["carousel_education"],
             "Controlled fallback opportunity used to preserve template bullet count.",
         ),
         (
-            f"{facts['brand'] or side.title()} can broaden variant and occasion storytelling",
+            f"{facts['brand'] or side.title()} can broaden variant storytelling",
             "opportunity",
             "variant_storytelling",
             ["variant_occasion_storytelling"],
@@ -1077,10 +1092,12 @@ def _fit_bullet_shape_group(
     max_lines: int,
     drop_threshold: int,
     font_threshold: int,
+    base_font_size: int | None = None,
     fallback_font_size: int = 10,
+    allow_drop: bool = False,
 ) -> dict[str, dict[str, Any]]:
     prepared: dict[str, dict[str, Any]] = {}
-    global_font = None
+    global_font = base_font_size
     for key, shape, bullets in items:
         rendered = [
             _safe_text(bullet)
@@ -1088,7 +1105,7 @@ def _fit_bullet_shape_group(
             if _safe_text(bullet)
         ][:max_lines]
         dropped: list[str] = []
-        while len(rendered) > 1 and sum(len(bullet) for bullet in rendered) > drop_threshold:
+        while allow_drop and len(rendered) > 1 and sum(len(bullet) for bullet in rendered) > drop_threshold:
             dropped.insert(0, rendered.pop())
         if sum(len(bullet) for bullet in rendered) > font_threshold:
             global_font = fallback_font_size
@@ -1233,13 +1250,13 @@ def _apply_slide3_search_benchmark(prs: Any, slide: Any, payload: dict[str, Any]
             if _safe_text(value)
         ]
         bullet_shape = side_shapes.get("bullets")
-        if bullet_shape is not None and len(bullets) == 5:
+        if bullet_shape is not None and len(bullets) == 4:
             bullet_render_items.append((side, bullet_shape, bullets))
         elif bullet_shape is None:
             print(f"[audit_powerpoint_new] Slide 3 {side} bullet box was not found.")
         else:
             print(
-                f"[audit_powerpoint_new] Slide 3 {side} did not contain exactly five bullets; "
+                f"[audit_powerpoint_new] Slide 3 {side} did not contain exactly four bullets; "
                 "the template bullet box was preserved."
             )
 
@@ -1277,10 +1294,11 @@ def _apply_slide3_search_benchmark(prs: Any, slide: Any, payload: dict[str, Any]
     if bullet_render_items:
         payload.setdefault("debug", {})["render_fit"] = _fit_bullet_shape_group(
             bullet_render_items,
-            max_lines=5,
-            drop_threshold=310,
-            font_threshold=270,
-            fallback_font_size=10,
+            max_lines=4,
+            drop_threshold=260,
+            font_threshold=235,
+            base_font_size=12,
+            fallback_font_size=11,
         )
 
 
@@ -1402,11 +1420,33 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
 
     if layout_mode == "2-column" and len(active_indices) == 2:
         target_indices = [0, 2]
-        for inactive_index in range(3):
-            _replace_shape_text_preserve_style(labels[inactive_index], "")
-            _replace_bullet_shape_text(bullets[inactive_index], [])
+        inactive_indices = [index for index in range(3) if index not in target_indices]
+        for inactive_index in inactive_indices:
+            _remove_shape(labels[inactive_index])
+            _remove_shape(bullets[inactive_index])
+        bullet_width = max(
+            int(bullet_bounds[0][2]),
+            int(bullet_bounds[2][2]),
+            int(Inches(4.05)),
+        )
+        gutter = int(Inches(0.55))
+        total_width = (bullet_width * 2) + gutter
+        start_left = int((int(prs.slide_width) - total_width) / 2)
+        image_width = max(int(container_bounds[0][2]), int(container_bounds[2][2]))
+        label_width = max(int(label_bounds[0][2]), int(label_bounds[2][2]))
+        two_column_bounds: dict[int, dict[str, tuple[int, int, int, int]]] = {}
+        for slot, target_index in enumerate(target_indices):
+            column_left = start_left + slot * (bullet_width + gutter)
+            image_left = int(column_left + (bullet_width - image_width) / 2)
+            label_left = int(column_left + (bullet_width - label_width) / 2)
+            two_column_bounds[target_index] = {
+                "label": (label_left, label_bounds[target_index][1], label_width, label_bounds[target_index][3]),
+                "bullet": (column_left, bullet_bounds[target_index][1], bullet_width, bullet_bounds[target_index][3]),
+                "container": (image_left, container_bounds[target_index][1], image_width, container_bounds[target_index][3]),
+            }
         render_pairs = list(zip(target_indices, [columns[index] for index in active_indices]))
     else:
+        two_column_bounds = {}
         render_pairs = [(index, column) for index, column in enumerate(columns)]
 
     for target_index, column in render_pairs:
@@ -1414,12 +1454,17 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
             _replace_shape_text_preserve_style(labels[target_index], "")
             _replace_bullet_shape_text(bullets[target_index], [])
             continue
-        labels[target_index].left, labels[target_index].top, labels[target_index].width, labels[target_index].height = label_bounds[target_index]
-        bullets[target_index].left, bullets[target_index].top, bullets[target_index].width, bullets[target_index].height = bullet_bounds[target_index]
+        bounds = two_column_bounds.get(target_index)
+        labels[target_index].left, labels[target_index].top, labels[target_index].width, labels[target_index].height = (
+            bounds["label"] if bounds else label_bounds[target_index]
+        )
+        bullets[target_index].left, bullets[target_index].top, bullets[target_index].width, bullets[target_index].height = (
+            bounds["bullet"] if bounds else bullet_bounds[target_index]
+        )
         _replace_shape_text_preserve_style(labels[target_index], column.get("label", ""))
         _fit_slide4_label(labels[target_index])
         _fit_bullet_shape_text(bullets[target_index], list(column.get("bullets", []) or []), max_lines=4)
-        left, top, width, height = container_bounds[target_index]
+        left, top, width, height = bounds["container"] if bounds else container_bounds[target_index]
         bullet_top = int(bullets[target_index].top)
         height = max(1, min(height, bullet_top - Inches(0.05) - top))
         _populate_slide4_carousel(
@@ -1766,7 +1811,8 @@ def _apply_slide2_summary(slide: Any, payload: dict[str, Any]) -> None:
             max_lines=4,
             drop_threshold=250,
             font_threshold=220,
-            fallback_font_size=10,
+            base_font_size=12,
+            fallback_font_size=11,
         )
 
 

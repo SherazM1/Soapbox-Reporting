@@ -514,6 +514,20 @@ def _short_phrase(values: list[str], max_items: int = 3) -> str:
     return f"{cleaned[0]}, {cleaned[1]}, and {cleaned[2]}"
 
 
+def _category_context(categories: list[str]) -> str:
+    phrase = _short_phrase(categories, 2)
+    if not phrase:
+        return "category discovery"
+    return f"{phrase} discovery"
+
+
+def _navigation_context(categories: list[str]) -> str:
+    phrase = _short_phrase(categories, 2)
+    if not phrase:
+        return "shop navigation"
+    return f"{phrase} navigation"
+
+
 def _fit_bullet(text: str) -> str:
     text = re.sub(r"\s+", " ", text).strip()
     words = text.split()
@@ -547,6 +561,28 @@ def _mirrored_bullet_key(text: str) -> str:
     return " ".join(tokens)
 
 
+def _bullet_token_set(text: str) -> set[str]:
+    return {
+        token
+        for token in _mirrored_bullet_key(text).split()
+        if len(token) > 3
+    }
+
+
+def _has_mirrored_structure(text: str, client_token_sets: list[set[str]]) -> bool:
+    candidate = _bullet_token_set(text)
+    if not candidate:
+        return False
+    for client_tokens in client_token_sets:
+        if not client_tokens:
+            continue
+        overlap = len(candidate & client_tokens)
+        smaller = max(1, min(len(candidate), len(client_tokens)))
+        if overlap / smaller >= 0.45:
+            return True
+    return False
+
+
 def _alternate_competitor_bullet(
     item: dict[str, Any],
     *,
@@ -561,13 +597,13 @@ def _alternate_competitor_bullet(
     product_count = int(evidence.get("product_count", 0) or 0)
     dimension = item.get("dimension")
     alternatives = {
-        "brand_presentation": f"{brand} anchors the benchmark with {module_count or 'multiple'} shop modules",
-        "lifestyle_merchandising": f"{brand} frames competitive occasions through {topic or 'editorial'} content",
-        "category_segmentation": f"{brand} turns {categories or 'category'} navigation into benchmark entry points",
-        "product_discovery": f"{brand} gives shoppers {product_count or 'multiple'} product discovery paths",
-        "educational_storytelling": f"{brand} uses {topic or 'editorial copy'} as a competitor education cue",
-        "video_rich_media": f"{brand} adds rich-media depth through {video_title or 'video-capable modules'}",
-        "cross_category_navigation": f"{brand} links {categories or 'category'} paths for broader exploration",
+        "brand_presentation": f"{brand} anchors the benchmark with {module_count or 'multiple'} branded sections",
+        "lifestyle_merchandising": f"{brand} frames shopping occasions through {topic or 'editorial'} content",
+        "category_segmentation": f"{brand} turns {_navigation_context(evidence.get('categories', []) or [])} into entry points",
+        "product_discovery": f"{brand} gives shoppers {product_count or 'multiple'} discovery paths",
+        "educational_storytelling": f"{brand} uses {topic or 'editorial copy'} for shopper education",
+        "video_rich_media": f"{brand} adds rich-media depth through {video_title or 'video content'}",
+        "cross_category_navigation": f"{brand} links {_category_context(evidence.get('categories', []) or [])} paths",
     }
     return _fit_bullet(alternatives.get(dimension, f"{brand} evidence creates a distinct benchmark cue"))
 
@@ -583,6 +619,10 @@ def _reduce_cross_side_mirroring(
         for text in client_side.get("bullets", []) or []
         if _mirrored_bullet_key(text)
     }
+    client_token_sets = [
+        _bullet_token_set(text)
+        for text in client_side.get("bullets", []) or []
+    ]
     used = set(client_keys)
     rewritten: list[str] = []
     competitor_debug = list(competitor_side.get("bullet_debug", []) or [])
@@ -597,7 +637,7 @@ def _reduce_cross_side_mirroring(
     for index, item in enumerate(competitor_debug):
         text = _safe_text(item.get("text"))
         key = _mirrored_bullet_key(text)
-        if key and key in used:
+        if key and (key in used or _has_mirrored_structure(text, client_token_sets)):
             text = _alternate_competitor_bullet(
                 item,
                 brand_name=competitor_side.get("brand_name", ""),
@@ -635,6 +675,8 @@ def _bullet_for_dimension(
 ) -> dict[str, Any]:
     score = dimension_data["score"]
     categories = _short_phrase(evidence["categories"])
+    category_context = _category_context(evidence["categories"])
+    navigation_context = _navigation_context(evidence["categories"])
     topic = _short_phrase([*evidence["headings"], *evidence["descriptions"]], 1)
     video_title = _short_phrase(evidence["videos"], 1)
     module_count = int(evidence.get("module_count", 0) or len(evidence.get("module_types", []) or []))
@@ -643,46 +685,46 @@ def _bullet_for_dimension(
     strength_templates = {
         "brand_presentation": (
             "brand_strength_01",
-            f"{brand_name} uses hero modules to anchor brand context" if brand_name and module_phrase else "Hero and module structure anchors brand context",
+            f"{brand_name} uses {module_phrase} to establish shop context" if brand_name and module_phrase else "Branded sections establish shop context",
         ),
         "lifestyle_merchandising": (
             "lifestyle_strength_02",
-            f"{topic} imagery reinforces shopper use cases" if topic else "Lifestyle-led merchandising supports engagement",
+            f"{topic} connects the shop to shopper occasions" if topic else "Lifestyle merchandising builds occasion context",
         ),
         "category_segmentation": (
             "category_strength_02",
-            f"{categories} navigation broadens discovery" if categories else "Clear category pathways simplify exploration",
+            f"{navigation_context.title()} broadens discovery" if categories else "Clear pathways simplify shop exploration",
         ),
         "product_discovery": (
             "product_strength_01",
-            f"Product modules organize {product_count} items into clearer shopper entry points" if product_count else "Product modules create clearer shopper entry points",
+            f"{product_count} products create clearer discovery paths" if product_count else "Product pathways clarify shopper entry points",
         ),
         "educational_storytelling": (
             "education_strength_02",
-            f"{topic} content supports shopper education" if topic else "Educational storytelling reinforces product benefits",
+            f"{topic} content deepens shopper education" if topic else "Education modules clarify product benefits",
         ),
         "video_rich_media": (
             "video_strength_02",
-            f"{video_title} adds immersive brand education" if video_title else "Rich media supports engaging product discovery",
+            f"{video_title} adds richer brand education" if video_title else "Rich media supports engaging product discovery",
         ),
         "cross_category_navigation": (
             "cross_strength_02",
-            f"{categories} pathways encourage broader brand exploration" if categories else "Multiple pathways encourage broader brand exploration",
+            f"{category_context.title()} encourages broader exploration" if categories else "Multiple pathways encourage broader exploration",
         ),
     }
     opportunity_templates = {
-        "brand_presentation": ("brand_opportunity_01", "Hero structure can do more brand-storytelling work"),
-        "lifestyle_merchandising": ("lifestyle_opportunity_01", "Lifestyle modules could connect products to shopper occasions"),
-        "category_segmentation": ("category_opportunity_02", "Category navigation can make spread varieties easier to compare"),
-        "product_discovery": ("product_opportunity_01", "Product discovery can surface more variants and use cases"),
-        "educational_storytelling": ("education_opportunity_01", "Education modules can deepen benefit and usage storytelling"),
-        "video_rich_media": ("video_opportunity_01", "Rich-media gaps create room for deeper shopper education"),
-        "cross_category_navigation": ("cross_opportunity_01", "Cross-category paths can connect routines, needs, and basket ideas"),
+        "brand_presentation": ("brand_opportunity_01", "Opening modules can carry more brand-storytelling work"),
+        "lifestyle_merchandising": ("lifestyle_opportunity_01", "Lifestyle content can connect products to occasions"),
+        "category_segmentation": ("category_opportunity_02", "Navigation can make varieties easier to compare"),
+        "product_discovery": ("product_opportunity_01", "Discovery paths can surface more variants and use cases"),
+        "educational_storytelling": ("education_opportunity_01", "Education can deepen benefit and usage storytelling"),
+        "video_rich_media": ("video_opportunity_01", "Rich-media gaps leave room for deeper education"),
+        "cross_category_navigation": ("cross_opportunity_01", "Cross-category paths can connect routines and basket ideas"),
     }
     restrained_benchmark_templates = {
-        "brand_presentation": ("brand_benchmark_basic", f"{module_count} modules establish a basic shop identity"),
-        "lifestyle_merchandising": ("lifestyle_benchmark_basic", "Static editorial modules provide light brand context"),
-        "category_segmentation": ("category_benchmark_basic", "Category grouping provides a basic exploration path"),
+        "brand_presentation": ("brand_benchmark_basic", f"{module_count} modules establish basic shop identity"),
+        "lifestyle_merchandising": ("lifestyle_benchmark_basic", "Static editorial content provides light brand context"),
+        "category_segmentation": ("category_benchmark_basic", "Category grouping creates a basic exploration path"),
         "product_discovery": ("product_benchmark_basic", "Product presentation gives shoppers a starting point"),
         "educational_storytelling": ("education_benchmark_basic", "Available copy gives shoppers basic product context"),
         "video_rich_media": ("video_benchmark_basic", "Static rich content supports product browsing"),

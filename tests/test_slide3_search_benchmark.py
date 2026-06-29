@@ -91,8 +91,10 @@ class Slide3SearchBenchmarkTests(unittest.TestCase):
         self.assertEqual(payload["benchmark"]["source_row"], 6)
         self.assertEqual(payload["benchmark"]["search_term"], "low sugar spreads")
         self.assertEqual(payload["benchmark"]["category_phrase"], "low sugar spreads")
-        self.assertEqual(len(payload["current"]["bullets"]), 5)
-        self.assertEqual(len(payload["benchmark"]["bullets"]), 5)
+        self.assertEqual(len(payload["current"]["bullets"]), 4)
+        self.assertEqual(len(payload["benchmark"]["bullets"]), 4)
+        self.assertTrue(all(len(bullet.split()) <= 9 for bullet in payload["current"]["bullets"]))
+        self.assertTrue(all(len(bullet.split()) <= 9 for bullet in payload["benchmark"]["bullets"]))
         self.assertTrue(any("selected source row" in warning.lower() for warning in payload["warnings"]))
 
     def test_search_term_fallbacks_to_url_query_and_label(self) -> None:
@@ -166,8 +168,8 @@ class Slide3SearchBenchmarkTests(unittest.TestCase):
         self.assertIn("Great Value", payload["current"]["top_brands"])
         self.assertIn("Best seller", payload["current"]["badges"])
         self.assertIn(120, payload["current"]["review_counts"])
-        self.assertEqual(len({item["dimension"] for item in payload["current"]["bullet_debug"]}), 5)
-        self.assertEqual(len({item["dimension"] for item in payload["benchmark"]["bullet_debug"]}), 5)
+        self.assertEqual(len({item["dimension"] for item in payload["current"]["bullet_debug"]}), 4)
+        self.assertEqual(len({item["dimension"] for item in payload["benchmark"]["bullet_debug"]}), 4)
 
     @unittest.skipUnless(TEMPLATE.exists(), "New strategic template is unavailable")
     def test_slide3_generation_populates_screenshots_and_text_without_changing_constants(self) -> None:

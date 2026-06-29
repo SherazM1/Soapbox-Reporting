@@ -10,33 +10,33 @@ from app.audit_helpers.bullet_uniqueness import make_unique_bullet_text
 
 CURRENT_BULLET_BANK = {
     "brand_presence": {
-        "Strong": "Strong brand-led search presence",
-        "Moderate": "Client products maintain visible shelf presence",
-        "Missing": "Limited Client representation in search results",
-        "Unknown": "No visible Client products in captured results",
+        "Strong": "Brand visibility anchors {shopping_context}",
+        "Moderate": "Client items hold a visible shelf position",
+        "Missing": "Client presence is limited in leading results",
+        "Unknown": "Client visibility is not clear in this shelf",
     },
     "top_result_visibility": {
-        "Strong": "Strong top-of-page product visibility",
-        "Moderate": "Moderate visibility across leading results",
-        "Limited": "Limited top-of-page visibility",
-        "Missing": "Client visibility concentrates lower in results",
+        "Strong": "Top results reinforce {shelf_navigation}",
+        "Moderate": "Visibility is present across leading results",
+        "Limited": "Top-of-page visibility is still constrained",
+        "Missing": "Client presence sits lower in the search shelf",
     },
     "sponsored_competition": {
-        "Strong": "Heavy sponsored competition",
-        "Moderate": "Moderate sponsored pressure",
-        "Unknown": "Sponsored competition limits immediate visibility",
+        "Strong": "Sponsored pressure shapes the search shelf",
+        "Moderate": "Paid placements influence discovery",
+        "Unknown": "Sponsored pressure is not fully visible",
         "Missing": "Sponsored status could not be fully verified",
     },
     "keyword_alignment": {
-        "Strong": "Strong product-type keyword alignment",
+        "Strong": "Titles align with {product_type} search language",
         "Moderate": "Mixed alignment with shopper search language",
         "Limited": "Limited benefit-led keyword differentiation",
-        "Missing": "Opportunity to strengthen query-relevant title language",
+        "Missing": "Query-relevant title language can work harder",
     },
     "assortment_breadth": {
-        "Strong": "Broad Client assortment representation",
-        "Moderate": "Focused assortment presence",
-        "Limited": "Limited assortment representation",
+        "Strong": "Client assortment supports broader comparison",
+        "Moderate": "Focused assortment supports core discovery",
+        "Limited": "Assortment representation is narrow",
         "Missing": "Competitors show broader product-type coverage",
     },
     "benefit_intent_alignment": {
@@ -61,7 +61,7 @@ CURRENT_BULLET_BANK = {
 
 BENCHMARK_BULLET_BANK = {
     "keyword_alignment": {
-        "Strong": "Strong product-type keyword alignment",
+        "Strong": "Benchmark titles mirror {product_type} intent",
         "Moderate": "Mixed alignment with shopper search language",
         "Limited": "Limited benefit-led keyword differentiation",
     },
@@ -71,7 +71,7 @@ BENCHMARK_BULLET_BANK = {
         "Limited": "Benefit and use-case language broadens relevance",
     },
     "assortment_breadth": {
-        "Strong": "Broad assortment-led discoverability",
+        "Strong": "Assortment breadth expands {discovery_context}",
         "Moderate": "Expanded need-state assortment",
         "Limited": "Multiple brands compete across core search terms",
     },
@@ -295,6 +295,23 @@ def _category_phrase(search_term: str) -> str:
     return " ".join(phrase_words)
 
 
+def _search_phrase_context(search_term: str) -> dict[str, str]:
+    phrase = _category_phrase(search_term)
+    if phrase == "category search":
+        product_type = "category"
+        category = "category"
+    else:
+        product_type = phrase
+        category = phrase.replace(" spreads", "").replace(" spread", "")
+    return {
+        "product_type": product_type,
+        "shopping_context": f"{category} search and discovery",
+        "shelf_navigation": f"{product_type} shelf navigation",
+        "discovery_context": f"{category} discovery and comparison",
+        "shopping_journey": f"{product_type} shopping journey",
+    }
+
+
 def _client_brand_matches(client_brand: str, product: dict[str, Any]) -> bool:
     if not client_brand:
         return False
@@ -451,7 +468,13 @@ def _dimension_scores(search_term: str, products: list[dict[str, Any]], client_b
     return scores
 
 
-def _select_bullets(side: str, scores: dict[str, str], products: list[dict[str, Any]], client_brand: str) -> tuple[list[str], list[dict[str, Any]]]:
+def _select_bullets(
+    side: str,
+    scores: dict[str, str],
+    products: list[dict[str, Any]],
+    client_brand: str,
+    search_term: str,
+) -> tuple[list[str], list[dict[str, Any]]]:
     bank = CURRENT_BULLET_BANK if side == "current" else BENCHMARK_BULLET_BANK
     order = DIMENSION_ORDER if side == "current" else BENCHMARK_DIMENSION_ORDER
     bullets: list[str] = []
@@ -468,11 +491,22 @@ def _select_bullets(side: str, scores: dict[str, str], products: list[dict[str, 
     ]
     search_brand_phrase = ", ".join(brands[:3])
     median_reviews = int(median(review_counts)) if review_counts else 0
+    phrase_context = _search_phrase_context(search_term)
+
+    def fit(text: str) -> str:
+        clean = re.sub(r"\s+", " ", text).strip()
+        words = clean.split()
+        if len(words) > 9:
+            clean = " ".join(words[:9]).rstrip(" ,;-")
+        if len(clean) <= 68:
+            return clean
+        return clean[:65].rsplit(" ", 1)[0].rstrip(" ,;-")
 
     def add(text: str, dimension: str, score: str, signals: list[str], reason: str, template_id: str) -> None:
-        if len(bullets) >= 5:
+        if len(bullets) >= 4:
             return
-        unique_text, changed = make_unique_bullet_text(text, used_texts, fallback_subject=f"{side} search")
+        rendered = text.format(**phrase_context)
+        unique_text, changed = make_unique_bullet_text(fit(rendered), used_texts, fallback_subject=f"{side} search")
         bullets.append(unique_text)
         if changed:
             signals = [*signals, "duplicate_bullet_reworded"]
@@ -494,7 +528,7 @@ def _select_bullets(side: str, scores: dict[str, str], products: list[dict[str, 
     if side == "current":
         if client_positions:
             add(
-                f"{client_brand} appears around position {min(client_positions)} in captured results",
+                f"{client_brand} appears near position {min(client_positions)} in {phrase_context['shopping_context']}",
                 "client_brand_presence",
                 scores.get("client_brand_presence", "Unknown"),
                 [f"client_position={min(client_positions)}"],
@@ -503,7 +537,7 @@ def _select_bullets(side: str, scores: dict[str, str], products: list[dict[str, 
             )
         elif client_brand:
             add(
-                f"{client_brand} is not visible in the captured leading results",
+                f"{client_brand} is not visible in leading {phrase_context['shelf_navigation']}",
                 "client_brand_presence",
                 "Missing",
                 ["client_not_found"],
@@ -512,7 +546,7 @@ def _select_bullets(side: str, scores: dict[str, str], products: list[dict[str, 
             )
         if badges:
             add(
-                f"{badges[0]} badge visibility shapes the captured search shelf",
+                f"{badges[0]} badge visibility shapes {phrase_context['shelf_navigation']}",
                 "badge_promotional_visibility",
                 scores.get("badge_promotional_visibility", "Limited"),
                 badges[:3],
@@ -521,7 +555,7 @@ def _select_bullets(side: str, scores: dict[str, str], products: list[dict[str, 
             )
         if median_reviews:
             add(
-                f"Median review count near {median_reviews} sets a shopper-confidence benchmark",
+                f"Median review count near {median_reviews} sets trust context",
                 "review_authority",
                 scores.get("review_authority", "Limited"),
                 [f"median_reviews={median_reviews}"],
@@ -531,7 +565,7 @@ def _select_bullets(side: str, scores: dict[str, str], products: list[dict[str, 
     else:
         if search_brand_phrase:
             add(
-                f"{search_brand_phrase} create a broader competitive search set",
+                f"{search_brand_phrase} broaden {phrase_context['discovery_context']}",
                 "assortment_breadth",
                 scores.get("assortment_breadth", "Limited"),
                 brands[:3],
@@ -540,7 +574,7 @@ def _select_bullets(side: str, scores: dict[str, str], products: list[dict[str, 
             )
         if median_reviews:
             add(
-                f"Review counts around {median_reviews} show varied authority across benchmark results",
+                f"Review counts near {median_reviews} vary benchmark authority",
                 "review_authority",
                 scores.get("review_authority", "Limited"),
                 [f"median_reviews={median_reviews}"],
@@ -571,19 +605,23 @@ def _select_bullets(side: str, scores: dict[str, str], products: list[dict[str, 
             f"{side}_{dimension}",
         )
         seen_dimensions.add(dimension)
-        if len(bullets) >= 5:
+        if len(bullets) >= 4:
             break
-    while len(bullets) < 5:
-        fallback_text = "Client search content can clarify benefit and usage cues" if side == "current" else "Benchmark results broaden category and product-type cues"
+    while len(bullets) < 4:
+        fallback_text = (
+            f"Clarify benefit cues across {phrase_context['shopping_journey']}"
+            if side == "current"
+            else f"Benchmark results broaden {phrase_context['product_type']} cues"
+        )
         add(
             fallback_text,
             "fallback",
             "Unknown",
             ["controlled_fallback"],
-            "Fallback bullet added to meet the five-bullet requirement.",
+            "Fallback bullet added to meet the four-bullet requirement.",
             f"{side}_fallback",
         )
-    return bullets[:5], bullet_debug[:5]
+    return bullets[:4], bullet_debug[:4]
 
 
 def _product_position(product: dict[str, Any], fallback: int) -> int:
@@ -653,7 +691,7 @@ def _build_side_payload(record: dict[str, Any] | None, side: str, client_name: s
     )
     products = _main_products(record)
     scores = _dimension_scores(search_term, products, client_name)
-    bullets, bullet_debug = _select_bullets(side, scores, products, client_name)
+    bullets, bullet_debug = _select_bullets(side, scores, products, client_name, search_term)
     client_products = [
         {
             "position": _product_position(product, index),

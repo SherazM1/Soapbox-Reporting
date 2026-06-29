@@ -152,12 +152,12 @@ class Slide2SummaryTest(unittest.TestCase):
         self.assertEqual(evolving["sections"]["competitive_benchmark"]["rating"], "Evolving")
         self.assertEqual(competitive["sections"]["competitive_benchmark"]["rating"], "Competitive")
 
-    def test_bullet_count_is_three_to_four_per_section(self) -> None:
+    def test_bullet_count_is_four_per_section(self) -> None:
         payload = build_slide2_summary_payload([_record(gap_count=4)], competitor_records=[_record()], audit_metadata={"client_name": "test"})
         for section in payload["sections"].values():
-            self.assertGreaterEqual(len(section["bullets"]), 3)
-            self.assertLessEqual(len(section["bullets"]), 4)
+            self.assertEqual(len(section["bullets"]), 4)
             self.assertEqual(len(section["bullets"]), len(section["bullet_debug"]))
+            self.assertTrue(all(len(bullet) <= 64 for bullet in section["bullets"]))
 
     def test_bullet_debug_is_traceable_and_powerpoint_bullets_remain_text_only(self) -> None:
         payload = build_slide2_summary_payload(
@@ -205,7 +205,7 @@ class Slide2SummaryTest(unittest.TestCase):
         self.assertEqual(payload["sections"]["walmart_opportunity"]["rating"], "Meaningful")
         self.assertEqual(payload["sections"]["competitive_benchmark"]["rating"], "Evolving")
         for section in payload["sections"].values():
-            self.assertGreaterEqual(len(section["bullets"]), 3)
+            self.assertEqual(len(section["bullets"]), 4)
             self.assertTrue(section["debug_warnings"])
         self.assertTrue(payload["debug"]["warnings"])
 
