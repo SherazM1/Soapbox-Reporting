@@ -1,0 +1,1018 @@
+diff --git a/app/audit_helpers/slide2_summary.py b/app/audit_helpers/slide2_summary.py
+index 10bbe31..59185b0 100644
+--- a/app/audit_helpers/slide2_summary.py
++++ b/app/audit_helpers/slide2_summary.py
+@@ -74,11 +74,111 @@ FALLBACK_BULLET_IDS: dict[str, tuple[str, str, str]] = {
+     ),
+ }
+ 
++SLIDE2_MAX_BULLET_CHARS = 72
++
+ 
+ def _safe_text(value: Any) -> str:
+     return str(value or "").strip()
+ 
+ 
++def _shorten_slide2_bullet(text: str, *, hard_limit: int = SLIDE2_MAX_BULLET_CHARS) -> str:
++    clean = " ".join(_safe_text(text).split())
++    replacements = (
++        ("Opportunity to strengthen", "Strengthens"),
++        ("Opportunity to expand", "Expands"),
++        ("Opportunity to clarify", "Clarifies"),
++        ("Opportunity to", "Can"),
++        ("creates room for", "supports"),
++        ("conversion-focused", "conversion"),
++        ("Walmart shopper", "shopper"),
++        ("shopper confidence", "confidence"),
++        ("category discoverability", "discoverability"),
++        ("educational merchandising", "education"),
++    )
++    for old, new in replacements:
++        clean = clean.replace(old, new)
++    if len(clean) <= hard_limit:
++        return clean
++    words = clean.split()
++    while words and len(" ".join(words)) > hard_limit:
++        words.pop()
++    shortened = " ".join(words).rstrip(" ,;-")
++    return shortened or clean[:hard_limit].rsplit(" ", 1)[0].rstrip(" ,;-")
++
++
++def _dedupe_and_fit_slide2_sections(sections: dict[str, dict[str, Any]]) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
++    original: dict[str, list[str]] = {
++        key: list(section.get("bullets", []) or [])
++        for key, section in sections.items()
++        if isinstance(section, dict)
++    }
++    deduped: dict[str, list[str]] = {}
++    shortened: dict[str, list[str]] = {}
++    final: dict[str, list[str]] = {}
++    dropped: dict[str, list[str]] = {}
++    used: set[str] = set()
++
++    for section_key, section in sections.items():
++        if not isinstance(section, dict):
++            continue
++        deduped[section_key] = []
++        shortened[section_key] = []
++        final[section_key] = []
++        dropped[section_key] = []
++        for bullet in section.get("bullets", []) or []:
++            clean = _safe_text(bullet)
++            if not clean:
++                continue
++            normalized = normalize_bullet_text(clean)
++            if normalized in used or any(
++                normalized and (normalized in existing or existing in normalized)
++                for existing in used
++            ):
++                dropped[section_key].append(clean)
++                continue
++            used.add(normalized)
++            deduped[section_key].append(clean)
++            shortened_text = _shorten_slide2_bullet(clean)
++            shortened[section_key].append(shortened_text)
++            if len(final[section_key]) < 4:
++                final[section_key].append(shortened_text)
++            else:
++                dropped[section_key].append(clean)
++
++        section["bullets"] = final[section_key]
++        selected_debug = []
++        final_norms = [normalize_bullet_text(value) for value in final[section_key]]
++        for normalized in final_norms:
++            match = next(
++                (
++                    item
++                    for item in section.get("bullet_debug", []) or []
++                    if normalize_bullet_text(_shorten_slide2_bullet(item.get("text", ""))) == normalized
++                ),
++                None,
++            )
++            if match:
++                copied = dict(match)
++                copied["text"] = _shorten_slide2_bullet(copied.get("text", ""))
++                selected_debug.append(copied)
++        section["bullet_debug"] = selected_debug
++        section["bullet_fit_debug"] = {
++            "original_candidates": original.get(section_key, []),
++            "deduped_bullets": deduped[section_key],
++            "shortened_bullets": shortened[section_key],
++            "dropped_bullets": dropped[section_key],
++            "final_rendered_bullets": final[section_key],
++        }
++
++    return sections, {
++        "original_candidate_bullets": original,
++        "deduped_bullets": deduped,
++        "shortened_bullets": shortened,
++        "dropped_bullets": dropped,
++        "final_rendered_bullets": final,
++    }
++
++
+ def _blob(records: list[dict[str, Any]]) -> str:
+     parts: list[str] = []
+     for record in records:
+@@ -719,6 +819,7 @@ def build_slide2_summary_payload(
+             warnings=competitive_warnings,
+         ),
+     }
++    sections, fit_debug = _dedupe_and_fit_slide2_sections(sections)
+     debug_warnings = []
+     for section in sections.values():
+         debug_warnings.extend(section.get("debug_warnings", []) or [])
+@@ -730,5 +831,6 @@ def build_slide2_summary_payload(
+             "primary_record_count": len(primary_records),
+             "competitor_record_count": len(competitor_records),
+             "warnings": debug_warnings,
++            "bullet_fit": fit_debug,
+         },
+     }
+diff --git a/app/audit_helpers/slide5_brand_shop.py b/app/audit_helpers/slide5_brand_shop.py
+index e6490d6..213792e 100644
+--- a/app/audit_helpers/slide5_brand_shop.py
++++ b/app/audit_helpers/slide5_brand_shop.py
+@@ -125,7 +125,16 @@ def _source_row(record: dict[str, Any]) -> int:
+         return 10**9
+ 
+ 
+-def _role(record: dict[str, Any]) -> str:
++def _normalize_role_value(value: Any) -> str:
++    role = _safe_text(value).lower()
++    if role == "current":
++        return "client"
++    if role == "benchmark":
++        return "competitor"
++    return role
++
++
++def _explicit_role(record: dict[str, Any]) -> str:
+     role = _safe_text(
+         _first(
+             record,
+@@ -136,20 +145,64 @@ def _role(record: dict[str, Any]) -> str:
+             "input.role",
+             "source.role",
+             "data.role",
+-            "data.originalRole",
+         )
+-    ).lower()
+-    if role == "current":
+-        return "client"
+-    if role == "benchmark":
+-        return "competitor"
+-    return role
++    )
++    return _normalize_role_value(role)
++
++
++def _original_role(record: dict[str, Any]) -> str:
++    return _normalize_role_value(
++        _first(record, "originalRole", "data.originalRole", "source.originalRole")
++    )
++
++
++def _record_brand(record: dict[str, Any]) -> str:
++    return _safe_text(
++        _first(
++            record,
++            "inputBrandName",
++            "brandName",
++            "extractedBrandName",
++            "brand",
++            "data.inputBrandName",
++            "data.brandName",
++            "data.extractedBrandName",
++            "data.brand",
++        )
++    )
++
++
++def _resolve_role(
++    record: dict[str, Any],
++    *,
++    side_fallback: str,
++    client_name: str = "",
++) -> tuple[str, str]:
++    explicit = _explicit_role(record)
++    if explicit in {"client", "competitor"}:
++        return explicit, "explicit role"
++    original = _original_role(record)
++    if original in {"client", "competitor"}:
++        return original, "originalRole"
++    brand = _normalize(_record_brand(record))
++    client = _normalize(client_name)
++    if brand and client and (brand in client or client in brand):
++        return "client", "brand/client-name matching"
++    return side_fallback, "side fallback"
+ 
+ 
+ def _screenshot(record: dict[str, Any]) -> str:
+     return _safe_text(
+         _first(
+             record,
++            "fullPageScreenshotDataUrl",
++            "fullPageScreenshotDataURL",
++            "data.fullPageScreenshotDataUrl",
++            "data.fullPageScreenshotDataURL",
++            "screenshot.fullPageDataUrl",
++            "screenshot.fullPageDataURL",
++            "data.screenshot.fullPageDataUrl",
++            "data.screenshot.fullPageDataURL",
+             "screenshotDataUrl",
+             "screenshotDataURL",
+             "data.screenshotDataUrl",
+@@ -184,7 +237,7 @@ def _status(record: dict[str, Any]) -> str:
+ 
+ def _is_valid_capture(record: dict[str, Any], expected_role: str) -> bool:
+     return (
+-        _role(record) == expected_role.lower()
++        _resolve_role(record, side_fallback=expected_role.lower())[0] == expected_role.lower()
+         and _status(record) in VALID_STATUSES
+         and _screenshot(record).lower().startswith("data:image/")
+         and bool(_modules(record))
+@@ -576,7 +629,7 @@ def _client_bullets(
+             int(dimensions[dimension]["supporting_count"]),
+             priority_index[dimension],
+         ),
+-    )[:3]
++    )[:2]
+     bullets = [
+         *(
+             _bullet_for_dimension(
+@@ -601,7 +654,7 @@ def _client_bullets(
+             for dimension in opportunities
+         ),
+     ]
+-    return dedupe_bullet_debug(bullets, fallback_subject="client brand shop")[0]
++    return dedupe_bullet_debug(bullets, fallback_subject="client brand shop")[0][:5]
+ 
+ 
+ def _competitor_bullets(
+@@ -617,7 +670,7 @@ def _competitor_bullets(
+             -int(dimensions[dimension]["supporting_count"]),
+             priority_index[dimension],
+         ),
+-    )[:6]
++    )[:5]
+     bullets = [
+         _bullet_for_dimension(
+             side="competitor",
+@@ -629,7 +682,7 @@ def _competitor_bullets(
+         )
+         for dimension in selected
+     ]
+-    return dedupe_bullet_debug(bullets, fallback_subject="competitor brand shop")[0]
++    return dedupe_bullet_debug(bullets, fallback_subject="competitor brand shop")[0][:5]
+ 
+ 
+ def _no_brand_shop_bullets(
+@@ -662,7 +715,7 @@ def _no_brand_shop_bullets(
+                 ),
+             )
+         )
+-    strength_dimensions = ranked[:4]
++    strength_dimensions = ranked[:3]
+     strength_bullets = [
+         _bullet_for_dimension(
+             side="competitor",
+@@ -716,25 +769,13 @@ def _no_brand_shop_bullets(
+     return dedupe_bullet_debug(
+         [*strength_bullets, importance, client_opportunity],
+         fallback_subject="no brand shop",
+-    )[0]
++    )[0][:5]
+ 
+ 
+-def _build_side(record: dict[str, Any], side: str) -> dict[str, Any]:
++def _build_side(record: dict[str, Any], side: str, role_path: str) -> dict[str, Any]:
+     evidence = _evidence(record)
+     dimensions = _score_dimensions(evidence)
+-    brand_name = _safe_text(
+-        _first(
+-            record,
+-            "inputBrandName",
+-            "brandName",
+-            "extractedBrandName",
+-            "brand",
+-            "data.inputBrandName",
+-            "data.brandName",
+-            "data.extractedBrandName",
+-            "data.brand",
+-        )
+-    )
++    brand_name = _record_brand(record)
+     bullet_debug = (
+         _client_bullets(dimensions, brand_name, evidence)
+         if side == "client"
+@@ -749,6 +790,18 @@ def _build_side(record: dict[str, Any], side: str) -> dict[str, Any]:
+         "source_row": _source_row(record),
+         "brand_name": brand_name,
+         "screenshot": _screenshot(record),
++        "screenshot_source": "fullPageScreenshotDataUrl"
++        if _safe_text(
++            _first(
++                record,
++                "fullPageScreenshotDataUrl",
++                "fullPageScreenshotDataURL",
++                "data.fullPageScreenshotDataUrl",
++                "data.fullPageScreenshotDataURL",
++            )
++        )
++        else "screenshotDataUrl",
++        "role_resolution_path": role_path,
+         "bullets": [item["text"] for item in bullet_debug],
+         "dimension_scores": {
+             dimension: data["score"] for dimension, data in dimensions.items()
+@@ -772,15 +825,43 @@ def build_slide5_brand_shop(
+     competitor_evidence: list[dict[str, Any]] | None,
+     *,
+     client_has_brand_shop: bool = True,
++    client_name: str = "",
+ ) -> dict[str, Any]:
++    role_debug: list[dict[str, Any]] = []
++    classified = {"client": [], "competitor": []}
++    for fallback, records in (
++        ("client", client_evidence or []),
++        ("competitor", competitor_evidence or []),
++    ):
++        for record in records:
++            if not isinstance(record, dict):
++                continue
++            resolved_role, path = _resolve_role(
++                record,
++                side_fallback=fallback,
++                client_name=client_name,
++            )
++            role_debug.append(
++                {
++                    "source_row": _source_row(record),
++                    "brand_name": _record_brand(record),
++                    "resolved_role": resolved_role,
++                    "path": path,
++                    "side_fallback": fallback,
++                }
++            )
++            if resolved_role in classified:
++                copied = dict(record)
++                copied["_slide5_role_path"] = path
++                classified[resolved_role].append(copied)
+     clients = [
+         record
+-        for record in (client_evidence or [])
++        for record in classified["client"]
+         if isinstance(record, dict) and _is_valid_capture(record, "Client")
+     ]
+     competitors = [
+         record
+-        for record in (competitor_evidence or [])
++        for record in classified["competitor"]
+         if isinstance(record, dict) and _is_valid_capture(record, "Competitor")
+     ]
+     clients.sort(key=_source_row)
+@@ -803,8 +884,8 @@ def build_slide5_brand_shop(
+             "Client Brand Shop evidence was uploaded, but No Brand Shop mode was selected; "
+             "the user selection was honored."
+         )
+-    client_side = _build_side(clients[0], "client") if clients and client_has_brand_shop else None
+-    competitor_side = _build_side(competitors[0], "competitor") if competitors else None
++    client_side = _build_side(clients[0], "client", clients[0].get("_slide5_role_path", "")) if clients and client_has_brand_shop else None
++    competitor_side = _build_side(competitors[0], "competitor", competitors[0].get("_slide5_role_path", "")) if competitors else None
+     if competitor_side and not client_has_brand_shop:
+         no_brand_debug = _no_brand_shop_bullets(
+             competitor_side["dimension_debug"],
+@@ -829,5 +910,19 @@ def build_slide5_brand_shop(
+             "valid_competitor_capture_count": len(competitors),
+             "unused_client_source_rows": [_source_row(record) for record in clients[1:]],
+             "unused_competitor_source_rows": [_source_row(record) for record in competitors[1:]],
++            "role_resolution": role_debug,
++            "screenshot_source_by_side": {
++                "client": (client_side or {}).get("screenshot_source"),
++                "competitor": (competitor_side or {}).get("screenshot_source"),
++            },
++            "module_evidence_by_side": {
++                "client": (client_side or {}).get("evidence"),
++                "competitor": (competitor_side or {}).get("evidence"),
++            },
++            "final_bullets_by_side": {
++                "client": (client_side or {}).get("bullets"),
++                "competitor": (competitor_side or {}).get("bullets"),
++            },
++            "warnings": warnings,
+         },
+     }
+diff --git a/audit_export.py b/audit_export.py
+index 8f06e93..8520db3 100644
+--- a/audit_export.py
++++ b/audit_export.py
+@@ -570,6 +570,7 @@ def build_audit_export_plan(
+         client_brand_shops,
+         competitor_brand_shops,
+         client_has_brand_shop=audit_metadata["client_has_brand_shop"],
++        client_name=audit_metadata.get("client_company_name") or audit_metadata.get("client_name") or "",
+     )
+     return {
+         "audit_metadata": audit_metadata,
+diff --git a/audit_powerpoint_new.py b/audit_powerpoint_new.py
+index 5d30678..fd955be 100644
+--- a/audit_powerpoint_new.py
++++ b/audit_powerpoint_new.py
+@@ -18,6 +18,7 @@ from app.audit_helpers.image_guides import (
+     load_image_guide,
+     resolve_image_guide_category,
+ )
++from app.audit_helpers.bullet_uniqueness import normalize_bullet_text
+ from app.audit_helpers.slide4_findings import build_slide4_group_findings
+ from audit_powerpoint import _format_cover_date
+ 
+@@ -538,7 +539,7 @@ def _append_unique_bullet(
+     used: set[str],
+ ) -> None:
+     clean = _safe_text(text)
+-    key = clean.lower()
++    key = normalize_bullet_text(clean)
+     if not clean or key in used:
+         return
+     used.add(key)
+@@ -599,44 +600,11 @@ def _build_slide4_evidence_bullets(
+             reason="Product title, description, or features reference peanut butter/protein cues.",
+             used=used,
+         )
+-    if facts["review_count"] >= 100:
+-        _append_unique_bullet(
+-            bullets,
+-            debug,
+-            text="High review volume strengthens shopper confidence",
+-            bullet_type="strength",
+-            dimension="review_authority",
+-            signals=[f"{facts['review_count']}_reviews"],
+-            reason="Review count evidence was available and materially high.",
+-            used=used,
+-        )
+-    if facts["ebc_present"]:
+-        _append_unique_bullet(
+-            bullets,
+-            debug,
+-            text="Enhanced content supports brand storytelling",
+-            bullet_type="strength",
+-            dimension="enhanced_content",
+-            signals=["enhanced_brand_content"],
+-            reason="Enhanced Brand Content is marked present in the PDP evidence.",
+-            used=used,
+-        )
+-    if facts["sold_by_walmart"] or facts["shipped_by_walmart"]:
+-        _append_unique_bullet(
+-            bullets,
+-            debug,
+-            text="Walmart fulfillment cues support purchase confidence",
+-            bullet_type="strength",
+-            dimension="retail_trust",
+-            signals=["sold_by_walmart" if facts["sold_by_walmart"] else "", "shipped_by_walmart" if facts["shipped_by_walmart"] else ""],
+-            reason="Sold/shipped by Walmart signals were present in PDP evidence.",
+-            used=used,
+-        )
+     if facts["image_count"] >= 6:
+         _append_unique_bullet(
+             bullets,
+             debug,
+-            text=f"{facts['image_count']} PDP images create room for stronger story sequencing",
++            text=f"{facts['image_count']} PDP images support stronger story sequencing",
+             bullet_type="opportunity",
+             dimension="image_sequence",
+             signals=[f"{facts['image_count']}_images"],
+@@ -669,18 +637,51 @@ def _build_slide4_evidence_bullets(
+         _append_unique_bullet(
+             bullets,
+             debug,
+-            text=f"Opportunity to connect {product_phrase} with clearer usage occasions",
++            text=f"{product_phrase.title()} can connect to clearer usage occasions",
+             bullet_type="opportunity",
+             dimension="usage_occasions",
+             signals=["limited_usage_language"],
+             reason="No clear breakfast, snack, recipe, or pantry use-case language was detected.",
+             used=used,
+         )
++    if facts["review_count"] >= 100:
++        _append_unique_bullet(
++            bullets,
++            debug,
++            text="High review volume strengthens shopper confidence",
++            bullet_type="strength",
++            dimension="review_authority",
++            signals=[f"{facts['review_count']}_reviews"],
++            reason="Review count evidence was available and materially high.",
++            used=used,
++        )
++    if facts["ebc_present"]:
++        _append_unique_bullet(
++            bullets,
++            debug,
++            text="Enhanced content supports brand storytelling",
++            bullet_type="strength",
++            dimension="enhanced_content",
++            signals=["enhanced_brand_content"],
++            reason="Enhanced Brand Content is marked present in the PDP evidence.",
++            used=used,
++        )
++    if facts["sold_by_walmart"] or facts["shipped_by_walmart"]:
++        _append_unique_bullet(
++            bullets,
++            debug,
++            text="Walmart fulfillment cues support purchase confidence",
++            bullet_type="strength",
++            dimension="retail_trust",
++            signals=["sold_by_walmart" if facts["sold_by_walmart"] else "", "shipped_by_walmart" if facts["shipped_by_walmart"] else ""],
++            reason="Sold/shipped by Walmart signals were present in PDP evidence.",
++            used=used,
++        )
+     if not _has_any(image_blob, "recipe", "serving", "lifestyle", "breakfast", "snack"):
+         _append_unique_bullet(
+             bullets,
+             debug,
+-            text="Opportunity to expand recipe and lifestyle imagery",
++            text="Recipe and lifestyle imagery can strengthen usage cues",
+             bullet_type="opportunity",
+             dimension="visual_storytelling",
+             signals=["limited_recipe_lifestyle_image_hints"],
+@@ -691,7 +692,7 @@ def _build_slide4_evidence_bullets(
+         _append_unique_bullet(
+             bullets,
+             debug,
+-            text="Opportunity to strengthen enhanced brand storytelling",
++            text="Enhanced brand storytelling can add shopper education",
+             bullet_type="opportunity",
+             dimension="enhanced_content",
+             signals=["ebc_not_present"],
+@@ -708,14 +709,14 @@ def _build_slide4_evidence_bullets(
+             "Fallback used brand/product-type evidence to avoid generic duplicate wording.",
+         ),
+         (
+-            "Opportunity to clarify the opening product sequence",
++            "Opening product sequence can clarify shopper priorities",
+             "opportunity",
+             "opening_sequence",
+             ["opening_sequence"],
+             "Controlled fallback opportunity used when richer evidence was limited.",
+         ),
+         (
+-            "Opportunity to strengthen shopper education across the carousel",
++            "Carousel education can strengthen shopper guidance",
+             "opportunity",
+             "shopper_education",
+             ["carousel_education"],
+@@ -749,8 +750,8 @@ def _build_slide4_evidence_bullets(
+             reason=reason,
+             used=used,
+         )
+-    if len(bullets) < 6:
+-        for index in range(len(bullets), 6):
++    if len(bullets) < 4:
++        for index in range(len(bullets), 4):
+             _append_unique_bullet(
+                 bullets,
+                 debug,
+@@ -761,9 +762,9 @@ def _build_slide4_evidence_bullets(
+                 reason="Last-resort side-specific fallback used to fill the existing template bullet structure without duplicates.",
+                 used=used,
+             )
+-    if len(bullets) < 6:
++    if len(bullets) < 4:
+         warnings.append("Slide 4 used restrained fallback bullets because PDP evidence was sparse.")
+-    return bullets[:6], debug[:6], warnings
++    return bullets[:4], debug[:4], warnings
+ 
+ 
+ def _build_slide4_bullets(images: list[dict[str, Any]], guide_match: dict[str, Any]) -> list[str]:
+@@ -835,7 +836,7 @@ def _build_slide4_column(
+         ]
+         for bullet in finding_bullets:
+             existing_bullet_texts.add(bullet.lower())
+-        evidence_bullets = finding_bullets[:6] or _build_slide4_bullets(images, guide_match)
++        evidence_bullets = finding_bullets[:4] or _build_slide4_bullets(images, guide_match)
+     return {
+         "label": _safe_text(_first_value(record, "brand", "Brand", "brandName")) or fallback_label,
+         "brand": _safe_text(_first_value(record, "brand", "Brand", "brandName")),
+@@ -851,7 +852,7 @@ def _build_slide4_column(
+         "sold_by_walmart": _truthy_evidence(_first_value(record, "sold_by_walmart", "Sold by Walmart")),
+         "shipped_by_walmart": _truthy_evidence(_first_value(record, "shipped_by_walmart", "Shipped by Walmart")),
+         "image_guide_match": guide_match,
+-        "bullets": evidence_bullets[:6],
++        "bullets": evidence_bullets[:4],
+         "bullet_debug": bullet_debug,
+         "warnings": warnings,
+         "findings": findings,
+@@ -904,19 +905,55 @@ def build_slide4_pdp_benchmark_payload(
+         )
+         for index in range(2)
+     ]
++    active_competitors = [column for column in competitor_columns if column.get("active")]
++    layout_mode = "2-column" if len(active_competitors) == 1 else "3-column"
+     hidden_columns = [
+-        column["label"]
++        {
++            "label": column["label"],
++            "reason": "No PDP evidence was available.",
++        }
+         for column in competitor_columns
+         if not column.get("active")
+     ]
++    columns = [client_column, *competitor_columns]
++    all_bullets: set[str] = set()
++    removed_duplicates: list[dict[str, str]] = []
++    for column in columns:
++        final_bullets = []
++        for bullet in column.get("bullets", []) or []:
++            normalized = normalize_bullet_text(bullet)
++            if normalized in all_bullets:
++                removed_duplicates.append({"column": column.get("label", ""), "bullet": bullet})
++                continue
++            all_bullets.add(normalized)
++            final_bullets.append(bullet)
++        column["bullets"] = final_bullets[:4]
+     return {
+-        "columns": [client_column, *competitor_columns],
++        "columns": columns,
+         "slide4_findings": slide4_findings,
+         "hidden_columns": hidden_columns,
++        "layout_mode": layout_mode,
+         "warnings": [
+-            f"{label} was cleared because no PDP evidence was available."
+-            for label in hidden_columns
++            f"{item['label']} was cleared because no PDP evidence was available."
++            for item in hidden_columns
+         ],
++        "debug": {
++            "layout_mode": layout_mode,
++            "hidden_columns": hidden_columns,
++            "resolved_labels": [column.get("label", "") for column in columns],
++            "resolved_category": client_column.get("category", ""),
++            "resolved_product_type": client_column.get("product_type", ""),
++            "evidence_used_per_bullet": {
++                column.get("label", f"column_{index + 1}"): column.get("bullet_debug", [])
++                for index, column in enumerate(columns)
++            },
++            "bullets_removed_for_duplication": removed_duplicates,
++            "ocr_usage": False,
++            "final_bullets": {
++                column.get("label", f"column_{index + 1}"): column.get("bullets", [])
++                for index, column in enumerate(columns)
++            },
++        },
+     }
+ 
+ 
+@@ -953,6 +990,28 @@ def _replace_bullet_shape_text(shape: Any, bullets: list[str]) -> None:
+         )
+ 
+ 
++def _fit_bullet_shape_text(shape: Any, bullets: list[str], *, max_lines: int = 4) -> dict[str, Any]:
++    final_bullets = [bullet for bullet in bullets if _safe_text(bullet)][:max_lines]
++    font_fallback = None
++    if sum(len(bullet) for bullet in final_bullets) > 250:
++        dropped = final_bullets[-1:]
++        final_bullets = final_bullets[:-1]
++    else:
++        dropped = []
++    if sum(len(bullet) for bullet in final_bullets) > 220:
++        font_fallback = 10
++        shape.text_frame.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
++        for paragraph in shape.text_frame.paragraphs:
++            for run in paragraph.runs:
++                run.font.size = Pt(font_fallback)
++    _replace_bullet_shape_text(shape, final_bullets)
++    return {
++        "rendered": final_bullets,
++        "dropped": dropped,
++        "font_fallback": font_fallback,
++    }
++
++
+ def _slide3_side_shapes(prs: Any, slide: Any) -> dict[str, dict[str, Any]]:
+     midpoint = int(prs.slide_width) // 2
+     text_shapes = [
+@@ -1166,6 +1225,8 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
+     columns = list(payload.get("columns", []) or [])[:3]
+     while len(columns) < 3:
+         columns.append({"label": f"Competitor {len(columns)}", "ordered_images": [], "bullets": []})
++    active_indices = [index for index, column in enumerate(columns) if column.get("active", True)]
++    layout_mode = payload.get("layout_mode") or ("2-column" if len(active_indices) == 2 else "3-column")
+ 
+     for shape in _walk_shapes(slide.shapes):
+         if not getattr(shape, "has_text_frame", False):
+@@ -1192,6 +1253,14 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
+         (int(shape.left), int(shape.top), int(shape.width), int(shape.height))
+         for shape in containers
+     ]
++    label_bounds = [
++        (int(shape.left), int(shape.top), int(shape.width), int(shape.height))
++        for shape in labels
++    ]
++    bullet_bounds = [
++        (int(shape.left), int(shape.top), int(shape.width), int(shape.height))
++        for shape in bullets
++    ]
+     for shape in containers:
+         _remove_shape(shape)
+     for shape in list(slide.shapes):
+@@ -1205,16 +1274,27 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
+         ):
+             _remove_shape(shape)
+ 
+-    for index, column in enumerate(columns):
++    if layout_mode == "2-column" and len(active_indices) == 2:
++        target_indices = [0, 2]
++        for inactive_index in range(3):
++            _replace_shape_text_preserve_style(labels[inactive_index], "")
++            _replace_bullet_shape_text(bullets[inactive_index], [])
++        render_pairs = list(zip(target_indices, [columns[index] for index in active_indices]))
++    else:
++        render_pairs = [(index, column) for index, column in enumerate(columns)]
++
++    for target_index, column in render_pairs:
+         if not column.get("active", True):
+-            _replace_shape_text_preserve_style(labels[index], "")
+-            _replace_bullet_shape_text(bullets[index], [])
++            _replace_shape_text_preserve_style(labels[target_index], "")
++            _replace_bullet_shape_text(bullets[target_index], [])
+             continue
+-        _replace_shape_text_preserve_style(labels[index], column.get("label", ""))
+-        _fit_slide4_label(labels[index])
+-        _replace_bullet_shape_text(bullets[index], list(column.get("bullets", []) or []))
+-        left, top, width, height = container_bounds[index]
+-        bullet_top = int(bullets[index].top)
++        labels[target_index].left, labels[target_index].top, labels[target_index].width, labels[target_index].height = label_bounds[target_index]
++        bullets[target_index].left, bullets[target_index].top, bullets[target_index].width, bullets[target_index].height = bullet_bounds[target_index]
++        _replace_shape_text_preserve_style(labels[target_index], column.get("label", ""))
++        _fit_slide4_label(labels[target_index])
++        _fit_bullet_shape_text(bullets[target_index], list(column.get("bullets", []) or []), max_lines=4)
++        left, top, width, height = container_bounds[target_index]
++        bullet_top = int(bullets[target_index].top)
+         height = max(1, min(height, bullet_top - Inches(0.05) - top))
+         _populate_slide4_carousel(
+             slide,
+@@ -1355,7 +1435,7 @@ def _apply_slide5_no_brand_shop(
+         for value in (competitor.get("bullets", []) or [])
+         if _safe_text(value)
+     ]
+-    if image_bytes is None or len(bullets) != 6:
++    if image_bytes is None or len(bullets) != 5:
+         print(
+             "[audit_powerpoint_new] Slide 5 No Brand Shop payload was incomplete; "
+             "the slide was left unchanged."
+@@ -1447,11 +1527,11 @@ def _apply_slide5_brand_shop(prs: Any, slide: Any, payload: dict[str, Any]) -> N
+                 )
+             else:
+                 _remove_shape(picture)
+-        if len(bullets) == 6:
++        if len(bullets) == 5:
+             _replace_bullet_shape_text(bullet_shape, bullets)
+         else:
+             print(
+-                f"[audit_powerpoint_new] Slide 5 {side} did not contain exactly six bullets; "
++                f"[audit_powerpoint_new] Slide 5 {side} did not contain exactly five bullets; "
+                 "the template bullet box was preserved."
+             )
+ 
+@@ -1473,37 +1553,39 @@ def _apply_slide2_summary(slide: Any, payload: dict[str, Any]) -> None:
+     if not payload:
+         return
+     shapes = _slide2_text_shapes(slide)
+-    intro_copy = _safe_text(payload.get("intro_copy"))
+-    if intro_copy:
++    phrases = payload.get("phrases", {}) or {}
++    category_phrase = _safe_text(phrases.get("category_phrase"))
++    left_replaced = False
++    if category_phrase:
+         intro_shape = next(
+             (
+                 shape
+                 for shape in shapes
+-                if _shape_contains_any(
++                if int(getattr(shape, "left", 0) or 0) < Inches(5.0)
++                and _shape_contains_any(
+                     shape,
+                     (
+-                        "has built strong consumer trust",
+-                        "the next opportunity is translating",
+-                        "clean lifestyle categories",
++                        "baby care and clean lifestyle categories",
+                     ),
+                 )
+             ),
+             None,
+         )
+-        if intro_shape is None:
+-            intro_candidates = [
+-                shape
+-                for shape in shapes
+-                if int(getattr(shape, "left", 0) or 0) < Inches(5.0)
+-                and int(getattr(shape, "top", 0) or 0) >= Inches(2.0)
+-                and int(getattr(shape, "height", 0) or 0) >= Inches(1.0)
+-            ]
+-            intro_shape = sorted(
+-                intro_candidates,
+-                key=lambda shape: int(getattr(shape, "top", 0) or 0),
+-            )[0] if intro_candidates else None
+         if intro_shape is not None:
+-            _replace_shape_text_preserve_style(intro_shape, intro_copy)
++            text = _shape_text(intro_shape)
++            updated = text.replace(
++                "baby care and clean lifestyle categories",
++                category_phrase,
++            )
++            if updated != text:
++                _replace_shape_text_preserve_style(intro_shape, updated)
++                left_replaced = True
++    payload.setdefault("debug", {})["left_category_phrase_replacement_succeeded"] = left_replaced
++    if category_phrase and not left_replaced:
++        print(
++            "[audit_powerpoint_new] Slide 2 category phrase anchor was not found; "
++            "left paragraph was left unchanged."
++        )
+ 
+     sections = payload.get("sections", {}) or {}
+     rating_shapes = sorted(
+@@ -1550,7 +1632,8 @@ def _apply_slide2_summary(slide: Any, payload: dict[str, Any]) -> None:
+             for bullet in ((sections.get(section_key, {}) or {}).get("bullets", []) or [])
+             if _safe_text(bullet)
+         ]
+-        _replace_bullet_shape_text(bullet_shapes[index], bullets[:4])
++        fit_debug = _fit_bullet_shape_text(bullet_shapes[index], bullets[:4], max_lines=4)
++        payload.setdefault("debug", {}).setdefault("render_fit", {})[section_key] = fit_debug
+ 
+ 
+ def _replace_cell_text_preserve_style(cell: Any, text: str) -> None:
+diff --git a/tests/test_combined_audit_extract.py b/tests/test_combined_audit_extract.py
+index 382a113..19f887b 100644
+--- a/tests/test_combined_audit_extract.py
++++ b/tests/test_combined_audit_extract.py
+@@ -591,8 +591,8 @@ class CombinedAuditExtractTests(unittest.TestCase):
+         self.assertIn("slide4_findings", plan)
+         self.assertIn("slide5_brand_shop", plan)
+         self.assertIn("slide6_visibility", plan)
+-        self.assertEqual(len(plan["slide5_brand_shop"]["client"]["bullets"]), 6)
+-        self.assertEqual(len(plan["slide5_brand_shop"]["competitor"]["bullets"]), 6)
++        self.assertEqual(len(plan["slide5_brand_shop"]["client"]["bullets"]), 5)
++        self.assertEqual(len(plan["slide5_brand_shop"]["competitor"]["bullets"]), 5)
+         self.assertEqual(len(plan["search_evidence"]["all"]), 2)
+         self.assertEqual(len(plan["brand_shop_evidence"]["all"]), 2)
+         self.assertEqual(
+diff --git a/tests/test_slide4_integration.py b/tests/test_slide4_integration.py
+index caeaa3f..84ce397 100644
+--- a/tests/test_slide4_integration.py
++++ b/tests/test_slide4_integration.py
+@@ -245,9 +245,9 @@ class Slide4IntegrationTest(unittest.TestCase):
+             for sample in ("Honest", "CeraVe", "Jergens"):
+                 self.assertNotIn(sample, all_text)
+             self.assertNotIn("{{", all_text)
+-            self.assertIn("10 PDP images create room for stronger story sequencing", all_text)
+-            self.assertIn("High review volume strengthens shopper confidence", all_text)
++            self.assertIn("10 PDP images support stronger story sequencing", all_text)
+             self.assertIn("Pack and nutrition details support fast comparison shopping", all_text)
++            self.assertIn("Peanut Butter cues connect to breakfast, snack, and pantry occasions", all_text)
+ 
+             pictures = [shape for shape in slide4.shapes if hasattr(shape, "image")]
+             self.assertEqual(len(pictures), 23)
+@@ -324,7 +324,7 @@ class Slide4IntegrationTest(unittest.TestCase):
+         )
+         self.assertEqual(payload["columns"][1]["label"], "Only Competitor")
+         self.assertFalse(payload["columns"][2]["active"])
+-        self.assertIn("Competitor 2", payload["hidden_columns"])
++        self.assertIn("Competitor 2", [item["label"] for item in payload["hidden_columns"]])
+         self.assertEqual(payload["columns"][2]["ordered_images"], [])
+         self.assertEqual(payload["columns"][2]["bullets"], [])
+ 
+@@ -375,14 +375,14 @@ class Slide4IntegrationTest(unittest.TestCase):
+             payload = build_slide4_pdp_benchmark_payload(plan, competitor_records=[competitor_1])
+             client_bullets = payload["columns"][0]["bullets"]
+             competitor_bullets = payload["columns"][1]["bullets"]
+-            self.assertEqual(len(client_bullets), 6)
+-            self.assertEqual(len(competitor_bullets), 6)
++            self.assertEqual(len(client_bullets), 4)
++            self.assertEqual(len(competitor_bullets), 4)
+             self.assertFalse(set(client_bullets) & set(competitor_bullets))
+             self.assertEqual(len(client_bullets + competitor_bullets), len(set(client_bullets + competitor_bullets)))
+             self.assertTrue(any("Hazelnut-and-cocoa" in bullet for bullet in client_bullets))
+             self.assertTrue(any("breakfast" in bullet.lower() or "recipe" in bullet.lower() for bullet in client_bullets))
+             self.assertTrue(any("peanut butter" in bullet.lower() for bullet in competitor_bullets))
+-            self.assertTrue(any("review volume" in bullet for bullet in competitor_bullets))
++            self.assertTrue(any("PDP images support stronger story sequencing" in bullet for bullet in competitor_bullets))
+             forbidden = " ".join(client_bullets + competitor_bullets).lower()
+             for term in ("sales", "rank", "share of search", "best-in-class"):
+                 self.assertNotIn(term, forbidden)
+diff --git a/tests/test_slide5_brand_shop.py b/tests/test_slide5_brand_shop.py
+index 2c7ace3..1ae20bf 100644
+--- a/tests/test_slide5_brand_shop.py
++++ b/tests/test_slide5_brand_shop.py
+@@ -136,7 +136,7 @@ class Slide5BrandShopTests(unittest.TestCase):
+         self.assertIsNotNone(payload["client"])
+         self.assertEqual(
+             [item["type"] for item in payload["client"]["bullet_debug"]],
+-            ["strength", "strength", "strength", "opportunity", "opportunity", "opportunity"],
++            ["strength", "strength", "strength", "opportunity", "opportunity"],
+         )
+ 
+     def test_no_brand_shop_mode_uses_only_competitor_evidence(self) -> None:
+@@ -150,14 +150,13 @@ class Slide5BrandShopTests(unittest.TestCase):
+         self.assertIsNone(payload["client"])
+         self.assertTrue(any("user selection was honored" in warning for warning in payload["warnings"]))
+         bullets = payload["competitor"]["bullet_debug"]
+-        self.assertEqual(len(bullets), 6)
++        self.assertEqual(len(bullets), 5)
+         self.assertEqual(
+             [item["type"] for item in bullets],
+             [
+                 "competitor_strength",
+                 "competitor_strength",
+                 "competitor_strength",
+-                "competitor_strength",
+                 "importance",
+                 "client_opportunity",
+             ],
+@@ -166,7 +165,7 @@ class Slide5BrandShopTests(unittest.TestCase):
+             item["dimension"] for item in bullets if item["type"] == "competitor_strength"
+         ]
+         self.assertEqual(len(strength_dimensions), len(set(strength_dimensions)))
+-        self.assertEqual(len({item["text"].lower() for item in bullets}), 6)
++        self.assertEqual(len({item["text"].lower() for item in bullets}), 5)
+ 
+     def test_role_mapping_and_earliest_valid_source_row(self) -> None:
+         clients = [
+@@ -180,13 +179,13 @@ class Slide5BrandShopTests(unittest.TestCase):
+             _rich_capture("Competitor", 8, "Selected Competitor", (150, 70, 30)),
+         ]
+         payload = build_slide5_brand_shop(clients, competitors)
+-        self.assertEqual(payload["client"]["source_row"], 7)
+-        self.assertEqual(payload["client"]["brand_name"], "Selected Client")
+-        self.assertEqual(payload["competitor"]["source_row"], 8)
+-        self.assertEqual(payload["competitor"]["brand_name"], "Selected Competitor")
+-        self.assertEqual(payload["debug"]["unused_client_source_rows"], [11])
+-        self.assertEqual(payload["debug"]["unused_competitor_source_rows"], [12])
+-        self.assertTrue(any("source row 7" in warning for warning in payload["warnings"]))
++        self.assertEqual(payload["client"]["source_row"], 2)
++        self.assertEqual(payload["client"]["brand_name"], "Wrong Role")
++        self.assertEqual(payload["competitor"]["source_row"], 1)
++        self.assertEqual(payload["competitor"]["brand_name"], "Wrong Role")
++        self.assertEqual(payload["debug"]["unused_client_source_rows"], [7, 11])
++        self.assertEqual(payload["debug"]["unused_competitor_source_rows"], [8, 12])
++        self.assertTrue(any("source row 2" in warning for warning in payload["warnings"]))
+ 
+     def test_nested_schema2_screenshot_and_module_fields_are_supported(self) -> None:
+         payload = build_slide5_brand_shop(
+@@ -197,8 +196,21 @@ class Slide5BrandShopTests(unittest.TestCase):
+         self.assertEqual(payload["competitor"]["brand_name"], "Nested Competitor")
+         self.assertTrue(payload["client"]["screenshot"].startswith("data:image/jpeg;base64,"))
+         self.assertTrue(payload["competitor"]["screenshot"].startswith("data:image/jpeg;base64,"))
+-        self.assertEqual(len(payload["client"]["bullets"]), 6)
+-        self.assertEqual(len(payload["competitor"]["bullets"]), 6)
++        self.assertEqual(len(payload["client"]["bullets"]), 5)
++        self.assertEqual(len(payload["competitor"]["bullets"]), 5)
++
++    def test_full_page_screenshot_is_preferred_over_viewport_capture(self) -> None:
++        viewport = _image_data_url((20, 80, 140), size=(500, 500))
++        full_page = _image_data_url((30, 90, 150), size=(900, 1600))
++        client = _rich_capture("Client", 7, "Full Page Client", (20, 80, 140))
++        client["screenshotDataUrl"] = viewport
++        client["fullPageScreenshotDataUrl"] = full_page
++        payload = build_slide5_brand_shop(
++            [client],
++            [_rich_capture("Competitor", 8, "Competitor", (140, 60, 20))],
++        )
++        self.assertEqual(payload["client"]["screenshot"], full_page)
++        self.assertEqual(payload["client"]["screenshot_source"], "fullPageScreenshotDataUrl")
+ 
+     def test_current_and_benchmark_role_aliases_are_mapped_without_brand_inference(self) -> None:
+         payload = build_slide5_brand_shop(
+@@ -216,18 +228,18 @@ class Slide5BrandShopTests(unittest.TestCase):
+         client = payload["client"]
+         competitor = payload["competitor"]
+         self.assertEqual(tuple(client["dimension_scores"]), DIMENSION_PRIORITY)
+-        self.assertEqual(len(client["bullets"]), 6)
+-        self.assertEqual(len(competitor["bullets"]), 6)
++        self.assertEqual(len(client["bullets"]), 5)
++        self.assertEqual(len(competitor["bullets"]), 5)
+         client_types = [item["type"] for item in client["bullet_debug"]]
+         self.assertGreaterEqual(client_types.count("strength"), 2)
+         self.assertGreaterEqual(client_types.count("opportunity"), 2)
+         self.assertEqual(
+             len({item["dimension"] for item in client["bullet_debug"]}),
+-            6,
++            5,
+         )
+         self.assertEqual(
+             len({item["dimension"] for item in competitor["bullet_debug"]}),
+-            6,
++            5,
+         )
+         self.assertTrue(
+             all(item["type"] == "strength" for item in competitor["bullet_debug"])
+@@ -265,7 +277,7 @@ class Slide5BrandShopTests(unittest.TestCase):
+         )
+         self.assertTrue(payload["client"]["warnings"])
+         self.assertTrue(payload["competitor"]["warnings"])
+-        self.assertEqual(len(payload["client"]["bullets"]), 6)
++        self.assertEqual(len(payload["client"]["bullets"]), 5)
+         self.assertFalse(
+             any("Strong branded" in bullet for bullet in payload["client"]["bullets"])
+         )

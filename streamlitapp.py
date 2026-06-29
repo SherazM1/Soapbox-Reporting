@@ -1092,6 +1092,18 @@ def _render_slide4_finding_preview_v2(plan: dict[str, Any]) -> None:
     findings_by_group = (plan or {}).get("slide4_findings", {}) or {}
     if not findings_by_group:
         return
+
+    def _format_hidden_column(item: Any) -> str:
+        if isinstance(item, str):
+            return item.strip()
+        if isinstance(item, dict):
+            label = str(item.get("label") or "").strip()
+            reason = str(item.get("reason") or "").strip()
+            if label and reason:
+                return f"{label} ({reason})"
+            return label
+        return ""
+
     with st.expander("Slide 4 Finding Preview", expanded=False):
         slide4_payload = build_slide4_pdp_benchmark_payload(
             plan or {},
@@ -1101,7 +1113,13 @@ def _render_slide4_finding_preview_v2(plan: dict[str, Any]) -> None:
             st.warning(warning)
         hidden = slide4_payload.get("hidden_columns", []) or []
         if hidden:
-            st.caption(f"Hidden competitor sections: {', '.join(hidden)}")
+            hidden_labels = [
+                formatted
+                for item in hidden
+                if (formatted := _format_hidden_column(item))
+            ]
+            if hidden_labels:
+                st.caption(f"Hidden competitor sections: {', '.join(hidden_labels)}")
         for index, column in enumerate(slide4_payload.get("columns", []) or [], start=1):
             side_label = "Client" if index == 1 else f"Competitor {index - 1}"
             st.markdown(f"##### {side_label}: {column.get('label') or '-'}")
