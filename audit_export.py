@@ -8,6 +8,8 @@ from app.audit_helpers.slide3_search_benchmark import build_slide3_search_benchm
 from app.audit_helpers.slide4_findings import build_slide4_group_findings
 from app.audit_helpers.slide5_brand_shop import build_slide5_brand_shop
 from app.audit_helpers.slide6_visibility import build_slide6_visibility
+from app.audit_helpers.strategic_cue_engine import aggregate_strategic_cues, cue_debug_payload
+from app.audit_helpers.strategic_identity import identity_debug_payload, resolve_strategic_identity
 
 
 def _text_has_value(value: Any) -> bool:
@@ -539,6 +541,24 @@ def build_audit_export_plan(
             metadata_src.get("client_has_brand_shop", True)
         ),
     }
+    strategic_identity = resolve_strategic_identity(
+        primary_records_for_summary or competitor_records,
+        fallback_category=metadata_src.get("category", ""),
+        fallback_product_type=metadata_src.get("product_type", ""),
+    )
+    strategic_identity_debug = identity_debug_payload(strategic_identity)
+    strategic_cue_context = aggregate_strategic_cues(
+        primary_records_for_summary,
+        competitor_records=competitor_records,
+        search_evidence=search_evidence,
+        brand_shop_evidence=brand_shop_evidence,
+        identity=strategic_identity,
+        fallback_category=metadata_src.get("category", ""),
+        fallback_product_type=metadata_src.get("product_type", ""),
+    )
+    strategic_cue_debug = cue_debug_payload(strategic_cue_context)
+    audit_metadata["strategic_identity_debug"] = strategic_identity_debug
+    audit_metadata["strategic_cue_debug"] = strategic_cue_debug
     slide2_summary = build_slide2_summary_payload(
         primary_records=primary_records_for_summary,
         competitor_records=competitor_records,
@@ -587,6 +607,8 @@ def build_audit_export_plan(
         "slide4_findings": slide4_findings,
         "slide5_brand_shop": slide5_brand_shop,
         "slide6_visibility": slide6_visibility,
+        "strategic_identity_debug": strategic_identity_debug,
+        "strategic_cue_debug": strategic_cue_debug,
         "search_evidence": search_evidence or {"current": [], "benchmark": [], "all": []},
         "brand_shop_evidence": brand_shop_payload,
     }

@@ -13,6 +13,9 @@ from app.audit_helpers.image_guides import (
     normalize_product_type,
     resolve_image_guide_category,
 )
+from app.audit_helpers.strategic_identity import (
+    resolve_strategic_identity as _resolve_foundation_identity,
+)
 
 
 CUE_SLIDE_PRIORITY: dict[str, tuple[str, ...]] = {
@@ -250,6 +253,19 @@ def _best_style_product_type(
 
 
 def resolve_strategic_identity(
+    records: list[dict[str, Any]],
+    *,
+    fallback_category: str = "",
+    fallback_product_type: str = "",
+) -> dict[str, Any]:
+    return _resolve_foundation_identity(
+        records,
+        fallback_category=fallback_category,
+        fallback_product_type=fallback_product_type,
+    )
+
+
+def _legacy_resolve_strategic_identity(
     records: list[dict[str, Any]],
     *,
     fallback_category: str = "",
@@ -735,6 +751,7 @@ def _polish_final_bullet(
     for pattern, replacement in _BANNED_FINAL_PATTERNS:
         text = pattern.sub(replacement, text).strip()
     text = re.sub(r"\s+", " ", text).strip(" -")
+    
 
     family = _starter_family(text)
     if starter_counts.get(family, 0) and family in _STARTER_ALTERNATES:
