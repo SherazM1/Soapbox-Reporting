@@ -136,7 +136,7 @@ class Slide5BrandShopTests(unittest.TestCase):
         self.assertIsNotNone(payload["client"])
         self.assertEqual(
             [item["type"] for item in payload["client"]["bullet_debug"]],
-            ["strength", "strength", "strength", "opportunity", "opportunity"],
+            ["strength", "opportunity", "opportunity", "opportunity", "opportunity"],
         )
 
     def test_no_brand_shop_mode_uses_only_competitor_evidence(self) -> None:
@@ -231,8 +231,9 @@ class Slide5BrandShopTests(unittest.TestCase):
         self.assertEqual(len(client["bullets"]), 5)
         self.assertEqual(len(competitor["bullets"]), 5)
         client_types = [item["type"] for item in client["bullet_debug"]]
-        self.assertGreaterEqual(client_types.count("strength"), 2)
-        self.assertGreaterEqual(client_types.count("opportunity"), 2)
+        self.assertGreaterEqual(client_types.count("strength"), 1)
+        self.assertGreaterEqual(client_types.count("opportunity"), 3)
+        self.assertIn("strategic_cues", client)
         self.assertEqual(
             len({item["dimension"] for item in client["bullet_debug"]}),
             5,
@@ -268,7 +269,7 @@ class Slide5BrandShopTests(unittest.TestCase):
             *payload["competitor"]["bullet_debug"],
         ]
         category_bullets = [
-            item for item in all_bullets if item["dimension"] == "category_segmentation"
+            item for item in all_bullets if item["dimension"] in {"category_grouping", "cross_category_navigation"}
         ]
         self.assertTrue(
             any("skin care" in item["text"].lower() and "navigation" in item["text"].lower() for item in category_bullets)
@@ -276,7 +277,7 @@ class Slide5BrandShopTests(unittest.TestCase):
         for item in all_bullets:
             self.assertTrue(item["template_id"])
             self.assertTrue(item["reason"])
-            self.assertIn(item["score"], {"Strong", "Present", "Limited", "Missing"})
+            self.assertIn(item["score"], {"Strong", "Present", "Limited", "Missing", "strength", "opportunity", "pressure", "context"})
             self.assertLessEqual(len(item["text"]), 78)
             self.assertLessEqual(len(item["text"].split()), 11)
 

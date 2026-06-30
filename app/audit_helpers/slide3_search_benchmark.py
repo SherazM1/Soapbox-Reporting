@@ -6,6 +6,7 @@ from typing import Any
 from urllib.parse import parse_qsl, unquote_plus, urlparse
 
 from app.audit_helpers.bullet_uniqueness import make_unique_bullet_text
+from app.audit_helpers.strategic_cues import search_cue_context, translate_cues
 
 
 CURRENT_BULLET_BANK = {
@@ -691,7 +692,36 @@ def _build_side_payload(record: dict[str, Any] | None, side: str, client_name: s
     )
     products = _main_products(record)
     scores = _dimension_scores(search_term, products, client_name)
-    bullets, bullet_debug = _select_bullets(side, scores, products, client_name, search_term)
+    cue_context = search_cue_context(
+        search_term,
+        products,
+        client_brand=client_name,
+        side=side,
+    )
+    bullets, cue_debug = translate_cues(
+        cue_context,
+        slide_key="slide3",
+        count=4,
+        preferred_order=("pressure", "opportunity", "context", "strength"),
+        side=side,
+    )
+    if len(bullets) != 4:
+        bullets, bullet_debug = _select_bullets(side, scores, products, client_name, search_term)
+    else:
+        bullet_debug = [
+            {
+                "text": item["text"],
+                "side": side,
+                "dimension": item.get("cue") or "cue",
+                "score": item.get("classification") or "context",
+                "template_id": f"cue_{item.get('cue')}",
+                "signals": [item.get("classification", ""), item.get("cue", "")],
+                "supporting_count": len(products),
+                "reason": item.get("reason", ""),
+                "cue_debug": item,
+            }
+            for item in cue_debug
+        ]
     client_products = [
         {
             "position": _product_position(product, index),
@@ -716,6 +746,7 @@ def _build_side_payload(record: dict[str, Any] | None, side: str, client_name: s
         "badges": _badges(products),
         "review_counts": _review_counts(products),
         "warnings": [],
+        "strategic_cues": cue_context.get("debug", {}),
     }
 
 

@@ -20,6 +20,7 @@ from app.audit_helpers.image_guides import (
 )
 from app.audit_helpers.bullet_uniqueness import normalize_bullet_text
 from app.audit_helpers.slide4_findings import build_slide4_group_findings
+from app.audit_helpers.strategic_cues import aggregate_pdp_cues, translate_cues
 from audit_powerpoint import _format_cover_date
 
 
@@ -614,6 +615,28 @@ def _build_slide4_evidence_bullets(
     phrases = _slide4_content_phrases(facts)
     brand = facts["brand"] or side.replace("_", " ").title()
     is_client = side == "client"
+    cue_context = aggregate_pdp_cues([record])
+    cue_bullets, cue_debug = translate_cues(
+        cue_context,
+        slide_key="slide4",
+        count=4,
+        preferred_order=("strength", "context", "opportunity", "pressure"),
+        side=side,
+    )
+    if len(cue_bullets) == 4:
+        for item in cue_debug:
+            debug.append(
+                {
+                    "text": item["text"],
+                    "type": item.get("classification", "context"),
+                    "dimension": item.get("cue", "cue"),
+                    "signals": [item.get("classification", ""), item.get("cue", "")],
+                    "reason": item.get("reason", ""),
+                    "cue_debug": item,
+                    "strategic_cue_context": cue_context.get("debug", {}),
+                }
+            )
+        return cue_bullets, debug[:4], warnings
 
     if _has_any(blob, "hazelnut", "cocoa", "nutella"):
         _append_unique_bullet(

@@ -4,6 +4,7 @@ from statistics import mean
 from typing import Any
 
 from app.audit_helpers.bullet_uniqueness import normalize_bullet_text
+from app.audit_helpers.strategic_cues import aggregate_pdp_cues, translate_cues
 
 
 # TODO: If this wording needs non-code tuning by strategists, move these banks to
@@ -837,6 +838,42 @@ def _section_payload(
     }
 
 
+def _apply_cue_bullets_to_slide2_sections(
+    sections: dict[str, dict[str, Any]],
+    cue_context: dict[str, Any],
+) -> None:
+    section_orders = {
+        "consumer_demand": ("context", "strength", "opportunity"),
+        "walmart_opportunity": ("opportunity", "pressure", "context", "strength"),
+        "competitive_benchmark": ("pressure", "opportunity", "context", "strength"),
+    }
+    for section_key, preferred_order in section_orders.items():
+        section = sections.get(section_key)
+        if not isinstance(section, dict):
+            continue
+        bullets, debug = translate_cues(
+            cue_context,
+            slide_key="slide2",
+            count=4,
+            preferred_order=preferred_order,
+            side=section_key,
+        )
+        if len(bullets) == 4:
+            section["bullets"] = bullets
+            section["bullet_debug"] = [
+                {
+                    **item,
+                    "section": section_key,
+                    "template_id": f"cue_{item.get('cue')}",
+                    "signals": [item.get("classification", ""), item.get("cue", "")],
+                    "supporting_count": 0,
+                    "analyzed_count": 0,
+                }
+                for item in debug
+            ]
+            section["cue_translation_debug"] = debug
+
+
 def build_slide2_summary_payload(
     primary_records: list[dict[str, Any]],
     competitor_records: list[dict[str, Any]] | None = None,
@@ -907,6 +944,11 @@ def build_slide2_summary_payload(
             warnings=competitive_warnings,
         ),
     }
+    cue_context = aggregate_pdp_cues(
+        primary_records,
+        competitor_records=competitor_records,
+    )
+    _apply_cue_bullets_to_slide2_sections(sections, cue_context)
     sections, fit_debug = _dedupe_and_fit_slide2_sections(sections, phrases)
     debug_warnings = []
     for section in sections.values():
@@ -920,5 +962,6 @@ def build_slide2_summary_payload(
             "competitor_record_count": len(competitor_records),
             "warnings": debug_warnings,
             "bullet_fit": fit_debug,
+            "strategic_cues": cue_context.get("debug", {}),
         },
     }

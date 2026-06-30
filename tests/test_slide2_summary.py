@@ -188,16 +188,12 @@ class Slide2SummaryTest(unittest.TestCase):
         )
         opportunity = payload["sections"]["walmart_opportunity"]
         self.assertTrue(all(isinstance(bullet, str) for bullet in opportunity["bullets"]))
-        traced = next(
-            item
-            for item in opportunity["bullet_debug"]
-            if item["template_id"] == "visual_storytelling_gap"
-        )
-        self.assertEqual(traced["section"], "walmart_opportunity")
-        self.assertIn("missing_usage_or_recipe_storytelling", traced["signals"])
-        self.assertEqual(traced["supporting_count"], 6)
-        self.assertEqual(traced["analyzed_count"], 10)
-        self.assertIn("Selected because", traced["reason"])
+        traced = next(item for item in opportunity["cue_translation_debug"])
+        self.assertIn(traced["classification"], {"opportunity", "pressure", "context", "strength"})
+        self.assertIn("coverage_ratio", traced)
+        self.assertIn("Translated from aggregated strategic cue evidence", traced["reason"])
+        self.assertIn("strategic_cues", payload["debug"])
+        self.assertIn("candidate_cues", payload["debug"]["strategic_cues"])
 
     def test_missing_data_returns_defaults_bullets_and_warnings(self) -> None:
         payload = build_slide2_summary_payload([], competitor_records=[], audit_metadata={"client_name": "test"})

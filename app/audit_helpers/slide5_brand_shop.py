@@ -4,6 +4,7 @@ import re
 from typing import Any
 
 from app.audit_helpers.bullet_uniqueness import dedupe_bullet_debug, normalize_bullet_text
+from app.audit_helpers.strategic_cues import brand_shop_cue_context, translate_cues
 
 
 DIMENSION_PRIORITY = (
@@ -651,11 +652,16 @@ def _reduce_cross_side_mirroring(
             ).strip()
         candidate_key = _mirrored_bullet_key(text)
         suffix = 2
-        while candidate_key and candidate_key in used:
-            text = _fit_bullet(f"{text} ({competitor_side.get('brand_name') or 'benchmark'} cue {suffix})")
+        while candidate_key and candidate_key in used and suffix <= 6:
+            marker = f"Benchmark {suffix}"
+            text = _fit_bullet(f"{marker} {text}")
             item["text"] = text
             candidate_key = _mirrored_bullet_key(text)
             suffix += 1
+        if candidate_key and candidate_key in used:
+            text = _fit_bullet(f"Distinct benchmark cue {suffix}")
+            item["text"] = text
+            candidate_key = _mirrored_bullet_key(text)
         if candidate_key:
             used.add(candidate_key)
         rewritten.append(text)
@@ -914,15 +920,79 @@ def _no_brand_shop_bullets(
     )[0][:5]
 
 
+def _brand_shop_cue_bullets(record: dict[str, Any], side: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    context = brand_shop_cue_context(record)
+    if side == "client":
+        for candidate in context.get("candidate_cues", []):
+            if candidate.get("cue") in {
+                "discovery_pathways",
+                "shopper_education",
+                "usage_storytelling",
+                "conversion_guidance",
+            }:
+                candidate["classification"] = "opportunity"
+        first_bullets, first_debug = translate_cues(
+            context,
+            slide_key="slide5",
+            count=1,
+            preferred_order=("strength", "context", "opportunity", "pressure"),
+            side=side,
+        )
+        opportunity_bullets, opportunity_debug = translate_cues(
+            context,
+            slide_key="slide5",
+            count=5,
+            preferred_order=("opportunity", "context", "strength", "pressure"),
+            side=side,
+        )
+        bullets = []
+        debug = []
+        used: set[str] = set()
+        for text, item in [*zip(first_bullets, first_debug), *zip(opportunity_bullets, opportunity_debug)]:
+            key = normalize_bullet_text(text)
+            if key in used:
+                continue
+            used.add(key)
+            bullets.append(text)
+            debug.append(item)
+            if len(bullets) >= 5:
+                break
+    else:
+        bullets, debug = translate_cues(
+            context,
+            slide_key="slide5",
+            count=5,
+            preferred_order=("pressure", "strength", "opportunity", "context"),
+            side=side,
+        )
+    return [
+        {
+            "text": item["text"],
+            "side": side,
+            "type": item.get("classification", "context"),
+            "dimension": item.get("cue", "cue"),
+            "score": item.get("classification", "context"),
+            "template_id": f"cue_{item.get('cue')}",
+            "signals": [item.get("classification", ""), item.get("cue", "")],
+            "supporting_count": 0,
+            "reason": item.get("reason", ""),
+            "cue_debug": item,
+        }
+        for item in debug
+    ], context.get("debug", {})
+
+
 def _build_side(record: dict[str, Any], side: str, role_path: str) -> dict[str, Any]:
     evidence = _evidence(record)
     dimensions = _score_dimensions(evidence)
     brand_name = _record_brand(record)
-    bullet_debug = (
+    cue_bullets, cue_context_debug = _brand_shop_cue_bullets(record, side)
+    fallback_bullets = (
         _client_bullets(dimensions, brand_name, evidence)
         if side == "client"
         else _competitor_bullets(dimensions, brand_name, evidence)
     )
+    bullet_debug = cue_bullets if len(cue_bullets) == 5 else fallback_bullets
     warnings: list[str] = []
     if sum(SCORE_ORDER[data["score"]] >= 2 for data in dimensions.values()) < 2:
         warnings.append(
@@ -950,6 +1020,7 @@ def _build_side(record: dict[str, Any], side: str, role_path: str) -> dict[str, 
         },
         "dimension_debug": dimensions,
         "bullet_debug": bullet_debug,
+        "strategic_cues": cue_context_debug,
         "warnings": warnings,
         "evidence": {
             "module_count": evidence["module_count"],
@@ -1062,6 +1133,10 @@ def build_slide5_brand_shop(
             "module_evidence_by_side": {
                 "client": (client_side or {}).get("evidence"),
                 "competitor": (competitor_side or {}).get("evidence"),
+            },
+            "strategic_cues_by_side": {
+                "client": (client_side or {}).get("strategic_cues"),
+                "competitor": (competitor_side or {}).get("strategic_cues"),
             },
             "final_bullets_by_side": {
                 "client": (client_side or {}).get("bullets"),
