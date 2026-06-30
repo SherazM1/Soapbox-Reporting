@@ -543,29 +543,65 @@ def _bullet_text(candidate: dict[str, Any], identity: dict[str, Any], *, slide_k
     classification = candidate.get("classification")
     cue = candidate.get("cue")
     family = identity.get("family_display") or identity.get("category_display") or product
-    slide4_scope = ""
-    if slide_key == "slide4":
-        if side.startswith("competitor_2"):
-            slide4_scope = "Secondary benchmark PDP"
-        elif side.startswith("competitor"):
-            slide4_scope = "Benchmark PDP"
-        else:
-            slide4_scope = "Current PDP"
     if classification == "pressure":
         if slide_key == "slide3":
-            return f"Competitive pressure around {label}"
-        if slide_key == "slide4" and slide4_scope:
-            return f"Competitive pressure on {product} PDP content"
-        return f"Competitive pressure on {label}"
+            if cue in {"discoverability", "keyword_alignment"}:
+                return f"High-visibility {product} search competition"
+            if cue == "review_or_trust_signals":
+                return "Review depth shapes shelf confidence"
+            return f"Stronger shelf signals around {label}"
+        if slide_key == "slide4":
+            if side.startswith("competitor"):
+                return (
+                    f"Alternate {product} PDP differentiation"
+                    if side.startswith("competitor_2")
+                    else f"Comparison-led {product} PDP differentiation"
+                )
+            return f"Sharper {product} PDP differentiation needed"
+        if slide_key == "slide5":
+            return f"Stronger {family} merchandising depth"
+        return f"Stronger market signals around {label}"
     if classification == "opportunity":
-        if slide_key == "slide4" and slide4_scope:
+        if slide_key == "slide4":
             if cue in {"shopper_education", "usage_storytelling"}:
-                return f"Opportunity to deepen {product} shopper education"
+                if side.startswith("competitor"):
+                    return (
+                        f"Adjacent {product} shopper education"
+                        if side.startswith("competitor_2")
+                        else f"Market-facing {product} shopper education"
+                    )
+                return f"Room to deepen {product} shopper education"
+            if cue == "pack_or_spec_detail":
+                return (
+                    f"Assortment-ready {product} pack and spec detail"
+                    if side.startswith("competitor_2")
+                    else f"Retail-ready {product} pack and spec detail"
+                    if side.startswith("competitor")
+                    else f"Clearer {product} pack and spec detail"
+                )
+            if cue == "benefit_communication":
+                return (
+                    f"Benefit-led {product} comparison language"
+                    if side.startswith("competitor_2")
+                    else f"Comparison-ready {product} benefit communication"
+                    if side.startswith("competitor")
+                    else f"Benefit-forward {product} PDP communication"
+                )
+            if side.startswith("competitor"):
+                return (
+                    f"Adjacent {product} PDP content"
+                    if side.startswith("competitor_2")
+                    else f"Shelf-ready {product} PDP content"
+                )
             return f"Opportunity to strengthen {product} PDP content"
         if cue in {"discoverability", "keyword_alignment"}:
-            return f"Opportunity to improve {label}"
+            return f"Room to improve {label}"
         if cue in {"shopper_education", "usage_storytelling"}:
             return f"Opportunity to deepen {label}"
+        if cue == "category_grouping":
+            return f"Clearer {family} category grouping"
+        if cue == "cross_category_navigation":
+            return f"Room to strengthen {family} navigation"
         return f"Opportunity to strengthen {label}"
     if classification == "strength":
         if slide_key == "slide5":
@@ -578,30 +614,44 @@ def _bullet_text(candidate: dict[str, Any], identity: dict[str, Any], *, slide_k
         if slide_key == "slide4":
             if cue == "product_positioning":
                 return (
-                    f"{slide4_scope.replace(' PDP', '')} {product} positioning"
+                    f"Alternate {product} positioning"
+                    if side.startswith("competitor_2")
+                    else f"Comparison-led {product} positioning"
                     if side.startswith("competitor")
                     else f"Strong {product} positioning"
                 )
             if cue == "ingredient_or_formula_communication":
                 return (
-                    f"{slide4_scope.replace(' PDP', '')} {product} ingredient communication"
+                    f"Assortment-ready {product} ingredient communication"
+                    if side.startswith("competitor_2")
+                    else f"Market-facing {product} ingredient communication"
                     if side.startswith("competitor")
                     else f"Clear {product} ingredient communication"
                 )
             if cue == "shopper_education":
                 return (
-                    f"{slide4_scope.replace(' PDP', '')} {product} shopper education"
+                    f"Adjacent {product} shopper education"
+                    if side.startswith("competitor_2")
+                    else f"Retail-ready {product} shopper education"
                     if side.startswith("competitor")
                     else f"Structured {product} shopper education"
                 )
             if cue == "usage_storytelling":
                 return (
-                    f"{slide4_scope.replace(' PDP', '')} {product} usage storytelling"
+                    f"Occasion-led {product} usage storytelling"
+                    if side.startswith("competitor_2")
+                    else f"Context-led {product} usage storytelling"
                     if side.startswith("competitor")
                     else f"Balanced {product} usage storytelling"
                 )
             if cue == "visual_identity":
-                return f"{slide4_scope} visual identity"
+                return (
+                    f"Assortment-ready {product} visual identity"
+                    if side.startswith("competitor_2")
+                    else f"Shelf-ready {product} visual identity"
+                    if side.startswith("competitor")
+                    else f"Cohesive {product} visual identity"
+                )
         prefixes = {
             "product_positioning": "Strong",
             "benefit_communication": "Clear",
@@ -625,6 +675,120 @@ def _bullet_text(candidate: dict[str, Any], identity: dict[str, Any], *, slide_k
     return f"{product} PDP content"
 
 
+_BANNED_FINAL_PATTERNS = (
+    (re.compile(r"\bsecondary benchmark\b", re.I), "comparison"),
+    (re.compile(r"\bbenchmark\s+\d+\b", re.I), "comparison"),
+    (re.compile(r"\bbenchmark cue\b", re.I), "comparison point"),
+    (re.compile(r"\bcue\b", re.I), "signal"),
+    (re.compile(r"\bevidence\b", re.I), "support"),
+    (re.compile(r"\bgives shoppers\b", re.I), "supports"),
+    (re.compile(r"\bproof points\b", re.I), "supporting details"),
+    (re.compile(r"\bcomparison points\b", re.I), "comparison details"),
+    (re.compile(r"\bdiscovery paths\b", re.I), "discovery pathways"),
+    (re.compile(r"\bshop context\b", re.I), "shopping context"),
+    (re.compile(r"\banchors the benchmark\b", re.I), "anchors the shelf read"),
+    (re.compile(r"\bcompetitive pressure around\b", re.I), "Stronger shelf signals around"),
+    (re.compile(r"\bcompetitive pressure on\b", re.I), "Stronger shelf signals for"),
+    (re.compile(r"^client\s+", re.I), ""),
+    (re.compile(r"^competitor\s+", re.I), ""),
+)
+
+_STARTER_ALTERNATES = {
+    "opportunity": ("Opportunity to", "Room to", "Potential to", "Clearer", "Enhanced"),
+    "benchmark": ("Strong", "Clear", "Structured", "Cohesive", "Benefit-forward"),
+    "competitive": ("Strong", "Clear", "Broad", "Structured", "Balanced"),
+}
+
+
+def _starter_family(text: str) -> str:
+    normalized = text.lower().strip()
+    if normalized.startswith("opportunity to"):
+        return "opportunity"
+    if normalized.startswith("benchmark"):
+        return "benchmark"
+    if normalized.startswith("competitive"):
+        return "competitive"
+    first = normalized.split(" ", 1)[0] if normalized else ""
+    return first
+
+
+def _replace_starter(text: str, family: str, replacement: str) -> str:
+    if family == "opportunity":
+        return re.sub(r"^opportunity to\s+", f"{replacement} ", text, flags=re.I).strip()
+    if family == "benchmark":
+        return re.sub(r"^benchmark\s+", f"{replacement} ", text, flags=re.I).strip()
+    if family == "competitive":
+        text = re.sub(r"^competitive pressure around\s+", f"{replacement} ", text, flags=re.I)
+        text = re.sub(r"^competitive pressure on\s+", f"{replacement} ", text, flags=re.I)
+        return re.sub(r"^competitive\s+", f"{replacement} ", text, flags=re.I).strip()
+    return text
+
+
+def _polish_final_bullet(
+    text: str,
+    *,
+    slide_key: str,
+    identity: dict[str, Any],
+    starter_counts: dict[str, int],
+) -> str:
+    text = re.sub(r"\s+", " ", text).strip()
+    for pattern, replacement in _BANNED_FINAL_PATTERNS:
+        text = pattern.sub(replacement, text).strip()
+    text = re.sub(r"\s+", " ", text).strip(" -")
+
+    family = _starter_family(text)
+    if starter_counts.get(family, 0) and family in _STARTER_ALTERNATES:
+        replacements = _STARTER_ALTERNATES[family]
+        replacement = replacements[min(starter_counts[family] - 1, len(replacements) - 1)]
+        text = _replace_starter(text, family, replacement)
+    elif starter_counts.get(family, 0):
+        replacements = ("Enhanced", "Clear", "Structured", "Balanced", "Cohesive", "Strong")
+        replacement = replacements[min(starter_counts[family] - 1, len(replacements) - 1)]
+        text = re.sub(r"^\S+\s+", f"{replacement} ", text, count=1).strip()
+
+    product = identity.get("product_type_display") or "category"
+    vocab = _category_vocab(identity)
+    if not text:
+        text = {
+            "slide2": f"Broad {product} relevance",
+            "slide3": f"Clear {product} shelf visibility",
+            "slide4": f"Benefit-forward {product} PDP content",
+            "slide5": f"Structured {vocab.get('navigation', 'category navigation')}",
+        }.get(slide_key, f"Clear {product} positioning")
+
+    words = text.split()
+    if len(words) > 9:
+        text = " ".join(words[:9]).rstrip(" ,;-")
+    return text[:1].upper() + text[1:]
+
+
+def _add_polished_bullet(
+    bullets: list[str],
+    used: set[str],
+    starter_counts: dict[str, int],
+    text: str,
+    *,
+    slide_key: str,
+    identity: dict[str, Any],
+) -> str | None:
+    for attempt in range(4):
+        polished = _polish_final_bullet(
+            text,
+            slide_key=slide_key,
+            identity=identity,
+            starter_counts=starter_counts,
+        )
+        key = _norm(polished)
+        if key and key not in used:
+            used.add(key)
+            starter_counts[_starter_family(polished)] = starter_counts.get(_starter_family(polished), 0) + 1
+            bullets.append(polished)
+            return polished
+        starter = ("Strong", "Clear", "Structured", "Balanced")[attempt]
+        text = re.sub(r"^\w+(?:\s+to)?\s+", f"{starter} ", polished, count=1).strip()
+    return None
+
+
 def translate_cues(
     context: dict[str, Any],
     *,
@@ -638,20 +802,22 @@ def translate_cues(
     bullets: list[str] = []
     debug: list[dict[str, Any]] = []
     used: set[str] = set()
+    starter_counts: dict[str, int] = {}
     for candidate in ordered:
         text = _bullet_text(candidate, identity, slide_key=slide_key, side=side)
-        text = re.sub(r"\s+", " ", text).strip()
-        words = text.split()
-        if len(words) > 9:
-            text = " ".join(words[:9]).rstrip(" ,;-")
-        key = _norm(text)
-        if not key or key in used:
+        polished = _add_polished_bullet(
+            bullets,
+            used,
+            starter_counts,
+            text,
+            slide_key=slide_key,
+            identity=identity,
+        )
+        if not polished:
             continue
-        used.add(key)
-        bullets.append(text)
         debug.append(
             {
-                "text": text,
+                "text": polished,
                 "cue": candidate.get("cue"),
                 "classification": candidate.get("classification"),
                 "coverage_ratio": candidate.get("coverage_ratio"),
@@ -663,25 +829,32 @@ def translate_cues(
         )
         if len(bullets) >= count:
             break
-    fallback_labels = [
-        identity.get("product_type_focus_phrase") or "product positioning",
-        _category_vocab(identity).get("education", "shopper education"),
-        _category_vocab(identity).get("navigation", "category discoverability"),
-        "conversion-focused guidance",
-        "visual identity",
+    product = identity.get("product_type_display") or "category"
+    vocab = _category_vocab(identity)
+    fallback_texts = [
+        f"Benefit-forward {product} positioning",
+        f"Structured {vocab.get('education', 'shopper education')}",
+        f"Clear {vocab.get('navigation', 'category discoverability')}",
+        "Enhanced conversion-focused guidance",
+        "Cohesive visual identity",
+        f"Room to deepen {product} shopper education",
     ]
-    for label in fallback_labels:
+    for text in fallback_texts:
         if len(bullets) >= count:
             break
-        text = f"Opportunity to strengthen {label}"
-        key = _norm(text)
-        if key in used:
+        polished = _add_polished_bullet(
+            bullets,
+            used,
+            starter_counts,
+            text,
+            slide_key=slide_key,
+            identity=identity,
+        )
+        if not polished:
             continue
-        used.add(key)
-        bullets.append(text)
         debug.append(
             {
-                "text": text,
+                "text": polished,
                 "cue": "fallback",
                 "classification": "opportunity",
                 "coverage_ratio": 0,

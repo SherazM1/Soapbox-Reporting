@@ -246,8 +246,8 @@ class Slide4IntegrationTest(unittest.TestCase):
                 self.assertNotIn(sample, all_text)
             self.assertNotIn("{{", all_text)
             self.assertIn("Strong Nut Butters & Spreads positioning", all_text)
-            self.assertIn("Benchmark Nut Butters & Spreads positioning", all_text)
-            self.assertIn("Opportunity to deepen Nut Butters & Spreads shopper education", all_text)
+            self.assertIn("Comparison-led Nut Butters & Spreads positioning", all_text)
+            self.assertIn("Room to deepen Nut Butters & Spreads shopper education", all_text)
 
             pictures = [shape for shape in slide4.shapes if hasattr(shape, "image")]
             self.assertEqual(len(pictures), 23)
@@ -384,9 +384,9 @@ class Slide4IntegrationTest(unittest.TestCase):
             self.assertTrue(any("nut butters" in bullet.lower() for bullet in client_bullets))
             self.assertTrue(any("usage storytelling" in bullet.lower() or "shopper education" in bullet.lower() for bullet in client_bullets))
             self.assertTrue(any("nut butters" in bullet.lower() for bullet in competitor_bullets))
-            self.assertTrue(any("benchmark" in bullet.lower() for bullet in competitor_bullets))
+            self.assertTrue(any("comparison" in bullet.lower() or "market-facing" in bullet.lower() for bullet in competitor_bullets))
             forbidden = " ".join(client_bullets + competitor_bullets).lower()
-            for term in ("sales", "rank", "share of search", "best-in-class"):
+            for term in ("sales", "rank", "share of search", "best-in-class", "secondary benchmark", "benchmark cue"):
                 self.assertNotIn(term, forbidden)
 
             deck_bytes = generate_new_audit_powerpoint_from_template(
@@ -496,7 +496,7 @@ class Slide4IntegrationTest(unittest.TestCase):
                 plan, competitor_records=[competitor_1]
             )
             self.assertTrue(any("nut butters" in bullet.lower() for bullet in payload["columns"][0]["bullets"]))
-            self.assertTrue(any("benchmark" in bullet.lower() for bullet in payload["columns"][1]["bullets"]))
+            self.assertTrue(any("comparison" in bullet.lower() or "market-facing" in bullet.lower() for bullet in payload["columns"][1]["bullets"]))
             self.assertTrue(any("nut butters" in bullet.lower() for bullet in payload["columns"][1]["bullets"]))
 
             deck_bytes = generate_new_audit_powerpoint_from_template(

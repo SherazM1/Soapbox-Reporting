@@ -598,15 +598,15 @@ def _alternate_competitor_bullet(
     product_count = int(evidence.get("product_count", 0) or 0)
     dimension = item.get("dimension")
     alternatives = {
-        "brand_presentation": f"{brand} anchors the benchmark with {module_count or 'multiple'} branded sections",
-        "lifestyle_merchandising": f"{brand} frames shopping occasions through {topic or 'editorial'} content",
-        "category_segmentation": f"{brand} turns {_navigation_context(evidence.get('categories', []) or [])} into entry points",
-        "product_discovery": f"{brand} gives shoppers {product_count or 'multiple'} discovery paths",
-        "educational_storytelling": f"{brand} uses {topic or 'editorial copy'} for shopper education",
-        "video_rich_media": f"{brand} adds rich-media depth through {video_title or 'video content'}",
-        "cross_category_navigation": f"{brand} links {_category_context(evidence.get('categories', []) or [])} paths",
+        "brand_presentation": f"Cohesive visual identity across {module_count or 'multiple'} sections",
+        "lifestyle_merchandising": f"Lifestyle-led shopping occasions through {topic or 'editorial'} content",
+        "category_segmentation": f"Structured {_navigation_context(evidence.get('categories', []) or [])} entry points",
+        "product_discovery": f"Enhanced product discovery across {product_count or 'multiple'} items",
+        "educational_storytelling": f"Benefit-forward education through {topic or 'editorial copy'}",
+        "video_rich_media": f"Rich-media depth through {video_title or 'video content'}",
+        "cross_category_navigation": f"Clear {_category_context(evidence.get('categories', []) or [])} navigation",
     }
-    return _fit_bullet(alternatives.get(dimension, f"{brand} evidence creates a distinct benchmark cue"))
+    return _fit_bullet(alternatives.get(dimension, "Distinct merchandising advantage"))
 
 
 def _reduce_cross_side_mirroring(
@@ -653,13 +653,13 @@ def _reduce_cross_side_mirroring(
         candidate_key = _mirrored_bullet_key(text)
         suffix = 2
         while candidate_key and candidate_key in used and suffix <= 6:
-            marker = f"Benchmark {suffix}"
-            text = _fit_bullet(f"{marker} {text}")
+            marker = ("Clear", "Structured", "Enhanced", "Cohesive", "Balanced")[min(suffix - 2, 4)]
+            text = _fit_bullet(re.sub(r"^\w+\s+", f"{marker} ", text, count=1))
             item["text"] = text
             candidate_key = _mirrored_bullet_key(text)
             suffix += 1
         if candidate_key and candidate_key in used:
-            text = _fit_bullet(f"Distinct benchmark cue {suffix}")
+            text = _fit_bullet("Distinct merchandising advantage")
             item["text"] = text
             candidate_key = _mirrored_bullet_key(text)
         if candidate_key:

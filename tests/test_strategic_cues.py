@@ -86,6 +86,60 @@ class StrategicCueTests(unittest.TestCase):
         self.assertEqual(brand_context["identity"]["category_key"], "beauty")
         self.assertEqual(brand_context["identity"]["family_display"], "Skin Care")
 
+    def test_final_translation_polishes_banned_patterns_and_repeated_starters(self) -> None:
+        context = {
+            "identity": {
+                "category_display": "Food & Beverage",
+                "family_display": "Spreads",
+                "product_type_display": "Nut Butters & Spreads",
+            },
+            "candidate_cues": [
+                {
+                    "cue": "shopper_education",
+                    "classification": "opportunity",
+                    "label": "shopper education",
+                    "coverage_ratio": 0.1,
+                    "gap_ratio": 0.9,
+                },
+                {
+                    "cue": "usage_storytelling",
+                    "classification": "opportunity",
+                    "label": "usage storytelling",
+                    "coverage_ratio": 0.1,
+                    "gap_ratio": 0.8,
+                },
+                {
+                    "cue": "discoverability",
+                    "classification": "pressure",
+                    "label": "discovery paths",
+                    "coverage_ratio": 0.8,
+                    "gap_ratio": 0.1,
+                },
+                {
+                    "cue": "product_positioning",
+                    "classification": "pressure",
+                    "label": "benchmark cue",
+                    "coverage_ratio": 0.7,
+                    "gap_ratio": 0.1,
+                },
+            ],
+        }
+
+        bullets, _debug = translate_cues(
+            context,
+            slide_key="slide3",
+            count=4,
+            preferred_order=("opportunity", "pressure", "strength", "context"),
+            side="benchmark",
+        )
+
+        self.assertEqual(len(bullets), 4)
+        lower = " ".join(bullets).lower()
+        for banned in ("cue", "evidence", "benchmark 2", "secondary benchmark", "competitive pressure"):
+            self.assertNotIn(banned, lower)
+        starters = [bullet.split(" ", 1)[0].lower() for bullet in bullets]
+        self.assertLessEqual(max(starters.count(starter) for starter in starters), 1)
+
 
 if __name__ == "__main__":
     unittest.main()
