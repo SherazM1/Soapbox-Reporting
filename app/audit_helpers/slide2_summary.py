@@ -41,11 +41,11 @@ BULLET_BANK: dict[str, dict[str, str]] = {
         "benefit_clarity_opportunity": "Clarify {benefit_phrase} benefits earlier",
     },
     "walmart_opportunity": {
-        "shelf_ownership": "{product_type_phrase} PDP content can strengthen shelf ownership",
-        "conversion_optimization": "Content cleanup can sharpen shopper guidance",
+        "shelf_ownership": "Stronger Walmart PDP content can deepen shelf ownership",
+        "conversion_optimization": "Sharper PDP guidance can reduce purchase friction",
         "visual_storytelling_gap": "Expand {visual_phrase}",
         "assortment_segmentation": "Sharper assortment cues can help shoppers compare variants faster",
-        "shopper_guidance": "Guide shoppers from need state to product choice",
+        "shopper_guidance": "Connect shopper needs to clearer product choice",
     },
     "competitive_benchmark": {
         "broader_discoverability": "Competitors broaden {discovery_phrase}",

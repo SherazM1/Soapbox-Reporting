@@ -20,6 +20,7 @@ from app.audit_helpers.image_guides import (
 )
 from app.audit_helpers.bullet_uniqueness import normalize_bullet_text
 from app.audit_helpers.slide4_findings import build_slide4_group_findings
+from app.audit_helpers.audit_language_resolver import strategic_bullet_text
 from app.audit_helpers.strategic_cue_engine import aggregate_strategic_cues
 from audit_powerpoint import _format_cover_date
 
@@ -609,56 +610,64 @@ def _slide4_evidence_theme(facts: dict[str, Any]) -> str:
     return "product"
 
 
-def _slide4_theme_bullet(cue_key: str, classification: str, facts: dict[str, Any]) -> str:
+def _slide4_theme_terms(facts: dict[str, Any]) -> dict[str, str]:
     theme = _slide4_evidence_theme(facts)
-    product = _slide4_product_phrase(facts)
     image_count = int(facts.get("image_count", 0) or 0)
-    review_count = int(facts.get("review_count", 0) or 0)
-    if cue_key == "product_positioning":
-        if theme == "hazelnut_cocoa":
-            return "Hazelnut-cocoa positioning supports breakfast occasions"
-        if theme == "peanut_protein":
-            return "Peanut butter positioning reinforces pantry relevance"
-        if theme == "almond":
-            return "Almond butter positioning clarifies variant choice"
-        return f"Benefit-forward {product} positioning"
-    if cue_key == "benefit_communication":
-        if theme == "hazelnut_cocoa":
-            return "Cocoa and hazelnut cues sharpen flavor appeal"
-        if theme == "peanut_protein":
-            return "Protein cues strengthen snack and pantry relevance"
-        return "Clear benefit communication supports shopper confidence"
-    if cue_key == "ingredient_or_formula_communication":
-        if theme == "hazelnut_cocoa":
-            return "Clear hazelnut and cocoa flavor communication"
-        if theme == "peanut_protein":
-            return "Clear peanut and protein detail"
-        return "Clear pack and ingredient detail"
-    if cue_key == "shopper_education":
-        if classification == "opportunity":
-            return "Opportunity to deepen serving and usage guidance"
-        return "Structured nutrition and usage education"
-    if cue_key == "usage_storytelling":
-        if theme == "hazelnut_cocoa":
-            return "Breakfast and snack storytelling builds usage relevance"
-        if theme == "peanut_protein":
-            return "Pantry and recipe cues support comparison"
-        return "Usage storytelling connects PDP content to shopper needs"
-    if cue_key == "visual_identity":
-        if image_count >= 6:
-            return f"{image_count}-image carousel supports visual education"
-        return "Cohesive PDP visual identity"
+    if theme == "hazelnut_cocoa":
+        terms = {
+            "theme": "hazelnut-cocoa spread",
+            "positioning": "Hazelnut-cocoa positioning supports breakfast occasions",
+            "benefit": "Cocoa and hazelnut cues sharpen flavor appeal",
+            "detail": "Clear hazelnut and cocoa flavor communication",
+            "story": "Breakfast and snack storytelling builds usage relevance",
+        }
+    elif theme == "peanut_protein":
+        terms = {
+            "theme": "peanut butter",
+            "positioning": "Peanut butter positioning reinforces pantry relevance",
+            "benefit": "Protein cues strengthen snack and pantry relevance",
+            "detail": "Clear peanut and protein detail",
+            "story": "Pantry and recipe cues support comparison",
+        }
+    elif theme == "almond":
+        terms = {
+            "theme": "almond butter",
+            "positioning": "Almond butter positioning clarifies variant choice",
+            "benefit": "Ingredient cues strengthen premium shelf relevance",
+            "detail": "Clear almond butter pack and nutrition detail",
+            "story": "Snack and recipe storytelling supports shopper comparison",
+        }
+    else:
+        product = _slide4_product_phrase(facts)
+        terms = {
+            "theme": product,
+            "positioning": f"Benefit-forward {product} PDP positioning",
+            "benefit": f"Clear {product} benefit communication",
+            "detail": f"Clear {product} pack and spec detail",
+            "story": f"Balanced {product} usage storytelling",
+        }
+    terms["visual"] = (
+        f"{image_count}-image carousel supports visual education"
+        if image_count >= 6
+        else "Cohesive PDP visual education"
+    )
+    return terms
+
+
+def _slide4_theme_bullet(cue_key: str, classification: str, facts: dict[str, Any], identity: dict[str, Any]) -> str:
     if cue_key == "pack_or_spec_detail":
         return "Clear pack and nutrition detail"
     if cue_key == "review_or_trust_signals":
+        review_count = int(facts.get("review_count", 0) or 0)
         if review_count >= 25:
             return "Review depth strengthens purchase confidence"
         return "Opportunity to strengthen trust signals"
-    if cue_key == "conversion_guidance":
-        return "Benefit-led PDP content supports conversion"
-    if cue_key == "discoverability":
-        return f"Clear {product} shelf discoverability"
-    return f"Focused {product} PDP content"
+    return strategic_bullet_text(
+        {"cue_key": cue_key, "classification": classification},
+        identity,
+        slide_key="slide4",
+        evidence_terms=_slide4_theme_terms(facts),
+    )
 
 
 def _slide4_candidate_sort_key(candidate: dict[str, Any]) -> tuple[int, int, float, float]:
@@ -699,7 +708,12 @@ def _translate_slide4_strategic_cues(
     debug: list[dict[str, Any]] = []
     used = existing_texts
     for candidate in sorted(candidates, key=_slide4_candidate_sort_key):
-        text = _slide4_theme_bullet(candidate.get("cue_key", ""), candidate.get("classification", ""), facts)
+        text = _slide4_theme_bullet(
+            candidate.get("cue_key", ""),
+            candidate.get("classification", ""),
+            facts,
+            context.get("identity", {}),
+        )
         key = normalize_bullet_text(text)
         if not text or key in used:
             continue

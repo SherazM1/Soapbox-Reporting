@@ -4,6 +4,7 @@ import re
 from typing import Any
 
 from app.audit_helpers.bullet_uniqueness import dedupe_bullet_debug, normalize_bullet_text
+from app.audit_helpers.audit_language_resolver import strategic_bullet_text
 from app.audit_helpers.strategic_cue_engine import aggregate_strategic_cues
 
 
@@ -948,38 +949,46 @@ def _slide5_topic_phrase(evidence: dict[str, Any]) -> str:
     return "Educational storytelling"
 
 
-def _slide5_candidate_text(cue_key: str, evidence: dict[str, Any], classification: str) -> str:
+def _slide5_evidence_terms(evidence: dict[str, Any]) -> dict[str, str]:
     categories = evidence.get("categories", []) or []
     category_context = _category_context(categories)
     navigation_context = _navigation_context(categories)
     product_count = int(evidence.get("product_count", 0) or 0)
     module_count = int(evidence.get("module_count", 0) or 0)
-    has_video = bool(evidence.get("video_present") or evidence.get("videos"))
     topic = _slide5_topic_phrase(evidence)
-    if cue_key == "category_grouping":
-        if len(categories) >= 3:
-            return f"Structured {category_context} category grouping"
-        return f"Clear {navigation_context} category focus"
-    if cue_key == "discovery_pathways":
-        if product_count >= 10:
-            return "Broad assortment depth supports product discovery"
-        if product_count > 0:
-            return "Focused assortment supports guided discovery"
-        return "Clear discovery pathways support shopper navigation"
-    if cue_key == "cross_category_navigation":
-        return f"Cross-category pathways expand {navigation_context}"
-    if cue_key == "shopper_education":
-        return f"{topic} builds shopper education"
-    if cue_key == "usage_storytelling":
-        return f"{topic} deepens the branded journey"
+    return {
+        "category_grouping": (
+            f"Structured {category_context} category grouping"
+            if len(categories) >= 3
+            else f"Clear {navigation_context} category focus"
+        ),
+        "discovery": (
+            "Broad assortment depth supports product discovery"
+            if product_count >= 10
+            else "Focused assortment supports guided discovery"
+            if product_count > 0
+            else "Clear discovery pathways support shopper navigation"
+        ),
+        "cross_category": f"Cross-category pathways expand {navigation_context}",
+        "education": f"{topic} builds shopper education",
+        "story": f"{topic} deepens the branded journey",
+        "visual": (
+            "Cohesive visual identity anchors the Brand Shop"
+            if module_count >= 5
+            else "Clear visual identity supports brand recognition"
+        ),
+    }
+
+
+def _slide5_candidate_text(
+    cue_key: str,
+    evidence: dict[str, Any],
+    classification: str,
+    identity: dict[str, Any],
+) -> str:
+    terms = _slide5_evidence_terms(evidence)
     if cue_key == "visual_identity":
-        if module_count >= 5:
-            return "Cohesive visual identity anchors the Brand Shop"
-        return "Clear visual identity supports brand recognition"
-    if cue_key == "conversion_guidance":
-        return "Benefit-led guidance supports product comparison"
-    if cue_key == "assortment_segmentation":
-        return "Assortment segmentation clarifies product choice"
+        return terms["visual"]
     if cue_key == "benefit_communication":
         return "Benefit-forward messaging supports shopper confidence"
     if cue_key == "product_positioning":
@@ -988,9 +997,14 @@ def _slide5_candidate_text(cue_key: str, evidence: dict[str, Any], classificatio
         return "Brand-led navigation strengthens shopper discovery"
     if cue_key == "review_or_trust_signals" and classification == "opportunity":
         return "Opportunity to strengthen conversion confidence"
-    if has_video:
+    if bool(evidence.get("video_present") or evidence.get("videos")) and cue_key == "usage_storytelling":
         return "Rich media deepens the branded shopping journey"
-    return "Focused merchandising supports shopper exploration"
+    return strategic_bullet_text(
+        {"cue_key": cue_key, "classification": classification},
+        identity,
+        slide_key="slide5",
+        evidence_terms=terms,
+    )
 
 
 def _slide5_candidate_sort_key(candidate: dict[str, Any]) -> tuple[int, int, float, float]:
@@ -1034,6 +1048,7 @@ def _brand_shop_cue_bullets(
                 candidate.get("cue_key", ""),
                 evidence,
                 candidate.get("classification", "context"),
+                context.get("identity", {}),
             )
         )
         key = normalize_bullet_text(text)

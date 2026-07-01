@@ -13,6 +13,7 @@ from app.audit_helpers.image_guides import (
     normalize_product_type,
     resolve_image_guide_category,
 )
+from app.audit_helpers.audit_language_resolver import strategic_bullet_text
 from app.audit_helpers.strategic_identity import (
     resolve_strategic_identity as _resolve_foundation_identity,
 )
@@ -559,6 +560,8 @@ def _bullet_text(candidate: dict[str, Any], identity: dict[str, Any], *, slide_k
     classification = candidate.get("classification")
     cue = candidate.get("cue")
     family = identity.get("family_display") or identity.get("category_display") or product
+    if slide_key in {"slide2", "slide3"}:
+        return strategic_bullet_text(candidate, identity, slide_key=slide_key, side=side)
     if classification == "pressure":
         if slide_key == "slide3":
             if cue in {"discoverability", "keyword_alignment"}:
