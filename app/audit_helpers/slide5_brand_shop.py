@@ -4,7 +4,7 @@ import re
 from typing import Any
 
 from app.audit_helpers.bullet_uniqueness import dedupe_bullet_debug, normalize_bullet_text
-from app.audit_helpers.strategic_cues import brand_shop_cue_context, translate_cues
+from app.audit_helpers.strategic_cue_engine import aggregate_strategic_cues
 
 
 DIMENSION_PRIORITY = (
@@ -605,8 +605,16 @@ def _alternate_competitor_bullet(
         "educational_storytelling": f"Benefit-forward education through {topic or 'editorial copy'}",
         "video_rich_media": f"Rich-media depth through {video_title or 'video content'}",
         "cross_category_navigation": f"Clear {_category_context(evidence.get('categories', []) or [])} navigation",
+        "visual_identity": f"Cohesive branded journey across {module_count or 'multiple'} sections",
+        "category_grouping": f"Organized {_navigation_context(evidence.get('categories', []) or [])} category entry points",
+        "discovery_pathways": f"Expanded assortment discovery across {product_count or 'multiple'} items",
+        "shopper_education": f"Benefit-forward shopper education through {topic or 'editorial copy'}",
+        "usage_storytelling": f"Lifestyle-led brand storytelling through {topic or 'editorial content'}",
+        "assortment_segmentation": f"Clear assortment segmentation across {product_count or 'multiple'} products",
+        "conversion_guidance": "Benefit-led guidance supports product comparison",
+        "benefit_communication": f"Clear benefit messaging through {topic or 'brand copy'}",
     }
-    return _fit_bullet(alternatives.get(dimension, "Distinct merchandising advantage"))
+    return _fit_bullet(alternatives.get(dimension, "Focused Brand Shop merchandising"))
 
 
 def _reduce_cross_side_mirroring(
@@ -920,73 +928,174 @@ def _no_brand_shop_bullets(
     )[0][:5]
 
 
-def _brand_shop_cue_bullets(record: dict[str, Any], side: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    context = brand_shop_cue_context(record)
-    if side == "client":
-        for candidate in context.get("candidate_cues", []):
-            if candidate.get("cue") in {
-                "discovery_pathways",
-                "shopper_education",
-                "usage_storytelling",
-                "conversion_guidance",
-            }:
-                candidate["classification"] = "opportunity"
-        first_bullets, first_debug = translate_cues(
-            context,
-            slide_key="slide5",
-            count=1,
-            preferred_order=("strength", "context", "opportunity", "pressure"),
-            side=side,
+def _slide5_context_from_record(record: dict[str, Any], side: str) -> dict[str, Any]:
+    return aggregate_strategic_cues(
+        [],
+        brand_shop_evidence={side: [record]},
+        fallback_category="Brand Shop",
+        fallback_product_type="Brand Shop",
+    )
+
+
+def _slide5_topic_phrase(evidence: dict[str, Any]) -> str:
+    blob = " ".join([*evidence.get("headings", []), *evidence.get("descriptions", [])]).lower()
+    if "hydration" in blob or "moisture" in blob:
+        return "Hydration-led storytelling"
+    if "routine" in blob:
+        return "Routine-led storytelling"
+    if "solution" in blob:
+        return "Solution-led storytelling"
+    return "Educational storytelling"
+
+
+def _slide5_candidate_text(cue_key: str, evidence: dict[str, Any], classification: str) -> str:
+    categories = evidence.get("categories", []) or []
+    category_context = _category_context(categories)
+    navigation_context = _navigation_context(categories)
+    product_count = int(evidence.get("product_count", 0) or 0)
+    module_count = int(evidence.get("module_count", 0) or 0)
+    has_video = bool(evidence.get("video_present") or evidence.get("videos"))
+    topic = _slide5_topic_phrase(evidence)
+    if cue_key == "category_grouping":
+        if len(categories) >= 3:
+            return f"Structured {category_context} category grouping"
+        return f"Clear {navigation_context} category focus"
+    if cue_key == "discovery_pathways":
+        if product_count >= 10:
+            return "Broad assortment depth supports product discovery"
+        if product_count > 0:
+            return "Focused assortment supports guided discovery"
+        return "Clear discovery pathways support shopper navigation"
+    if cue_key == "cross_category_navigation":
+        return f"Cross-category pathways expand {navigation_context}"
+    if cue_key == "shopper_education":
+        return f"{topic} builds shopper education"
+    if cue_key == "usage_storytelling":
+        return f"{topic} deepens the branded journey"
+    if cue_key == "visual_identity":
+        if module_count >= 5:
+            return "Cohesive visual identity anchors the Brand Shop"
+        return "Clear visual identity supports brand recognition"
+    if cue_key == "conversion_guidance":
+        return "Benefit-led guidance supports product comparison"
+    if cue_key == "assortment_segmentation":
+        return "Assortment segmentation clarifies product choice"
+    if cue_key == "benefit_communication":
+        return "Benefit-forward messaging supports shopper confidence"
+    if cue_key == "product_positioning":
+        return "Clear product positioning supports brand relevance"
+    if cue_key == "discoverability":
+        return "Brand-led navigation strengthens shopper discovery"
+    if cue_key == "review_or_trust_signals" and classification == "opportunity":
+        return "Opportunity to strengthen conversion confidence"
+    if has_video:
+        return "Rich media deepens the branded shopping journey"
+    return "Focused merchandising supports shopper exploration"
+
+
+def _slide5_candidate_sort_key(candidate: dict[str, Any]) -> tuple[int, int, float, float]:
+    class_rank = {"strength": 0, "opportunity": 1, "context": 2, "pressure": 3}
+    cue_rank = {
+        "visual_identity": 0,
+        "category_grouping": 1,
+        "discovery_pathways": 2,
+        "shopper_education": 3,
+        "usage_storytelling": 4,
+        "cross_category_navigation": 5,
+        "assortment_segmentation": 6,
+        "conversion_guidance": 7,
+        "benefit_communication": 8,
+        "discoverability": 9,
+    }
+    return (
+        class_rank.get(candidate.get("classification"), 9),
+        cue_rank.get(candidate.get("cue_key"), 99),
+        -float(candidate.get("coverage_ratio", 0) or 0),
+        -float(candidate.get("strength_ratio", 0) or 0),
+    )
+
+
+def _brand_shop_cue_bullets(
+    record: dict[str, Any],
+    side: str,
+    evidence: dict[str, Any],
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    context = _slide5_context_from_record(record, side)
+    candidates = [
+        candidate
+        for candidate in context.get("candidate_cues", [])
+        if "slide5_brand_shop" in (candidate.get("slide_objective_tags") or [])
+    ]
+    debug_items: list[dict[str, Any]] = []
+    used: set[str] = set()
+    for candidate in sorted(candidates, key=_slide5_candidate_sort_key):
+        text = _fit_bullet(
+            _slide5_candidate_text(
+                candidate.get("cue_key", ""),
+                evidence,
+                candidate.get("classification", "context"),
+            )
         )
-        opportunity_bullets, opportunity_debug = translate_cues(
-            context,
-            slide_key="slide5",
-            count=5,
-            preferred_order=("opportunity", "context", "strength", "pressure"),
-            side=side,
+        key = normalize_bullet_text(text)
+        if not text or key in used:
+            continue
+        used.add(key)
+        debug_items.append(
+            {
+                "text": text,
+                "side": side,
+                "type": candidate.get("classification", "context"),
+                "dimension": candidate.get("cue_key", "cue"),
+                "score": candidate.get("classification", "context"),
+                "template_id": f"strategic_cue_{candidate.get('cue_key')}",
+                "signals": [
+                    candidate.get("classification", ""),
+                    candidate.get("cue_key", ""),
+                    *candidate.get("evidence_sources", [])[:2],
+                ],
+                "supporting_count": len(candidate.get("matched_guide_rules", []) or []),
+                "reason": candidate.get("debug_reason", "Selected from strategic cue engine output."),
+                "cue_debug": candidate,
+            }
         )
-        bullets = []
-        debug = []
-        used: set[str] = set()
-        for text, item in [*zip(first_bullets, first_debug), *zip(opportunity_bullets, opportunity_debug)]:
-            key = normalize_bullet_text(text)
-            if key in used:
-                continue
-            used.add(key)
-            bullets.append(text)
-            debug.append(item)
-            if len(bullets) >= 5:
-                break
-    else:
-        bullets, debug = translate_cues(
-            context,
-            slide_key="slide5",
-            count=5,
-            preferred_order=("pressure", "strength", "opportunity", "context"),
-            side=side,
+        if len(debug_items) >= 5:
+            break
+    fallback_texts = [
+        "Cohesive visual identity anchors the Brand Shop",
+        "Structured category grouping supports navigation",
+        "Broad assortment depth supports product discovery",
+        "Educational storytelling builds shopper confidence",
+        "Cross-category pathways support broader exploration",
+    ]
+    for text in fallback_texts:
+        if len(debug_items) >= 5:
+            break
+        key = normalize_bullet_text(text)
+        if key in used:
+            continue
+        used.add(key)
+        debug_items.append(
+            {
+                "text": _fit_bullet(text),
+                "side": side,
+                "type": "context",
+                "dimension": "fallback",
+                "score": "context",
+                "template_id": "strategic_cue_fallback",
+                "signals": ["fallback"],
+                "supporting_count": 0,
+                "reason": "Controlled fallback used to preserve Slide 5 bullet count.",
+                "cue_debug": {},
+            }
         )
-    return [
-        {
-            "text": item["text"],
-            "side": side,
-            "type": item.get("classification", "context"),
-            "dimension": item.get("cue", "cue"),
-            "score": item.get("classification", "context"),
-            "template_id": f"cue_{item.get('cue')}",
-            "signals": [item.get("classification", ""), item.get("cue", "")],
-            "supporting_count": 0,
-            "reason": item.get("reason", ""),
-            "cue_debug": item,
-        }
-        for item in debug
-    ], context.get("debug", {})
+    return debug_items[:5], context.get("debug", {})
 
 
 def _build_side(record: dict[str, Any], side: str, role_path: str) -> dict[str, Any]:
     evidence = _evidence(record)
     dimensions = _score_dimensions(evidence)
     brand_name = _record_brand(record)
-    cue_bullets, cue_context_debug = _brand_shop_cue_bullets(record, side)
+    cue_bullets, cue_context_debug = _brand_shop_cue_bullets(record, side, evidence)
     fallback_bullets = (
         _client_bullets(dimensions, brand_name, evidence)
         if side == "client"

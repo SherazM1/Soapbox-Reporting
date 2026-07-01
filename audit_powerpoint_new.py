@@ -20,7 +20,7 @@ from app.audit_helpers.image_guides import (
 )
 from app.audit_helpers.bullet_uniqueness import normalize_bullet_text
 from app.audit_helpers.slide4_findings import build_slide4_group_findings
-from app.audit_helpers.strategic_cues import aggregate_pdp_cues, translate_cues
+from app.audit_helpers.strategic_cue_engine import aggregate_strategic_cues
 from audit_powerpoint import _format_cover_date
 
 
@@ -598,6 +598,157 @@ def _slide4_content_phrases(facts: dict[str, Any]) -> dict[str, str]:
     }
 
 
+def _slide4_evidence_theme(facts: dict[str, Any]) -> str:
+    blob = _slide4_content_blob(facts)
+    if _has_any(blob, "hazelnut", "cocoa", "nutella"):
+        return "hazelnut_cocoa"
+    if _has_any(blob, "peanut butter", "peanut", "protein", "jif", "fresh roasted", "fresh-roasted"):
+        return "peanut_protein"
+    if _has_any(blob, "almond butter", "almond"):
+        return "almond"
+    return "product"
+
+
+def _slide4_theme_bullet(cue_key: str, classification: str, facts: dict[str, Any]) -> str:
+    theme = _slide4_evidence_theme(facts)
+    product = _slide4_product_phrase(facts)
+    image_count = int(facts.get("image_count", 0) or 0)
+    review_count = int(facts.get("review_count", 0) or 0)
+    if cue_key == "product_positioning":
+        if theme == "hazelnut_cocoa":
+            return "Hazelnut-cocoa positioning supports breakfast occasions"
+        if theme == "peanut_protein":
+            return "Peanut butter positioning reinforces pantry relevance"
+        if theme == "almond":
+            return "Almond butter positioning clarifies variant choice"
+        return f"Benefit-forward {product} positioning"
+    if cue_key == "benefit_communication":
+        if theme == "hazelnut_cocoa":
+            return "Cocoa and hazelnut cues sharpen flavor appeal"
+        if theme == "peanut_protein":
+            return "Protein cues strengthen snack and pantry relevance"
+        return "Clear benefit communication supports shopper confidence"
+    if cue_key == "ingredient_or_formula_communication":
+        if theme == "hazelnut_cocoa":
+            return "Clear hazelnut and cocoa flavor communication"
+        if theme == "peanut_protein":
+            return "Clear peanut and protein detail"
+        return "Clear pack and ingredient detail"
+    if cue_key == "shopper_education":
+        if classification == "opportunity":
+            return "Opportunity to deepen serving and usage guidance"
+        return "Structured nutrition and usage education"
+    if cue_key == "usage_storytelling":
+        if theme == "hazelnut_cocoa":
+            return "Breakfast and snack storytelling builds usage relevance"
+        if theme == "peanut_protein":
+            return "Pantry and recipe cues support comparison"
+        return "Usage storytelling connects PDP content to shopper needs"
+    if cue_key == "visual_identity":
+        if image_count >= 6:
+            return f"{image_count}-image carousel supports visual education"
+        return "Cohesive PDP visual identity"
+    if cue_key == "pack_or_spec_detail":
+        return "Clear pack and nutrition detail"
+    if cue_key == "review_or_trust_signals":
+        if review_count >= 25:
+            return "Review depth strengthens purchase confidence"
+        return "Opportunity to strengthen trust signals"
+    if cue_key == "conversion_guidance":
+        return "Benefit-led PDP content supports conversion"
+    if cue_key == "discoverability":
+        return f"Clear {product} shelf discoverability"
+    return f"Focused {product} PDP content"
+
+
+def _slide4_candidate_sort_key(candidate: dict[str, Any]) -> tuple[int, int, float, float]:
+    class_rank = {"strength": 0, "opportunity": 1, "context": 2, "pressure": 3}
+    cue_rank = {
+        "product_positioning": 0,
+        "benefit_communication": 1,
+        "ingredient_or_formula_communication": 2,
+        "pack_or_spec_detail": 3,
+        "shopper_education": 4,
+        "usage_storytelling": 5,
+        "visual_identity": 6,
+        "review_or_trust_signals": 7,
+        "conversion_guidance": 8,
+    }
+    return (
+        class_rank.get(candidate.get("classification"), 9),
+        cue_rank.get(candidate.get("cue_key"), 99),
+        -float(candidate.get("coverage_ratio", 0) or 0),
+        -float(candidate.get("strength_ratio", 0) or 0),
+    )
+
+
+def _translate_slide4_strategic_cues(
+    record: dict[str, Any],
+    facts: dict[str, Any],
+    *,
+    side: str,
+    existing_texts: set[str],
+) -> tuple[list[str], list[dict[str, Any]], dict[str, Any]]:
+    context = aggregate_strategic_cues([record])
+    candidates = [
+        candidate
+        for candidate in context.get("candidate_cues", [])
+        if "slide4_pdp_benchmark" in (candidate.get("slide_objective_tags") or [])
+    ]
+    bullets: list[str] = []
+    debug: list[dict[str, Any]] = []
+    used = existing_texts
+    for candidate in sorted(candidates, key=_slide4_candidate_sort_key):
+        text = _slide4_theme_bullet(candidate.get("cue_key", ""), candidate.get("classification", ""), facts)
+        key = normalize_bullet_text(text)
+        if not text or key in used:
+            continue
+        used.add(key)
+        bullets.append(text)
+        debug.append(
+            {
+                "text": text,
+                "type": candidate.get("classification", "context"),
+                "dimension": candidate.get("cue_key", "cue"),
+                "signals": [
+                    candidate.get("classification", ""),
+                    candidate.get("cue_key", ""),
+                    *candidate.get("evidence_sources", [])[:2],
+                ],
+                "reason": candidate.get("debug_reason", "Selected from strategic cue engine output."),
+                "cue_debug": candidate,
+                "strategic_cue_context": context.get("debug", {}),
+            }
+        )
+        if len(bullets) >= 4:
+            break
+    fallback_candidates = [
+        "Benefit-forward product positioning",
+        "Clear pack and nutrition detail",
+        "Structured shopper education",
+        "Opportunity to deepen serving guidance",
+    ]
+    for text in fallback_candidates:
+        if len(bullets) >= 4:
+            break
+        key = normalize_bullet_text(text)
+        if key in used:
+            continue
+        used.add(key)
+        bullets.append(text)
+        debug.append(
+            {
+                "text": text,
+                "type": "opportunity",
+                "dimension": "fallback",
+                "signals": ["fallback"],
+                "reason": "Controlled fallback used to preserve Slide 4 bullet count.",
+                "strategic_cue_context": context.get("debug", {}),
+            }
+        )
+    return bullets[:4], debug[:4], context.get("debug", {})
+
+
 def _build_slide4_evidence_bullets(
     record: dict[str, Any],
     *,
@@ -615,28 +766,14 @@ def _build_slide4_evidence_bullets(
     phrases = _slide4_content_phrases(facts)
     brand = facts["brand"] or side.replace("_", " ").title()
     is_client = side == "client"
-    cue_context = aggregate_pdp_cues([record])
-    cue_bullets, cue_debug = translate_cues(
-        cue_context,
-        slide_key="slide4",
-        count=4,
-        preferred_order=("strength", "context", "opportunity", "pressure"),
+    cue_bullets, cue_debug, _cue_context_debug = _translate_slide4_strategic_cues(
+        record,
+        facts,
         side=side,
+        existing_texts=used,
     )
     if len(cue_bullets) == 4:
-        for item in cue_debug:
-            debug.append(
-                {
-                    "text": item["text"],
-                    "type": item.get("classification", "context"),
-                    "dimension": item.get("cue", "cue"),
-                    "signals": [item.get("classification", ""), item.get("cue", "")],
-                    "reason": item.get("reason", ""),
-                    "cue_debug": item,
-                    "strategic_cue_context": cue_context.get("debug", {}),
-                }
-            )
-        return cue_bullets, debug[:4], warnings
+        return cue_bullets, cue_debug[:4], warnings
 
     if _has_any(blob, "hazelnut", "cocoa", "nutella"):
         _append_unique_bullet(

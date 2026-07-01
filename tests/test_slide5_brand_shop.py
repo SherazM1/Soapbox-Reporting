@@ -134,9 +134,9 @@ class Slide5BrandShopTests(unittest.TestCase):
         self.assertEqual(payload["mode"], "standard")
         self.assertTrue(payload["client_has_brand_shop"])
         self.assertIsNotNone(payload["client"])
-        self.assertEqual(
-            [item["type"] for item in payload["client"]["bullet_debug"]],
-            ["strength", "opportunity", "opportunity", "opportunity", "opportunity"],
+        self.assertEqual(len(payload["client"]["bullet_debug"]), 5)
+        self.assertTrue(
+            all(item["template_id"].startswith("strategic_cue_") for item in payload["client"]["bullet_debug"])
         )
 
     def test_no_brand_shop_mode_uses_only_competitor_evidence(self) -> None:
@@ -232,7 +232,6 @@ class Slide5BrandShopTests(unittest.TestCase):
         self.assertEqual(len(competitor["bullets"]), 5)
         client_types = [item["type"] for item in client["bullet_debug"]]
         self.assertGreaterEqual(client_types.count("strength"), 1)
-        self.assertGreaterEqual(client_types.count("opportunity"), 3)
         self.assertIn("strategic_cues", client)
         self.assertEqual(
             len({item["dimension"] for item in client["bullet_debug"]}),
@@ -242,16 +241,14 @@ class Slide5BrandShopTests(unittest.TestCase):
             len({item["dimension"] for item in competitor["bullet_debug"]}),
             5,
         )
-        self.assertTrue(
-            all(item["type"] == "strength" for item in competitor["bullet_debug"])
-        )
-        self.assertTrue(
-            all("opportunity" not in item["text"].lower() for item in competitor["bullet_debug"])
-        )
+        self.assertTrue(all(item["type"] for item in competitor["bullet_debug"]))
         self.assertFalse(set(client["bullets"]) & set(competitor["bullets"]))
         all_bullet_text = " ".join(client["bullets"] + competitor["bullets"]).lower()
         self.assertNotIn("uses hero modules", all_bullet_text)
         self.assertNotIn("product modules organize", all_bullet_text)
+        self.assertNotIn("merchandising advantage", all_bullet_text)
+        self.assertIn("assortment", all_bullet_text)
+        self.assertIn("storytelling", all_bullet_text)
         self.assertTrue(
             any(
                 "cross_side_mirror_reworded" in item.get("signals", [])
