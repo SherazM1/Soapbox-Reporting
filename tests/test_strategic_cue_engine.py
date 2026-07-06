@@ -185,6 +185,161 @@ class StrategicCueEngineTests(unittest.TestCase):
             self.assertIn(key, candidate)
         self.assertEqual(plan["audit_metadata"]["strategic_cue_debug"], debug)
 
+    def test_search_records_keep_intent_visibility_assortment_and_trust_distinct(self) -> None:
+        context = aggregate_strategic_cues(
+            [],
+            search_evidence={
+                "current": [
+                    {
+                        "searchTerm": "facial cleanser",
+                        "products": [
+                            {
+                                "title": "Hydrating Facial Cleanser",
+                                "brand": "Client",
+                                "rank": 1,
+                                "reviewCount": 120,
+                                "rating": 4.7,
+                            },
+                            {
+                                "title": "Gentle Foaming Face Wash",
+                                "brand": "Client",
+                                "rank": 7,
+                                "productType": "Foaming Cleanser",
+                            },
+                        ],
+                    }
+                ]
+            },
+            fallback_category="Beauty",
+            fallback_product_type="Facial Cleansers",
+        )
+        keyword = _cue(context, "keyword_alignment")
+        visibility = _cue(context, "discoverability")
+        assortment = _cue(context, "assortment_segmentation")
+        trust = _cue(context, "review_or_trust_signals")
+        self.assertIn("search_intent", keyword["evidence_channels"])
+        self.assertIn("search_visibility", visibility["evidence_channels"])
+        self.assertIn("assortment", assortment["evidence_channels"])
+        self.assertIn("trust", trust["evidence_channels"])
+        self.assertNotEqual(keyword["evidence_channels"], visibility["evidence_channels"])
+
+    def test_brand_shop_records_separate_grouping_pathways_media_and_conversion(self) -> None:
+        context = aggregate_strategic_cues(
+            [],
+            brand_shop_evidence={
+                "client": [
+                    {
+                        "brandName": "Client",
+                        "categories": ["Skin Care", "Cleansers", "Moisturizers", "Suncare"],
+                        "moduleCount": 4,
+                        "productCount": 42,
+                        "destinationLinks": ["Shop All", "Cleansers", "Moisturizers"],
+                        "modules": [
+                            {"type": "hero banner", "heading": "Clean routine"},
+                            {"type": "video rich media", "heading": "Regimen story"},
+                            {"type": "product grid", "heading": "Shop now"},
+                        ],
+                    }
+                ]
+            },
+            fallback_category="Beauty",
+            fallback_product_type="Facial Cleansers",
+        )
+        grouping = _cue(context, "category_grouping")
+        pathways = _cue(context, "discovery_pathways")
+        cross_category = _cue(context, "cross_category_navigation")
+        visual = _cue(context, "visual_identity")
+        conversion = _cue(context, "conversion_guidance")
+        self.assertIn("navigation", grouping["evidence_channels"])
+        self.assertIn("brand_shop_pathways", pathways["evidence_channels"])
+        self.assertIn("cross_category", cross_category["evidence_channels"])
+        self.assertIn("brand_shop_media", visual["evidence_channels"])
+        self.assertIn("conversion", conversion["evidence_channels"])
+
+    def test_beauty_guardrails_demote_food_oriented_detail_cues(self) -> None:
+        context = aggregate_strategic_cues(
+            [
+                {
+                    "category": "Beauty/Skin Care",
+                    "product_type": "Facial Cleansers",
+                    "product_title": "Hydrating Facial Cleanser",
+                    "description_body": "Nutrition protein breakfast recipe details.",
+                    "key_features": ["Hydrating formula", "Niacinamide active"],
+                }
+            ],
+            fallback_category="Beauty",
+            fallback_product_type="Facial Cleansers",
+        )
+        benefit = _cue(context, "benefit_communication")
+        formula = _cue(context, "ingredient_or_formula_communication")
+        usage = _cue(context, "usage_storytelling")
+        pack = _cue(context, "pack_or_spec_detail")
+        self.assertEqual(context["identity"]["category_key"], "beauty")
+        self.assertGreaterEqual(benefit["guardrail_multiplier"], 1.0)
+        self.assertGreaterEqual(formula["guardrail_multiplier"], 1.0)
+        self.assertLess(usage["guardrail_multiplier"], 0.5)
+        self.assertLess(pack["guardrail_multiplier"], 0.5)
+
+    def test_structured_evidence_weights_features_above_generic_description(self) -> None:
+        identity = {
+            "category_key": "food_beverage",
+            "product_type_display": "Protein Bars",
+            "attribute_cues": [],
+            "benefit_cues": [],
+            "recommended_title_priorities": [],
+            "education_cues": [],
+            "usage_occasion_cues": [],
+            "recommended_visual_priorities": [],
+            "image_story_cues": [],
+            "comparison_cues": [],
+        }
+        context = aggregate_strategic_cues(
+            [
+                {
+                    "record_id": "feature-rich",
+                    "category": "Food",
+                    "product_type": "Protein Bars",
+                    "product_title": "Snack Bar",
+                    "key_features": ["Protein benefit"],
+                },
+                {
+                    "record_id": "description-only",
+                    "category": "Food",
+                    "product_type": "Protein Bars",
+                    "product_title": "Snack Bar",
+                    "description_body": "Protein benefit.",
+                },
+            ],
+            identity=identity,
+        )
+        benefit = _cue(context, "benefit_communication")
+        self.assertEqual(benefit["coverage_ratio"], 0.5)
+        self.assertIn("features", benefit["evidence_channels"])
+        self.assertGreater(benefit["strength_ratio"], 0.25)
+
+    def test_redundant_brand_shop_navigation_cues_are_suppressed(self) -> None:
+        context = aggregate_strategic_cues(
+            [],
+            brand_shop_evidence={
+                "client": [
+                    {
+                        "brandName": "Client",
+                        "categories": ["Skin Care", "Cleansers", "Moisturizers", "Suncare"],
+                        "destinationLinks": ["Shop All", "Cleansers", "Moisturizers"],
+                    }
+                ]
+            },
+            fallback_category="Beauty",
+            fallback_product_type="Facial Cleansers",
+        )
+        suppressed = [
+            item
+            for item in context["candidate_cues"]
+            if item["cue_key"] in {"category_grouping", "discovery_pathways", "cross_category_navigation"}
+            and item.get("redundancy_suppressed_by")
+        ]
+        self.assertTrue(suppressed)
+
 
 if __name__ == "__main__":
     unittest.main()
