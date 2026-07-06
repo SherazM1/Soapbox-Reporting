@@ -6,7 +6,7 @@ from typing import Any
 from urllib.parse import parse_qsl, unquote_plus, urlparse
 
 from app.audit_helpers.bullet_uniqueness import make_unique_bullet_text
-from app.audit_helpers.strategic_cues import search_cue_context, translate_cues
+from app.audit_helpers.strategic_cues import search_cue_context
 
 
 CURRENT_BULLET_BANK = {
@@ -112,6 +112,22 @@ BENCHMARK_DIMENSION_ORDER = [
     "badge_promotional_visibility",
     "sponsored_competition",
 ]
+
+SEARCH_BULLET_FAMILIES = (
+    "query_alignment",
+    "shelf_breadth",
+    "trust_authority",
+    "side_specific",
+)
+
+MALFORMED_PHRASE_BLOCKLIST = (
+    "enhanced to improve",
+    "review and confidence signals",
+    "enhanced active",
+    "form, and dosage segmentation",
+    "benchmark cue",
+    "cue translation",
+)
 
 STOP_WORDS = {
     "a",
@@ -469,6 +485,468 @@ def _dimension_scores(search_term: str, products: list[dict[str, Any]], client_b
     return scores
 
 
+def _fit_search_bullet(text: str) -> str:
+    clean = re.sub(r"\s+", " ", _safe_text(text)).strip(" .;")
+    words = clean.split()
+    if len(words) > 9:
+        clean = " ".join(words[:9]).rstrip(" ,;-")
+    if len(clean) > 68:
+        clean = clean[:65].rsplit(" ", 1)[0].rstrip(" ,;-")
+    return clean
+
+
+def _search_language_allowed(text: str) -> tuple[bool, str]:
+    normalized = _safe_text(text).lower()
+    if not normalized:
+        return False, "blank"
+    if any(blocked in normalized for blocked in MALFORMED_PHRASE_BLOCKLIST):
+        return False, "malformed_or_strategy_phrase"
+    titleish_tokens = [token for token in normalized.split() if token[:1].isupper()]
+    if len(titleish_tokens) >= 6:
+        return False, "raw_product_title_like"
+    if not any(term in normalized for term in ("query", "queries", "shelf", "review", "brand", "position", "coverage", "presence", "badge", "sponsored", "authority", "alignment", "breadth", "adjacent")):
+        return False, "not_search_native"
+    return True, "allowed"
+
+
+def _score_rank(score: str) -> int:
+    return {"Strong": 4, "Moderate": 3, "Limited": 2, "Unknown": 1, "Missing": 0}.get(score, 1)
+
+
+def _candidate_overlap_key(text: str) -> set[str]:
+    stop = STOP_WORDS | {
+        "current",
+        "client",
+        "benchmark",
+        "competitive",
+        "stronger",
+        "broader",
+        "visible",
+        "visibility",
+        "leading",
+        "results",
+        "across",
+        "near",
+        "sets",
+        "supports",
+        "anchors",
+    }
+    return {token for token in _normalize_tokens(text) if token not in stop and len(token) > 2}
+
+
+def _is_overlapping_bullet(left: str, right: str) -> bool:
+    left_terms = _candidate_overlap_key(left)
+    right_terms = _candidate_overlap_key(right)
+    if not left_terms or not right_terms:
+        return False
+    shared = left_terms & right_terms
+    return len(shared) >= 2 and len(shared) >= min(len(left_terms), len(right_terms)) * 0.5
+
+
+def _add_search_candidate(
+    candidates: list[dict[str, Any]],
+    rejected: list[dict[str, str]],
+    *,
+    side: str,
+    text: str,
+    family: str,
+    dimension: str,
+    score: str,
+    rank: float,
+    evidence: list[str],
+    reason: str,
+    search_term: str,
+    product_type: str,
+) -> None:
+    fitted = _fit_search_bullet(text)
+    allowed, guard_reason = _search_language_allowed(fitted)
+    if not allowed:
+        rejected.append({"text": fitted, "reason": guard_reason, "family": family})
+        return
+    candidates.append(
+        {
+            "text": fitted,
+            "side": side,
+            "family": family if family in SEARCH_BULLET_FAMILIES else "side_specific",
+            "dimension": dimension,
+            "score": score,
+            "rank": rank + _score_rank(score),
+            "evidence": evidence,
+            "reason": reason,
+            "search_term": search_term,
+            "product_type": product_type,
+        }
+    )
+
+
+def _build_side_candidates(
+    side: str,
+    scores: dict[str, str],
+    products: list[dict[str, Any]],
+    client_brand: str,
+    search_term: str,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    brands = _top_brands(products)
+    badges = _badges(products)
+    review_counts = _review_counts(products)
+    client_positions = [
+        _product_position(product, index)
+        for index, product in enumerate(products, start=1)
+        if _client_brand_matches(client_brand, product)
+    ]
+    median_reviews = int(median(review_counts)) if review_counts else 0
+    max_reviews = max(review_counts) if review_counts else 0
+    phrase_context = _search_phrase_context(search_term)
+    product_type = phrase_context["product_type"]
+    candidates: list[dict[str, Any]] = []
+    rejected: list[dict[str, str]] = []
+
+    def add(**kwargs: Any) -> None:
+        _add_search_candidate(
+            candidates,
+            rejected,
+            side=side,
+            search_term=search_term,
+            product_type=product_type,
+            **kwargs,
+        )
+
+    keyword_score = scores.get("keyword_alignment", "Limited")
+    assortment_score = scores.get("assortment_breadth", "Limited")
+    review_score = scores.get("review_authority", "Missing")
+    sponsored_score = scores.get("sponsored_competition", "Unknown")
+
+    if side == "current":
+        if client_positions and client_brand:
+            add(
+                text=f"{client_brand} appears near position {min(client_positions)} for {product_type}",
+                family="side_specific",
+                dimension="client_brand_presence",
+                score=scores.get("client_brand_presence", "Unknown"),
+                rank=96,
+                evidence=[f"client_position={min(client_positions)}", f"query={search_term}"],
+                reason="Current side prioritized actual client placement in captured results.",
+            )
+        elif client_brand:
+            add(
+                text=f"{client_brand} presence is narrow for {product_type}",
+                family="side_specific",
+                dimension="client_brand_presence",
+                score="Missing",
+                rank=92,
+                evidence=["client_not_found", f"query={search_term}"],
+                reason="Current side prioritized missing client presence in leading results.",
+            )
+        add(
+            text=(
+                f"Current titles align with {product_type} queries"
+                if keyword_score in {"Strong", "Moderate"}
+                else f"Current query alignment is thin for {product_type}"
+            ),
+            family="query_alignment",
+            dimension="keyword_alignment",
+            score=keyword_score,
+            rank=88,
+            evidence=[keyword_score, f"query={search_term}"],
+            reason="Current side evaluated title/query fit against captured products.",
+        )
+        add(
+            text=(
+                f"Current shelf breadth spans {len(brands)} visible brands"
+                if len(brands) >= 2
+                else f"Current shelf breadth is narrow for {product_type}"
+            ),
+            family="shelf_breadth",
+            dimension="assortment_breadth",
+            score=assortment_score,
+            rank=82,
+            evidence=[f"brands={len(brands)}", *brands[:3]],
+            reason="Current side used captured brand count as shelf-breadth evidence.",
+        )
+        add(
+            text=(
+                f"Visible review threshold is near {median_reviews}"
+                if median_reviews
+                else f"Review authority is limited on current shelf"
+            ),
+            family="trust_authority",
+            dimension="review_authority",
+            score=review_score,
+            rank=78,
+            evidence=[f"median_reviews={median_reviews}"] if median_reviews else ["review_counts_missing"],
+            reason="Current side used median review count as trust evidence.",
+        )
+        if badges:
+            add(
+                text=f"{badges[0]} badge shapes current shelf attention",
+                family="side_specific",
+                dimension="badge_promotional_visibility",
+                score=scores.get("badge_promotional_visibility", "Limited"),
+                rank=74,
+                evidence=badges[:3],
+                reason="Current side kept promotional badge evidence as a distinct shelf signal.",
+            )
+        if sponsored_score in {"Strong", "Moderate"}:
+            add(
+                text=f"Sponsored pressure competes with current shelf presence",
+                family="side_specific",
+                dimension="sponsored_competition",
+                score=sponsored_score,
+                rank=70,
+                evidence=[sponsored_score],
+                reason="Current side identified paid placement pressure in captured results.",
+            )
+        add(
+            text="Benefit-led coverage remains limited on current shelf",
+            family="side_specific",
+            dimension="benefit_intent_alignment",
+            score=scores.get("benefit_intent_alignment", "Limited"),
+            rank=66,
+            evidence=[scores.get("benefit_intent_alignment", "Limited")],
+            reason="Current side used benefit and adjacent-intent coverage as a distinct fallback signal.",
+        )
+    else:
+        add(
+            text=(
+                f"Benchmark titles match {product_type} query intent"
+                if keyword_score in {"Strong", "Moderate"}
+                else f"Benchmark query fit varies for {product_type}"
+            ),
+            family="query_alignment",
+            dimension="keyword_alignment",
+            score=keyword_score,
+            rank=90,
+            evidence=[keyword_score, f"query={search_term}"],
+            reason="Benchmark side evaluated competitor title/query fit separately.",
+        )
+        add(
+            text=(
+                f"Benchmark shelf spans {len(brands)} competing brands"
+                if len(brands) >= 2
+                else f"Benchmark shelf breadth is still concentrated"
+            ),
+            family="shelf_breadth",
+            dimension="assortment_breadth",
+            score=assortment_score,
+            rank=88,
+            evidence=[f"brands={len(brands)}", *brands[:3]],
+            reason="Benchmark side prioritized competing brand breadth.",
+        )
+        add(
+            text=(
+                f"Higher review threshold reaches {max_reviews}"
+                if max_reviews >= 100
+                else f"Benchmark review authority remains uneven"
+            ),
+            family="trust_authority",
+            dimension="review_authority",
+            score=review_score,
+            rank=84,
+            evidence=[f"max_reviews={max_reviews}", f"median_reviews={median_reviews}"] if review_counts else ["review_counts_missing"],
+            reason="Benchmark side used review ceiling and median to describe authority.",
+        )
+        if sponsored_score in {"Strong", "Moderate", "Unknown"}:
+            add(
+                text=f"Sponsored pressure is visible on benchmark shelf",
+                family="side_specific",
+                dimension="sponsored_competition",
+                score=sponsored_score,
+                rank=76,
+                evidence=[sponsored_score],
+                reason="Benchmark side kept sponsored pressure as a distinct competitive signal.",
+            )
+        if badges:
+            add(
+                text=f"Retail badges sharpen benchmark shelf choice",
+                family="side_specific",
+                dimension="badge_promotional_visibility",
+                score=scores.get("badge_promotional_visibility", "Limited"),
+                rank=72,
+                evidence=badges[:3],
+                reason="Benchmark side used retail badge evidence for shelf differentiation.",
+            )
+        add(
+            text="Benefit-led coverage broadens benchmark results",
+            family="side_specific",
+            dimension="benefit_intent_alignment",
+            score=scores.get("benefit_intent_alignment", "Limited"),
+            rank=68,
+            evidence=[scores.get("benefit_intent_alignment", "Limited")],
+            reason="Benchmark side used benefit and adjacent-intent coverage as a distinct fallback signal.",
+        )
+
+    ranked = sorted(candidates, key=lambda item: float(item.get("rank", 0)), reverse=True)
+    return ranked, {
+        "side": side,
+        "search_term": search_term,
+        "product_type": product_type,
+        "brands": brands[:6],
+        "review_summary": {
+            "median": median_reviews,
+            "max": max_reviews,
+            "count": len(review_counts),
+        },
+        "client_positions": client_positions,
+        "scores": scores,
+        "ranked_candidate_themes": [
+            {
+                "text": item["text"],
+                "family": item["family"],
+                "dimension": item["dimension"],
+                "rank": item["rank"],
+                "evidence": item["evidence"],
+                "reason": item["reason"],
+            }
+            for item in ranked[:12]
+        ],
+        "rejected_candidates": rejected,
+    }
+
+
+def _select_side_candidates(candidates: list[dict[str, Any]], used_texts: set[str] | None = None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    selected: list[dict[str, Any]] = []
+    family_counts: dict[str, int] = {}
+    used = set(used_texts or set())
+    rejected: list[dict[str, str]] = []
+
+    def try_add(candidate: dict[str, Any], *, allow_second_family: bool) -> bool:
+        text = candidate["text"]
+        family = candidate["family"]
+        normalized = make_unique_bullet_text(text, used, fallback_subject="search shelf")[0]
+        if normalized != text:
+            rejected.append({"text": text, "reason": "duplicate_text"})
+            return False
+        if family_counts.get(family, 0) >= 2:
+            rejected.append({"text": text, "reason": "family_cap_reached"})
+            return False
+        if family_counts.get(family, 0) >= 1 and not allow_second_family:
+            return False
+        used.add(text)
+        family_counts[family] = family_counts.get(family, 0) + 1
+        selected.append(candidate)
+        return True
+
+    for family in SEARCH_BULLET_FAMILIES:
+        for candidate in candidates:
+            if candidate["family"] == family and try_add(candidate, allow_second_family=False):
+                break
+        if len(selected) == 4:
+            break
+    if len(selected) < 4:
+        for candidate in candidates:
+            if len(selected) == 4:
+                break
+            if candidate in selected:
+                continue
+            try_add(candidate, allow_second_family=True)
+
+    return selected[:4], {
+        "accepted_bullets": [item["text"] for item in selected[:4]],
+        "family_counts": family_counts,
+        "rejected_bullets": rejected[:12],
+    }
+
+
+def _candidate_to_debug(candidate: dict[str, Any], *, overlap_note: str = "") -> dict[str, Any]:
+    return {
+        "text": candidate["text"],
+        "side": candidate["side"],
+        "dimension": candidate["dimension"],
+        "score": candidate["score"],
+        "template_id": f"search_native_{candidate['dimension']}",
+        "signals": candidate["evidence"],
+        "supporting_count": 0,
+        "reason": candidate["reason"],
+        "bullet_family": candidate["family"],
+        "evidence_summary": {
+            "search_term": candidate["search_term"],
+            "product_type": candidate["product_type"],
+            "evidence": candidate["evidence"],
+        },
+        "overlap_note": overlap_note,
+    }
+
+
+def _apply_cross_side_overlap_suppression(current_payload: dict[str, Any], benchmark_payload: dict[str, Any]) -> dict[str, Any]:
+    current_candidates = list(current_payload.get("candidate_themes", []) or [])
+    benchmark_candidates = list(benchmark_payload.get("candidate_themes", []) or [])
+    current_selected = list(current_payload.get("selected_candidates", []) or [])
+    benchmark_selected = list(benchmark_payload.get("selected_candidates", []) or [])
+    rejected_overlap: list[dict[str, Any]] = []
+
+    def replace_candidate(side_name: str, selected: list[dict[str, Any]], candidates: list[dict[str, Any]], index: int, other_texts: list[str]) -> bool:
+        current_texts = [item["text"] for pos, item in enumerate(selected) if pos != index]
+        for candidate in candidates:
+            if candidate in selected:
+                continue
+            if any(_is_overlapping_bullet(candidate["text"], text) for text in current_texts):
+                continue
+            if any(_is_overlapping_bullet(candidate["text"], text) for text in other_texts):
+                continue
+            rejected_text = selected[index]["text"]
+            selected[index] = candidate
+            rejected_overlap.append(
+                {
+                    "side": side_name,
+                    "rejected": rejected_text,
+                    "replacement": candidate["text"],
+                    "reason": "Replaced overlapping bullet with next-best side-specific search insight.",
+                }
+            )
+            return True
+        return False
+
+    for current_index, current_item in enumerate(list(current_selected)):
+        for benchmark_index, benchmark_item in enumerate(list(benchmark_selected)):
+            if not _is_overlapping_bullet(current_item["text"], benchmark_item["text"]):
+                continue
+            if current_item["family"] != benchmark_item["family"]:
+                continue
+            current_rank = float(current_item.get("rank", 0))
+            benchmark_rank = float(benchmark_item.get("rank", 0))
+            if abs(current_rank - benchmark_rank) >= 5:
+                if current_rank >= benchmark_rank:
+                    replace_candidate(
+                        "benchmark",
+                        benchmark_selected,
+                        benchmark_candidates,
+                        benchmark_index,
+                        [item["text"] for item in current_selected],
+                    )
+                else:
+                    replace_candidate(
+                        "current",
+                        current_selected,
+                        current_candidates,
+                        current_index,
+                        [item["text"] for item in benchmark_selected],
+                    )
+            else:
+                rejected_overlap.append(
+                    {
+                        "side": "shared",
+                        "current": current_item["text"],
+                        "benchmark": benchmark_item["text"],
+                        "reason": "Shared theme kept because both sides had similar evidence strength.",
+                    }
+                )
+
+    current_payload["selected_candidates"] = current_selected[:4]
+    benchmark_payload["selected_candidates"] = benchmark_selected[:4]
+    for payload in (current_payload, benchmark_payload):
+        payload["bullets"] = [candidate["text"] for candidate in payload["selected_candidates"][:4]]
+        payload["bullet_debug"] = [
+            _candidate_to_debug(candidate)
+            for candidate in payload["selected_candidates"][:4]
+        ]
+        payload.setdefault("debug", {})["accepted_bullets"] = payload["bullets"]
+    return {
+        "rejected_overlapping_bullets": rejected_overlap,
+        "current_final_bullets": current_payload.get("bullets", []),
+        "benchmark_final_bullets": benchmark_payload.get("bullets", []),
+    }
+
+
 def _select_bullets(
     side: str,
     scores: dict[str, str],
@@ -698,30 +1176,12 @@ def _build_side_payload(record: dict[str, Any] | None, side: str, client_name: s
         client_brand=client_name,
         side=side,
     )
-    bullets, cue_debug = translate_cues(
-        cue_context,
-        slide_key="slide3",
-        count=4,
-        preferred_order=("pressure", "opportunity", "context", "strength"),
-        side=side,
-    )
+    candidate_themes, side_debug = _build_side_candidates(side, scores, products, client_name, search_term)
+    selected_candidates, selection_debug = _select_side_candidates(candidate_themes)
+    bullets = [candidate["text"] for candidate in selected_candidates[:4]]
+    bullet_debug = [_candidate_to_debug(candidate) for candidate in selected_candidates[:4]]
     if len(bullets) != 4:
         bullets, bullet_debug = _select_bullets(side, scores, products, client_name, search_term)
-    else:
-        bullet_debug = [
-            {
-                "text": item["text"],
-                "side": side,
-                "dimension": item.get("cue") or "cue",
-                "score": item.get("classification") or "context",
-                "template_id": f"cue_{item.get('cue')}",
-                "signals": [item.get("classification", ""), item.get("cue", "")],
-                "supporting_count": len(products),
-                "reason": item.get("reason", ""),
-                "cue_debug": item,
-            }
-            for item in cue_debug
-        ]
     client_products = [
         {
             "position": _product_position(product, index),
@@ -739,6 +1199,8 @@ def _build_side_payload(record: dict[str, Any] | None, side: str, client_name: s
         "bullets": bullets,
         "dimension_scores": scores,
         "bullet_debug": bullet_debug,
+        "candidate_themes": candidate_themes,
+        "selected_candidates": selected_candidates,
         "product_count": len(products),
         "client_brand": client_name,
         "client_products": client_products,
@@ -747,6 +1209,12 @@ def _build_side_payload(record: dict[str, Any] | None, side: str, client_name: s
         "review_counts": _review_counts(products),
         "warnings": [],
         "strategic_cues": cue_context.get("debug", {}),
+        "debug": {
+            "side_built_separately": True,
+            "side_candidate_debug": side_debug,
+            "selection_debug": selection_debug,
+            "strategic_cue_debug": cue_context.get("debug", {}),
+        },
     }
 
 
@@ -764,6 +1232,7 @@ def build_slide3_search_benchmark(search_evidence: Any, client_name: str = "") -
     client_label = _safe_text(client_name or "")
     current_payload = _build_side_payload(current_record, "current", client_label)
     benchmark_payload = _build_side_payload(benchmark_record, "benchmark", client_label)
+    overlap_debug = _apply_cross_side_overlap_suppression(current_payload, benchmark_payload)
 
     if current_record is None:
         current_payload["warnings"].append("Missing Current evidence; left side was left unchanged.")
@@ -792,5 +1261,21 @@ def build_slide3_search_benchmark(search_evidence: Any, client_name: str = "") -
             "benchmark_source_row": benchmark_payload.get("source_row"),
             "current_search_term": current_payload.get("search_term"),
             "benchmark_search_term": benchmark_payload.get("search_term"),
+            "side_build_order": [
+                "current_candidates_built",
+                "benchmark_candidates_built",
+                "cross_side_overlap_suppression_applied",
+            ],
+            "current_ranked_candidate_themes": (
+                current_payload.get("debug", {})
+                .get("side_candidate_debug", {})
+                .get("ranked_candidate_themes", [])
+            ),
+            "benchmark_ranked_candidate_themes": (
+                benchmark_payload.get("debug", {})
+                .get("side_candidate_debug", {})
+                .get("ranked_candidate_themes", [])
+            ),
+            "overlap_suppression": overlap_debug,
         },
     }

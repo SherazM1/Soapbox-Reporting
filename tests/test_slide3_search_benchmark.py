@@ -171,6 +171,107 @@ class Slide3SearchBenchmarkTests(unittest.TestCase):
         self.assertEqual(len({item["dimension"] for item in payload["current"]["bullet_debug"]}), 4)
         self.assertEqual(len({item["dimension"] for item in payload["benchmark"]["bullet_debug"]}), 4)
 
+    def test_slide3_builds_sides_separately_and_suppresses_overlap(self) -> None:
+        payload = build_slide3_search_benchmark(
+            {
+                "current": [
+                    {
+                        "role": "Current",
+                        "sourceRow": 1,
+                        "searchTerm": "facial cleanser",
+                        "screenshotDataUrl": _image_data_url((12, 24, 36)),
+                        "orderedMainResultProducts": [
+                            {"position": 5, "title": "Glow Hydrating Facial Cleanser Sensitive Skin", "brand": "Glow", "reviewCount": 42},
+                            {"position": 8, "title": "Foaming Face Cleanser", "brand": "Brand B", "reviewCount": 12},
+                        ],
+                    }
+                ],
+                "benchmark": [
+                    {
+                        "role": "Benchmark",
+                        "sourceRow": 2,
+                        "searchTerm": "facial cleanser",
+                        "screenshotDataUrl": _image_data_url((36, 24, 12)),
+                        "orderedMainResultProducts": [
+                            {"position": 1, "title": "CeraVe Hydrating Facial Cleanser", "brand": "CeraVe", "reviewCount": 1200, "sponsored": True},
+                            {"position": 2, "title": "Cetaphil Gentle Skin Cleanser", "brand": "Cetaphil", "reviewCount": 900, "sponsored": True},
+                            {"position": 3, "title": "Neutrogena Hydro Boost Cleanser", "brand": "Neutrogena", "reviewCount": 450},
+                        ],
+                    }
+                ],
+            },
+            client_name="Glow",
+        )
+        self.assertEqual(len(payload["current"]["bullets"]), 4)
+        self.assertEqual(len(payload["benchmark"]["bullets"]), 4)
+        self.assertNotEqual(payload["current"]["bullets"], payload["benchmark"]["bullets"])
+        self.assertEqual(
+            payload["debug"]["side_build_order"],
+            [
+                "current_candidates_built",
+                "benchmark_candidates_built",
+                "cross_side_overlap_suppression_applied",
+            ],
+        )
+        self.assertTrue(payload["current"]["debug"]["side_built_separately"])
+        self.assertTrue(payload["benchmark"]["debug"]["side_built_separately"])
+        overlap = payload["debug"]["overlap_suppression"]["rejected_overlapping_bullets"]
+        self.assertTrue(any(item.get("side") == "current" and item.get("replacement") for item in overlap))
+        self.assertTrue(any("benefit-led coverage" in bullet.lower() for bullet in payload["current"]["bullets"]))
+        self.assertTrue(any("sponsored pressure" in bullet.lower() for bullet in payload["benchmark"]["bullets"]))
+
+    def test_slide3_outputs_search_native_phrasing_without_malformed_templates(self) -> None:
+        payload = build_slide3_search_benchmark(
+            {
+                "current": [
+                    {
+                        "role": "Current",
+                        "sourceRow": 1,
+                        "searchTerm": "peanut butter",
+                        "screenshotDataUrl": _image_data_url((44, 55, 66)),
+                        "orderedMainResultProducts": [
+                            {"position": 2, "title": "Client Brand Peanut Butter", "brand": "Client Brand", "reviewCount": 220, "badges": ["Best seller"]},
+                            {"position": 4, "title": "Natural Peanut Butter", "brand": "Brand B", "reviewCount": 125},
+                        ],
+                    }
+                ],
+                "benchmark": [
+                    {
+                        "role": "Benchmark",
+                        "sourceRow": 2,
+                        "searchTerm": "natural peanut butter",
+                        "screenshotDataUrl": _image_data_url((66, 55, 44)),
+                        "orderedMainResultProducts": [
+                            {"position": 1, "title": "Jif Natural Peanut Butter", "brand": "Jif", "reviewCount": 1500},
+                            {"position": 2, "title": "Skippy Natural Peanut Butter", "brand": "Skippy", "reviewCount": 700},
+                        ],
+                    }
+                ],
+            },
+            client_name="Client Brand",
+        )
+        all_bullets = payload["current"]["bullets"] + payload["benchmark"]["bullets"]
+        forbidden = " ".join(all_bullets).lower()
+        for phrase in (
+            "enhanced to improve",
+            "review and confidence signals",
+            "enhanced active",
+            "generic discovery",
+            "benchmark cue",
+        ):
+            self.assertNotIn(phrase, forbidden)
+        self.assertTrue(
+            all(
+                any(term in bullet.lower() for term in ("query", "queries", "shelf", "review", "brand", "position", "badge", "coverage", "sponsored", "threshold"))
+                for bullet in all_bullets
+            )
+        )
+        self.assertTrue(all(len(bullet.split()) <= 9 for bullet in all_bullets))
+        for row in payload["current"]["bullet_debug"] + payload["benchmark"]["bullet_debug"]:
+            self.assertIn("bullet_family", row)
+            self.assertIn("evidence_summary", row)
+            self.assertTrue(row["reason"])
+
     @unittest.skipUnless(TEMPLATE.exists(), "New strategic template is unavailable")
     def test_slide3_generation_populates_screenshots_and_text_without_changing_constants(self) -> None:
         payload = build_slide3_search_benchmark(

@@ -79,6 +79,80 @@ FALLBACK_BULLET_IDS: dict[str, tuple[str, ...]] = {
 }
 
 SLIDE2_MAX_BULLET_CHARS = 64
+MIN_SECTION_BANK_BULLETS = 2
+MAX_CUE_SWAPS_PER_SECTION = 2
+
+SECTION_CUE_RULES: dict[str, dict[str, Any]] = {
+    "consumer_demand": {
+        "allowed_cues": {"product_positioning", "benefit_communication", "review_or_trust_signals"},
+        "allowed_classifications": {"strength", "context"},
+        "required_terms": {
+            "trust",
+            "review",
+            "relevance",
+            "confidence",
+            "fit",
+            "foundation",
+            "positioning",
+            "demand",
+        },
+        "blocked_terms": {"opportunity", "competitor", "benchmark", "pressure", "gap"},
+    },
+    "walmart_opportunity": {
+        "allowed_cues": {
+            "keyword_alignment",
+            "discoverability",
+            "assortment_segmentation",
+            "shopper_education",
+            "conversion_guidance",
+            "visual_identity",
+            "product_positioning",
+        },
+        "allowed_classifications": {"opportunity", "pressure", "context", "strength"},
+        "required_terms": {
+            "opportunity",
+            "walmart",
+            "pdp",
+            "content",
+            "shelf",
+            "conversion",
+            "guidance",
+            "discoverability",
+            "visibility",
+            "assortment",
+        },
+        "blocked_terms": {"competitor", "benchmark", "category leaders"},
+    },
+    "competitive_benchmark": {
+        "allowed_cues": {
+            "keyword_alignment",
+            "discoverability",
+            "shopper_education",
+            "usage_storytelling",
+            "visual_identity",
+            "benefit_communication",
+            "review_or_trust_signals",
+        },
+        "allowed_classifications": {"pressure", "context", "strength", "opportunity"},
+        "required_terms": {
+            "competitor",
+            "benchmark",
+            "competitive",
+            "category leaders",
+            "comparison",
+            "pressure",
+            "limited competitor",
+        },
+        "blocked_terms": {"client-side", "walmart opportunity", "ownable"},
+    },
+}
+
+SYNTHETIC_FILLER_PATTERNS = (
+    "more ownable",
+    "enhanced ownable",
+    "value communication",
+    "focused ",
+)
 
 
 def _safe_text(value: Any) -> str:
@@ -101,10 +175,13 @@ def _shorten_slide2_bullet(text: str, *, hard_limit: int = SLIDE2_MAX_BULLET_CHA
     )
     for old, new in replacements:
         clean = clean.replace(old, new)
+    clean = clean.replace(" And ", " and ")
     if len(clean) <= hard_limit:
         return clean
     words = clean.split()
     while words and len(" ".join(words)) > hard_limit:
+        words.pop()
+    while words and words[-1].lower() in {"and", "or", "for", "with", "to"}:
         words.pop()
     shortened = " ".join(words).rstrip(" ,;-")
     return shortened or clean[:hard_limit].rsplit(" ", 1)[0].rstrip(" ,;-")
@@ -168,6 +245,7 @@ def _dedupe_and_fit_slide2_sections(
                         "text": fallback,
                         "template_id": template_id,
                         "section": section_key,
+                        "source_tag": "section_bank_fallback",
                         "signals": ["dedupe_refill_controlled_bullet"],
                         "supporting_count": 0,
                         "analyzed_count": 0,
@@ -198,6 +276,17 @@ def _dedupe_and_fit_slide2_sections(
             "shortened_bullets": shortened[section_key],
             "dropped_bullets": dropped[section_key],
             "final_rendered_bullets": final[section_key],
+            "final_bullet_count": len(final[section_key]),
+            "dedupe_result": "passed" if len(final[section_key]) == len(set(final_norms)) else "duplicates_remaining",
+            "fit_result": "passed" if all(len(value) <= SLIDE2_MAX_BULLET_CHARS for value in final[section_key]) else "over_limit",
+        }
+        section["final_validation"] = {
+            "final_bullet_count": len(final[section_key]),
+            "dedupe_result": section["bullet_fit_debug"]["dedupe_result"],
+            "fit_result": section["bullet_fit_debug"]["fit_result"],
+            "final_rating": section.get("rating"),
+            "final_rating_valid": section.get("rating") in RATING_SCALES[section_key]["allowed"],
+            "required_count_met": len(final[section_key]) == 4,
         }
 
     return sections, {
@@ -507,12 +596,14 @@ def _bullet(
     reason: str,
     supporting_count: int = 0,
     analyzed_count: int = 0,
+    source_tag: str = "section_bank_original",
 ) -> dict[str, Any]:
     text = BULLET_BANK[section][template_id].format(**phrases)
     return {
         "text": text,
         "template_id": template_id,
         "section": section,
+        "source_tag": source_tag,
         "signals": signals,
         "supporting_count": supporting_count,
         "analyzed_count": analyzed_count,
@@ -542,6 +633,7 @@ def _ensure_minimum_bullets(
                 phrases,
                 signals=["fallback_controlled_bullet"],
                 reason="Selected as a safe controlled fallback because fewer than four evidence-backed bullets were available.",
+                source_tag="section_bank_fallback",
             ),
         )
     if len(bullets) < 4:
@@ -826,16 +918,51 @@ def _section_payload(
     warnings: list[str],
 ) -> dict[str, Any]:
     validated_rating = _validate_rating(section_key, rating, warnings)
+    rating_reason = _rating_reason(section_key, validated_rating, signals, warnings)
     return {
         "label": label,
         "rating": validated_rating,
         "allowed_ratings": list(RATING_SCALES[section_key]["allowed"]),
         "default_rating": RATING_SCALES[section_key]["default"],
         "signals": signals,
+        "rating_reason": rating_reason,
+        "rating_signals": signals,
+        "rating_inputs": {
+            "section_key": section_key,
+            "raw_rating": rating,
+            "validated_rating": validated_rating,
+            "warnings": list(warnings),
+        },
         "bullets": [item["text"] for item in bullet_debug],
         "bullet_debug": bullet_debug,
         "debug_warnings": warnings,
     }
+
+
+def _rating_reason(section_key: str, rating: str, signals: list[str], warnings: list[str]) -> str:
+    if warnings:
+        warning_text = warnings[-1]
+        if "No" in warning_text or "Limited" in warning_text:
+            return warning_text
+    if section_key == "consumer_demand":
+        if rating == "Strong":
+            return "Strong was selected because review volume and rating quality indicate credible shopper trust."
+        if rating == "Emerging":
+            return "Emerging was selected because demand evidence is present but not yet broad enough for Strong."
+        return "Limited was selected because review or rating evidence is sparse, weak, or unavailable."
+    if section_key == "walmart_opportunity":
+        if rating == "Significant":
+            return "Significant was selected because PDP/content gap evidence indicates a material Walmart opportunity."
+        if rating == "Meaningful":
+            return "Meaningful was selected because gap evidence indicates real but not maximal improvement potential."
+        return "Selective was selected because available gap evidence points to narrower targeted improvements."
+    if section_key == "competitive_benchmark":
+        if rating == "Competitive":
+            return "Competitive was selected because competitor strengths and client opportunities create benchmark pressure."
+        if rating == "Evolving":
+            return "Evolving was selected because competitor evidence provides moderate benchmark context."
+        return "Limited was selected because competitor benchmark evidence is constrained."
+    return f"{rating} was selected from signals: {', '.join(signals)}"
 
 
 def _apply_cue_bullets_to_slide2_sections(
@@ -851,6 +978,8 @@ def _apply_cue_bullets_to_slide2_sections(
         section = sections.get(section_key)
         if not isinstance(section, dict):
             continue
+        original_bullets = list(section.get("bullets", []) or [])
+        original_debug = [dict(item) for item in section.get("bullet_debug", []) or []]
         bullets, debug = translate_cues(
             cue_context,
             slide_key="slide2",
@@ -858,20 +987,161 @@ def _apply_cue_bullets_to_slide2_sections(
             preferred_order=preferred_order,
             side=section_key,
         )
-        if len(bullets) == 4:
-            section["bullets"] = bullets
-            section["bullet_debug"] = [
+        refinement_debug = {
+            "mode": "controlled_swap",
+            "max_swaps": MAX_CUE_SWAPS_PER_SECTION,
+            "minimum_section_bank_bullets": MIN_SECTION_BANK_BULLETS,
+            "original_bullets": original_bullets,
+            "accepted_swaps": [],
+            "rejected_candidates": [],
+        }
+        section["cue_translation_debug"] = []
+        swap_count = 0
+        current_debug = [dict(item) for item in original_debug]
+        for index, translated in enumerate(bullets):
+            cue_item = debug[index] if index < len(debug) else {}
+            candidate_text = _shorten_slide2_bullet(translated)
+            decision = _cue_swap_decision(
+                section_key=section_key,
+                candidate_text=candidate_text,
+                cue_item=cue_item,
+                current_debug=current_debug,
+                swap_count=swap_count,
+            )
+            traced_cue = {
+                **cue_item,
+                "text": candidate_text,
+                "section": section_key,
+                "template_id": f"cue_{cue_item.get('cue')}",
+                "signals": [cue_item.get("classification", ""), cue_item.get("cue", "")],
+                "supporting_count": 0,
+                "analyzed_count": 0,
+                "source_tag": "cue_candidate_reviewed",
+                "accepted": decision["accepted"],
+                "decision_reason": decision["reason"],
+            }
+            section["cue_translation_debug"].append(traced_cue)
+            if not decision["accepted"]:
+                refinement_debug["rejected_candidates"].append(
+                    {
+                        "replacement_bullet": candidate_text,
+                        "cue": cue_item.get("cue"),
+                        "classification": cue_item.get("classification"),
+                        "reason": decision["reason"],
+                    }
+                )
+                continue
+            replaced = current_debug[decision["replace_index"]]
+            replacement_debug = {
+                **traced_cue,
+                "source_tag": "cue_refined_swap",
+                "original_bullet_text": replaced.get("text"),
+                "replacement_bullet_text": candidate_text,
+                "swap_reason": decision["reason"],
+                "reason": "Controlled cue refinement accepted because it was section-specific and more concrete than the replaced bullet.",
+            }
+            current_debug[decision["replace_index"]] = replacement_debug
+            swap_count += 1
+            refinement_debug["accepted_swaps"].append(
                 {
-                    **item,
-                    "section": section_key,
-                    "template_id": f"cue_{item.get('cue')}",
-                    "signals": [item.get("classification", ""), item.get("cue", "")],
-                    "supporting_count": 0,
-                    "analyzed_count": 0,
+                    "original_bullet_text": replaced.get("text"),
+                    "replacement_bullet_text": candidate_text,
+                    "cue": cue_item.get("cue"),
+                    "classification": cue_item.get("classification"),
+                    "reason": decision["reason"],
                 }
-                for item in debug
-            ]
-            section["cue_translation_debug"] = debug
+            )
+        section["bullet_debug"] = current_debug[:4]
+        section["bullets"] = [item.get("text", "") for item in section["bullet_debug"]]
+        refinement_debug["final_bullets_before_fit"] = list(section["bullets"])
+        refinement_debug["swap_count"] = swap_count
+        section["cue_refinement_debug"] = refinement_debug
+
+
+def _cue_swap_decision(
+    *,
+    section_key: str,
+    candidate_text: str,
+    cue_item: dict[str, Any],
+    current_debug: list[dict[str, Any]],
+    swap_count: int,
+) -> dict[str, Any]:
+    if swap_count >= MAX_CUE_SWAPS_PER_SECTION:
+        return {"accepted": False, "reason": "Rejected because the section already reached the cue swap limit."}
+    if not candidate_text or len(candidate_text) > SLIDE2_MAX_BULLET_CHARS:
+        return {"accepted": False, "reason": "Rejected because the cue bullet was empty or exceeded the Slide 2 fit limit."}
+    normalized_candidate = normalize_bullet_text(candidate_text)
+    if any(pattern in candidate_text.lower() for pattern in SYNTHETIC_FILLER_PATTERNS):
+        return {"accepted": False, "reason": "Rejected because the cue bullet used synthetic filler language."}
+    if any(normalized_candidate == normalize_bullet_text(item.get("text", "")) for item in current_debug):
+        return {"accepted": False, "reason": "Rejected because the cue bullet duplicated an existing section bullet."}
+    if any(
+        normalized_candidate and (
+            normalized_candidate in normalize_bullet_text(item.get("text", ""))
+            or normalize_bullet_text(item.get("text", "")) in normalized_candidate
+        )
+        for item in current_debug
+    ):
+        return {"accepted": False, "reason": "Rejected because the cue bullet was a near-duplicate within the section."}
+
+    rules = SECTION_CUE_RULES[section_key]
+    cue = _safe_text(cue_item.get("cue"))
+    classification = _safe_text(cue_item.get("classification"))
+    lowered = candidate_text.lower()
+    if cue not in rules["allowed_cues"]:
+        return {"accepted": False, "reason": f"Rejected because cue '{cue}' does not belong to {section_key}."}
+    if classification and classification not in rules["allowed_classifications"]:
+        return {
+            "accepted": False,
+            "reason": f"Rejected because classification '{classification}' does not align with {section_key}.",
+        }
+    if any(term in lowered for term in rules["blocked_terms"]):
+        return {"accepted": False, "reason": "Rejected because the cue bullet crossed into another Slide 2 section meaning."}
+    if not any(term in lowered for term in rules["required_terms"]):
+        return {"accepted": False, "reason": "Rejected because the cue bullet lacked section-specific language."}
+    section_bank_count = sum(1 for item in current_debug if item.get("source_tag") != "cue_refined_swap")
+    if section_bank_count <= MIN_SECTION_BANK_BULLETS:
+        return {"accepted": False, "reason": "Rejected to preserve at least two original section-built bullets."}
+
+    candidate_score = _section_specificity_score(section_key, candidate_text, cue_item)
+    replace_index = -1
+    replace_score = 999
+    for index, item in enumerate(current_debug):
+        if item.get("source_tag") == "cue_refined_swap":
+            continue
+        score = _section_specificity_score(section_key, _safe_text(item.get("text")), item)
+        if score < replace_score:
+            replace_index = index
+            replace_score = score
+    if replace_index < 0:
+        return {"accepted": False, "reason": "Rejected because no replaceable section-bank bullet was available."}
+    if candidate_score <= replace_score:
+        return {
+            "accepted": False,
+            "reason": "Rejected because the cue bullet was not more specific than the section-built bullet.",
+        }
+    return {
+        "accepted": True,
+        "replace_index": replace_index,
+        "reason": (
+            "Accepted because it matched the section meaning, improved specificity, "
+            "and preserved the section-bank bullet majority."
+        ),
+    }
+
+
+def _section_specificity_score(section_key: str, text: str, cue_item: dict[str, Any] | None = None) -> int:
+    lowered = _safe_text(text).lower()
+    rules = SECTION_CUE_RULES[section_key]
+    score = 0
+    score += sum(2 for term in rules["required_terms"] if term in lowered)
+    score += 1 if any(char.isdigit() for char in lowered) else 0
+    score += 1 if cue_item and cue_item.get("cue") in rules["allowed_cues"] else 0
+    score -= sum(3 for term in rules["blocked_terms"] if term in lowered)
+    score -= sum(2 for pattern in SYNTHETIC_FILLER_PATTERNS if pattern in lowered)
+    if len(lowered.split()) <= 8:
+        score += 1
+    return score
 
 
 def build_slide2_summary_payload(

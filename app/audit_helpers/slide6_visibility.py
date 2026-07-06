@@ -4,6 +4,8 @@ import re
 from collections import Counter
 from typing import Any
 
+from app.audit_helpers.strategic_identity import resolve_strategic_identity
+
 
 VISIBILITY_LABELS = ("Strong", "Moderate", "Partial", "Limited")
 _VISIBILITY_SET = set(VISIBILITY_LABELS)
@@ -24,6 +26,36 @@ _TEXT_FIELDS = (
     "features",
     "content_signals",
 )
+QUERY_ROW_TYPES = ("core", "attribute", "adjacent")
+QUERY_BLOCKLIST = {
+    "recommended",
+    "routine",
+    "shopper education",
+    "category discoverability",
+    "benchmark visibility",
+    "merchandising",
+    "communication",
+    "alignment",
+    "need state",
+    "content coverage",
+    "product detail language",
+    "audience ingredient needs",
+    "food and beverage",
+    "dips and spread",
+    "animal health",
+}
+ATTRIBUTE_STOPWORDS = {
+    "brand",
+    "size",
+    "count",
+    "pack",
+    "retail packaging",
+    "net content",
+    "multipack quantity",
+    "product type",
+    "product",
+    "type",
+}
 
 
 def _segment(
@@ -134,6 +166,416 @@ def _ocr_text(record: dict[str, Any]) -> str:
         parts.append(_safe_text(image.get("ocr_text")))
         parts.append(_safe_text(image.get("ocr_tokens")))
     return _normalize(parts)
+
+
+def _as_list(value: Any) -> list[Any]:
+    if isinstance(value, list):
+        return value
+    if value in (None, "", {}, []):
+        return []
+    return [value]
+
+
+def _display_query(value: Any) -> str:
+    text = re.sub(r"\s+", " ", _safe_text(value).replace("&", " and ")).strip(" -")
+    return text.lower()
+
+
+def _singular_query(value: str) -> str:
+    text = _display_query(value)
+    replacements = (
+        ("facial cleansers", "face cleanser"),
+        ("facial cleanser", "face cleanser"),
+        ("jams, jellies and preserves", "jam"),
+        ("jams jellies and preserves", "jam"),
+        ("jams, jellies and preserves", "jam"),
+        ("jams jellies preserves", "jam"),
+        ("nut butters and spreads", "peanut butter"),
+        ("nut butters spreads", "peanut butter"),
+    )
+    for old, new in replacements:
+        if _normalize(text) == _normalize(old):
+            return new
+    words = text.split()
+    if len(words) <= 3 and words and words[-1].endswith("s") and not words[-1].endswith("ss"):
+        words[-1] = words[-1][:-1]
+    return " ".join(words)
+
+
+def _query_like(value: str, negative_keywords: tuple[str, ...] = ()) -> tuple[bool, str]:
+    query = _display_query(value)
+    normalized = _normalize(query)
+    if not normalized:
+        return False, "blank"
+    if any(blocked in normalized for blocked in QUERY_BLOCKLIST):
+        return False, "strategist_or_internal_label"
+    if any(_normalize(term) and _normalize(term) in normalized for term in negative_keywords):
+        return False, "negative_keyword"
+    words = normalized.split()
+    if len(words) > 5:
+        return False, "too_long_for_search_query"
+    if normalized.endswith(" type") or " type " in normalized:
+        return False, "attribute_taxonomy_label"
+    if len(words) == 1 and len(words[0]) < 4 and words[0] not in {"jam", "bbq", "tea"}:
+        return False, "too_short"
+    if normalized in {"skin care", "beauty shelf", "category core", "product type"}:
+        return False, "too_broad"
+    return True, "query_like"
+
+
+def _record_blob(records: list[dict[str, Any]], fields: tuple[str, ...] = (*_STRUCTURED_FIELDS, *_TEXT_FIELDS)) -> str:
+    return " ".join(
+        _record_field_text(record, field)
+        for record in records
+        for field in fields
+        if isinstance(record, dict)
+    )
+
+
+def _candidate(
+    query: str,
+    row_type: str,
+    source: str,
+    *,
+    positive_terms: tuple[str, ...] = (),
+    supporting_terms: tuple[str, ...] = (),
+    negative_terms: tuple[str, ...] = (),
+    base_score: float = 0.0,
+    guide_support: tuple[str, ...] = (),
+) -> dict[str, Any]:
+    display = _display_query(query)
+    terms = tuple(dict.fromkeys(_normalize(term) for term in (positive_terms or (display,)) if _normalize(term)))
+    return {
+        "segment_id": f"query_{_normalize(display).replace(' ', '_')}",
+        "display_name": display,
+        "positive_terms": terms or (_normalize(display),),
+        "supporting_terms": tuple(dict.fromkeys(_normalize(term) for term in supporting_terms if _normalize(term))),
+        "negative_terms": tuple(dict.fromkeys(_normalize(term) for term in negative_terms if _normalize(term))),
+        "fields": (*_STRUCTURED_FIELDS, *_TEXT_FIELDS),
+        "row_type": row_type if row_type in QUERY_ROW_TYPES else "adjacent",
+        "candidate_source": source,
+        "base_score": base_score,
+        "guide_support": list(guide_support),
+    }
+
+
+def _extract_search_evidence(records: list[dict[str, Any]]) -> list[str]:
+    values: list[str] = []
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        values.extend(
+            [
+                record.get("searchTerm"),
+                record.get("search_term"),
+                record.get("query"),
+                record.get("keyword"),
+            ]
+        )
+        values.extend(_as_list(record.get("search_terms") or record.get("queries") or record.get("keywords")))
+    return [_display_query(value) for value in values if _safe_text(value)]
+
+
+def _best_title_phrases(records: list[dict[str, Any]], negative_keywords: tuple[str, ...]) -> list[str]:
+    counts: Counter[str] = Counter()
+    for record in records:
+        title = _record_field_text(record, "product_title") or _record_field_text(record, "title")
+        words = [word for word in title.split() if len(word) >= 3 and word not in {"with", "and", "for", "the", "pack", "count"}]
+        for size in (2, 3):
+            for index in range(0, max(0, len(words) - size + 1)):
+                phrase = " ".join(words[index : index + size])
+                ok, _ = _query_like(phrase, negative_keywords)
+                if ok:
+                    counts[phrase] += 1
+    return [phrase for phrase, _ in counts.most_common(8)]
+
+
+def _guide_product_data(identity: dict[str, Any]) -> dict[str, Any]:
+    data = identity.get("style_product_type") or {}
+    return data if isinstance(data, dict) else {}
+
+
+def _build_query_candidates(
+    records: list[dict[str, Any]],
+    identity: dict[str, Any],
+    pack: dict[str, Any],
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    product_data = _guide_product_data(identity)
+    negative_keywords = tuple(_display_query(value) for value in _as_list(product_data.get("negative_keywords")))
+    product = _singular_query(identity.get("product_type_display") or _common_value(records, "product_type", "subcategory"))
+    family = _singular_query(identity.get("family_display") or "")
+    category = _singular_query(identity.get("category_display") or _common_value(records, "category"))
+    aliases = [_display_query(value) for value in _as_list(product_data.get("aliases"))]
+    title_keywords = [_display_query(value) for value in _as_list(product_data.get("title_keywords"))]
+    context_keywords = [_display_query(value) for value in _as_list(product_data.get("context_keywords"))]
+    attributes = [
+        _display_query(value)
+        for value in _as_list(product_data.get("attributes"))
+        if _normalize(value) and _normalize(value) not in ATTRIBUTE_STOPWORDS
+    ]
+    search_terms = _extract_search_evidence(records)
+    title_phrases = _best_title_phrases(records, negative_keywords)
+    pool: list[dict[str, Any]] = []
+
+    def add(
+        query: str,
+        row_type: str,
+        source: str,
+        score: float,
+        guide_support: tuple[str, ...] = (),
+        positive_terms: tuple[str, ...] = (),
+    ) -> None:
+        ok, reason = _query_like(query, negative_keywords)
+        if not ok:
+            rejected.append({"query": _display_query(query), "source": source, "reason": reason})
+            return
+        base = product if product and product != "category" else query
+        support = tuple(term for term in (product, family, category) if term and _normalize(term) != _normalize(query))
+        pool.append(
+            _candidate(
+                query,
+                row_type,
+                source,
+                positive_terms=positive_terms or (query,),
+                supporting_terms=support,
+                negative_terms=negative_keywords,
+                base_score=score,
+                guide_support=guide_support,
+            )
+        )
+
+    rejected: list[dict[str, str]] = []
+    for query in (product,):
+        add(
+            query,
+            "core",
+            "resolved_identity",
+            10.0,
+            positive_terms=(query, _safe_text(identity.get("product_type_display"))),
+        )
+    for query in [*aliases[:5], *title_keywords[:6]]:
+        add(query, "core", "style_guide_title_or_alias", 9.0, ("aliases/title_keywords",))
+    for query in search_terms:
+        add(query, "core", "actual_search_evidence", 11.0)
+    for query in title_phrases:
+        add(query, "attribute", "actual_pdp_title_language", 7.5)
+
+    product_head = product.split()[-1] if product else ""
+    for term in [*context_keywords[:10], *attributes[:8]]:
+        term_norm = _normalize(term)
+        if not term_norm:
+            continue
+        if product_head and product_head not in term_norm and len(term_norm.split()) <= 2:
+            query = f"{term} {product_head}"
+        else:
+            query = term
+        add(query, "attribute", "style_guide_context_or_attribute", 7.0, ("context_keywords/attributes",))
+
+    for segment in pack.get("segments", ())[:8]:
+        if not isinstance(segment, dict):
+            continue
+        ok, reason = _query_like(segment.get("display_name", ""), negative_keywords)
+        if not ok:
+            rejected.append({"query": _display_query(segment.get("display_name", "")), "source": "segment_pack_fallback_seed", "reason": reason})
+            continue
+        segment_name = _display_query(segment.get("display_name", ""))
+        segment_terms = tuple(segment.get("positive_terms") or ())
+        segment_supporting = tuple(segment.get("supporting_terms") or ())
+        source_type = "attribute" if any(
+            term in _normalize(segment_name)
+            for term in ("organic", "low sugar", "sensitive", "hydrating", "natural", "chocolate")
+        ) else "adjacent"
+        pool.append(
+            _candidate(
+                segment_name,
+                source_type,
+                "segment_pack_fallback_seed",
+                positive_terms=(*segment_terms, segment_name),
+                supporting_terms=segment_supporting,
+                negative_terms=negative_keywords,
+                base_score=5.5,
+            )
+        )
+
+    deduped: dict[str, dict[str, Any]] = {}
+    for item in pool:
+        key = _query_cluster_key(item["display_name"])
+        existing = deduped.get(key)
+        if not existing or float(item.get("base_score", 0)) > float(existing.get("base_score", 0)):
+            deduped[key] = item
+        elif existing:
+            existing.setdefault("merged_sources", []).append(item.get("candidate_source"))
+    return list(deduped.values()), {
+        "identity": {
+            "category_key": identity.get("category_key"),
+            "product_type_display": identity.get("product_type_display"),
+            "family_display": identity.get("family_display"),
+            "style_guide_path": identity.get("style_guide_path"),
+            "style_product_type_score": identity.get("style_product_type_score"),
+        },
+        "guide_terms_used": {
+            "aliases": aliases[:8],
+            "title_keywords": title_keywords[:8],
+            "context_keywords": context_keywords[:10],
+            "attributes": attributes[:8],
+            "negative_keywords": list(negative_keywords)[:10],
+        },
+        "rejected_candidates": rejected[:20],
+        "raw_candidate_count": len(pool),
+        "deduped_candidate_count": len(deduped),
+    }
+
+
+def _query_cluster_key(query: str) -> str:
+    normalized = _normalize(query)
+    replacements = {
+        "facial cleanser": "face cleanser",
+        "facial cleansers": "face cleanser",
+        "face wash": "face cleanser",
+        "jams jellies preserves": "jam",
+        "jam and jelly": "jam",
+        "jellies": "jam",
+        "jelly": "jam",
+        "marmalade": "jam",
+        "preserve": "jam",
+        "preserves": "jam",
+    }
+    for old, new in replacements.items():
+        normalized = normalized.replace(old, new)
+    words = [word[:-1] if word.endswith("s") and not word.endswith("ss") else word for word in normalized.split()]
+    return " ".join(words)
+
+
+def _candidate_evidence_summary(records: list[dict[str, Any]], definition: dict[str, Any]) -> dict[str, Any]:
+    matches = [_score_record(record, definition) for record in records if isinstance(record, dict)]
+    return {
+        "matched_terms": list(dict.fromkeys(term for match in matches for term in match.get("matched_terms", []))),
+        "matched_fields": list(dict.fromkeys(field for match in matches for field in match.get("matched_fields", []))),
+        "supporting_records": sum(1 for match in matches if match.get("weight", 0) > 0),
+    }
+
+
+def _rank_candidate(
+    definition: dict[str, Any],
+    records: list[dict[str, Any]],
+    competitors: list[dict[str, Any]],
+) -> tuple[float, dict[str, Any]]:
+    client_summary = _candidate_evidence_summary(records, definition)
+    competitor_summary = _candidate_evidence_summary(competitors, definition)
+    source_bonus = {
+        "actual_search_evidence": 5.0,
+        "resolved_identity": 4.0,
+        "style_guide_title_or_alias": 3.5,
+        "actual_pdp_title_language": 4.0,
+        "style_guide_context_or_attribute": 2.0,
+        "segment_pack_fallback_seed": 0.5,
+    }.get(str(definition.get("candidate_source")), 1.0)
+    evidence_support = client_summary["supporting_records"] + competitor_summary["supporting_records"]
+    benchmark_usefulness = 1.0 if client_summary["supporting_records"] != competitor_summary["supporting_records"] else 0.0
+    row_type_bonus = {"core": 4.0, "attribute": 3.0, "adjacent": 1.0}.get(str(definition.get("row_type")), 1.0)
+    realism = _query_realism_score(str(definition.get("display_name")))
+    score = float(definition.get("base_score", 0)) + source_bonus + row_type_bonus + evidence_support * 3 + benchmark_usefulness + realism
+    factors = {
+        "base_score": definition.get("base_score", 0),
+        "source_bonus": source_bonus,
+        "row_type_bonus": row_type_bonus,
+        "evidence_support": evidence_support,
+        "benchmark_usefulness": benchmark_usefulness,
+        "shopper_query_realism": realism,
+        "client_supporting_records": client_summary["supporting_records"],
+        "competitor_supporting_records": competitor_summary["supporting_records"],
+    }
+    return score, factors
+
+
+def _query_realism_score(query: str) -> float:
+    normalized = _normalize(query)
+    words = normalized.split()
+    score = 3.0
+    if 2 <= len(words) <= 4:
+        score += 2.0
+    if any(blocked in normalized for blocked in QUERY_BLOCKLIST):
+        score -= 8.0
+    if normalized.istitle():
+        score -= 1.0
+    return score
+
+
+def _select_final_query_rows(
+    candidates: list[dict[str, Any]],
+    records: list[dict[str, Any]],
+    competitors: list[dict[str, Any]],
+    warnings: list[str],
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    ranked: list[tuple[float, dict[str, Any], dict[str, Any]]] = []
+    for candidate in candidates:
+        score, factors = _rank_candidate(candidate, records, competitors)
+        ranked.append((score, candidate, factors))
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    selected: list[dict[str, Any]] = []
+    selected_keys: set[str] = set()
+    type_counts: Counter[str] = Counter()
+    rejected_similar: list[dict[str, str]] = []
+
+    def can_add(candidate: dict[str, Any]) -> tuple[bool, str]:
+        key = _query_cluster_key(candidate["display_name"])
+        if key in selected_keys:
+            return False, "near_duplicate"
+        for existing in selected_keys:
+            key_words = set(key.split())
+            existing_words = set(existing.split())
+            if key_words and existing_words and len(key_words & existing_words) >= min(len(key_words), len(existing_words)):
+                if abs(len(key_words) - len(existing_words)) <= 1:
+                    return False, "near_duplicate"
+        row_type = str(candidate.get("row_type"))
+        if row_type == "core" and type_counts[row_type] >= 2:
+            return False, "core_row_quota_met"
+        if row_type == "attribute" and type_counts[row_type] >= 4:
+            return False, "attribute_row_quota_met"
+        if row_type == "adjacent" and type_counts[row_type] >= 1:
+            return False, "adjacent_row_quota_met"
+        return True, "selected"
+
+    for score, candidate, factors in ranked:
+        ok, reason = can_add(candidate)
+        if not ok:
+            rejected_similar.append({"query": candidate["display_name"], "reason": reason})
+            continue
+        candidate = dict(candidate)
+        candidate["ranking_factors"] = factors
+        candidate["selection_score"] = round(score, 2)
+        selected.append(candidate)
+        selected_keys.add(_query_cluster_key(candidate["display_name"]))
+        type_counts[str(candidate.get("row_type"))] += 1
+        if len(selected) == 6:
+            break
+    if len(selected) < 6:
+        warnings.append("Query candidate pool was thin; static segment pack fallback filled remaining rows.")
+        for score, candidate, factors in ranked:
+            if len(selected) == 6:
+                break
+            key = _query_cluster_key(candidate["display_name"])
+            if key in selected_keys:
+                continue
+            candidate = dict(candidate)
+            candidate["ranking_factors"] = factors
+            candidate["selection_score"] = round(score, 2)
+            selected.append(candidate)
+            selected_keys.add(key)
+    return selected[:6], {
+        "ranked_candidates": [
+            {
+                "query": candidate["display_name"],
+                "source": candidate.get("candidate_source"),
+                "row_type": candidate.get("row_type"),
+                "score": round(score, 2),
+                "ranking_factors": factors,
+            }
+            for score, candidate, factors in ranked[:20]
+        ],
+        "rejected_similar_rows": rejected_similar[:20],
+        "row_type_counts": dict(type_counts),
+    }
 
 
 def _select_pack(records: list[dict[str, Any]]) -> tuple[str, dict[str, Any]]:
@@ -287,6 +729,8 @@ def _score_record(record: dict[str, Any], definition: dict[str, Any]) -> dict[st
     matched_terms: list[str] = []
     structured_match_count = 0
     text_match_count = 0
+    title_match_count = 0
+    guide_match_count = 0
     analyzed_fields: list[str] = []
     ocr = _ocr_text(record)
     ocr_terms = _term_matches(ocr, positives)
@@ -314,8 +758,13 @@ def _score_record(record: dict[str, Any], definition: dict[str, Any]) -> dict[st
             matched_terms.extend(terms + context)
             if field in _STRUCTURED_FIELDS:
                 structured_match_count += len(terms)
+            elif field in {"product_title", "title"}:
+                title_match_count += len(terms)
+                text_match_count += len(terms)
             else:
                 text_match_count += len(terms)
+            if context:
+                guide_match_count += len(context)
 
     if ocr:
         analyzed_fields.append("image_analysis.ocr")
@@ -345,6 +794,14 @@ def _score_record(record: dict[str, Any], definition: dict[str, Any]) -> dict[st
         "analyzed": bool(analyzed_fields),
         "meaningful": meaningful,
         "structured": bool(structured_match_count),
+        "score_components": {
+            "direct_query_match": bool(structured_match_count or title_match_count),
+            "title_product_type_support": bool(title_match_count or structured_match_count),
+            "pdp_content_support": bool(text_match_count),
+            "guide_keyword_support": bool(guide_match_count),
+            "image_ocr_support": bool(ocr_match or ocr_corroborates),
+            "weight": weight,
+        },
     }
 
 
@@ -410,6 +867,19 @@ def _score_group(records: list[dict[str, Any]], definition: dict[str, Any]) -> d
         warnings.append(
             f"{ocr_only_count} OCR-only match(es) were retained for traceability but did not count as support."
         )
+    score_components = {
+        "direct_query_fit": sum(1 for match in supporting if (match.get("score_components") or {}).get("direct_query_match")),
+        "title_product_type_support": sum(
+            1 for match in supporting if (match.get("score_components") or {}).get("title_product_type_support")
+        ),
+        "pdp_content_support": sum(1 for match in supporting if (match.get("score_components") or {}).get("pdp_content_support")),
+        "guide_keyword_support": sum(1 for match in supporting if (match.get("score_components") or {}).get("guide_keyword_support")),
+        "image_ocr_support": sum(1 for match in observed if (match.get("score_components") or {}).get("image_ocr_support")),
+        "weighted_support": round(weighted_support, 2),
+        "analyzed_count": analyzed_count,
+        "meaningful_count": meaningful_count,
+        "structured_support_count": structured_support_count,
+    }
     label = _validate_visibility_label(
         _visibility_label(
             weighted_support,
@@ -431,8 +901,20 @@ def _score_group(records: list[dict[str, Any]], definition: dict[str, Any]) -> d
         "matched_terms": list(dict.fromkeys(term for match in observed for term in match["matched_terms"])),
         "ocr_only_count": ocr_only_count,
         "weighted_support": round(weighted_support, 2),
+        "score_components": score_components,
+        "label_reason": _label_reason(label, score_components),
         "warnings": warnings,
     }
+
+
+def _label_reason(label: str, components: dict[str, Any]) -> str:
+    if label == "Strong":
+        return "Strong because direct row fit is supported by multiple aligned evidence sources."
+    if label == "Moderate":
+        return "Moderate because meaningful row-specific support exists but is not dominant across the evidence set."
+    if label == "Partial":
+        return "Partial because support exists but is limited, indirect, or small-sample capped."
+    return "Limited because little row-specific evidence was available for this side."
 
 
 def _rating_rank(label: str) -> int:
@@ -449,7 +931,16 @@ def build_slide6_visibility(
     competitors = [record for record in (competitor_records or []) if isinstance(record, dict)]
     audit_metadata = audit_metadata or {}
     pack_id, pack = _select_pack(primary or competitors)
-    category_phrase = str(pack["category_phrase"])
+    identity = resolve_strategic_identity(
+        primary or competitors,
+        fallback_category=str(pack.get("category_phrase") or ""),
+        fallback_product_type=str(pack.get("category_phrase") or ""),
+    )
+    category_phrase = _display_query(
+        identity.get("product_type_display")
+        or identity.get("family_display")
+        or pack["category_phrase"]
+    )
     client_label = _safe_text(
         audit_metadata.get("client_company_name")
         or audit_metadata.get("client_name")
@@ -468,11 +959,10 @@ def build_slide6_visibility(
         warnings.append("No controlled category pack matched; restrained generic segments were used.")
 
     segments: list[dict[str, Any]] = []
-    definitions = _six_distinct_segments(
-        pack.get("segments", ()),
-        primary or competitors,
-        warnings,
-    )
+    query_candidates, candidate_debug = _build_query_candidates(primary or competitors, identity, pack)
+    definitions, selection_debug = _select_final_query_rows(query_candidates, primary, competitors, warnings)
+    if len(definitions) < 6:
+        definitions = _six_distinct_segments([*definitions, *pack.get("segments", ())], primary or competitors, warnings)
     for definition in definitions:
         client = _score_group(primary, definition)
         competitor = _score_group(competitors, definition)
@@ -507,6 +997,16 @@ def build_slide6_visibility(
                 "debug": {
                     "segment_id": definition["segment_id"],
                     "selected_pack": pack_id,
+                    "row_selection_reason": (
+                        "Selected as a ranked shopper-query row using realism, product fit, evidence support, "
+                        "diversity, benchmark usefulness, and adjacent discovery value."
+                    ),
+                    "candidate_source": definition.get("candidate_source", "segment_pack_fallback"),
+                    "row_type": definition.get("row_type", "fallback"),
+                    "ranking_factors": definition.get("ranking_factors", {}),
+                    "selection_score": definition.get("selection_score"),
+                    "guide_support_used": definition.get("guide_support", []),
+                    "negative_terms": list(definition.get("negative_terms", ())),
                     "matched_fields": {
                         "competitor": competitor["matched_fields"],
                         "client": client["matched_fields"],
@@ -523,8 +1023,16 @@ def build_slide6_visibility(
                         "competitor": competitor["weighted_support"],
                         "client": client["weighted_support"],
                     },
+                    "score_inputs": {
+                        "competitor": competitor["score_components"],
+                        "client": client["score_components"],
+                    },
+                    "label_reason": {
+                        "competitor": competitor["label_reason"],
+                        "client": client["label_reason"],
+                    },
                     "reason": (
-                        "Selected from the controlled pack and rated from available structured PDP fields "
+                        "Selected from query-style row candidates and rated from row-specific structured PDP fields "
                         "first, secondary title and content fields second, with OCR used only to corroborate "
                         "non-OCR evidence."
                     ),
@@ -573,5 +1081,8 @@ def build_slide6_visibility(
             "competitor_row_wins": competitor_wins,
             "client_row_wins": client_wins,
             "slide4_findings_available": bool(slide4_findings),
+            "row_generation": candidate_debug,
+            "row_selection": selection_debug,
+            "segment_packs_role": "fallback_seed_only",
         },
     }

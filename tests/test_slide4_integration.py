@@ -14,6 +14,7 @@ from audit_powerpoint_new import (
     build_slide4_pdp_benchmark_payload,
     generate_new_audit_powerpoint_from_template,
 )
+from pptx.util import Inches
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -72,6 +73,23 @@ def _record(brand: str, images: list[dict], record_id: str) -> dict:
         "shipped_by_walmart": True,
         "enhanced_brand_content": "present",
     }
+
+
+def _slide4_lines(slide):
+    return [
+        shape
+        for shape in _walk_shapes(slide.shapes)
+        if "LINE" in str(getattr(shape, "shape_type", "")).upper()
+    ]
+
+
+def _slide4_vertical_divider_count(slide) -> int:
+    return sum(
+        1
+        for shape in _slide4_lines(slide)
+        if int(getattr(shape, "width", 0) or 0) <= int(Inches(0.03))
+        and int(getattr(shape, "height", 0) or 0) >= int(Inches(1.0))
+    )
 
 
 def _image_analysis(*, image_count: int, formats: list[str], signals: list[list[str]]) -> dict:
@@ -189,6 +207,9 @@ class Slide4IntegrationTest(unittest.TestCase):
             payload = build_slide4_pdp_benchmark_payload(
                 plan, competitor_records=[competitor_1, competitor_2]
             )
+            self.assertEqual(payload["layout_mode"], "3-column")
+            self.assertEqual(payload["debug"]["layout_debug"]["divider_cleanup"], "preserve_three_column_chrome")
+            self.assertEqual(payload["debug"]["layout_debug"]["render_slots"], [0, 1, 2])
             self.assertEqual(
                 [column["label"] for column in payload["columns"]],
                 ["Client Company", "Competitor Alpha", "Competitor Beta"],
@@ -235,6 +256,7 @@ class Slide4IntegrationTest(unittest.TestCase):
                     if getattr(shape, "has_text_frame", False)
                 )
             )
+            self.assertGreaterEqual(_slide4_vertical_divider_count(slide4), 2)
             all_text = "\n".join(
                 shape.text
                 for shape in _walk_shapes(slide4.shapes)
@@ -376,6 +398,11 @@ class Slide4IntegrationTest(unittest.TestCase):
                 competitor_records=[competitor_1],
             )
             payload = build_slide4_pdp_benchmark_payload(plan, competitor_records=[competitor_1])
+            self.assertEqual(payload["layout_mode"], "2-column")
+            layout_debug = payload["debug"]["layout_debug"]
+            self.assertEqual(layout_debug["active_column_count"], 2)
+            self.assertEqual(layout_debug["render_slots"], [0, 2])
+            self.assertEqual(layout_debug["divider_cleanup"], "suppress_middle_column_label_rule_and_vertical_3_column_dividers")
             client_bullets = payload["columns"][0]["bullets"]
             competitor_bullets = payload["columns"][1]["bullets"]
             self.assertEqual(len(client_bullets), 4)
@@ -419,6 +446,7 @@ class Slide4IntegrationTest(unittest.TestCase):
             self.assertIn("hazelnut", all_text.lower())
             self.assertIn("peanut", all_text.lower())
             self.assertIn("benchmark", all_text.lower())
+            self.assertEqual(_slide4_vertical_divider_count(slide4), 0)
             bullet_shapes = sorted(
                 [
                     shape
@@ -443,6 +471,88 @@ class Slide4IntegrationTest(unittest.TestCase):
                 bullet_shapes[1].left + bullet_shapes[1].width,
                 presentation.slide_width - 1_000_000,
             )
+
+    def test_slide4_balances_bullet_families_and_uses_guide_debug(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            temp_dir = Path(tmp)
+            client_record = _record(
+                "Client Brand", _make_images(temp_dir, "client-family", 6, (800, 800)), "client-1"
+            )
+            competitor_1 = _record(
+                "Competitor Alpha", _make_images(temp_dir, "comp-family", 6, (800, 800)), "comp-1"
+            )
+            plan = {
+                "audit_metadata": {"client_name": "Client Brand"},
+                "product_slide_pairs": [{"pdp_slide": client_record}],
+            }
+            payload = build_slide4_pdp_benchmark_payload(plan, competitor_records=[competitor_1])
+
+            for column in payload["columns"][:2]:
+                self.assertEqual(len(column["bullets"]), 4)
+                families = [debug.get("bullet_family") for debug in column["bullet_debug"]]
+                self.assertGreaterEqual(len(set(families)), 3)
+                self.assertLessEqual(max(families.count(family) for family in set(families)), 2)
+                for debug in column["bullet_debug"]:
+                    self.assertIn(debug.get("evidence_family_source"), {
+                        "title/product_identification",
+                        "title_formula",
+                        "pdp_detail_compliance",
+                        "style_title_and_pdp_detail",
+                        "pdp_storytelling",
+                        "image_support",
+                        "image_guide_support",
+                        "review_trust",
+                        "strategic_cue_engine",
+                    })
+                    self.assertTrue(debug.get("product_type_context"))
+                    self.assertTrue(debug.get("guide_context"))
+                    self.assertTrue(debug.get("selected_because"))
+            guide_debug = payload["columns"][0]["bullet_debug"][0]["evidence_context"]["identity"]
+            self.assertIn("style_guides", guide_debug["style_guide_path"])
+            self.assertIn("image_guides", guide_debug["image_guide_path"])
+
+    def test_slide4_blocks_wrong_category_language_for_beauty(self) -> None:
+        client_record = {
+            "brand": "Glow",
+            "product_title": "Glow Hydrating Facial Cleanser for Sensitive Skin",
+            "item_id": "beauty-client",
+            "category": "Beauty/Skin Care",
+            "product_type": "Facial Cleansers",
+            "images": [],
+            "image_count": 0,
+            "description_body": "Gentle cleanser for daily use with hydrating skin benefits.",
+            "key_features": ["Hydrating", "Sensitive skin", "Fragrance free"],
+            "review_count": 42,
+        }
+        competitor_record = {
+            "brand": "Cera",
+            "product_title": "Cera Foaming Facial Cleanser",
+            "item_id": "beauty-comp",
+            "category": "Beauty/Skin Care",
+            "product_type": "Facial Cleansers",
+            "images": [],
+            "image_count": 0,
+            "description_body": "Daily face wash for normal skin.",
+            "key_features": ["Cleanser", "Daily use"],
+            "review_count": 800,
+        }
+        payload = build_slide4_pdp_benchmark_payload(
+            {
+                "audit_metadata": {"client_name": "Glow"},
+                "product_slide_pairs": [{"pdp_slide": client_record}],
+            },
+            competitor_records=[competitor_record],
+        )
+        joined = " ".join(
+            bullet
+            for column in payload["columns"][:2]
+            for bullet in column["bullets"]
+        ).lower()
+        self.assertIn("facial cleanser", joined)
+        self.assertTrue("hydrating" in joined or "sensitive" in joined or "skin-benefit" in joined)
+        for forbidden in ("nutrition", "protein", "breakfast", "snack", "recipe", "pantry"):
+            self.assertNotIn(forbidden, joined)
+        self.assertEqual(payload["columns"][0]["bullet_debug"][0]["evidence_context"]["identity"]["category_key"], "beauty")
 
     def test_slide4_uses_evidence_based_bullets_when_image_analysis_exists(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

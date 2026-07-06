@@ -159,6 +159,80 @@ class Slide2SummaryTest(unittest.TestCase):
             self.assertEqual(len(section["bullets"]), len(section["bullet_debug"]))
             self.assertTrue(all(len(bullet) <= 64 for bullet in section["bullets"]))
 
+    def test_cue_refinement_preserves_section_ownership_and_limits_swaps(self) -> None:
+        payload = build_slide2_summary_payload(
+            [_record(gap_count=4)],
+            competitor_records=[_record(), _record()],
+            slide4_findings={
+                "client": {"opportunities": [{"signal": "missing_lifestyle_storytelling"} for _ in range(3)]},
+                "competitor_1": {"strengths": [{"signal": "usage_or_recipe_storytelling"} for _ in range(4)]},
+            },
+            audit_metadata={"client_name": "test"},
+        )
+        for section_key, section in payload["sections"].items():
+            source_tags = [item.get("source_tag") for item in section["bullet_debug"]]
+            self.assertLessEqual(source_tags.count("cue_refined_swap"), 2, section_key)
+            self.assertGreaterEqual(
+                sum(1 for tag in source_tags if tag in {"section_bank_original", "section_bank_fallback"}),
+                2,
+                section_key,
+            )
+            self.assertEqual(section["cue_refinement_debug"]["mode"], "controlled_swap")
+            self.assertLessEqual(section["cue_refinement_debug"]["swap_count"], 2)
+
+        consumer_text = " ".join(payload["sections"]["consumer_demand"]["bullets"]).lower()
+        opportunity_text = " ".join(payload["sections"]["walmart_opportunity"]["bullets"]).lower()
+        benchmark_text = " ".join(payload["sections"]["competitive_benchmark"]["bullets"]).lower()
+        all_bullets_text = " ".join(
+            bullet
+            for section in payload["sections"].values()
+            for bullet in section["bullets"]
+        ).lower()
+        self.assertTrue(any(term in consumer_text for term in ("trust", "review", "confidence", "fit")))
+        self.assertTrue(any(term in opportunity_text for term in ("walmart", "pdp", "shelf", "guidance", "conversion")))
+        self.assertTrue(any(term in benchmark_text for term in ("competitor", "benchmark", "category leaders")))
+        self.assertNotIn("more ownable", all_bullets_text)
+        self.assertNotIn("value communication", all_bullets_text)
+
+    def test_slide2_debug_explains_ratings_sources_and_final_validation(self) -> None:
+        payload = build_slide2_summary_payload(
+            [_record(gap_count=4)],
+            competitor_records=[_record()],
+            audit_metadata={"client_name": "test"},
+        )
+        for section_key, section in payload["sections"].items():
+            self.assertTrue(section["rating_reason"])
+            self.assertEqual(section["rating_inputs"]["section_key"], section_key)
+            self.assertEqual(section["rating_inputs"]["validated_rating"], section["rating"])
+            self.assertEqual(section["rating_signals"], section["signals"])
+            self.assertTrue(all(item.get("source_tag") for item in section["bullet_debug"]))
+            validation = section["final_validation"]
+            self.assertEqual(validation["final_bullet_count"], 4)
+            self.assertEqual(validation["dedupe_result"], "passed")
+            self.assertEqual(validation["fit_result"], "passed")
+            self.assertTrue(validation["final_rating_valid"])
+            self.assertTrue(validation["required_count_met"])
+            for swap in section["cue_refinement_debug"]["accepted_swaps"]:
+                self.assertIn("original_bullet_text", swap)
+                self.assertIn("replacement_bullet_text", swap)
+                self.assertIn("reason", swap)
+
+    def test_section_fallback_refill_preserves_four_bullets_after_dedupe(self) -> None:
+        payload = build_slide2_summary_payload(
+            [_record(category="", product_type="", title="Generic Product", rating=None, rating_count=None)],
+            competitor_records=[],
+            audit_metadata={"client_name": "test"},
+        )
+        for section in payload["sections"].values():
+            self.assertEqual(len(section["bullets"]), 4)
+            self.assertTrue(section["final_validation"]["required_count_met"])
+        source_tags = [
+            item.get("source_tag")
+            for section in payload["sections"].values()
+            for item in section["bullet_debug"]
+        ]
+        self.assertIn("section_bank_fallback", source_tags)
+
     def test_bullet_debug_is_traceable_and_powerpoint_bullets_remain_text_only(self) -> None:
         payload = build_slide2_summary_payload(
             [_record(gap_count=4)],

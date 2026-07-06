@@ -74,7 +74,7 @@ class Slide6VisibilityTests(unittest.TestCase):
             [],
             audit_metadata={"client_name": "Test Client"},
         )
-        organic = next(item for item in payload["segments"] if item["segment"] == "Organic Fruit Spread")
+        organic = next(item for item in payload["segments"] if item["segment"] in {"organic strawberry", "organic strawberry jam"})
         self.assertEqual(organic["client_visibility"], "Partial")
         self.assertTrue(any("sparse" in warning.lower() for warning in payload["warnings"]))
         self.assertTrue(any("small-sample" in warning.lower() for warning in organic["warnings"]))
@@ -86,7 +86,8 @@ class Slide6VisibilityTests(unittest.TestCase):
         )
         self.assertEqual(payload["pack_id"], "jam_fruit_spreads")
         self.assertEqual(len(payload["segments"]), 6)
-        self.assertEqual(payload["segments"][0]["segment"], "Jam & Jelly")
+        self.assertIn("jam", payload["segments"][0]["segment"])
+        self.assertTrue(payload["segments"][0]["segment"].islower())
 
     def test_nut_butter_pack(self) -> None:
         payload = build_slide6_visibility(
@@ -109,6 +110,57 @@ class Slide6VisibilityTests(unittest.TestCase):
                 payload = build_slide6_visibility([record], [])
                 self.assertEqual(payload["pack_id"], expected_pack)
                 self.assertEqual(len(payload["segments"]), 6)
+
+    def test_rows_are_realistic_shopper_queries_not_strategy_labels(self) -> None:
+        payload = build_slide6_visibility(
+            [
+                _record(
+                    category="Beauty/Skin Care",
+                    product_type="Facial Cleansers",
+                    title="Hydrating Face Wash for Sensitive Skin",
+                )
+            ],
+            [],
+        )
+        rows = [item["segment"] for item in payload["segments"]]
+        joined = " ".join(rows).lower()
+        self.assertIn("face cleanser", rows)
+        self.assertTrue(any("sensitive" in row or "hydrating" in row for row in rows))
+        self.assertNotIn("dermatologist recommended", joined)
+        self.assertNotIn("daily skin routine", joined)
+        self.assertNotIn("shopper education", joined)
+        self.assertTrue(all(row == row.lower() for row in rows))
+
+    def test_style_guide_keywords_influence_rows_and_negative_keywords_suppress_leakage(self) -> None:
+        payload = build_slide6_visibility(
+            [_record(product_type="Nut Butters & Spreads", title="Natural Peanut Butter")],
+            [],
+        )
+        rows = [item["segment"] for item in payload["segments"]]
+        joined = " ".join(rows)
+        self.assertTrue(any(row in rows for row in ("peanut butter", "natural peanut butter")))
+        self.assertTrue(any("hazelnut" in row or "almond" in row or "nut butter" in row for row in rows))
+        self.assertNotIn("jam", joined)
+        self.assertNotIn("jelly", joined)
+        self.assertEqual(payload["debug"]["segment_packs_role"], "fallback_seed_only")
+        self.assertTrue(payload["debug"]["row_generation"]["guide_terms_used"]["negative_keywords"])
+
+    def test_final_rows_are_diverse_and_near_duplicates_are_rejected(self) -> None:
+        payload = build_slide6_visibility(
+            [
+                _record(
+                    category="Beauty/Skin Care",
+                    product_type="Facial Cleansers",
+                    title="Gentle Facial Cleanser Face Wash",
+                )
+            ],
+            [],
+        )
+        rows = [item["segment"] for item in payload["segments"]]
+        self.assertEqual(len(rows), 6)
+        self.assertEqual(len(set(rows)), 6)
+        self.assertFalse({"face cleanser", "face wash"}.issubset(set(rows)))
+        self.assertTrue(payload["debug"]["row_selection"]["rejected_similar_rows"])
 
     def test_jam_and_nut_butter_packs_are_distinct(self) -> None:
         jam = build_slide6_visibility([_record(category="Jam", title="Fruit Spread")], [])
@@ -153,12 +205,12 @@ class Slide6VisibilityTests(unittest.TestCase):
         )
         rows = {item["segment"]: item for item in payload["segments"]}
         self.assertGreater(
-            rows["Low Sugar Jam"]["competitor_supporting_count"],
-            rows["Low Sugar Jam"]["client_supporting_count"],
+            rows["low sugar jam"]["competitor_supporting_count"],
+            rows["low sugar jam"]["client_supporting_count"],
         )
         self.assertNotEqual(
-            rows["Low Sugar Jam"]["competitor_visibility"],
-            rows["Low Sugar Jam"]["client_visibility"],
+            rows["low sugar jam"]["competitor_visibility"],
+            rows["low sugar jam"]["client_visibility"],
         )
 
     def test_ocr_is_supporting_evidence_only(self) -> None:
@@ -166,19 +218,19 @@ class Slide6VisibilityTests(unittest.TestCase):
             [_record(category="Jam", ocr_tokens=["organic", "fruit", "spread"])],
             [],
         )
-        organic = next(item for item in payload["segments"] if item["segment"] == "Organic Fruit Spread")
-        self.assertEqual(organic["client_supporting_count"], 0)
-        self.assertEqual(organic["client_visibility"], "Limited")
-        self.assertEqual(organic["debug"]["ocr_only_support"]["client"], 1)
-        self.assertIn("image_analysis.ocr", organic["debug"]["matched_fields"]["client"])
-        self.assertTrue(any("did not count as support" in warning for warning in organic["warnings"]))
+        row = next(item for item in payload["segments"] if item["debug"]["ocr_only_support"]["client"])
+        self.assertEqual(row["client_supporting_count"], 0)
+        self.assertEqual(row["client_visibility"], "Limited")
+        self.assertEqual(row["debug"]["ocr_only_support"]["client"], 1)
+        self.assertIn("image_analysis.ocr", row["debug"]["matched_fields"]["client"])
+        self.assertTrue(any("did not count as support" in warning for warning in row["warnings"]))
 
     def test_ocr_can_corroborate_but_not_replace_text_evidence(self) -> None:
         payload = build_slide6_visibility(
             [_record(category="Jam", title="Organic option", ocr_tokens=["fruit", "spread"])],
             [],
         )
-        organic = next(item for item in payload["segments"] if item["segment"] == "Organic Fruit Spread")
+        organic = next(item for item in payload["segments"] if item["segment"] == "organic fruit spread")
         self.assertEqual(organic["client_supporting_count"], 1)
         self.assertEqual(organic["client_visibility"], "Partial")
         self.assertIn("product_title", organic["debug"]["matched_fields"]["client"])
@@ -189,7 +241,7 @@ class Slide6VisibilityTests(unittest.TestCase):
             [_record(category="Jam"), {}, {"description": ""}],
             [],
         )
-        row = next(item for item in payload["segments"] if item["segment"] == "Jam & Jelly")
+        row = next(item for item in payload["segments"] if item["segment"] in {"jam", "jelly"} or "jam" in item["segment"])
         self.assertEqual(row["client_analyzed_count"], 1)
         self.assertEqual(row["client_fraction"], "1/1")
 
@@ -209,8 +261,17 @@ class Slide6VisibilityTests(unittest.TestCase):
             self.assertIn("competitor_percentage", row)
             self.assertIn("matched_fields", row["debug"])
             self.assertIn("matched_terms", row["debug"])
+            self.assertIn("row_selection_reason", row["debug"])
+            self.assertIn("candidate_source", row["debug"])
+            self.assertIn("ranking_factors", row["debug"])
+            self.assertIn("score_inputs", row["debug"])
+            self.assertIn("label_reason", row["debug"])
+            self.assertTrue(row["debug"]["label_reason"]["client"])
+            self.assertTrue(row["debug"]["label_reason"]["competitor"])
             self.assertTrue(row["debug"]["reason"])
             self.assertIn("warnings", row)
+        self.assertIn("row_generation", payload["debug"])
+        self.assertIn("row_selection", payload["debug"])
 
     def test_generic_fallback_is_restrained_and_non_repetitive(self) -> None:
         payload = build_slide6_visibility(

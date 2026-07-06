@@ -5,6 +5,7 @@ import io
 import math
 import re
 import ssl
+from collections import Counter
 from typing import Any
 from urllib.request import Request, urlopen
 
@@ -22,6 +23,7 @@ from app.audit_helpers.bullet_uniqueness import normalize_bullet_text
 from app.audit_helpers.slide4_findings import build_slide4_group_findings
 from app.audit_helpers.audit_language_resolver import strategic_bullet_text
 from app.audit_helpers.strategic_cue_engine import aggregate_strategic_cues
+from app.audit_helpers.strategic_identity import resolve_strategic_identity
 from audit_powerpoint import _format_cover_date
 
 
@@ -37,6 +39,12 @@ SLIDE4_SLOT_LABELS = {
     "dimensions": "Dimensions",
     "graphic_nutrition": "Nutrition",
 }
+SLIDE4_BULLET_FAMILIES = (
+    "positioning_title",
+    "detail_compliance",
+    "education_storytelling",
+    "trust_visual",
+)
 
 
 def _safe_text(value: Any) -> str:
@@ -670,6 +678,487 @@ def _slide4_theme_bullet(cue_key: str, classification: str, facts: dict[str, Any
     )
 
 
+def _slide4_product_phrase_for_identity(facts: dict[str, Any], identity: dict[str, Any]) -> str:
+    product = _safe_text(identity.get("product_type_display") or "").lower().replace("&", "and")
+    if product and product not in {"category", "product"}:
+        if product.endswith("s") and not product.endswith("ss"):
+            product = product[:-1]
+        if product == "facial cleanser":
+            return "facial cleanser"
+        return product
+    return _slide4_product_phrase(facts)
+
+
+def _slide4_category_context(facts: dict[str, Any], identity: dict[str, Any]) -> str:
+    blob = " ".join(
+        [
+            _safe_text(identity.get("category_key")),
+            _safe_text(identity.get("category_display")),
+            _safe_text(facts.get("category")),
+            _safe_text(facts.get("product_type")),
+            _safe_text(facts.get("title")),
+        ]
+    ).lower()
+    if any(term in blob for term in ("beauty", "skin", "facial", "cleanser", "cosmetic")):
+        return "beauty"
+    if any(term in blob for term in ("food", "pantry", "snack", "beverage", "spread", "butter", "jam", "jell")):
+        return "food"
+    if any(term in blob for term in ("electronics", "device", "charger", "battery", "headphone", "speaker")):
+        return "electronics"
+    return "general"
+
+
+def _slide4_language_allowed(text: str, category_context: str) -> tuple[bool, str]:
+    normalized = _safe_text(text).lower()
+    invalid_by_context = {
+        "beauty": ("nutrition", "protein", "breakfast", "snack", "recipe", "serving", "pantry"),
+        "food": ("regimen", "skin-care", "skin care", "dermatologist", "clinical routine", "device setup"),
+        "electronics": ("ingredient", "ingredients", "formula", "nutrition", "regimen", "skin"),
+    }
+    for term in invalid_by_context.get(category_context, ()):
+        if term in normalized:
+            return False, f"blocked_wrong_category_term:{term}"
+    return True, "allowed"
+
+
+def _slide4_family_for_cue(cue_key: str) -> str:
+    if cue_key in {"product_positioning", "benefit_communication"}:
+        return "positioning_title"
+    if cue_key in {"ingredient_or_formula_communication", "pack_or_spec_detail", "conversion_guidance"}:
+        return "detail_compliance"
+    if cue_key in {"shopper_education", "usage_storytelling"}:
+        return "education_storytelling"
+    if cue_key in {"visual_identity", "review_or_trust_signals"}:
+        return "trust_visual"
+    return "education_storytelling"
+
+
+def _slide4_add_candidate(
+    candidates: list[dict[str, Any]],
+    rejected: list[dict[str, str]],
+    *,
+    text: str,
+    family: str,
+    evidence_source: str,
+    score: float,
+    bullet_type: str,
+    dimension: str,
+    signals: list[str],
+    reason: str,
+    product_context: str,
+    category_context: str,
+    guide_context: dict[str, Any],
+) -> None:
+    clean = _safe_text(text)
+    if not clean:
+        return
+    allowed, guard_reason = _slide4_language_allowed(clean, category_context)
+    if not allowed:
+        rejected.append({"text": clean, "reason": guard_reason})
+        return
+    candidates.append(
+        {
+            "text": clean,
+            "family": family if family in SLIDE4_BULLET_FAMILIES else "education_storytelling",
+            "evidence_source": evidence_source,
+            "score": score,
+            "type": bullet_type,
+            "dimension": dimension,
+            "signals": [signal for signal in signals if signal],
+            "reason": reason,
+            "product_context": product_context,
+            "category_context": category_context,
+            "guide_context": guide_context,
+        }
+    )
+
+
+def _slide4_image_analysis_facts(record: dict[str, Any]) -> dict[str, Any]:
+    analysis = record.get("image_analysis", {}) or {}
+    images = [
+        image
+        for image in (analysis.get("images", []) or [])
+        if isinstance(image, dict) and image.get("status") == "analyzed"
+    ]
+    formats = Counter(_safe_text(image.get("probable_format")) for image in images if _safe_text(image.get("probable_format")))
+    detected: set[str] = set()
+    tokens: set[str] = set()
+    for image in images:
+        detected.update(_safe_text(signal).lower() for signal in (image.get("detected_signals") or []) if _safe_text(signal))
+        tokens.update(_safe_text(token).lower() for token in (image.get("ocr_tokens") or []) if _safe_text(token))
+    return {
+        "analyzed_image_count": len(images),
+        "formats": formats,
+        "detected_signals": detected,
+        "ocr_tokens": tokens,
+        "has_lifestyle": formats["lifestyle_or_scene"] > 0,
+        "has_detail": bool({"nutrition_or_ingredients", "dimensions_or_instructions"} & set(formats))
+        or bool({"nutrition_or_ingredients", "size_or_count", "dimensions_or_scale"} & detected),
+        "has_usage": bool({"usage_or_instructions", "recipe_or_serving"} & detected)
+        or bool({"recipe", "serving", "toast", "routine", "apply", "use"} & tokens),
+        "has_trust": bool({"organic_or_certification", "clinical_or_dermatologist", "guarantee"} & detected),
+        "has_benefit": "feature_or_benefit_claim" in detected,
+    }
+
+
+def _slide4_title_has_product(facts: dict[str, Any], identity: dict[str, Any], product_phrase: str) -> bool:
+    title = _safe_text(facts.get("title")).lower()
+    product_terms = [
+        product_phrase,
+        _safe_text(identity.get("product_type_display")).lower(),
+        *_as_text_list((identity.get("style_product_type") or {}).get("aliases") if isinstance(identity.get("style_product_type"), dict) else []),
+        *_as_text_list((identity.get("style_product_type") or {}).get("title_keywords") if isinstance(identity.get("style_product_type"), dict) else []),
+    ]
+    return any(_safe_text(term).lower() and _safe_text(term).lower() in title for term in product_terms)
+
+
+def _slide4_build_candidate_pool(
+    record: dict[str, Any],
+    *,
+    side: str,
+    existing_texts: set[str],
+) -> tuple[list[dict[str, Any]], list[dict[str, str]], dict[str, Any]]:
+    facts = _slide4_record_facts(record)
+    identity = resolve_strategic_identity(
+        [record],
+        fallback_category=_safe_text(facts.get("category")),
+        fallback_product_type=_safe_text(facts.get("product_type")),
+    )
+    guide_match = _build_image_guide_match(_safe_text(facts.get("category")), _safe_text(facts.get("product_type")))
+    image_facts = _slide4_image_analysis_facts(record)
+    blob = _slide4_content_blob(facts)
+    product_phrase = _slide4_product_phrase_for_identity(facts, identity)
+    category_context = _slide4_category_context(facts, identity)
+    brand = facts["brand"] or side.replace("_", " ").title()
+    is_client = side == "client"
+    style_product = identity.get("style_product_type") if isinstance(identity.get("style_product_type"), dict) else {}
+    guide_context = {
+        "style_guide_path": identity.get("style_guide_path", ""),
+        "image_guide_path": identity.get("image_guide_path", ""),
+        "style_product_type_score": identity.get("style_product_type_score"),
+        "title_priorities": list(identity.get("recommended_title_priorities") or [])[:4],
+        "visual_priorities": list(identity.get("recommended_visual_priorities") or [])[:4],
+        "image_required_slots": list(guide_match.get("required_slot_labels") or [])[:4],
+    }
+    candidates: list[dict[str, Any]] = []
+    rejected: list[dict[str, str]] = []
+
+    def add(**kwargs: Any) -> None:
+        _slide4_add_candidate(
+            candidates,
+            rejected,
+            product_context=product_phrase,
+            category_context=category_context,
+            guide_context=guide_context,
+            **kwargs,
+        )
+
+    if _has_any(blob, "hazelnut", "cocoa", "nutella"):
+        add(
+            text="Hazelnut-cocoa positioning supports breakfast occasions",
+            family="positioning_title",
+            evidence_source="title/product_identification",
+            score=93,
+            bullet_type="strength",
+            dimension="product_positioning",
+            signals=["hazelnut", "cocoa", "title"],
+            reason="Title or PDP copy identifies hazelnut/cocoa spread positioning.",
+        )
+    elif _has_any(blob, "peanut butter", "peanut", "protein", "jif", "fresh roasted", "fresh-roasted"):
+        add(
+            text="Peanut butter positioning reinforces pantry relevance",
+            family="positioning_title",
+            evidence_source="title/product_identification",
+            score=93,
+            bullet_type="strength",
+            dimension="product_positioning",
+            signals=["peanut butter", "protein", "title"],
+            reason="Title, product type, or PDP copy identifies peanut butter/protein positioning.",
+        )
+    elif _slide4_title_has_product(facts, identity, product_phrase):
+        add(
+            text=f"{product_phrase.title()} title clarifies product role",
+            family="positioning_title",
+            evidence_source="title_formula",
+            score=90,
+            bullet_type="strength",
+            dimension="title_product_type_identification",
+            signals=["title", product_phrase],
+            reason="Product type or guide-supported aliases appear in the title.",
+        )
+    else:
+        add(
+            text=f"Title can name {product_phrase} more directly",
+            family="positioning_title",
+            evidence_source="title_formula",
+            score=82,
+            bullet_type="opportunity",
+            dimension="title_product_type_identification",
+            signals=["title_gap", product_phrase],
+            reason="Resolved product type was not strongly represented in the title.",
+        )
+
+    key_features = facts.get("key_features", []) or []
+    description = _safe_text(facts.get("description"))
+    if _has_any(blob, "protein", "nutrition", "calories", "ingredients") and category_context == "food":
+        add(
+            text="Protein cues strengthen snack and pantry relevance",
+            family="detail_compliance",
+            evidence_source="pdp_detail_compliance",
+            score=91,
+            bullet_type="strength",
+            dimension="detail_compliance",
+            signals=["protein", "nutrition", "key_features"],
+            reason="Food PDP evidence includes nutrition, ingredient, or protein detail.",
+        )
+        add(
+            text="Clear pack and nutrition detail",
+            family="detail_compliance",
+            evidence_source="style_title_and_pdp_detail",
+            score=89,
+            bullet_type="strength",
+            dimension="pack_or_spec_detail",
+            signals=["nutrition", "ingredients", "style_guide"],
+            reason="PDP and guide context support food-specific pack/nutrition detail.",
+        )
+    elif category_context == "beauty":
+        detail_text = (
+            f"Formula and skin-benefit details support {product_phrase} comparison"
+            if _has_any(blob, "hydrating", "sensitive", "fragrance", "ingredient", "formula")
+            else f"{product_phrase.title()} detail can clarify skin-benefit fit"
+        )
+        add(
+            text=detail_text,
+            family="detail_compliance",
+            evidence_source="pdp_detail_compliance",
+            score=88 if _has_any(blob, "hydrating", "sensitive", "ingredient", "formula") else 80,
+            bullet_type="strength" if _has_any(blob, "hydrating", "sensitive", "ingredient", "formula") else "opportunity",
+            dimension="formula_detail",
+            signals=["formula", "skin_benefit", "description"],
+            reason="Beauty PDP evidence is evaluated with formula/benefit language instead of food detail.",
+        )
+    elif category_context == "electronics":
+        add(
+            text=f"Spec detail helps shoppers compare {product_phrase}",
+            family="detail_compliance",
+            evidence_source="pdp_detail_compliance",
+            score=86,
+            bullet_type="strength" if description or key_features else "opportunity",
+            dimension="spec_detail",
+            signals=["spec", "description", "key_features"],
+            reason="Electronics PDP detail is framed around specs and comparison support.",
+        )
+    elif description or key_features:
+        add(
+            text=f"Feature detail supports {product_phrase} comparison",
+            family="detail_compliance",
+            evidence_source="pdp_detail_compliance",
+            score=84,
+            bullet_type="strength",
+            dimension="feature_detail",
+            signals=["description", "key_features"],
+            reason="PDP description or key features provide comparison detail.",
+        )
+    else:
+        add(
+            text=f"Description detail can make {product_phrase} easier to compare",
+            family="detail_compliance",
+            evidence_source="pdp_detail_compliance",
+            score=76,
+            bullet_type="opportunity",
+            dimension="description_quality",
+            signals=["description_gap"],
+            reason="Description and key-feature evidence was sparse.",
+        )
+
+    if category_context == "food" and _has_any(blob, "breakfast", "snack", "recipe", "toast", "pantry"):
+        add(
+            text=f"{product_phrase.title()} cues connect PDP content to breakfast",
+            family="education_storytelling",
+            evidence_source="pdp_storytelling",
+            score=88,
+            bullet_type="strength",
+            dimension="usage_storytelling",
+            signals=["breakfast", "snack", "recipe", "description"],
+            reason="Usage occasion language was present in PDP title, description, or features.",
+        )
+    elif category_context == "beauty" and _has_any(blob, "daily", "routine", "use", "sensitive", "hydrating"):
+        add(
+            text=f"{product_phrase.title()} usage cues clarify routine fit",
+            family="education_storytelling",
+            evidence_source="pdp_storytelling",
+            score=88,
+            bullet_type="strength",
+            dimension="usage_storytelling",
+            signals=["routine", "sensitive", "hydrating"],
+            reason="Beauty PDP evidence includes usage, routine, or skin-need language.",
+        )
+    elif image_facts["has_usage"] or image_facts["has_lifestyle"]:
+        add(
+            text=f"Image stack extends {product_phrase} usage education",
+            family="education_storytelling",
+            evidence_source="image_support",
+            score=83,
+            bullet_type="strength",
+            dimension="visual_storytelling",
+            signals=["image_usage", "lifestyle"],
+            reason="Image analysis detected usage, recipe, routine, or lifestyle support.",
+        )
+    else:
+        add(
+            text=f"Usage storytelling can make {product_phrase} occasions clearer",
+            family="education_storytelling",
+            evidence_source="pdp_storytelling",
+            score=77,
+            bullet_type="opportunity",
+            dimension="usage_storytelling",
+            signals=["limited_usage_language"],
+            reason="PDP and image evidence did not show strong usage education.",
+        )
+
+    if facts["review_count"] >= 100:
+        add(
+            text=(
+                f"{brand} review volume raises comparison confidence"
+                if not is_client
+                else f"Review depth supports {product_phrase} confidence"
+            ),
+            family="trust_visual",
+            evidence_source="review_trust",
+            score=87,
+            bullet_type="strength",
+            dimension="review_authority",
+            signals=[f"{facts['review_count']}_reviews"],
+            reason="Review count evidence was high enough to support shopper confidence.",
+        )
+    if facts["image_count"] >= 6 or image_facts["analyzed_image_count"] >= 3:
+        add(
+            text=f"{facts['image_count']}-image carousel supports visual education",
+            family="trust_visual",
+            evidence_source="image_guide_support",
+            score=84,
+            bullet_type="strength",
+            dimension="image_sequence",
+            signals=[f"{facts['image_count']}_images", *guide_context["image_required_slots"][:2]],
+            reason="Carousel depth and image-guide context support visual comparison.",
+        )
+    if facts["sold_by_walmart"] or facts["shipped_by_walmart"] or facts["ebc_present"] or image_facts["has_trust"]:
+        add(
+            text=f"Trust cues strengthen {product_phrase} purchase confidence",
+            family="trust_visual",
+            evidence_source="review_trust",
+            score=82,
+            bullet_type="strength",
+            dimension="trust_support",
+            signals=["walmart_fulfillment" if facts["sold_by_walmart"] or facts["shipped_by_walmart"] else "", "enhanced_content" if facts["ebc_present"] else "", "image_trust" if image_facts["has_trust"] else ""],
+            reason="Fulfillment, enhanced content, or image trust signals were present.",
+        )
+
+    cue_bullets, cue_debug, cue_context_debug = _translate_slide4_strategic_cues(
+        record,
+        facts,
+        side=side,
+        existing_texts=set(existing_texts),
+    )
+    for text, cue in zip(cue_bullets, cue_debug):
+        dimension = _safe_text(cue.get("dimension", "cue"))
+        add(
+            text=text,
+            family=_slide4_family_for_cue(dimension),
+            evidence_source="strategic_cue_engine",
+            score=72,
+            bullet_type=_safe_text(cue.get("type", "context")) or "context",
+            dimension=dimension,
+            signals=[*_as_text_list(cue.get("signals"))[:3]],
+            reason=_safe_text(cue.get("reason")) or "Selected from strategic cue engine output.",
+        )
+
+    return candidates, rejected, {
+        "identity": {
+            "category_key": identity.get("category_key"),
+            "product_type_display": identity.get("product_type_display"),
+            "style_guide_path": identity.get("style_guide_path", ""),
+            "image_guide_path": identity.get("image_guide_path", ""),
+        },
+        "product_context": product_phrase,
+        "category_context": category_context,
+        "style_terms_used": {
+            "aliases": _as_text_list(style_product.get("aliases"))[:5],
+            "title_keywords": _as_text_list(style_product.get("title_keywords"))[:5],
+            "context_keywords": _as_text_list(style_product.get("context_keywords"))[:5],
+            "attributes": _as_text_list(style_product.get("attributes"))[:5],
+            "negative_keywords": _as_text_list(style_product.get("negative_keywords"))[:5],
+        },
+        "image_guide": guide_context,
+        "image_analysis": {
+            "analyzed_image_count": image_facts["analyzed_image_count"],
+            "detected_signals": sorted(image_facts["detected_signals"])[:8],
+            "formats": dict(image_facts["formats"]),
+        },
+        "cue_context": cue_context_debug,
+        "rejected_language": rejected,
+    }
+
+
+def _select_slide4_balanced_candidates(
+    candidates: list[dict[str, Any]],
+    *,
+    existing_texts: set[str],
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    ranked = sorted(candidates, key=lambda item: float(item.get("score", 0)), reverse=True)
+    selected: list[dict[str, Any]] = []
+    family_counts: Counter[str] = Counter()
+    used = set(existing_texts)
+    rejected: list[dict[str, str]] = []
+
+    def try_add(candidate: dict[str, Any], *, allow_second_family: bool) -> bool:
+        text = _safe_text(candidate.get("text"))
+        key = normalize_bullet_text(text)
+        family = _safe_text(candidate.get("family"))
+        if not text or key in used:
+            rejected.append({"text": text, "reason": "duplicate_or_cross_column_repeat"})
+            return False
+        if family_counts[family] >= 2:
+            rejected.append({"text": text, "reason": "family_cap_reached"})
+            return False
+        if family_counts[family] >= 1 and not allow_second_family:
+            return False
+        used.add(key)
+        family_counts[family] += 1
+        selected.append(candidate)
+        return True
+
+    for family in SLIDE4_BULLET_FAMILIES:
+        family_candidates = [candidate for candidate in ranked if candidate.get("family") == family]
+        for candidate in family_candidates:
+            if try_add(candidate, allow_second_family=False):
+                break
+        if len(selected) == 4:
+            break
+
+    if len(selected) < 4:
+        for candidate in ranked:
+            if len(selected) == 4:
+                break
+            if candidate in selected:
+                continue
+            try_add(candidate, allow_second_family=True)
+
+    return selected[:4], {
+        "family_counts": dict(family_counts),
+        "ranked_candidates": [
+            {
+                "text": candidate.get("text"),
+                "family": candidate.get("family"),
+                "evidence_source": candidate.get("evidence_source"),
+                "score": candidate.get("score"),
+            }
+            for candidate in ranked[:12]
+        ],
+        "rejected_candidates": rejected[:12],
+    }
+
+
 def _slide4_candidate_sort_key(candidate: dict[str, Any]) -> tuple[int, int, float, float]:
     class_rank = {"strength": 0, "opportunity": 1, "context": 2, "pressure": 3}
     cue_rank = {
@@ -770,6 +1259,44 @@ def _build_slide4_evidence_bullets(
     existing_texts: set[str],
 ) -> tuple[list[str], list[dict[str, Any]], list[str]]:
     facts = _slide4_record_facts(record)
+    candidates, rejected_language, evidence_context = _slide4_build_candidate_pool(
+        record,
+        side=side,
+        existing_texts=existing_texts,
+    )
+    selected_candidates, selection_debug = _select_slide4_balanced_candidates(
+        candidates,
+        existing_texts=existing_texts,
+    )
+    if len(selected_candidates) == 4:
+        for candidate in selected_candidates:
+            existing_texts.add(normalize_bullet_text(candidate["text"]))
+        return (
+            [candidate["text"] for candidate in selected_candidates],
+            [
+                {
+                    "text": candidate["text"],
+                    "type": candidate.get("type", "context"),
+                    "dimension": candidate.get("dimension", candidate.get("family", "")),
+                    "signals": candidate.get("signals", []),
+                    "reason": candidate.get("reason", ""),
+                    "bullet_family": candidate.get("family", ""),
+                    "evidence_family_source": candidate.get("evidence_source", ""),
+                    "selected_because": (
+                        "Chosen by Slide 4 balanced PDP selection using supported evidence, "
+                        "family diversity, product-type fit, and cross-column uniqueness."
+                    ),
+                    "product_type_context": candidate.get("product_context", ""),
+                    "category_context": candidate.get("category_context", ""),
+                    "guide_context": candidate.get("guide_context", {}),
+                    "selection_debug": selection_debug,
+                    "evidence_context": evidence_context,
+                    "rejected_language": rejected_language,
+                }
+                for candidate in selected_candidates
+            ],
+            [],
+        )
     blob = _slide4_content_blob(facts)
     image_blob = facts["image_text"]
     bullets: list[str] = []
@@ -1162,12 +1689,18 @@ def build_slide4_pdp_benchmark_payload(
     ]
     active_competitors = [column for column in competitor_columns if column.get("active")]
     layout_mode = "2-column" if len(active_competitors) == 1 else "3-column"
+    active_columns_debug = [
+        {"index": index, "label": column.get("label", ""), "active": bool(column.get("active"))}
+        for index, column in enumerate([client_column, *competitor_columns])
+        if column.get("active")
+    ]
     hidden_columns = [
         {
+            "index": index + 1,
             "label": column["label"],
             "reason": "No PDP evidence was available.",
         }
-        for column in competitor_columns
+        for index, column in enumerate(competitor_columns)
         if not column.get("active")
     ]
     columns = [client_column, *competitor_columns]
@@ -1194,6 +1727,23 @@ def build_slide4_pdp_benchmark_payload(
         ],
         "debug": {
             "layout_mode": layout_mode,
+            "layout_debug": {
+                "layout_mode": layout_mode,
+                "active_columns": active_columns_debug,
+                "hidden_columns": hidden_columns,
+                "active_column_count": len(active_columns_debug),
+                "render_slots": [0, 2] if layout_mode == "2-column" and len(active_columns_debug) == 2 else [0, 1, 2],
+                "reused_regions": (
+                    "outer_template_regions_rebalanced_as_left_right_columns"
+                    if layout_mode == "2-column" and len(active_columns_debug) == 2
+                    else "native_three_column_template_regions"
+                ),
+                "divider_cleanup": (
+                    "suppress_middle_column_label_rule_and_vertical_3_column_dividers"
+                    if layout_mode == "2-column" and len(active_columns_debug) == 2
+                    else "preserve_three_column_chrome"
+                ),
+            },
             "hidden_columns": hidden_columns,
             "resolved_labels": [column.get("label", "") for column in columns],
             "resolved_category": client_column.get("category", ""),
@@ -1539,12 +2089,85 @@ def _populate_slide4_carousel(
         )
 
 
+def _slide4_line_shapes(slide: Any) -> list[Any]:
+    return [
+        shape
+        for shape in _walk_shapes(slide.shapes)
+        if "LINE" in str(getattr(shape, "shape_type", "")).upper()
+    ]
+
+
+def _cleanup_slide4_two_column_chrome(
+    slide: Any,
+    *,
+    target_indices: list[int],
+    inactive_indices: list[int],
+    two_column_bounds: dict[int, dict[str, tuple[int, int, int, int]]],
+) -> dict[str, Any]:
+    removed: list[dict[str, Any]] = []
+    relocated: list[dict[str, Any]] = []
+    lines = _slide4_line_shapes(slide)
+    vertical_lines = [
+        shape
+        for shape in lines
+        if int(getattr(shape, "width", 0) or 0) <= int(Inches(0.03))
+        and int(getattr(shape, "height", 0) or 0) >= int(Inches(1.0))
+    ]
+    for shape in vertical_lines:
+        removed.append({"name": getattr(shape, "name", ""), "reason": "removed_3_column_vertical_divider"})
+        _remove_shape(shape)
+
+    horizontal_lines = sorted(
+        [
+            shape
+            for shape in lines
+            if shape not in vertical_lines
+            and int(getattr(shape, "width", 0) or 0) >= int(Inches(1.0))
+            and int(getattr(shape, "height", 0) or 0) <= int(Inches(0.03))
+        ],
+        key=lambda shape: int(getattr(shape, "left", 0) or 0),
+    )
+    for index in inactive_indices:
+        if index < len(horizontal_lines):
+            shape = horizontal_lines[index]
+            removed.append({"name": getattr(shape, "name", ""), "reason": "removed_inactive_column_label_rule"})
+            _remove_shape(shape)
+
+    for index in target_indices:
+        if index >= len(horizontal_lines) or index not in two_column_bounds:
+            continue
+        shape = horizontal_lines[index]
+        if getattr(shape, "element", None) is None or shape.element.getparent() is None:
+            continue
+        label_left, label_top, label_width, label_height = two_column_bounds[index]["label"]
+        bullet_left, _bullet_top, bullet_width, _bullet_height = two_column_bounds[index]["bullet"]
+        shape.left = int(min(label_left, bullet_left))
+        shape.top = int(label_top + label_height)
+        shape.width = int(max(label_width, bullet_width))
+        shape.height = 0
+        relocated.append(
+            {
+                "name": getattr(shape, "name", ""),
+                "target_index": index,
+                "bounds": [int(shape.left), int(shape.top), int(shape.width), int(shape.height)],
+            }
+        )
+
+    return {
+        "removed": removed,
+        "relocated_label_rules": relocated,
+        "suppressed_vertical_dividers": len(vertical_lines),
+        "inactive_indices": inactive_indices,
+    }
+
+
 def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None:
     columns = list(payload.get("columns", []) or [])[:3]
     while len(columns) < 3:
         columns.append({"label": f"Competitor {len(columns)}", "ordered_images": [], "bullets": []})
     active_indices = [index for index, column in enumerate(columns) if column.get("active", True)]
     layout_mode = payload.get("layout_mode") or ("2-column" if len(active_indices) == 2 else "3-column")
+    layout_debug = payload.setdefault("debug", {}).setdefault("layout_debug", {})
 
     for shape in _walk_shapes(slide.shapes):
         if not getattr(shape, "has_text_frame", False):
@@ -1618,9 +2241,34 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
                 "bullet": (column_left, bullet_bounds[target_index][1], bullet_width, bullet_bounds[target_index][3]),
                 "container": (image_left, container_bounds[target_index][1], image_width, container_bounds[target_index][3]),
             }
+        cleanup_debug = _cleanup_slide4_two_column_chrome(
+            slide,
+            target_indices=target_indices,
+            inactive_indices=inactive_indices,
+            two_column_bounds=two_column_bounds,
+        )
+        layout_debug["render_cleanup"] = cleanup_debug
+        layout_debug["final_active_geometry"] = {
+            str(index): {key: list(value) for key, value in bounds.items()}
+            for index, bounds in two_column_bounds.items()
+        }
         render_pairs = list(zip(target_indices, [columns[index] for index in active_indices]))
     else:
         two_column_bounds = {}
+        layout_debug["render_cleanup"] = {
+            "removed": [],
+            "relocated_label_rules": [],
+            "suppressed_vertical_dividers": 0,
+            "inactive_indices": [],
+        }
+        layout_debug["final_active_geometry"] = {
+            str(index): {
+                "label": list(label_bounds[index]),
+                "bullet": list(bullet_bounds[index]),
+                "container": list(container_bounds[index]),
+            }
+            for index in range(min(3, len(columns)))
+        }
         render_pairs = [(index, column) for index, column in enumerate(columns)]
 
     for target_index, column in render_pairs:
