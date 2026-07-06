@@ -32,7 +32,7 @@ BULLET_BANK: dict[str, dict[str, str]] = {
     "consumer_demand": {
         "established_trust": "Established shopper trust in {category_context_phrase}",
         "strong_benefit_positioning": "Strong {product_positioning_phrase}",
-        "broad_relevance": "Fits high-frequency Walmart pantry routines",
+        "broad_relevance": "Relevant to repeat Walmart shopper needs",
         "positive_review_foundation": "Reviews provide a trust base for conversion",
         "clear_shopping_journey_fit": "Clear fit for the Walmart {shopping_journey_phrase}",
         "growing_relevance": "Growing relevance for {shopper_phrase}",
@@ -152,7 +152,32 @@ SYNTHETIC_FILLER_PATTERNS = (
     "enhanced ownable",
     "value communication",
     "focused ",
+    "signals support",
+    "cues support",
+    "confidence communication",
+    "support confidence",
 )
+
+SECTION_LAST_RESORT_BULLETS: dict[str, tuple[str, ...]] = {
+    "consumer_demand": (
+        "Reviews give shoppers a clearer reason to trust",
+        "Relevant benefits help shoppers choose with confidence",
+        "Shopper confidence grows from stronger proof points",
+        "Trust cues keep demand grounded in evidence",
+    ),
+    "walmart_opportunity": (
+        "Walmart PDP guidance can make choice easier",
+        "Sharper shelf content can reduce purchase friction",
+        "Clearer PDP proof points can support conversion",
+        "Assortment cues can help shoppers compare faster",
+    ),
+    "competitive_benchmark": (
+        "Benchmark PDPs create clearer comparison pressure",
+        "Competitor content raises shelf expectations",
+        "Category leaders make benefits easier to compare",
+        "Competitive examples show stronger shopper guidance",
+    ),
+}
 
 
 def _safe_text(value: Any) -> str:
@@ -187,6 +212,51 @@ def _shorten_slide2_bullet(text: str, *, hard_limit: int = SLIDE2_MAX_BULLET_CHA
     return shortened or clean[:hard_limit].rsplit(" ", 1)[0].rstrip(" ,;-")
 
 
+def _slide2_category_context(phrases: dict[str, str]) -> str:
+    blob = " ".join(_safe_text(value).lower() for value in phrases.values())
+    if any(term in blob for term in ("skin care", "skincare", "regimen", "ingredient-led", "care-focused")):
+        return "beauty"
+    if any(term in blob for term in ("pantry", "breakfast", "snack", "jam", "butter", "spreads")):
+        return "food"
+    if any(term in blob for term in ("baby", "infant", "toddler", "family-care")):
+        return "baby"
+    return "general"
+
+
+def _slide2_final_bullet_allowed(section_key: str, text: str, phrases: dict[str, str]) -> tuple[bool, str]:
+    lowered = _safe_text(text).lower()
+    if not lowered:
+        return False, "blank"
+    if any(pattern in lowered for pattern in SYNTHETIC_FILLER_PATTERNS):
+        return False, "robotic_or_synthetic_phrase"
+    category_context = _slide2_category_context(phrases)
+    wrong_terms = {
+        "beauty": ("pantry", "breakfast", "snack", "recipe", "serving"),
+        "food": ("skin care", "regimen", "skin-benefit", "dermatologist"),
+    }.get(category_context, ())
+    if any(term in lowered for term in wrong_terms):
+        return False, f"wrong_category_language:{category_context}"
+    if section_key == "consumer_demand":
+        if any(term in lowered for term in ("competitor", "benchmark", "opportunity", "pressure", "gap")):
+            return False, "consumer_demand_section_leakage"
+        if not any(term in lowered for term in ("trust", "review", "relevance", "relevant", "confidence", "fit", "foundation", "proof", "choose", "demand")):
+            return False, "consumer_demand_meaning_missing"
+    return True, "allowed"
+
+
+def _slide2_refill_debug_item(section_key: str, text: str, reason: str) -> dict[str, Any]:
+    return {
+        "text": text,
+        "template_id": "final_count_guardrail",
+        "section": section_key,
+        "source_tag": "final_count_guardrail",
+        "signals": ["final_4_4_4_enforcement"],
+        "supporting_count": 0,
+        "analyzed_count": 0,
+        "reason": reason,
+    }
+
+
 def _dedupe_and_fit_slide2_sections(
     sections: dict[str, dict[str, Any]],
     phrases: dict[str, str],
@@ -214,6 +284,10 @@ def _dedupe_and_fit_slide2_sections(
             if not clean:
                 continue
             normalized = normalize_bullet_text(clean)
+            allowed, allow_reason = _slide2_final_bullet_allowed(section_key, clean, phrases)
+            if not allowed:
+                dropped[section_key].append(f"{clean} ({allow_reason})")
+                continue
             if normalized in used or any(
                 normalized and (normalized in existing or existing in normalized)
                 for existing in used
@@ -236,6 +310,10 @@ def _dedupe_and_fit_slide2_sections(
                 BULLET_BANK[section_key][template_id].format(**phrases)
             )
             normalized = normalize_bullet_text(fallback)
+            allowed, allow_reason = _slide2_final_bullet_allowed(section_key, fallback, phrases)
+            if not allowed:
+                dropped[section_key].append(f"{fallback} ({allow_reason})")
+                continue
             if normalized and normalized not in used:
                 used.add(normalized)
                 final[section_key].append(fallback)
@@ -251,6 +329,27 @@ def _dedupe_and_fit_slide2_sections(
                         "analyzed_count": 0,
                         "reason": "Controlled refill added after cross-section dedupe to preserve four bullets.",
                     }
+                )
+
+        for fallback in SECTION_LAST_RESORT_BULLETS.get(section_key, ()):
+            if len(final[section_key]) >= 4:
+                break
+            fallback = _shorten_slide2_bullet(fallback)
+            normalized = normalize_bullet_text(fallback)
+            allowed, allow_reason = _slide2_final_bullet_allowed(section_key, fallback, phrases)
+            if not allowed:
+                dropped[section_key].append(f"{fallback} ({allow_reason})")
+                continue
+            if normalized and normalized not in used:
+                used.add(normalized)
+                final[section_key].append(fallback)
+                shortened[section_key].append(fallback)
+                section.setdefault("bullet_debug", []).append(
+                    _slide2_refill_debug_item(
+                        section_key,
+                        fallback,
+                        "Natural section-specific refill added as the final 4/4/4 guardrail.",
+                    )
                 )
 
         section["bullets"] = final[section_key]

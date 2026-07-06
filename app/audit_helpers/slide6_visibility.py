@@ -43,6 +43,13 @@ QUERY_BLOCKLIST = {
     "food and beverage",
     "dips and spread",
     "animal health",
+    "organic option",
+    "product option",
+    "flavor jam",
+    "wash cleanser",
+    "wash sensitive",
+    "hydrating face",
+    "cleansing cleanser",
 }
 ATTRIBUTE_STOPWORDS = {
     "brand",
@@ -474,7 +481,16 @@ def _rank_candidate(
     benchmark_usefulness = 1.0 if client_summary["supporting_records"] != competitor_summary["supporting_records"] else 0.0
     row_type_bonus = {"core": 4.0, "attribute": 3.0, "adjacent": 1.0}.get(str(definition.get("row_type")), 1.0)
     realism = _query_realism_score(str(definition.get("display_name")))
-    score = float(definition.get("base_score", 0)) + source_bonus + row_type_bonus + evidence_support * 3 + benchmark_usefulness + realism
+    quality_penalty, quality_reasons = _query_quality_penalty(definition, evidence_support)
+    score = (
+        float(definition.get("base_score", 0))
+        + source_bonus
+        + row_type_bonus
+        + evidence_support * 3
+        + benchmark_usefulness
+        + realism
+        - quality_penalty
+    )
     factors = {
         "base_score": definition.get("base_score", 0),
         "source_bonus": source_bonus,
@@ -482,10 +498,83 @@ def _rank_candidate(
         "evidence_support": evidence_support,
         "benchmark_usefulness": benchmark_usefulness,
         "shopper_query_realism": realism,
+        "quality_penalty": quality_penalty,
+        "quality_penalty_reasons": quality_reasons,
         "client_supporting_records": client_summary["supporting_records"],
         "competitor_supporting_records": competitor_summary["supporting_records"],
     }
     return score, factors
+
+
+def _query_quality_penalty(definition: dict[str, Any], evidence_support: int) -> tuple[float, list[str]]:
+    query = str(definition.get("display_name") or "")
+    normalized = _normalize(query)
+    words = normalized.split()
+    source = str(definition.get("candidate_source") or "")
+    row_type = str(definition.get("row_type") or "")
+    reasons: list[str] = []
+    penalty = 0.0
+    weak_pairs = {
+        "cleansing cleanser",
+        "wash cleanser",
+        "wash sensitive",
+        "hydrating face",
+        "organic option",
+        "flavor jam",
+        "option cleanser",
+        "product cleanser",
+    }
+    if normalized in weak_pairs:
+        penalty += 8.0
+        reasons.append("weak_synthetic_fragment")
+    if len(words) == 1 and source not in {"resolved_identity", "actual_search_evidence"}:
+        penalty += 4.0
+        reasons.append("single_word_non_core_candidate")
+    if row_type == "adjacent" and evidence_support <= 0:
+        penalty += 5.0
+        reasons.append("unsupported_adjacent_row")
+    if source == "actual_pdp_title_language" and evidence_support <= 0:
+        benefit_or_concern_terms = {
+            "hydrating",
+            "sensitive",
+            "gentle",
+            "natural",
+            "organic",
+            "low",
+            "sugar",
+            "protein",
+            "fragrance",
+            "free",
+        }
+        if "option" in words or "product" in words:
+            penalty += 6.0
+            reasons.append("synthetic_title_fragment")
+        product_or_concern_anchors = {
+            "cleanser",
+            "wash",
+            "skin",
+            "butter",
+            "jam",
+            "spread",
+            "moisturizer",
+            "cleaner",
+        }
+        if benefit_or_concern_terms & set(words) and not (product_or_concern_anchors & set(words)):
+            penalty += 4.0
+            reasons.append("benefit_fragment_without_product_anchor")
+        elif not (benefit_or_concern_terms & set(words)):
+            penalty += 5.0
+            reasons.append("unsupported_title_fragment")
+    if source == "segment_pack_fallback_seed" and evidence_support <= 0 and row_type != "adjacent":
+        penalty += 3.0
+        reasons.append("unsupported_fallback_attribute")
+    if words and len(set(words)) < len(words):
+        penalty += 3.0
+        reasons.append("repeated_query_token")
+    if len(words) == 2 and words[0] in {"organic", "classic", "natural", "gentle", "clean"} and evidence_support <= 0:
+        penalty += 3.0
+        reasons.append("modifier_without_product_evidence")
+    return penalty, reasons
 
 
 def _query_realism_score(query: str) -> float:
@@ -494,10 +583,10 @@ def _query_realism_score(query: str) -> float:
     score = 3.0
     if 2 <= len(words) <= 4:
         score += 2.0
+    if len(words) == 1:
+        score -= 1.5
     if any(blocked in normalized for blocked in QUERY_BLOCKLIST):
         score -= 8.0
-    if normalized.istitle():
-        score -= 1.0
     return score
 
 
@@ -534,16 +623,19 @@ def _select_final_query_rows(
             return False, "attribute_row_quota_met"
         if row_type == "adjacent" and type_counts[row_type] >= 1:
             return False, "adjacent_row_quota_met"
+        penalty = float(((candidate.get("ranking_factors") or {}).get("quality_penalty", 0)) or 0)
+        if penalty >= 8:
+            return False, "weak_query_quality"
         return True, "selected"
 
     for score, candidate, factors in ranked:
+        candidate = dict(candidate)
+        candidate["ranking_factors"] = factors
+        candidate["selection_score"] = round(score, 2)
         ok, reason = can_add(candidate)
         if not ok:
             rejected_similar.append({"query": candidate["display_name"], "reason": reason})
             continue
-        candidate = dict(candidate)
-        candidate["ranking_factors"] = factors
-        candidate["selection_score"] = round(score, 2)
         selected.append(candidate)
         selected_keys.add(_query_cluster_key(candidate["display_name"]))
         type_counts[str(candidate.get("row_type"))] += 1
@@ -560,6 +652,10 @@ def _select_final_query_rows(
             candidate = dict(candidate)
             candidate["ranking_factors"] = factors
             candidate["selection_score"] = round(score, 2)
+            penalty = float(factors.get("quality_penalty", 0) or 0)
+            if penalty >= 8:
+                rejected_similar.append({"query": candidate["display_name"], "reason": "weak_query_quality"})
+                continue
             selected.append(candidate)
             selected_keys.add(key)
     return selected[:6], {

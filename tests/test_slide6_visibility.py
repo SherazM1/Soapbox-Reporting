@@ -162,6 +162,37 @@ class Slide6VisibilityTests(unittest.TestCase):
         self.assertFalse({"face cleanser", "face wash"}.issubset(set(rows)))
         self.assertTrue(payload["debug"]["row_selection"]["rejected_similar_rows"])
 
+    def test_weak_title_fragments_do_not_survive_final_rows(self) -> None:
+        payload = build_slide6_visibility(
+            [
+                _record(
+                    category="Beauty/Skin Care",
+                    product_type="Facial Cleansers",
+                    title="Hydrating Face Wash for Sensitive Skin",
+                )
+            ],
+            [],
+        )
+        rows = [item["segment"] for item in payload["segments"]]
+        self.assertEqual(len(rows), 6)
+        self.assertIn("face cleanser", rows)
+        self.assertIn("sensitive skin", rows)
+        self.assertNotIn("hydrating face", rows)
+        self.assertNotIn("wash sensitive", rows)
+        self.assertTrue(all("option" not in row for row in rows))
+
+    def test_synthetic_option_rows_are_demoted_from_final_selection(self) -> None:
+        payload = build_slide6_visibility(
+            [_record(category="Jam", title="Organic option", ocr_tokens=["fruit", "spread"])],
+            [],
+        )
+        rows = [item["segment"] for item in payload["segments"]]
+        self.assertNotIn("organic option", rows)
+        ranked = payload["debug"]["row_selection"]["ranked_candidates"]
+        organic_option = next((item for item in ranked if item["query"] == "organic option"), None)
+        if organic_option:
+            self.assertGreaterEqual(organic_option["ranking_factors"]["quality_penalty"], 8)
+
     def test_jam_and_nut_butter_packs_are_distinct(self) -> None:
         jam = build_slide6_visibility([_record(category="Jam", title="Fruit Spread")], [])
         nut = build_slide6_visibility([_record(product_type="Nut Butter", title="Peanut Butter")], [])

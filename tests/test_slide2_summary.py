@@ -233,6 +233,41 @@ class Slide2SummaryTest(unittest.TestCase):
         ]
         self.assertIn("section_bank_fallback", source_tags)
 
+    def test_final_guardrail_blocks_wrong_category_and_robotic_consumer_language(self) -> None:
+        payload = build_slide2_summary_payload(
+            [
+                _record(
+                    category="Beauty/Skin Care",
+                    product_type="Facial Cleansers",
+                    title="Hydrating Facial Cleanser",
+                    rating=None,
+                    rating_count=None,
+                )
+            ],
+            competitor_records=[],
+            audit_metadata={"client_name": "test"},
+        )
+        sections = payload["sections"]
+        self.assertEqual(
+            {key: len(section["bullets"]) for key, section in sections.items()},
+            {
+                "consumer_demand": 4,
+                "walmart_opportunity": 4,
+                "competitive_benchmark": 4,
+            },
+        )
+        consumer_text = " ".join(sections["consumer_demand"]["bullets"]).lower()
+        all_text = " ".join(
+            bullet
+            for section in sections.values()
+            for bullet in section["bullets"]
+        ).lower()
+        self.assertTrue(any(term in consumer_text for term in ("trust", "review", "relevant", "confidence", "fit")))
+        for forbidden in ("pantry routine", "breakfast", "snack", "recipe", "signals support", "cues support", "support confidence"):
+            self.assertNotIn(forbidden, all_text)
+        for section in sections.values():
+            self.assertTrue(section["final_validation"]["required_count_met"])
+
     def test_bullet_debug_is_traceable_and_powerpoint_bullets_remain_text_only(self) -> None:
         payload = build_slide2_summary_payload(
             [_record(gap_count=4)],
