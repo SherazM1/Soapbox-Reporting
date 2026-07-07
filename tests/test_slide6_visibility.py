@@ -181,6 +181,44 @@ class Slide6VisibilityTests(unittest.TestCase):
         self.assertNotIn("wash sensitive", rows)
         self.assertTrue(all("option" not in row for row in rows))
 
+    def test_trailing_rows_prefer_stronger_non_redundant_queries(self) -> None:
+        payload = build_slide6_visibility(
+            [
+                _record(
+                    category="Beauty/Skin Care",
+                    product_type="Facial Cleansers",
+                    title="Gentle Facial Cleanser Face Wash for Sensitive Skin",
+                ),
+                _record(
+                    category="Beauty/Skin Care",
+                    product_type="Facial Cleansers",
+                    title="Hydrating Face Cleanser for Sensitive Skin",
+                ),
+            ],
+            [
+                _record(
+                    category="Beauty/Skin Care",
+                    product_type="Facial Cleansers",
+                    title="Clean Skin Care Face Cleanser Sensitive Skin",
+                )
+            ],
+        )
+        rows = [item["segment"] for item in payload["segments"]]
+        joined = " ".join(rows)
+        self.assertEqual(len(rows), 6)
+        self.assertEqual(len(set(rows)), 6)
+        self.assertNotIn("gentle facial", joined)
+        self.assertNotIn("cleanser face", joined)
+        self.assertNotIn("facial cleanser face", joined)
+        selection = payload["debug"]["row_selection"]
+        self.assertGreaterEqual(selection["lowest_selected_row_score"], 15)
+        rejected = selection["rejected_similar_rows"]
+        self.assertTrue(any(item["reason"] in {"near_duplicate", "weak_query_quality"} for item in rejected))
+        ranked = selection["ranked_candidates"]
+        weak = [item for item in ranked if item["query"] in {"gentle facial", "cleanser face", "facial cleanser face"}]
+        self.assertTrue(weak)
+        self.assertTrue(all(item["ranking_factors"]["quality_penalty"] >= 8 for item in weak))
+
     def test_synthetic_option_rows_are_demoted_from_final_selection(self) -> None:
         payload = build_slide6_visibility(
             [_record(category="Jam", title="Organic option", ocr_tokens=["fruit", "spread"])],

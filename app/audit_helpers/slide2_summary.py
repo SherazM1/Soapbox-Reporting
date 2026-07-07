@@ -32,9 +32,9 @@ BULLET_BANK: dict[str, dict[str, str]] = {
     "consumer_demand": {
         "established_trust": "Established shopper trust in {category_context_phrase}",
         "strong_benefit_positioning": "Strong {product_positioning_phrase}",
-        "broad_relevance": "Relevant to repeat Walmart shopper needs",
+        "broad_relevance": "Repeat shoppers have clear reasons to choose",
         "positive_review_foundation": "Reviews provide a trust base for conversion",
-        "clear_shopping_journey_fit": "Clear fit for the Walmart {shopping_journey_phrase}",
+        "clear_shopping_journey_fit": "Fits how Walmart shoppers compare {product_type_phrase}",
         "growing_relevance": "Growing relevance for {shopper_phrase}",
         "review_confidence_opportunity": "Review depth can further reduce purchase friction",
         "limited_review_evidence": "Sparse reviews make trust-building more important",
@@ -376,16 +376,21 @@ def _dedupe_and_fit_slide2_sections(
             "dropped_bullets": dropped[section_key],
             "final_rendered_bullets": final[section_key],
             "final_bullet_count": len(final[section_key]),
+            "render_target_bullet_count": 4,
+            "render_safe_bullet_count": len(final[section_key]),
             "dedupe_result": "passed" if len(final[section_key]) == len(set(final_norms)) else "duplicates_remaining",
             "fit_result": "passed" if all(len(value) <= SLIDE2_MAX_BULLET_CHARS for value in final[section_key]) else "over_limit",
         }
         section["final_validation"] = {
             "final_bullet_count": len(final[section_key]),
+            "render_target_bullet_count": 4,
+            "render_safe_bullet_count": len(final[section_key]),
             "dedupe_result": section["bullet_fit_debug"]["dedupe_result"],
             "fit_result": section["bullet_fit_debug"]["fit_result"],
             "final_rating": section.get("rating"),
             "final_rating_valid": section.get("rating") in RATING_SCALES[section_key]["allowed"],
             "required_count_met": len(final[section_key]) == 4,
+            "render_target_count_met": len(final[section_key]) == 4,
         }
 
     return sections, {

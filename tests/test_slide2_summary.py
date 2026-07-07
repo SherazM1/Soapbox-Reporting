@@ -208,10 +208,13 @@ class Slide2SummaryTest(unittest.TestCase):
             self.assertTrue(all(item.get("source_tag") for item in section["bullet_debug"]))
             validation = section["final_validation"]
             self.assertEqual(validation["final_bullet_count"], 4)
+            self.assertEqual(validation["render_target_bullet_count"], 4)
+            self.assertEqual(validation["render_safe_bullet_count"], 4)
             self.assertEqual(validation["dedupe_result"], "passed")
             self.assertEqual(validation["fit_result"], "passed")
             self.assertTrue(validation["final_rating_valid"])
             self.assertTrue(validation["required_count_met"])
+            self.assertTrue(validation["render_target_count_met"])
             for swap in section["cue_refinement_debug"]["accepted_swaps"]:
                 self.assertIn("original_bullet_text", swap)
                 self.assertIn("replacement_bullet_text", swap)
@@ -263,7 +266,17 @@ class Slide2SummaryTest(unittest.TestCase):
             for bullet in section["bullets"]
         ).lower()
         self.assertTrue(any(term in consumer_text for term in ("trust", "review", "relevant", "confidence", "fit")))
-        for forbidden in ("pantry routine", "breakfast", "snack", "recipe", "signals support", "cues support", "support confidence"):
+        for forbidden in (
+            "pantry routine",
+            "breakfast",
+            "snack",
+            "recipe",
+            "signals support",
+            "cues support",
+            "support confidence",
+            "repeat shopper needs",
+            "shopping journey",
+        ):
             self.assertNotIn(forbidden, all_text)
         for section in sections.values():
             self.assertTrue(section["final_validation"]["required_count_met"])
@@ -368,11 +381,22 @@ class Slide2SummaryTest(unittest.TestCase):
         self.assertIn(plan["slide2_summary"]["sections"]["consumer_demand"]["rating"], all_text)
         self.assertIn(plan["slide2_summary"]["sections"]["walmart_opportunity"]["rating"], all_text)
         self.assertIn(plan["slide2_summary"]["sections"]["competitive_benchmark"]["rating"], all_text)
+        for section in plan["slide2_summary"]["sections"].values():
+            self.assertEqual(len(section["bullets"]), 4)
+            for bullet in section["bullets"]:
+                self.assertIn(bullet, all_text)
         render_fit = plan["slide2_summary"]["debug"]["render_fit"]
         self.assertEqual(
             set(render_fit),
             {"consumer_demand", "walmart_opportunity", "competitive_benchmark"},
         )
+        for section_key, fit in render_fit.items():
+            self.assertEqual(fit["render_target_count"], 4, section_key)
+            self.assertEqual(fit["rendered_bullet_count"], 4, section_key)
+            self.assertEqual(len(fit["rendered"]), 4, section_key)
+            self.assertEqual(fit["dropped"], [], section_key)
+            self.assertGreaterEqual(fit["available_paragraph_count"], 4, section_key)
+            self.assertTrue(fit["visible_count_expectation_met"], section_key)
         self.assertEqual(
             len({item["font_fallback"] for item in render_fit.values()}),
             1,

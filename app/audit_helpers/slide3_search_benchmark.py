@@ -127,6 +127,9 @@ MALFORMED_PHRASE_BLOCKLIST = (
     "form, and dosage segmentation",
     "benchmark cue",
     "cue translation",
+    "benchmark shelf breadth is still concentrated",
+    "higher review threshold reaches",
+    "presence is narrow for",
 )
 
 STOP_WORDS = {
@@ -157,6 +160,20 @@ STOP_WORDS = {
 
 def _safe_text(value: Any) -> str:
     return str(value or "").strip()
+
+
+def _client_display_name(value: Any) -> str:
+    name = _safe_text(value)
+    normalized = re.sub(r"[^a-z0-9]+", " ", name.lower()).strip()
+    if (
+        not name
+        or normalized in {"test", "deck", "sample", "untitled"}
+        or name.lower().endswith((".ppt", ".pptx", ".html", ".csv", ".xlsx"))
+        or "\\" in name
+        or "/" in name
+    ):
+        return "Client brand"
+    return name
 
 
 def _normalize_term(value: Any) -> str:
@@ -594,6 +611,7 @@ def _build_side_candidates(
         for index, product in enumerate(products, start=1)
         if _client_brand_matches(client_brand, product)
     ]
+    client_display = _client_display_name(client_brand)
     median_reviews = int(median(review_counts)) if review_counts else 0
     max_reviews = max(review_counts) if review_counts else 0
     phrase_context = _search_phrase_context(search_term)
@@ -619,7 +637,7 @@ def _build_side_candidates(
     if side == "current":
         if client_positions and client_brand:
             add(
-                text=f"{client_brand} appears near position {min(client_positions)} for {product_type}",
+                text=f"{client_display} appears near position {min(client_positions)} for {product_type}",
                 family="side_specific",
                 dimension="client_brand_presence",
                 score=scores.get("client_brand_presence", "Unknown"),
@@ -629,7 +647,7 @@ def _build_side_candidates(
             )
         elif client_brand:
             add(
-                text=f"{client_brand} presence is narrow for {product_type}",
+                text=f"{client_display} is missing from top {product_type} results",
                 family="side_specific",
                 dimension="client_brand_presence",
                 score="Missing",
@@ -665,7 +683,7 @@ def _build_side_candidates(
         )
         add(
             text=(
-                f"Visible review threshold is near {median_reviews}"
+                f"Visible reviews average near {median_reviews}"
                 if median_reviews
                 else f"Review authority is limited on current shelf"
             ),
@@ -723,7 +741,7 @@ def _build_side_candidates(
             text=(
                 f"Benchmark shelf spans {len(brands)} competing brands"
                 if len(brands) >= 2
-                else f"Benchmark shelf breadth is still concentrated"
+                else f"Benchmark shelf shows fewer competing brands"
             ),
             family="shelf_breadth",
             dimension="assortment_breadth",
@@ -734,7 +752,7 @@ def _build_side_candidates(
         )
         add(
             text=(
-                f"Higher review threshold reaches {max_reviews}"
+                "Benchmark reviews create stronger trust signals"
                 if max_reviews >= 100
                 else f"Benchmark review authority remains uneven"
             ),
@@ -968,6 +986,7 @@ def _select_bullets(
         for index, product in enumerate(products, start=1)
         if _client_brand_matches(client_brand, product)
     ]
+    client_display = _client_display_name(client_brand)
     search_brand_phrase = ", ".join(brands[:3])
     median_reviews = int(median(review_counts)) if review_counts else 0
     phrase_context = _search_phrase_context(search_term)
@@ -1007,7 +1026,7 @@ def _select_bullets(
     if side == "current":
         if client_positions:
             add(
-                f"{client_brand} appears near position {min(client_positions)} in {phrase_context['shopping_context']}",
+                f"{client_display} appears near position {min(client_positions)} in {phrase_context['shopping_context']}",
                 "client_brand_presence",
                 scores.get("client_brand_presence", "Unknown"),
                 [f"client_position={min(client_positions)}"],
@@ -1016,7 +1035,7 @@ def _select_bullets(
             )
         elif client_brand:
             add(
-                f"{client_brand} is not visible in leading {phrase_context['shelf_navigation']}",
+                f"{client_display} is missing from leading {phrase_context['shelf_navigation']}",
                 "client_brand_presence",
                 "Missing",
                 ["client_not_found"],

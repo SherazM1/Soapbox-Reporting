@@ -372,6 +372,28 @@ class Slide5BrandShopTests(unittest.TestCase):
         right_text = [paragraph.text.strip() for paragraph in bullet_boxes[1].text_frame.paragraphs if paragraph.text.strip()]
         self.assertEqual(left_text, payload["client"]["bullets"])
         self.assertEqual(right_text, payload["competitor"]["bullets"])
+        rendered_font_sizes = {
+            run.font.size
+            for box in bullet_boxes
+            for paragraph in box.text_frame.paragraphs
+            for run in paragraph.runs
+            if paragraph.text.strip() and run.text.strip()
+        }
+        rendered_line_spacing = {
+            paragraph.line_spacing
+            for box in bullet_boxes
+            for paragraph in box.text_frame.paragraphs
+            if paragraph.text.strip()
+        }
+        rendered_space_after = {
+            paragraph.space_after
+            for box in bullet_boxes
+            for paragraph in box.text_frame.paragraphs
+            if paragraph.text.strip()
+        }
+        self.assertEqual(len(rendered_font_sizes), 1)
+        self.assertEqual(rendered_line_spacing, {0.9})
+        self.assertEqual(len(rendered_space_after), 1)
         for sample in (*CLIENT_SAMPLE_BULLETS, *COMPETITOR_SAMPLE_BULLETS):
             self.assertNotIn(sample, left_text + right_text)
         text_box_count = sum(
@@ -575,6 +597,10 @@ class Slide5BrandShopTests(unittest.TestCase):
             if paragraph.text.strip()
         ]
         self.assertEqual(bullet_text, payload["competitor"]["bullets"])
+        self.assertEqual(
+            {paragraph.line_spacing for paragraph in bullet_box.text_frame.paragraphs if paragraph.text.strip()},
+            {0.9},
+        )
         text_box_count = sum(
             1 for shape in slide.shapes if str(shape.shape_type).endswith("TEXT_BOX (17)")
         )

@@ -460,6 +460,28 @@ class Slide4IntegrationTest(unittest.TestCase):
                 key=lambda shape: shape.left,
             )
             self.assertEqual(len(bullet_shapes), 2)
+            rendered_font_sizes = {
+                run.font.size
+                for shape in bullet_shapes
+                for paragraph in shape.text_frame.paragraphs
+                for run in paragraph.runs
+                if paragraph.text.strip() and run.text.strip()
+            }
+            rendered_line_spacing = {
+                paragraph.line_spacing
+                for shape in bullet_shapes
+                for paragraph in shape.text_frame.paragraphs
+                if paragraph.text.strip()
+            }
+            rendered_space_after = {
+                paragraph.space_after
+                for shape in bullet_shapes
+                for paragraph in shape.text_frame.paragraphs
+                if paragraph.text.strip()
+            }
+            self.assertEqual(len(rendered_font_sizes), 1)
+            self.assertEqual(rendered_line_spacing, {0.95})
+            self.assertEqual(len(rendered_space_after), 1)
             centers = [shape.left + shape.width / 2 for shape in bullet_shapes]
             self.assertAlmostEqual(
                 sum(centers) / 2,

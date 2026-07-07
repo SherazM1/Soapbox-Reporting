@@ -1787,23 +1787,67 @@ def _slide4_bullet_shapes(slide: Any) -> list[Any]:
     return sorted(candidates, key=lambda shape: int(getattr(shape, "left", 0) or 0))[:3]
 
 
-def _replace_bullet_shape_text(shape: Any, bullets: list[str]) -> None:
-    paragraphs = list(shape.text_frame.paragraphs)
+def _copy_basic_paragraph_style(source: Any, target: Any) -> None:
+    target.level = getattr(source, "level", 0)
+    target.alignment = getattr(source, "alignment", None)
+    target.space_before = getattr(source, "space_before", None)
+    target.space_after = getattr(source, "space_after", None)
+    target.line_spacing = getattr(source, "line_spacing", None)
+    source_runs = list(getattr(source, "runs", []) or [])
+    if not source_runs:
+        return
+    if not target.runs:
+        target.add_run()
+    source_font = source_runs[0].font
+    target_font = target.runs[0].font
+    target_font.name = source_font.name
+    target_font.size = source_font.size
+    target_font.bold = source_font.bold
+    target_font.italic = source_font.italic
+
+
+def _replace_bullet_shape_text(
+    shape: Any,
+    bullets: list[str],
+    *,
+    ensure_paragraph_count: bool = False,
+) -> dict[str, int]:
+    text_frame = shape.text_frame
+    existing_count = len(text_frame.paragraphs)
+    created_count = 0
+    if ensure_paragraph_count and bullets:
+        while len(text_frame.paragraphs) < len(bullets):
+            template_paragraph = text_frame.paragraphs[-1]
+            new_paragraph = text_frame.add_paragraph()
+            _copy_basic_paragraph_style(template_paragraph, new_paragraph)
+            created_count += 1
+    paragraphs = list(text_frame.paragraphs)
     for index, paragraph in enumerate(paragraphs):
         _replace_paragraph_text_preserve_style(
             paragraph, bullets[index] if index < len(bullets) else ""
         )
+    return {
+        "existing_paragraph_count": existing_count,
+        "created_paragraph_count": created_count,
+        "available_paragraph_count": len(text_frame.paragraphs),
+    }
 
 
-def _apply_bullet_spacing_and_font(shape: Any, font_size: int | None) -> None:
+def _apply_bullet_spacing_and_font(
+    shape: Any,
+    font_size: int | None,
+    *,
+    line_spacing: float = 1.0,
+    space_after: int = 0,
+) -> None:
     text_frame = shape.text_frame
     text_frame.word_wrap = True
     if font_size is not None:
         text_frame.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
     for paragraph in text_frame.paragraphs:
         paragraph.space_before = Pt(0)
-        paragraph.space_after = Pt(0)
-        paragraph.line_spacing = 1.0
+        paragraph.space_after = Pt(space_after)
+        paragraph.line_spacing = line_spacing
         if font_size is None:
             continue
         for run in paragraph.runs:
@@ -1819,6 +1863,9 @@ def _fit_bullet_shape_group(
     base_font_size: int | None = None,
     fallback_font_size: int = 10,
     allow_drop: bool = False,
+    ensure_paragraph_count: bool = False,
+    line_spacing: float = 1.0,
+    space_after: int = 0,
 ) -> dict[str, dict[str, Any]]:
     prepared: dict[str, dict[str, Any]] = {}
     global_font = base_font_size
@@ -1837,13 +1884,29 @@ def _fit_bullet_shape_group(
             "shape": shape,
             "rendered": rendered,
             "dropped": dropped,
+            "render_target_count": min(len([bullet for bullet in bullets if _safe_text(bullet)]), max_lines),
         }
 
     for key, data in prepared.items():
         shape = data["shape"]
-        _replace_bullet_shape_text(shape, data["rendered"])
-        _apply_bullet_spacing_and_font(shape, global_font)
+        paragraph_debug = _replace_bullet_shape_text(
+            shape,
+            data["rendered"],
+            ensure_paragraph_count=ensure_paragraph_count,
+        )
+        _apply_bullet_spacing_and_font(
+            shape,
+            global_font,
+            line_spacing=line_spacing,
+            space_after=space_after,
+        )
         data["font_fallback"] = global_font
+        data.update(paragraph_debug)
+        data["rendered_bullet_count"] = len(data["rendered"])
+        data["visible_count_expectation_met"] = (
+            len(data["rendered"]) == data["render_target_count"]
+            and data["available_paragraph_count"] >= len(data["rendered"])
+        )
         del data["shape"]
     return prepared
 
@@ -1868,6 +1931,15 @@ def _fit_bullet_shape_text(shape: Any, bullets: list[str], *, max_lines: int = 4
         "dropped": dropped,
         "font_fallback": font_fallback,
     }
+
+
+def _apply_slide5_bullet_rhythm(shape: Any) -> None:
+    _apply_bullet_spacing_and_font(
+        shape,
+        10,
+        line_spacing=0.9,
+        space_after=1,
+    )
 
 
 def _slide3_side_shapes(prs: Any, slide: Any) -> dict[str, dict[str, Any]]:
@@ -2271,6 +2343,7 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
         }
         render_pairs = [(index, column) for index, column in enumerate(columns)]
 
+    slide4_bullet_render_items: list[tuple[str, Any, list[str]]] = []
     for target_index, column in render_pairs:
         if not column.get("active", True):
             _replace_shape_text_preserve_style(labels[target_index], "")
@@ -2285,7 +2358,13 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
         )
         _replace_shape_text_preserve_style(labels[target_index], column.get("label", ""))
         _fit_slide4_label(labels[target_index])
-        _fit_bullet_shape_text(bullets[target_index], list(column.get("bullets", []) or []), max_lines=4)
+        slide4_bullet_render_items.append(
+            (
+                str(target_index),
+                bullets[target_index],
+                list(column.get("bullets", []) or []),
+            )
+        )
         left, top, width, height = bounds["container"] if bounds else container_bounds[target_index]
         bullet_top = int(bullets[target_index].top)
         height = max(1, min(height, bullet_top - Inches(0.05) - top))
@@ -2293,6 +2372,18 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
             slide,
             container=(left, top, width, height),
             images=list(column.get("ordered_images", []) or []),
+        )
+    if slide4_bullet_render_items:
+        layout_debug["bullet_render_fit"] = _fit_bullet_shape_group(
+            slide4_bullet_render_items,
+            max_lines=4,
+            drop_threshold=300,
+            font_threshold=250,
+            base_font_size=10,
+            fallback_font_size=10,
+            ensure_paragraph_count=True,
+            line_spacing=0.95,
+            space_after=1,
         )
 
 
@@ -2462,6 +2553,7 @@ def _apply_slide5_no_brand_shop(
 
     _remove_shape(competitor_picture)
     _replace_bullet_shape_text(competitor_bullets, bullets)
+    _apply_slide5_bullet_rhythm(competitor_bullets)
 
 
 def _apply_slide5_brand_shop(prs: Any, slide: Any, payload: dict[str, Any]) -> None:
@@ -2522,6 +2614,7 @@ def _apply_slide5_brand_shop(prs: Any, slide: Any, payload: dict[str, Any]) -> N
                 _remove_shape(picture)
         if len(bullets) == 5:
             _replace_bullet_shape_text(bullet_shape, bullets)
+            _apply_slide5_bullet_rhythm(bullet_shape)
         else:
             print(
                 f"[audit_powerpoint_new] Slide 5 {side} did not contain exactly five bullets; "
@@ -2635,6 +2728,7 @@ def _apply_slide2_summary(slide: Any, payload: dict[str, Any]) -> None:
             font_threshold=220,
             base_font_size=12,
             fallback_font_size=11,
+            ensure_paragraph_count=True,
         )
 
 

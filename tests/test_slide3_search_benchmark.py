@@ -258,11 +258,14 @@ class Slide3SearchBenchmarkTests(unittest.TestCase):
             "enhanced active",
             "generic discovery",
             "benchmark cue",
+            "benchmark shelf breadth is still concentrated",
+            "higher review threshold reaches",
+            "visible review threshold",
         ):
             self.assertNotIn(phrase, forbidden)
         self.assertTrue(
             all(
-                any(term in bullet.lower() for term in ("query", "queries", "shelf", "review", "brand", "position", "badge", "coverage", "sponsored", "threshold"))
+                any(term in bullet.lower() for term in ("query", "queries", "shelf", "review", "brand", "position", "badge", "coverage", "sponsored", "trust"))
                 for bullet in all_bullets
             )
         )
@@ -271,6 +274,44 @@ class Slide3SearchBenchmarkTests(unittest.TestCase):
             self.assertIn("bullet_family", row)
             self.assertIn("evidence_summary", row)
             self.assertTrue(row["reason"])
+
+    def test_slide3_suppresses_deck_name_leakage_and_awkward_benchmark_phrasing(self) -> None:
+        payload = build_slide3_search_benchmark(
+            {
+                "current": [
+                    {
+                        "role": "Current",
+                        "sourceRow": 1,
+                        "searchTerm": "facial cleanser",
+                        "screenshotDataUrl": _image_data_url((12, 34, 56)),
+                        "orderedMainResultProducts": [
+                            {"position": 3, "title": "Hydrating Face Cleanser", "brand": "Glow", "reviewCount": 42},
+                        ],
+                    }
+                ],
+                "benchmark": [
+                    {
+                        "role": "Benchmark",
+                        "sourceRow": 2,
+                        "searchTerm": "facial cleanser",
+                        "screenshotDataUrl": _image_data_url((56, 34, 12)),
+                        "orderedMainResultProducts": [
+                            {"position": 1, "title": "Hydrating Facial Cleanser", "brand": "CeraVe", "reviewCount": 15055},
+                        ],
+                    }
+                ],
+            },
+            client_name="test_deck.pptx",
+        )
+        all_text = " ".join(payload["current"]["bullets"] + payload["benchmark"]["bullets"]).lower()
+        self.assertNotIn("test_deck", all_text)
+        self.assertNotIn(".pptx", all_text)
+        self.assertNotIn("presence is narrow", all_text)
+        self.assertNotIn("benchmark shelf breadth is still concentrated", all_text)
+        self.assertNotIn("higher review threshold reaches", all_text)
+        self.assertNotIn("15055", all_text)
+        self.assertTrue(any("client brand" in bullet.lower() for bullet in payload["current"]["bullets"]))
+        self.assertTrue(any("trust signals" in bullet.lower() for bullet in payload["benchmark"]["bullets"]))
 
     @unittest.skipUnless(TEMPLATE.exists(), "New strategic template is unavailable")
     def test_slide3_generation_populates_screenshots_and_text_without_changing_constants(self) -> None:

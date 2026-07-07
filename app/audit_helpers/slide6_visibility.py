@@ -453,6 +453,21 @@ def _query_cluster_key(query: str) -> str:
     return " ".join(words)
 
 
+def _row_similarity_reason(candidate_key: str, selected_keys: set[str]) -> str:
+    key_words = set(candidate_key.split())
+    for existing in selected_keys:
+        existing_words = set(existing.split())
+        if not key_words or not existing_words:
+            continue
+        shared = key_words & existing_words
+        if len(shared) >= min(len(key_words), len(existing_words)):
+            if abs(len(key_words) - len(existing_words)) <= 1:
+                return "near_duplicate"
+        if len(shared) >= 2 and len(shared) >= min(len(key_words), len(existing_words)) * 0.75:
+            return "redundant_query_theme"
+    return ""
+
+
 def _candidate_evidence_summary(records: list[dict[str, Any]], definition: dict[str, Any]) -> dict[str, Any]:
     matches = [_score_record(record, definition) for record in records if isinstance(record, dict)]
     return {
@@ -516,6 +531,9 @@ def _query_quality_penalty(definition: dict[str, Any], evidence_support: int) ->
     penalty = 0.0
     weak_pairs = {
         "cleansing cleanser",
+        "cleanser face",
+        "facial cleanser face",
+        "gentle facial",
         "wash cleanser",
         "wash sensitive",
         "hydrating face",
@@ -533,6 +551,9 @@ def _query_quality_penalty(definition: dict[str, Any], evidence_support: int) ->
     if row_type == "adjacent" and evidence_support <= 0:
         penalty += 5.0
         reasons.append("unsupported_adjacent_row")
+    if source == "segment_pack_fallback_seed" and evidence_support <= 0:
+        penalty += 2.0
+        reasons.append("fallback_without_visible_evidence")
     if source == "actual_pdp_title_language" and evidence_support <= 0:
         benefit_or_concern_terms = {
             "hydrating",
@@ -610,12 +631,9 @@ def _select_final_query_rows(
         key = _query_cluster_key(candidate["display_name"])
         if key in selected_keys:
             return False, "near_duplicate"
-        for existing in selected_keys:
-            key_words = set(key.split())
-            existing_words = set(existing.split())
-            if key_words and existing_words and len(key_words & existing_words) >= min(len(key_words), len(existing_words)):
-                if abs(len(key_words) - len(existing_words)) <= 1:
-                    return False, "near_duplicate"
+        similarity_reason = _row_similarity_reason(key, selected_keys)
+        if similarity_reason:
+            return False, similarity_reason
         row_type = str(candidate.get("row_type"))
         if row_type == "core" and type_counts[row_type] >= 2:
             return False, "core_row_quota_met"
@@ -626,6 +644,12 @@ def _select_final_query_rows(
         penalty = float(((candidate.get("ranking_factors") or {}).get("quality_penalty", 0)) or 0)
         if penalty >= 8:
             return False, "weak_query_quality"
+        if len(selected) >= 4:
+            factors = candidate.get("ranking_factors") or {}
+            evidence_support = int(factors.get("evidence_support", 0) or 0)
+            source = str(candidate.get("candidate_source") or "")
+            if source == "segment_pack_fallback_seed" and evidence_support <= 0 and penalty >= 5:
+                return False, "weak_trailing_fallback_row"
         return True, "selected"
 
     for score, candidate, factors in ranked:
@@ -649,12 +673,19 @@ def _select_final_query_rows(
             key = _query_cluster_key(candidate["display_name"])
             if key in selected_keys:
                 continue
+            similarity_reason = _row_similarity_reason(key, selected_keys)
+            if similarity_reason:
+                rejected_similar.append({"query": candidate["display_name"], "reason": similarity_reason})
+                continue
             candidate = dict(candidate)
             candidate["ranking_factors"] = factors
             candidate["selection_score"] = round(score, 2)
             penalty = float(factors.get("quality_penalty", 0) or 0)
             if penalty >= 8:
                 rejected_similar.append({"query": candidate["display_name"], "reason": "weak_query_quality"})
+                continue
+            if len(selected) >= 4 and penalty >= 5 and int(factors.get("evidence_support", 0) or 0) <= 0:
+                rejected_similar.append({"query": candidate["display_name"], "reason": "weak_trailing_fallback_row"})
                 continue
             selected.append(candidate)
             selected_keys.add(key)
@@ -671,6 +702,11 @@ def _select_final_query_rows(
         ],
         "rejected_similar_rows": rejected_similar[:20],
         "row_type_counts": dict(type_counts),
+        "selected_row_scores": [item.get("selection_score") for item in selected[:6]],
+        "lowest_selected_row_score": min(
+            (float(item.get("selection_score", 0) or 0) for item in selected[:6]),
+            default=0,
+        ),
     }
 
 
