@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import io
+import re
 import unittest
 from pathlib import Path
 
@@ -95,7 +96,7 @@ class Slide3SearchBenchmarkTests(unittest.TestCase):
         self.assertEqual(len(payload["benchmark"]["bullets"]), 4)
         self.assertTrue(all(len(bullet.split()) <= 9 for bullet in payload["current"]["bullets"]))
         self.assertTrue(all(len(bullet.split()) <= 9 for bullet in payload["benchmark"]["bullets"]))
-        self.assertTrue(any("selected source row" in warning.lower() for warning in payload["warnings"]))
+        self.assertTrue(any("bullets summarize the broader valid evidence set" in warning.lower() for warning in payload["warnings"]))
 
     def test_search_term_fallbacks_to_url_query_and_label(self) -> None:
         payload = build_slide3_search_benchmark(
@@ -218,7 +219,7 @@ class Slide3SearchBenchmarkTests(unittest.TestCase):
         overlap = payload["debug"]["overlap_suppression"]["rejected_overlapping_bullets"]
         self.assertTrue(any(item.get("side") == "current" and item.get("replacement") for item in overlap))
         self.assertTrue(any("benefit-led coverage" in bullet.lower() for bullet in payload["current"]["bullets"]))
-        self.assertTrue(any("sponsored pressure" in bullet.lower() for bullet in payload["benchmark"]["bullets"]))
+        self.assertTrue(any("sponsored" in bullet.lower() and "pressure" in bullet.lower() for bullet in payload["benchmark"]["bullets"]))
 
     def test_slide3_outputs_search_native_phrasing_without_malformed_templates(self) -> None:
         payload = build_slide3_search_benchmark(
@@ -261,8 +262,12 @@ class Slide3SearchBenchmarkTests(unittest.TestCase):
             "benchmark shelf breadth is still concentrated",
             "higher review threshold reaches",
             "visible review threshold",
+            "visible reviews average near",
+            "median review count near",
+            "review counts near",
         ):
             self.assertNotIn(phrase, forbidden)
+        self.assertFalse(any(re.search(r"\d{3,}", bullet) for bullet in all_bullets))
         self.assertTrue(
             all(
                 any(term in bullet.lower() for term in ("query", "queries", "shelf", "review", "brand", "position", "badge", "coverage", "sponsored", "trust"))
@@ -311,7 +316,74 @@ class Slide3SearchBenchmarkTests(unittest.TestCase):
         self.assertNotIn("higher review threshold reaches", all_text)
         self.assertNotIn("15055", all_text)
         self.assertTrue(any("client brand" in bullet.lower() for bullet in payload["current"]["bullets"]))
-        self.assertTrue(any("trust signals" in bullet.lower() for bullet in payload["benchmark"]["bullets"]))
+        self.assertTrue(any("shelf trust" in bullet.lower() for bullet in payload["benchmark"]["bullets"]))
+
+    def test_slide3_reduces_side_label_starters_and_uses_representative_evidence(self) -> None:
+        payload = build_slide3_search_benchmark(
+            {
+                "current": [
+                    {
+                        "role": "Current",
+                        "sourceRow": 1,
+                        "searchTerm": "face cleanser",
+                        "screenshotDataUrl": _image_data_url((11, 22, 33)),
+                        "orderedMainResultProducts": [
+                            {"position": 8, "title": "Glow Face Cleanser", "brand": "Glow", "reviewCount": 28},
+                        ],
+                    },
+                    {
+                        "role": "Current",
+                        "sourceRow": 2,
+                        "searchTerm": "sensitive skin cleanser",
+                        "screenshotDataUrl": _image_data_url((33, 22, 11)),
+                        "orderedMainResultProducts": [
+                            {"position": 5, "title": "Gentle Skin Cleanser", "brand": "Brand B", "reviewCount": 34},
+                            {"position": 7, "title": "Hydrating Face Wash", "brand": "Brand C", "reviewCount": 42},
+                        ],
+                    },
+                ],
+                "benchmark": [
+                    {
+                        "role": "Benchmark",
+                        "sourceRow": 3,
+                        "searchTerm": "face cleanser",
+                        "screenshotDataUrl": _image_data_url((44, 55, 66)),
+                        "orderedMainResultProducts": [
+                            {"position": 1, "title": "CeraVe Hydrating Cleanser", "brand": "CeraVe", "reviewCount": 10917, "sponsored": True},
+                        ],
+                    },
+                    {
+                        "role": "Benchmark",
+                        "sourceRow": 4,
+                        "searchTerm": "sensitive skin cleanser",
+                        "screenshotDataUrl": _image_data_url((66, 55, 44)),
+                        "orderedMainResultProducts": [
+                            {"position": 1, "title": "Cetaphil Gentle Cleanser", "brand": "Cetaphil", "reviewCount": 8200, "sponsored": True},
+                            {"position": 2, "title": "Neutrogena Skin Cleanser", "brand": "Neutrogena", "reviewCount": 4100},
+                        ],
+                    },
+                ],
+            },
+            client_name="test7/7.pptx",
+        )
+        all_bullets = payload["current"]["bullets"] + payload["benchmark"]["bullets"]
+        all_text = " ".join(all_bullets).lower()
+        self.assertEqual(len(payload["current"]["bullets"]), 4)
+        self.assertEqual(len(payload["benchmark"]["bullets"]), 4)
+        self.assertNotIn("test7", all_text)
+        self.assertNotIn(".pptx", all_text)
+        self.assertFalse(any(re.search(r"\d{3,}", bullet) for bullet in all_bullets))
+        self.assertLessEqual(
+            sum(1 for bullet in all_bullets if bullet.startswith(("Current", "Benchmark"))),
+            1,
+        )
+        self.assertTrue(any("brand variety" in bullet.lower() or "comparison set" in bullet.lower() for bullet in all_bullets))
+        self.assertTrue(any("shelf trust" in bullet.lower() for bullet in payload["benchmark"]["bullets"]))
+        representative = payload["debug"]["representative_evidence"]
+        self.assertEqual(representative["current"]["valid_capture_count"], 2)
+        self.assertEqual(representative["benchmark"]["valid_capture_count"], 2)
+        self.assertEqual(payload["current"]["product_count"], 3)
+        self.assertEqual(payload["benchmark"]["product_count"], 3)
 
     @unittest.skipUnless(TEMPLATE.exists(), "New strategic template is unavailable")
     def test_slide3_generation_populates_screenshots_and_text_without_changing_constants(self) -> None:

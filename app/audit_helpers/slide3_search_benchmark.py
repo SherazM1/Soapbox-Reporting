@@ -35,7 +35,7 @@ CURRENT_BULLET_BANK = {
         "Missing": "Query-relevant title language can work harder",
     },
     "assortment_breadth": {
-        "Strong": "Client assortment supports broader comparison",
+        "Strong": "Assortment supports broader shopper comparison",
         "Moderate": "Focused assortment supports core discovery",
         "Limited": "Assortment representation is narrow",
         "Missing": "Competitors show broader product-type coverage",
@@ -50,7 +50,7 @@ CURRENT_BULLET_BANK = {
         "Strong": "Strong review authority supports visibility",
         "Moderate": "Review strength aligns with leading competitors",
         "Limited": "Competitors demonstrate stronger review authority",
-        "Missing": "Limited review evidence across visible Client products",
+        "Missing": "Limited reviews make shelf trust harder to build",
     },
     "badge_promotional_visibility": {
         "Strong": "Strong promotional shelf visibility",
@@ -62,7 +62,7 @@ CURRENT_BULLET_BANK = {
 
 BENCHMARK_BULLET_BANK = {
     "keyword_alignment": {
-        "Strong": "Benchmark titles mirror {product_type} intent",
+        "Strong": "Titles match core {product_type} query intent",
         "Moderate": "Mixed alignment with shopper search language",
         "Limited": "Limited benefit-led keyword differentiation",
     },
@@ -89,7 +89,7 @@ BENCHMARK_BULLET_BANK = {
     "sponsored_competition": {
         "Strong": "Heavy sponsored competition shapes the search shelf",
         "Moderate": "Sponsored placements influence the search shelf",
-        "Unknown": "Sponsored competition shapes the search shelf",
+        "Unknown": "Sponsored visibility may be shaping the search shelf",
     },
 }
 
@@ -168,12 +168,42 @@ def _client_display_name(value: Any) -> str:
     if (
         not name
         or normalized in {"test", "deck", "sample", "untitled"}
+        or normalized.startswith("test")
+        or " deck" in f" {normalized} "
+        or " file" in f" {normalized} "
         or name.lower().endswith((".ppt", ".pptx", ".html", ".csv", ".xlsx"))
         or "\\" in name
         or "/" in name
     ):
         return "Client brand"
     return name
+
+
+def _representative_valid_record(selected: dict[str, Any], valid_records: list[dict[str, Any]]) -> dict[str, Any]:
+    records = [record for record in valid_records if isinstance(record, dict)] or [selected]
+    merged = dict(selected)
+    merged_products: list[dict[str, Any]] = []
+    search_terms: list[str] = []
+    for record in records:
+        search_terms.append(_resolve_search_term(record))
+        merged_products.extend(_main_products(record))
+    if merged_products:
+        merged["orderedMainResultProducts"] = merged_products
+    term_counts: dict[str, int] = {}
+    for term in search_terms:
+        if term:
+            term_counts[term] = term_counts.get(term, 0) + 1
+    if term_counts:
+        representative_term = sorted(term_counts.items(), key=lambda item: (-item[1], search_terms.index(item[0])))[0][0]
+        merged["searchTerm"] = representative_term
+    merged["_slide3_representative_debug"] = {
+        "valid_capture_count": len(records),
+        "source_rows": [_source_row(record) for record in records],
+        "search_terms": search_terms,
+        "product_count": len(merged_products),
+        "selected_source_row_for_screenshot": _source_row(selected),
+    }
+    return merged
 
 
 def _normalize_term(value: Any) -> str:
@@ -267,7 +297,7 @@ def _select_earliest_valid(records: list[dict[str, Any]], role: str) -> tuple[di
     warnings: list[str] = []
     if len(valid) > 1:
         warnings.append(
-        f"{role} evidence included multiple valid captures; selected source row {_source_row(selected)} as the earliest valid source row."
+        f"{role} evidence included multiple valid captures; source row {_source_row(selected)} was used for the screenshot while bullets summarize the broader valid evidence set."
         )
     return selected, valid, warnings
 
@@ -521,13 +551,64 @@ def _search_language_allowed(text: str) -> tuple[bool, str]:
     titleish_tokens = [token for token in normalized.split() if token[:1].isupper()]
     if len(titleish_tokens) >= 6:
         return False, "raw_product_title_like"
-    if not any(term in normalized for term in ("query", "queries", "shelf", "review", "brand", "position", "coverage", "presence", "badge", "sponsored", "authority", "alignment", "breadth", "adjacent")):
+    if not any(term in normalized for term in ("query", "queries", "shelf", "review", "brand", "coverage", "presence", "badge", "sponsored", "authority", "alignment", "breadth", "adjacent", "trust", "discovery", "visibility", "results")):
         return False, "not_search_native"
     return True, "allowed"
 
 
 def _score_rank(score: str) -> int:
     return {"Strong": 4, "Moderate": 3, "Limited": 2, "Unknown": 1, "Missing": 0}.get(score, 1)
+
+
+def _client_presence_insight(client_display: str, client_positions: list[int], product_type: str) -> str:
+    if not client_positions:
+        return f"{client_display} is missing from leading {product_type} results"
+    first_position = min(client_positions)
+    if first_position <= 4:
+        return f"{client_display} has strong top-shelf presence"
+    if first_position <= 12:
+        return f"{client_display} has visible mid-shelf presence"
+    return f"{client_display} sits deeper in the search shelf"
+
+
+def _shelf_breadth_insight(side: str, brand_count: int, product_type: str) -> str:
+    if side == "current":
+        if brand_count >= 3:
+            return "Brand variety gives shoppers a broader comparison set"
+        if brand_count >= 2:
+            return "Shelf variety supports basic shopper comparison"
+        return f"Shelf breadth is still narrow for {product_type}"
+    if brand_count >= 3:
+        return "Competing brands create a broader comparison set"
+    if brand_count >= 2:
+        return "Benchmark results show moderate brand variety"
+    return "Benchmark shelf breadth is limited"
+
+
+def _review_depth_insight(side: str, review_counts: list[int]) -> str:
+    if not review_counts:
+        return "Review depth is limited on this shelf"
+    review_peak = max(review_counts)
+    review_midpoint = median(review_counts)
+    if side == "benchmark":
+        if review_peak >= 500 or review_midpoint >= 100:
+            return "Review depth creates stronger shelf trust"
+        return "Review strength is uneven across benchmark results"
+    if review_midpoint >= 100:
+        return "Review strength helps support shelf credibility"
+    if review_midpoint >= 25:
+        return "Review depth gives shoppers some trust context"
+    return "Limited reviews make shelf trust harder to build"
+
+
+def _query_alignment_insight(side: str, keyword_score: str, product_type: str) -> str:
+    if side == "benchmark":
+        if keyword_score in {"Strong", "Moderate"}:
+            return f"Titles match core {product_type} query intent"
+        return f"Query fit varies across {product_type} results"
+    if keyword_score in {"Strong", "Moderate"}:
+        return f"Titles connect clearly to {product_type} queries"
+    return f"Query alignment is thin for {product_type}"
 
 
 def _candidate_overlap_key(text: str) -> set[str]:
@@ -635,32 +716,22 @@ def _build_side_candidates(
     sponsored_score = scores.get("sponsored_competition", "Unknown")
 
     if side == "current":
-        if client_positions and client_brand:
+        if client_brand:
             add(
-                text=f"{client_display} appears near position {min(client_positions)} for {product_type}",
+                text=_client_presence_insight(client_display, client_positions, product_type),
                 family="side_specific",
                 dimension="client_brand_presence",
                 score=scores.get("client_brand_presence", "Unknown"),
                 rank=96,
-                evidence=[f"client_position={min(client_positions)}", f"query={search_term}"],
-                reason="Current side prioritized actual client placement in captured results.",
-            )
-        elif client_brand:
-            add(
-                text=f"{client_display} is missing from top {product_type} results",
-                family="side_specific",
-                dimension="client_brand_presence",
-                score="Missing",
-                rank=92,
-                evidence=["client_not_found", f"query={search_term}"],
-                reason="Current side prioritized missing client presence in leading results.",
+                evidence=(
+                    [f"client_position={min(client_positions)}", f"query={search_term}"]
+                    if client_positions
+                    else ["client_not_found", f"query={search_term}"]
+                ),
+                reason="Current side translated client placement into a shelf-presence takeaway.",
             )
         add(
-            text=(
-                f"Current titles align with {product_type} queries"
-                if keyword_score in {"Strong", "Moderate"}
-                else f"Current query alignment is thin for {product_type}"
-            ),
+            text=_query_alignment_insight(side, keyword_score, product_type),
             family="query_alignment",
             dimension="keyword_alignment",
             score=keyword_score,
@@ -669,11 +740,7 @@ def _build_side_candidates(
             reason="Current side evaluated title/query fit against captured products.",
         )
         add(
-            text=(
-                f"Current shelf breadth spans {len(brands)} visible brands"
-                if len(brands) >= 2
-                else f"Current shelf breadth is narrow for {product_type}"
-            ),
+            text=_shelf_breadth_insight(side, len(brands), product_type),
             family="shelf_breadth",
             dimension="assortment_breadth",
             score=assortment_score,
@@ -682,11 +749,7 @@ def _build_side_candidates(
             reason="Current side used captured brand count as shelf-breadth evidence.",
         )
         add(
-            text=(
-                f"Visible reviews average near {median_reviews}"
-                if median_reviews
-                else f"Review authority is limited on current shelf"
-            ),
+            text=_review_depth_insight(side, review_counts),
             family="trust_authority",
             dimension="review_authority",
             score=review_score,
@@ -696,7 +759,7 @@ def _build_side_candidates(
         )
         if badges:
             add(
-                text=f"{badges[0]} badge shapes current shelf attention",
+                text=f"{badges[0]} badge helps draw shelf attention",
                 family="side_specific",
                 dimension="badge_promotional_visibility",
                 score=scores.get("badge_promotional_visibility", "Limited"),
@@ -706,7 +769,7 @@ def _build_side_candidates(
             )
         if sponsored_score in {"Strong", "Moderate"}:
             add(
-                text=f"Sponsored pressure competes with current shelf presence",
+                text="Sponsored placements add pressure on the shelf",
                 family="side_specific",
                 dimension="sponsored_competition",
                 score=sponsored_score,
@@ -715,7 +778,7 @@ def _build_side_candidates(
                 reason="Current side identified paid placement pressure in captured results.",
             )
         add(
-            text="Benefit-led coverage remains limited on current shelf",
+            text="Benefit-led coverage is still limited on the shelf",
             family="side_specific",
             dimension="benefit_intent_alignment",
             score=scores.get("benefit_intent_alignment", "Limited"),
@@ -725,11 +788,7 @@ def _build_side_candidates(
         )
     else:
         add(
-            text=(
-                f"Benchmark titles match {product_type} query intent"
-                if keyword_score in {"Strong", "Moderate"}
-                else f"Benchmark query fit varies for {product_type}"
-            ),
+            text=_query_alignment_insight(side, keyword_score, product_type),
             family="query_alignment",
             dimension="keyword_alignment",
             score=keyword_score,
@@ -738,11 +797,7 @@ def _build_side_candidates(
             reason="Benchmark side evaluated competitor title/query fit separately.",
         )
         add(
-            text=(
-                f"Benchmark shelf spans {len(brands)} competing brands"
-                if len(brands) >= 2
-                else f"Benchmark shelf shows fewer competing brands"
-            ),
+            text=_shelf_breadth_insight(side, len(brands), product_type),
             family="shelf_breadth",
             dimension="assortment_breadth",
             score=assortment_score,
@@ -751,11 +806,7 @@ def _build_side_candidates(
             reason="Benchmark side prioritized competing brand breadth.",
         )
         add(
-            text=(
-                "Benchmark reviews create stronger trust signals"
-                if max_reviews >= 100
-                else f"Benchmark review authority remains uneven"
-            ),
+            text=_review_depth_insight(side, review_counts),
             family="trust_authority",
             dimension="review_authority",
             score=review_score,
@@ -765,7 +816,7 @@ def _build_side_candidates(
         )
         if sponsored_score in {"Strong", "Moderate", "Unknown"}:
             add(
-                text=f"Sponsored pressure is visible on benchmark shelf",
+                text="Sponsored visibility adds competitive pressure",
                 family="side_specific",
                 dimension="sponsored_competition",
                 score=sponsored_score,
@@ -775,7 +826,7 @@ def _build_side_candidates(
             )
         if badges:
             add(
-                text=f"Retail badges sharpen benchmark shelf choice",
+                text="Retail badges help sharpen shelf choice",
                 family="side_specific",
                 dimension="badge_promotional_visibility",
                 score=scores.get("badge_promotional_visibility", "Limited"),
@@ -784,7 +835,7 @@ def _build_side_candidates(
                 reason="Benchmark side used retail badge evidence for shelf differentiation.",
             )
         add(
-            text="Benefit-led coverage broadens benchmark results",
+            text="Benefit-led coverage broadens search relevance",
             family="side_specific",
             dimension="benefit_intent_alignment",
             score=scores.get("benefit_intent_alignment", "Limited"),
@@ -1026,7 +1077,7 @@ def _select_bullets(
     if side == "current":
         if client_positions:
             add(
-                f"{client_display} appears near position {min(client_positions)} in {phrase_context['shopping_context']}",
+                _client_presence_insight(client_display, client_positions, phrase_context["product_type"]),
                 "client_brand_presence",
                 scores.get("client_brand_presence", "Unknown"),
                 [f"client_position={min(client_positions)}"],
@@ -1053,7 +1104,7 @@ def _select_bullets(
             )
         if median_reviews:
             add(
-                f"Median review count near {median_reviews} sets trust context",
+                _review_depth_insight(side, review_counts),
                 "review_authority",
                 scores.get("review_authority", "Limited"),
                 [f"median_reviews={median_reviews}"],
@@ -1063,7 +1114,7 @@ def _select_bullets(
     else:
         if search_brand_phrase:
             add(
-                f"{search_brand_phrase} broaden {phrase_context['discovery_context']}",
+                f"Competing brands broaden {phrase_context['discovery_context']}",
                 "assortment_breadth",
                 scores.get("assortment_breadth", "Limited"),
                 brands[:3],
@@ -1072,7 +1123,7 @@ def _select_bullets(
             )
         if median_reviews:
             add(
-                f"Review counts near {median_reviews} vary benchmark authority",
+                _review_depth_insight(side, review_counts),
                 "review_authority",
                 scores.get("review_authority", "Limited"),
                 [f"median_reviews={median_reviews}"],
@@ -1109,7 +1160,7 @@ def _select_bullets(
         fallback_text = (
             f"Clarify benefit cues across {phrase_context['shopping_journey']}"
             if side == "current"
-            else f"Benchmark results broaden {phrase_context['product_type']} cues"
+            else f"Broader {phrase_context['product_type']} cues support discovery"
         )
         add(
             fallback_text,
@@ -1245,12 +1296,22 @@ def build_slide3_search_benchmark(search_evidence: Any, client_name: str = "") -
         current_records = []
         benchmark_records = []
 
-    current_record, _, current_warnings = _select_earliest_valid(current_records, "Current")
-    benchmark_record, _, benchmark_warnings = _select_earliest_valid(benchmark_records, "Benchmark")
+    current_record, current_valid_records, current_warnings = _select_earliest_valid(current_records, "Current")
+    benchmark_record, benchmark_valid_records, benchmark_warnings = _select_earliest_valid(benchmark_records, "Benchmark")
 
     client_label = _safe_text(client_name or "")
-    current_payload = _build_side_payload(current_record, "current", client_label)
-    benchmark_payload = _build_side_payload(benchmark_record, "benchmark", client_label)
+    current_representative = (
+        _representative_valid_record(current_record, current_valid_records)
+        if current_record is not None
+        else None
+    )
+    benchmark_representative = (
+        _representative_valid_record(benchmark_record, benchmark_valid_records)
+        if benchmark_record is not None
+        else None
+    )
+    current_payload = _build_side_payload(current_representative, "current", client_label)
+    benchmark_payload = _build_side_payload(benchmark_representative, "benchmark", client_label)
     overlap_debug = _apply_cross_side_overlap_suppression(current_payload, benchmark_payload)
 
     if current_record is None:
@@ -1280,6 +1341,10 @@ def build_slide3_search_benchmark(search_evidence: Any, client_name: str = "") -
             "benchmark_source_row": benchmark_payload.get("source_row"),
             "current_search_term": current_payload.get("search_term"),
             "benchmark_search_term": benchmark_payload.get("search_term"),
+            "representative_evidence": {
+                "current": (current_representative or {}).get("_slide3_representative_debug", {}),
+                "benchmark": (benchmark_representative or {}).get("_slide3_representative_debug", {}),
+            },
             "side_build_order": [
                 "current_candidates_built",
                 "benchmark_candidates_built",
