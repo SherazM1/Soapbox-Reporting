@@ -1033,7 +1033,11 @@ def _slide4_build_candidate_pool(
         )
     if facts["image_count"] >= 6 or image_facts["analyzed_image_count"] >= 3:
         add(
-            text=f"{facts['image_count']}-image carousel supports visual education",
+            text=(
+                f"{facts['image_count']}-image carousel supports visual education"
+                if is_client
+                else f"{brand} carousel supports visual education"
+            ),
             family="trust_visual",
             evidence_source="image_guide_support",
             score=84,
@@ -1133,18 +1137,18 @@ def _select_slide4_balanced_candidates(
         for candidate in family_candidates:
             if try_add(candidate, allow_second_family=False):
                 break
-        if len(selected) == 4:
+        if len(selected) == 6:
             break
 
-    if len(selected) < 4:
+    if len(selected) < 6:
         for candidate in ranked:
-            if len(selected) == 4:
+            if len(selected) == 6:
                 break
             if candidate in selected:
                 continue
             try_add(candidate, allow_second_family=True)
 
-    return selected[:4], {
+    return selected[:6], {
         "family_counts": dict(family_counts),
         "ranked_candidates": [
             {
@@ -1223,16 +1227,18 @@ def _translate_slide4_strategic_cues(
                 "strategic_cue_context": context.get("debug", {}),
             }
         )
-        if len(bullets) >= 4:
+        if len(bullets) >= 6:
             break
     fallback_candidates = [
         "Benefit-forward product positioning",
         "Clear pack and nutrition detail",
         "Structured shopper education",
         "Opportunity to deepen serving guidance",
+        "Review and trust cues support conversion confidence",
+        "Visual sequencing can clarify shopper priorities",
     ]
     for text in fallback_candidates:
-        if len(bullets) >= 4:
+        if len(bullets) >= 6:
             break
         key = normalize_bullet_text(text)
         if key in used:
@@ -1249,7 +1255,7 @@ def _translate_slide4_strategic_cues(
                 "strategic_cue_context": context.get("debug", {}),
             }
         )
-    return bullets[:4], debug[:4], context.get("debug", {})
+    return bullets[:6], debug[:6], context.get("debug", {})
 
 
 def _build_slide4_evidence_bullets(
@@ -1268,7 +1274,7 @@ def _build_slide4_evidence_bullets(
         candidates,
         existing_texts=existing_texts,
     )
-    if len(selected_candidates) == 4:
+    if len(selected_candidates) == 6:
         for candidate in selected_candidates:
             existing_texts.add(normalize_bullet_text(candidate["text"]))
         return (
@@ -1313,8 +1319,8 @@ def _build_slide4_evidence_bullets(
         side=side,
         existing_texts=used,
     )
-    if len(cue_bullets) == 4:
-        return cue_bullets, cue_debug[:4], warnings
+    if len(cue_bullets) == 6:
+        return cue_bullets, cue_debug[:6], warnings
 
     if _has_any(blob, "hazelnut", "cocoa", "nutella"):
         _append_unique_bullet(
@@ -1532,8 +1538,8 @@ def _build_slide4_evidence_bullets(
             reason=reason,
             used=used,
         )
-    if len(bullets) < 4:
-        for index in range(len(bullets), 4):
+    if len(bullets) < 6:
+        for index in range(len(bullets), 6):
             _append_unique_bullet(
                 bullets,
                 debug,
@@ -1544,9 +1550,9 @@ def _build_slide4_evidence_bullets(
                 reason="Last-resort side-specific fallback used to fill the existing template bullet structure without duplicates.",
                 used=used,
             )
-    if len(bullets) < 4:
+    if len(bullets) < 6:
         warnings.append("Slide 4 used restrained fallback bullets because PDP evidence was sparse.")
-    return bullets[:4], debug[:4], warnings
+    return bullets[:6], debug[:6], warnings
 
 
 def _build_slide4_bullets(images: list[dict[str, Any]], guide_match: dict[str, Any]) -> list[str]:
@@ -1618,7 +1624,7 @@ def _build_slide4_column(
         ]
         for bullet in finding_bullets:
             existing_bullet_texts.add(bullet.lower())
-        evidence_bullets = finding_bullets[:4] or _build_slide4_bullets(images, guide_match)
+        evidence_bullets = finding_bullets[:6] or _build_slide4_bullets(images, guide_match)
     return {
         "label": _safe_text(_first_value(record, "brand", "Brand", "brandName")) or fallback_label,
         "brand": _safe_text(_first_value(record, "brand", "Brand", "brandName")),
@@ -1634,7 +1640,7 @@ def _build_slide4_column(
         "sold_by_walmart": _truthy_evidence(_first_value(record, "sold_by_walmart", "Sold by Walmart")),
         "shipped_by_walmart": _truthy_evidence(_first_value(record, "shipped_by_walmart", "Shipped by Walmart")),
         "image_guide_match": guide_match,
-        "bullets": evidence_bullets[:4],
+        "bullets": evidence_bullets[:6],
         "bullet_debug": bullet_debug,
         "warnings": warnings,
         "findings": findings,
@@ -1715,7 +1721,7 @@ def build_slide4_pdp_benchmark_payload(
                 continue
             all_bullets.add(normalized)
             final_bullets.append(bullet)
-        column["bullets"] = final_bullets[:4]
+        column["bullets"] = final_bullets[:6]
     return {
         "columns": columns,
         "slide4_findings": slide4_findings,
@@ -1757,6 +1763,14 @@ def build_slide4_pdp_benchmark_payload(
             "final_bullets": {
                 column.get("label", f"column_{index + 1}"): column.get("bullets", [])
                 for index, column in enumerate(columns)
+            },
+            "render_targets": {
+                "target_bullet_count": 6,
+                "final_bullet_counts": {
+                    column.get("label", f"column_{index + 1}"): len(column.get("bullets", []) or [])
+                    for index, column in enumerate(columns)
+                    if column.get("active")
+                },
             },
         },
     }
@@ -1885,6 +1899,13 @@ def _fit_bullet_shape_group(
             "rendered": rendered,
             "dropped": dropped,
             "render_target_count": min(len([bullet for bullet in bullets if _safe_text(bullet)]), max_lines),
+            "target_bullet_count": max_lines,
+            "source_bullet_count": len([bullet for bullet in bullets if _safe_text(bullet)]),
+            "dropped_bullets_reason": (
+                "length_fit_threshold"
+                if dropped
+                else "not_dropped"
+            ),
         }
 
     for key, data in prepared.items():
@@ -1901,6 +1922,11 @@ def _fit_bullet_shape_group(
             space_after=space_after,
         )
         data["font_fallback"] = global_font
+        data["font_size_selected"] = global_font
+        data["shared_fallback_font_size_used"] = (
+            base_font_size is not None
+            and global_font != base_font_size
+        )
         data.update(paragraph_debug)
         data["rendered_bullet_count"] = len(data["rendered"])
         data["visible_count_expectation_met"] = (
@@ -1936,9 +1962,9 @@ def _fit_bullet_shape_text(shape: Any, bullets: list[str], *, max_lines: int = 4
 def _apply_slide5_bullet_rhythm(shape: Any) -> None:
     _apply_bullet_spacing_and_font(
         shape,
-        10,
-        line_spacing=0.9,
-        space_after=1,
+        11,
+        line_spacing=0.86,
+        space_after=0,
     )
 
 
@@ -2376,14 +2402,14 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
     if slide4_bullet_render_items:
         layout_debug["bullet_render_fit"] = _fit_bullet_shape_group(
             slide4_bullet_render_items,
-            max_lines=4,
-            drop_threshold=300,
-            font_threshold=250,
-            base_font_size=10,
+            max_lines=6,
+            drop_threshold=520,
+            font_threshold=470,
+            base_font_size=11,
             fallback_font_size=10,
             ensure_paragraph_count=True,
-            line_spacing=0.95,
-            space_after=1,
+            line_spacing=0.9,
+            space_after=0,
         )
 
 
@@ -2519,7 +2545,7 @@ def _apply_slide5_no_brand_shop(
         for value in (competitor.get("bullets", []) or [])
         if _safe_text(value)
     ]
-    if image_bytes is None or len(bullets) != 5:
+    if image_bytes is None or len(bullets) < 1:
         print(
             "[audit_powerpoint_new] Slide 5 No Brand Shop payload was incomplete; "
             "the slide was left unchanged."
@@ -2552,8 +2578,17 @@ def _apply_slide5_no_brand_shop(
     competitor_divider.width = Inches(11.2)
 
     _remove_shape(competitor_picture)
-    _replace_bullet_shape_text(competitor_bullets, bullets)
-    _apply_slide5_bullet_rhythm(competitor_bullets)
+    payload.setdefault("debug", {})["render_fit"] = _fit_bullet_shape_group(
+        [("competitor", competitor_bullets, bullets)],
+        max_lines=7,
+        drop_threshold=640,
+        font_threshold=590,
+        base_font_size=11,
+        fallback_font_size=10,
+        ensure_paragraph_count=True,
+        line_spacing=0.86,
+        space_after=0,
+    )
 
 
 def _apply_slide5_brand_shop(prs: Any, slide: Any, payload: dict[str, Any]) -> None:
@@ -2563,6 +2598,7 @@ def _apply_slide5_brand_shop(prs: Any, slide: Any, payload: dict[str, Any]) -> N
     if payload.get("mode") == "no_brand_shop":
         _apply_slide5_no_brand_shop(prs, slide, payload, shapes)
         return
+    bullet_render_items: list[tuple[str, Any, list[str]]] = []
     for side in ("client", "competitor"):
         side_payload = payload.get(side)
         if not isinstance(side_payload, dict):
@@ -2612,14 +2648,25 @@ def _apply_slide5_brand_shop(prs: Any, slide: Any, payload: dict[str, Any]) -> N
                 )
             else:
                 _remove_shape(picture)
-        if len(bullets) == 5:
-            _replace_bullet_shape_text(bullet_shape, bullets)
-            _apply_slide5_bullet_rhythm(bullet_shape)
+        if bullets:
+            bullet_render_items.append((side, bullet_shape, bullets))
         else:
             print(
-                f"[audit_powerpoint_new] Slide 5 {side} did not contain exactly five bullets; "
+                f"[audit_powerpoint_new] Slide 5 {side} did not contain bullets; "
                 "the template bullet box was preserved."
             )
+    if bullet_render_items:
+        payload.setdefault("debug", {})["render_fit"] = _fit_bullet_shape_group(
+            bullet_render_items,
+            max_lines=7,
+            drop_threshold=640,
+            font_threshold=590,
+            base_font_size=11,
+            fallback_font_size=10,
+            ensure_paragraph_count=True,
+            line_spacing=0.86,
+            space_after=0,
+        )
 
 
 def _slide2_text_shapes(slide: Any) -> list[Any]:

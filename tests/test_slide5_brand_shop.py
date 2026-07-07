@@ -8,7 +8,7 @@ from pathlib import Path
 
 from PIL import Image
 from pptx import Presentation
-from pptx.util import Inches
+from pptx.util import Inches, Pt
 
 from app.audit_helpers.slide5_brand_shop import (
     DIMENSION_PRIORITY,
@@ -134,7 +134,7 @@ class Slide5BrandShopTests(unittest.TestCase):
         self.assertEqual(payload["mode"], "standard")
         self.assertTrue(payload["client_has_brand_shop"])
         self.assertIsNotNone(payload["client"])
-        self.assertEqual(len(payload["client"]["bullet_debug"]), 5)
+        self.assertEqual(len(payload["client"]["bullet_debug"]), 7)
         self.assertTrue(
             all(item["template_id"].startswith("strategic_cue_") for item in payload["client"]["bullet_debug"])
         )
@@ -150,10 +150,12 @@ class Slide5BrandShopTests(unittest.TestCase):
         self.assertIsNone(payload["client"])
         self.assertTrue(any("user selection was honored" in warning for warning in payload["warnings"]))
         bullets = payload["competitor"]["bullet_debug"]
-        self.assertEqual(len(bullets), 5)
+        self.assertEqual(len(bullets), 7)
         self.assertEqual(
             [item["type"] for item in bullets],
             [
+                "competitor_strength",
+                "competitor_strength",
                 "competitor_strength",
                 "competitor_strength",
                 "competitor_strength",
@@ -165,7 +167,7 @@ class Slide5BrandShopTests(unittest.TestCase):
             item["dimension"] for item in bullets if item["type"] == "competitor_strength"
         ]
         self.assertEqual(len(strength_dimensions), len(set(strength_dimensions)))
-        self.assertEqual(len({item["text"].lower() for item in bullets}), 5)
+        self.assertEqual(len({item["text"].lower() for item in bullets}), 7)
 
     def test_role_mapping_and_earliest_valid_source_row(self) -> None:
         clients = [
@@ -196,8 +198,8 @@ class Slide5BrandShopTests(unittest.TestCase):
         self.assertEqual(payload["competitor"]["brand_name"], "Nested Competitor")
         self.assertTrue(payload["client"]["screenshot"].startswith("data:image/jpeg;base64,"))
         self.assertTrue(payload["competitor"]["screenshot"].startswith("data:image/jpeg;base64,"))
-        self.assertEqual(len(payload["client"]["bullets"]), 5)
-        self.assertEqual(len(payload["competitor"]["bullets"]), 5)
+        self.assertEqual(len(payload["client"]["bullets"]), 7)
+        self.assertEqual(len(payload["competitor"]["bullets"]), 7)
 
     def test_full_page_screenshot_is_preferred_over_viewport_capture(self) -> None:
         viewport = _image_data_url((20, 80, 140), size=(500, 500))
@@ -228,18 +230,18 @@ class Slide5BrandShopTests(unittest.TestCase):
         client = payload["client"]
         competitor = payload["competitor"]
         self.assertEqual(tuple(client["dimension_scores"]), DIMENSION_PRIORITY)
-        self.assertEqual(len(client["bullets"]), 5)
-        self.assertEqual(len(competitor["bullets"]), 5)
+        self.assertEqual(len(client["bullets"]), 7)
+        self.assertEqual(len(competitor["bullets"]), 7)
         client_types = [item["type"] for item in client["bullet_debug"]]
         self.assertGreaterEqual(client_types.count("strength"), 1)
         self.assertIn("strategic_cues", client)
         self.assertEqual(
             len({item["dimension"] for item in client["bullet_debug"]}),
-            5,
+            7,
         )
         self.assertEqual(
             len({item["dimension"] for item in competitor["bullet_debug"]}),
-            5,
+            7,
         )
         self.assertTrue(all(item["type"] for item in competitor["bullet_debug"]))
         self.assertFalse(set(client["bullets"]) & set(competitor["bullets"]))
@@ -285,7 +287,7 @@ class Slide5BrandShopTests(unittest.TestCase):
         )
         self.assertTrue(payload["client"]["warnings"])
         self.assertTrue(payload["competitor"]["warnings"])
-        self.assertEqual(len(payload["client"]["bullets"]), 5)
+        self.assertEqual(len(payload["client"]["bullets"]), 7)
         self.assertFalse(
             any("Strong branded" in bullet for bullet in payload["client"]["bullets"])
         )
@@ -392,8 +394,15 @@ class Slide5BrandShopTests(unittest.TestCase):
             if paragraph.text.strip()
         }
         self.assertEqual(len(rendered_font_sizes), 1)
-        self.assertEqual(rendered_line_spacing, {0.9})
+        self.assertEqual(rendered_font_sizes, {Pt(11)})
+        self.assertEqual(rendered_line_spacing, {0.86})
         self.assertEqual(len(rendered_space_after), 1)
+        render_fit = payload["debug"]["render_fit"]
+        self.assertEqual({item["target_bullet_count"] for item in render_fit.values()}, {7})
+        self.assertEqual({item["rendered_bullet_count"] for item in render_fit.values()}, {7})
+        self.assertEqual({item["font_size_selected"] for item in render_fit.values()}, {11})
+        self.assertEqual({item["shared_fallback_font_size_used"] for item in render_fit.values()}, {False})
+        self.assertTrue(all(item["visible_count_expectation_met"] for item in render_fit.values()))
         for sample in (*CLIENT_SAMPLE_BULLETS, *COMPETITOR_SAMPLE_BULLETS):
             self.assertNotIn(sample, left_text + right_text)
         text_box_count = sum(
@@ -599,7 +608,7 @@ class Slide5BrandShopTests(unittest.TestCase):
         self.assertEqual(bullet_text, payload["competitor"]["bullets"])
         self.assertEqual(
             {paragraph.line_spacing for paragraph in bullet_box.text_frame.paragraphs if paragraph.text.strip()},
-            {0.9},
+            {0.86},
         )
         text_box_count = sum(
             1 for shape in slide.shapes if str(shape.shape_type).endswith("TEXT_BOX (17)")

@@ -14,7 +14,7 @@ from audit_powerpoint_new import (
     build_slide4_pdp_benchmark_payload,
     generate_new_audit_powerpoint_from_template,
 )
-from pptx.util import Inches
+from pptx.util import Inches, Pt
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -405,8 +405,8 @@ class Slide4IntegrationTest(unittest.TestCase):
             self.assertEqual(layout_debug["divider_cleanup"], "suppress_middle_column_label_rule_and_vertical_3_column_dividers")
             client_bullets = payload["columns"][0]["bullets"]
             competitor_bullets = payload["columns"][1]["bullets"]
-            self.assertEqual(len(client_bullets), 4)
-            self.assertEqual(len(competitor_bullets), 4)
+            self.assertEqual(len(client_bullets), 6)
+            self.assertEqual(len(competitor_bullets), 6)
             self.assertFalse(set(client_bullets) & set(competitor_bullets))
             self.assertEqual(len(client_bullets + competitor_bullets), len(set(client_bullets + competitor_bullets)))
             self.assertTrue(any("hazelnut" in bullet.lower() or "cocoa" in bullet.lower() for bullet in client_bullets))
@@ -480,8 +480,14 @@ class Slide4IntegrationTest(unittest.TestCase):
                 if paragraph.text.strip()
             }
             self.assertEqual(len(rendered_font_sizes), 1)
-            self.assertEqual(rendered_line_spacing, {0.95})
+            self.assertEqual(rendered_font_sizes, {Pt(11)})
+            self.assertEqual(rendered_line_spacing, {0.9})
             self.assertEqual(len(rendered_space_after), 1)
+            self.assertEqual(payload["debug"]["render_targets"]["target_bullet_count"], 6)
+            self.assertEqual(
+                set(payload["debug"]["render_targets"]["final_bullet_counts"].values()),
+                {6},
+            )
             centers = [shape.left + shape.width / 2 for shape in bullet_shapes]
             self.assertAlmostEqual(
                 sum(centers) / 2,
@@ -510,7 +516,7 @@ class Slide4IntegrationTest(unittest.TestCase):
             payload = build_slide4_pdp_benchmark_payload(plan, competitor_records=[competitor_1])
 
             for column in payload["columns"][:2]:
-                self.assertEqual(len(column["bullets"]), 4)
+                self.assertEqual(len(column["bullets"]), 6)
                 families = [debug.get("bullet_family") for debug in column["bullet_debug"]]
                 self.assertGreaterEqual(len(set(families)), 3)
                 self.assertLessEqual(max(families.count(family) for family in set(families)), 2)

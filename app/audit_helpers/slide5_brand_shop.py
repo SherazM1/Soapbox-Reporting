@@ -17,6 +17,7 @@ DIMENSION_PRIORITY = (
     "video_rich_media",
     "cross_category_navigation",
 )
+SLIDE5_TARGET_BULLET_COUNT = 7
 SCORE_ORDER = {"Missing": 0, "Limited": 1, "Present": 2, "Strong": 3}
 VALID_STATUSES = {"success", "successful", "partial", "partially successful", "partially_successful"}
 IMPORTANCE_BULLETS = {
@@ -675,8 +676,8 @@ def _reduce_cross_side_mirroring(
             used.add(candidate_key)
         rewritten.append(text)
         competitor_debug[index] = item
-    competitor_side["bullet_debug"] = competitor_debug[:5]
-    competitor_side["bullets"] = rewritten[:5]
+    competitor_side["bullet_debug"] = competitor_debug[:SLIDE5_TARGET_BULLET_COUNT]
+    competitor_side["bullets"] = rewritten[:SLIDE5_TARGET_BULLET_COUNT]
 
 
 def _bullet_for_dimension(
@@ -777,7 +778,7 @@ def _client_bullets(
             -int(dimensions[dimension]["supporting_count"]),
             priority_index[dimension],
         ),
-    )[:3]
+    )[:4]
     remaining = [dimension for dimension in DIMENSION_PRIORITY if dimension not in strengths]
     opportunities = sorted(
         remaining,
@@ -786,7 +787,7 @@ def _client_bullets(
             int(dimensions[dimension]["supporting_count"]),
             priority_index[dimension],
         ),
-    )[:2]
+    )[:3]
     bullets = [
         *(
             _bullet_for_dimension(
@@ -811,7 +812,7 @@ def _client_bullets(
             for dimension in opportunities
         ),
     ]
-    return dedupe_bullet_debug(bullets, fallback_subject="client brand shop")[0][:5]
+    return dedupe_bullet_debug(bullets, fallback_subject="client brand shop")[0][:SLIDE5_TARGET_BULLET_COUNT]
 
 
 def _competitor_bullets(
@@ -827,7 +828,7 @@ def _competitor_bullets(
             -int(dimensions[dimension]["supporting_count"]),
             priority_index[dimension],
         ),
-    )[:5]
+    )[:SLIDE5_TARGET_BULLET_COUNT]
     bullets = [
         _bullet_for_dimension(
             side="competitor",
@@ -839,7 +840,7 @@ def _competitor_bullets(
         )
         for dimension in selected
     ]
-    return dedupe_bullet_debug(bullets, fallback_subject="competitor brand shop")[0][:5]
+    return dedupe_bullet_debug(bullets, fallback_subject="competitor brand shop")[0][:SLIDE5_TARGET_BULLET_COUNT]
 
 
 def _no_brand_shop_bullets(
@@ -862,7 +863,7 @@ def _no_brand_shop_bullets(
             priority_index[dimension],
         ),
     )
-    if len(ranked) < 4:
+    if len(ranked) < 5:
         ranked.extend(
             sorted(
                 unsupported,
@@ -872,7 +873,7 @@ def _no_brand_shop_bullets(
                 ),
             )
         )
-    strength_dimensions = ranked[:3]
+    strength_dimensions = ranked[:5]
     strength_bullets = [
         _bullet_for_dimension(
             side="competitor",
@@ -926,7 +927,7 @@ def _no_brand_shop_bullets(
     return dedupe_bullet_debug(
         [*strength_bullets, importance, client_opportunity],
         fallback_subject="no brand shop",
-    )[0][:5]
+    )[0][:SLIDE5_TARGET_BULLET_COUNT]
 
 
 def _slide5_context_from_record(record: dict[str, Any], side: str) -> dict[str, Any]:
@@ -1073,7 +1074,7 @@ def _brand_shop_cue_bullets(
                 "cue_debug": candidate,
             }
         )
-        if len(debug_items) >= 5:
+        if len(debug_items) >= SLIDE5_TARGET_BULLET_COUNT:
             break
     fallback_texts = [
         "Cohesive visual identity anchors the Brand Shop",
@@ -1081,9 +1082,11 @@ def _brand_shop_cue_bullets(
         "Broad assortment depth supports product discovery",
         "Educational storytelling builds shopper confidence",
         "Cross-category pathways support broader exploration",
+        "Rich-media cues make the shop feel more immersive",
+        "Conversion guidance helps shoppers compare products",
     ]
     for text in fallback_texts:
-        if len(debug_items) >= 5:
+        if len(debug_items) >= SLIDE5_TARGET_BULLET_COUNT:
             break
         key = normalize_bullet_text(text)
         if key in used:
@@ -1103,7 +1106,7 @@ def _brand_shop_cue_bullets(
                 "cue_debug": {},
             }
         )
-    return debug_items[:5], context.get("debug", {})
+    return debug_items[:SLIDE5_TARGET_BULLET_COUNT], context.get("debug", {})
 
 
 def _build_side(record: dict[str, Any], side: str, role_path: str) -> dict[str, Any]:
@@ -1116,7 +1119,7 @@ def _build_side(record: dict[str, Any], side: str, role_path: str) -> dict[str, 
         if side == "client"
         else _competitor_bullets(dimensions, brand_name, evidence)
     )
-    bullet_debug = cue_bullets if len(cue_bullets) == 5 else fallback_bullets
+    bullet_debug = cue_bullets if len(cue_bullets) == SLIDE5_TARGET_BULLET_COUNT else fallback_bullets
     warnings: list[str] = []
     if sum(SCORE_ORDER[data["score"]] >= 2 for data in dimensions.values()) < 2:
         warnings.append(
@@ -1265,6 +1268,13 @@ def build_slide5_brand_shop(
             "final_bullets_by_side": {
                 "client": (client_side or {}).get("bullets"),
                 "competitor": (competitor_side or {}).get("bullets"),
+            },
+            "render_targets": {
+                "target_bullet_count": SLIDE5_TARGET_BULLET_COUNT,
+                "final_bullet_counts": {
+                    "client": len((client_side or {}).get("bullets") or []),
+                    "competitor": len((competitor_side or {}).get("bullets") or []),
+                },
             },
             "warnings": warnings,
         },
