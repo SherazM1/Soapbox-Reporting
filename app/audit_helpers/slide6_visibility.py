@@ -26,7 +26,7 @@ _TEXT_FIELDS = (
     "features",
     "content_signals",
 )
-QUERY_ROW_TYPES = ("core", "attribute", "adjacent")
+QUERY_ROW_TYPES = ("core", "attribute", "variant", "adjacent")
 QUERY_BLOCKLIST = {
     "recommended",
     "routine",
@@ -225,7 +225,7 @@ def _query_like(value: str, negative_keywords: tuple[str, ...] = ()) -> tuple[bo
         return False, "attribute_taxonomy_label"
     if len(words) == 1 and len(words[0]) < 4 and words[0] not in {"jam", "bbq", "tea"}:
         return False, "too_short"
-    if normalized in {"skin care", "beauty shelf", "category core", "product type"}:
+    if normalized in {"beauty shelf", "category core", "product type"}:
         return False, "too_broad"
     return True, "query_like"
 
@@ -249,6 +249,7 @@ def _candidate(
     negative_terms: tuple[str, ...] = (),
     base_score: float = 0.0,
     guide_support: tuple[str, ...] = (),
+    layer: str = "",
 ) -> dict[str, Any]:
     display = _display_query(query)
     terms = tuple(dict.fromkeys(_normalize(term) for term in (positive_terms or (display,)) if _normalize(term)))
@@ -263,7 +264,38 @@ def _candidate(
         "candidate_source": source,
         "base_score": base_score,
         "guide_support": list(guide_support),
+        "query_layer": layer or _query_layer(display, row_type, source),
     }
+
+
+def _query_layer(query: str, row_type: str, source: str) -> str:
+    normalized = _normalize(query)
+    words = set(normalized.split())
+    modifier_terms = {
+        "sensitive",
+        "hydrating",
+        "fragrance",
+        "free",
+        "natural",
+        "organic",
+        "low",
+        "sugar",
+        "protein",
+        "creamy",
+        "gentle",
+    }
+    form_terms = {"wash", "foam", "foaming", "gel", "cream", "stick", "bar", "spray"}
+    if words & modifier_terms:
+        return "modifier_attribute"
+    if source in {"actual_search_evidence", "resolved_identity", "resolved_category_anchor", "resolved_family_anchor"}:
+        return "core_search_family"
+    if words & form_terms:
+        return "form_variant"
+    if row_type == "core":
+        return "product_type_anchor"
+    if row_type == "adjacent":
+        return "adjacent_discovery"
+    return "product_type_anchor"
 
 
 def _extract_search_evidence(records: list[dict[str, Any]]) -> list[str]:
@@ -331,6 +363,7 @@ def _build_query_candidates(
         score: float,
         guide_support: tuple[str, ...] = (),
         positive_terms: tuple[str, ...] = (),
+        layer: str = "",
     ) -> None:
         ok, reason = _query_like(query, negative_keywords)
         if not ok:
@@ -348,6 +381,7 @@ def _build_query_candidates(
                 negative_terms=negative_keywords,
                 base_score=score,
                 guide_support=guide_support,
+                layer=layer,
             )
         )
 
@@ -359,13 +393,70 @@ def _build_query_candidates(
             "resolved_identity",
             10.0,
             positive_terms=(query, _safe_text(identity.get("product_type_display"))),
+            layer="product_type_anchor",
+        )
+    for query, source, score in (
+        (category, "resolved_category_anchor", 8.5),
+        (family, "resolved_family_anchor", 8.0),
+    ):
+        add(
+            query,
+            "core",
+            source,
+            score,
+            positive_terms=(query,),
+            layer="core_search_family",
         )
     for query in [*aliases[:5], *title_keywords[:6]]:
-        add(query, "core", "style_guide_title_or_alias", 9.0, ("aliases/title_keywords",))
+        layer = _query_layer(query, "core", "style_guide_title_or_alias")
+        add(
+            query,
+            "variant" if layer == "form_variant" else "core",
+            "style_guide_title_or_alias",
+            9.0,
+            ("aliases/title_keywords",),
+            layer=layer,
+        )
     for query in search_terms:
-        add(query, "core", "actual_search_evidence", 11.0)
+        layer = _query_layer(query, "core", "actual_search_evidence")
+        add(
+            query,
+            "attribute" if layer == "modifier_attribute" else "core",
+            "actual_search_evidence",
+            11.0,
+            layer=layer,
+        )
     for query in title_phrases:
         add(query, "attribute", "actual_pdp_title_language", 7.5)
+
+    title_blob = _record_blob(records, ("product_title", "title"))
+    product_anchor = product.split()[-1] if product else ""
+    if product_anchor:
+        modifier_phrases = (
+            "sensitive skin",
+            "fragrance free",
+            "hydrating",
+            "foaming",
+            "gentle",
+            "natural",
+            "creamy",
+            "low sugar",
+            "protein",
+        )
+        for modifier in modifier_phrases:
+            if _normalize(modifier) not in title_blob:
+                continue
+            query = f"{modifier} {product_anchor}"
+            layer = _query_layer(query, "attribute", "actual_pdp_title_language")
+            add(
+                query,
+                "variant" if layer == "form_variant" else "attribute",
+                "actual_pdp_title_language",
+                8.2,
+                ("title_modifier_product_anchor",),
+                positive_terms=(modifier, query),
+                layer=layer,
+            )
 
     product_head = product.split()[-1] if product else ""
     for term in [*context_keywords[:10], *attributes[:8]]:
@@ -376,7 +467,9 @@ def _build_query_candidates(
             query = f"{term} {product_head}"
         else:
             query = term
-        add(query, "attribute", "style_guide_context_or_attribute", 7.0, ("context_keywords/attributes",))
+        layer = _query_layer(query, "attribute", "style_guide_context_or_attribute")
+        row_type = "variant" if layer == "form_variant" else "attribute"
+        add(query, row_type, "style_guide_context_or_attribute", 7.0, ("context_keywords/attributes",), layer=layer)
 
     for segment in pack.get("segments", ())[:8]:
         if not isinstance(segment, dict):
@@ -392,15 +485,17 @@ def _build_query_candidates(
             term in _normalize(segment_name)
             for term in ("organic", "low sugar", "sensitive", "hydrating", "natural", "chocolate")
         ) else "adjacent"
+        layer = _query_layer(segment_name, source_type, "segment_pack_fallback_seed")
         pool.append(
             _candidate(
                 segment_name,
-                source_type,
+                "variant" if layer == "form_variant" else source_type,
                 "segment_pack_fallback_seed",
                 positive_terms=(*segment_terms, segment_name),
                 supporting_terms=segment_supporting,
                 negative_terms=negative_keywords,
                 base_score=5.5,
+                layer=layer,
             )
         )
 
@@ -487,6 +582,8 @@ def _rank_candidate(
     source_bonus = {
         "actual_search_evidence": 5.0,
         "resolved_identity": 4.0,
+        "resolved_category_anchor": 3.5,
+        "resolved_family_anchor": 3.0,
         "style_guide_title_or_alias": 3.5,
         "actual_pdp_title_language": 4.0,
         "style_guide_context_or_attribute": 2.0,
@@ -494,13 +591,22 @@ def _rank_candidate(
     }.get(str(definition.get("candidate_source")), 1.0)
     evidence_support = client_summary["supporting_records"] + competitor_summary["supporting_records"]
     benchmark_usefulness = 1.0 if client_summary["supporting_records"] != competitor_summary["supporting_records"] else 0.0
-    row_type_bonus = {"core": 4.0, "attribute": 3.0, "adjacent": 1.0}.get(str(definition.get("row_type")), 1.0)
+    row_type_bonus = {"core": 4.0, "attribute": 3.0, "variant": 2.0, "adjacent": 0.5}.get(str(definition.get("row_type")), 1.0)
+    layer = str(definition.get("query_layer") or "")
+    layer_bonus = {
+        "core_search_family": 3.0,
+        "product_type_anchor": 2.5,
+        "modifier_attribute": 2.0,
+        "form_variant": 0.75,
+        "adjacent_discovery": -0.5,
+    }.get(layer, 0.0)
     realism = _query_realism_score(str(definition.get("display_name")))
     quality_penalty, quality_reasons = _query_quality_penalty(definition, evidence_support)
     score = (
         float(definition.get("base_score", 0))
         + source_bonus
         + row_type_bonus
+        + layer_bonus
         + evidence_support * 3
         + benchmark_usefulness
         + realism
@@ -510,11 +616,13 @@ def _rank_candidate(
         "base_score": definition.get("base_score", 0),
         "source_bonus": source_bonus,
         "row_type_bonus": row_type_bonus,
+        "layer_bonus": layer_bonus,
         "evidence_support": evidence_support,
         "benchmark_usefulness": benchmark_usefulness,
         "shopper_query_realism": realism,
         "quality_penalty": quality_penalty,
         "quality_penalty_reasons": quality_reasons,
+        "query_layer": layer,
         "client_supporting_records": client_summary["supporting_records"],
         "competitor_supporting_records": competitor_summary["supporting_records"],
     }
@@ -534,6 +642,13 @@ def _query_quality_penalty(definition: dict[str, Any], evidence_support: int) ->
         "cleanser face",
         "facial cleanser face",
         "gentle facial",
+        "free foaming",
+        "free foaming face",
+        "hydrating fragrance",
+        "hydrating fragrance free",
+        "fragrance free foaming",
+        "foaming face",
+        "daily cleanser",
         "wash cleanser",
         "wash sensitive",
         "hydrating face",
@@ -554,6 +669,12 @@ def _query_quality_penalty(definition: dict[str, Any], evidence_support: int) ->
     if source == "segment_pack_fallback_seed" and evidence_support <= 0:
         penalty += 2.0
         reasons.append("fallback_without_visible_evidence")
+    if row_type == "variant" and evidence_support <= 0:
+        penalty += 2.5
+        reasons.append("unsupported_form_variant")
+    if normalized in {"daily cleanser", "foam cleanser", "gel cleanser", "cream cleanser"} and evidence_support <= 0:
+        penalty += 3.0
+        reasons.append("weak_generic_form_variant")
     if source == "actual_pdp_title_language" and evidence_support <= 0:
         benefit_or_concern_terms = {
             "hydrating",
@@ -625,6 +746,7 @@ def _select_final_query_rows(
     selected: list[dict[str, Any]] = []
     selected_keys: set[str] = set()
     type_counts: Counter[str] = Counter()
+    layer_counts: Counter[str] = Counter()
     rejected_similar: list[dict[str, str]] = []
 
     def can_add(candidate: dict[str, Any]) -> tuple[bool, str]:
@@ -635,12 +757,19 @@ def _select_final_query_rows(
         if similarity_reason:
             return False, similarity_reason
         row_type = str(candidate.get("row_type"))
+        layer = str(candidate.get("query_layer") or "")
         if row_type == "core" and type_counts[row_type] >= 2:
             return False, "core_row_quota_met"
         if row_type == "attribute" and type_counts[row_type] >= 4:
             return False, "attribute_row_quota_met"
+        if row_type == "variant" and type_counts[row_type] >= 1:
+            return False, "variant_row_quota_met"
         if row_type == "adjacent" and type_counts[row_type] >= 1:
             return False, "adjacent_row_quota_met"
+        if layer == "adjacent_discovery" and layer_counts[layer] >= 1:
+            return False, "adjacent_layer_quota_met"
+        if layer == "form_variant" and layer_counts[layer] >= 1:
+            return False, "form_variant_quota_met"
         penalty = float(((candidate.get("ranking_factors") or {}).get("quality_penalty", 0)) or 0)
         if penalty >= 8:
             return False, "weak_query_quality"
@@ -650,6 +779,8 @@ def _select_final_query_rows(
             source = str(candidate.get("candidate_source") or "")
             if source == "segment_pack_fallback_seed" and evidence_support <= 0 and penalty >= 5:
                 return False, "weak_trailing_fallback_row"
+            if layer in {"form_variant", "adjacent_discovery"} and evidence_support <= 0:
+                return False, "weak_trailing_layer_row"
         return True, "selected"
 
     for score, candidate, factors in ranked:
@@ -663,6 +794,7 @@ def _select_final_query_rows(
         selected.append(candidate)
         selected_keys.add(_query_cluster_key(candidate["display_name"]))
         type_counts[str(candidate.get("row_type"))] += 1
+        layer_counts[str(candidate.get("query_layer") or "")] += 1
         if len(selected) == 6:
             break
     if len(selected) < 6:
@@ -680,21 +812,21 @@ def _select_final_query_rows(
             candidate = dict(candidate)
             candidate["ranking_factors"] = factors
             candidate["selection_score"] = round(score, 2)
-            penalty = float(factors.get("quality_penalty", 0) or 0)
-            if penalty >= 8:
-                rejected_similar.append({"query": candidate["display_name"], "reason": "weak_query_quality"})
-                continue
-            if len(selected) >= 4 and penalty >= 5 and int(factors.get("evidence_support", 0) or 0) <= 0:
-                rejected_similar.append({"query": candidate["display_name"], "reason": "weak_trailing_fallback_row"})
+            ok, reason = can_add(candidate)
+            if not ok:
+                rejected_similar.append({"query": candidate["display_name"], "reason": reason})
                 continue
             selected.append(candidate)
             selected_keys.add(key)
+            type_counts[str(candidate.get("row_type"))] += 1
+            layer_counts[str(candidate.get("query_layer") or "")] += 1
     return selected[:6], {
         "ranked_candidates": [
             {
                 "query": candidate["display_name"],
                 "source": candidate.get("candidate_source"),
                 "row_type": candidate.get("row_type"),
+                "query_layer": candidate.get("query_layer"),
                 "score": round(score, 2),
                 "ranking_factors": factors,
             }
@@ -702,6 +834,7 @@ def _select_final_query_rows(
         ],
         "rejected_similar_rows": rejected_similar[:20],
         "row_type_counts": dict(type_counts),
+        "query_layer_counts": dict(layer_counts),
         "selected_row_scores": [item.get("selection_score") for item in selected[:6]],
         "lowest_selected_row_score": min(
             (float(item.get("selection_score", 0) or 0) for item in selected[:6]),
@@ -812,28 +945,47 @@ def _generic_fill_segments(records: list[dict[str, Any]]) -> list[dict[str, Any]
     return generic
 
 
+def _definition_has_record_signal(definition: dict[str, Any], records: list[dict[str, Any]]) -> bool:
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        scored = _score_record(record, definition)
+        if scored.get("matched_fields") or scored.get("weight", 0) > 0:
+            return True
+    return False
+
+
 def _six_distinct_segments(
     selected_segments: Any,
     records: list[dict[str, Any]],
     warnings: list[str],
+    ranked_selected_count: int | None = None,
 ) -> list[dict[str, Any]]:
     distinct: list[dict[str, Any]] = []
     seen_names: set[str] = set()
     seen_ids: set[str] = set()
     selected_count = 0
     selected_distinct_count = 0
+    duplicate_or_blank_replaced = False
     selected_list = list(selected_segments or [])
+    selected_limit = len(selected_list) if ranked_selected_count is None else ranked_selected_count
     for index, definition in enumerate([*selected_list, *_generic_fill_segments(records)]):
         if not isinstance(definition, dict):
             continue
-        if index < len(selected_list):
+        if index < selected_limit:
             selected_count += 1
         name_key = _normalize(definition.get("display_name"))
         id_key = _normalize(definition.get("segment_id"))
         if not name_key or not id_key or name_key in seen_names or id_key in seen_ids:
+            duplicate_or_blank_replaced = True
             continue
-        distinct.append(definition)
-        if index < len(selected_list):
+        is_raw_pack_filler = selected_limit <= index < len(selected_list)
+        if is_raw_pack_filler and len(distinct) >= 4 and not _definition_has_record_signal(definition, records):
+            continue
+        normalized_definition = dict(definition)
+        normalized_definition["display_name"] = _display_query(definition.get("display_name"))
+        distinct.append(normalized_definition)
+        if index < selected_limit:
             selected_distinct_count += 1
         seen_names.add(name_key)
         seen_ids.add(id_key)
@@ -841,7 +993,7 @@ def _six_distinct_segments(
             break
     if len(distinct) < 6:
         warnings.append("Selected pack could not provide six distinct nonblank segments.")
-    elif selected_distinct_count < selected_count:
+    elif selected_distinct_count < selected_count or duplicate_or_blank_replaced:
         warnings.append("Duplicate or blank segment definitions were replaced with restrained generic rows.")
     elif selected_distinct_count < 6:
         warnings.append("Selected pack was supplemented with restrained generic rows to reach six segments.")
@@ -1094,7 +1246,12 @@ def build_slide6_visibility(
     query_candidates, candidate_debug = _build_query_candidates(primary or competitors, identity, pack)
     definitions, selection_debug = _select_final_query_rows(query_candidates, primary, competitors, warnings)
     if len(definitions) < 6:
-        definitions = _six_distinct_segments([*definitions, *pack.get("segments", ())], primary or competitors, warnings)
+        definitions = _six_distinct_segments(
+            [*definitions, *pack.get("segments", ())],
+            primary or competitors,
+            warnings,
+            ranked_selected_count=len(definitions),
+        )
     for definition in definitions:
         client = _score_group(primary, definition)
         competitor = _score_group(competitors, definition)
@@ -1135,6 +1292,7 @@ def build_slide6_visibility(
                     ),
                     "candidate_source": definition.get("candidate_source", "segment_pack_fallback"),
                     "row_type": definition.get("row_type", "fallback"),
+                    "query_layer": definition.get("query_layer", ""),
                     "ranking_factors": definition.get("ranking_factors", {}),
                     "selection_score": definition.get("selection_score"),
                     "guide_support_used": definition.get("guide_support", []),
