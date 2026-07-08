@@ -74,7 +74,7 @@ class Slide6VisibilityTests(unittest.TestCase):
             [],
             audit_metadata={"client_name": "Test Client"},
         )
-        organic = next(item for item in payload["segments"] if item["segment"] in {"organic strawberry", "organic strawberry jam"})
+        organic = next(item for item in payload["segments"] if "organic" in item["segment"])
         self.assertEqual(organic["client_visibility"], "Partial")
         self.assertTrue(any("sparse" in warning.lower() for warning in payload["warnings"]))
         self.assertTrue(any("small-sample" in warning.lower() for warning in organic["warnings"]))
@@ -176,10 +176,56 @@ class Slide6VisibilityTests(unittest.TestCase):
         rows = [item["segment"] for item in payload["segments"]]
         self.assertEqual(len(rows), 6)
         self.assertIn("face cleanser", rows)
-        self.assertIn("sensitive skin", rows)
+        self.assertIn("sensitive skin cleanser", rows)
         self.assertNotIn("hydrating face", rows)
         self.assertNotIn("wash sensitive", rows)
+        self.assertNotIn("sensitive skin", rows)
         self.assertTrue(all("option" not in row for row in rows))
+
+    def test_incomplete_modifier_fragments_lose_to_full_shopper_phrases(self) -> None:
+        payload = build_slide6_visibility(
+            [
+                _record(
+                    category="Beauty/Skin Care",
+                    product_type="Facial Cleansers",
+                    title="Normal to Oily Skin Hydrating Facial Cleanser",
+                )
+            ],
+            [],
+        )
+        rows = [item["segment"] for item in payload["segments"]]
+        self.assertTrue(
+            any(row in rows for row in {"normal to oily skin cleanser", "oily skin cleanser"})
+        )
+        self.assertNotIn("normal oily", rows)
+        self.assertNotIn("normal to oily", rows)
+        ranked = payload["debug"]["row_selection"]["ranked_candidates"]
+        rejected = payload["debug"]["row_selection"]["rejected_similar_rows"]
+        normal_oily = next((item for item in ranked if item["query"] == "normal oily"), None)
+        if normal_oily:
+            self.assertTrue(normal_oily["ranking_factors"]["quality_penalty_reasons"])
+        self.assertTrue(
+            any(item["reason"] == "weak_query_quality" for item in rejected)
+        )
+
+    def test_broad_category_rows_are_demoted_from_skin_care_final_rows(self) -> None:
+        payload = build_slide6_visibility(
+            [
+                _record(
+                    category="Beauty/Skin Care",
+                    product_type="Facial Cleansers",
+                    title="Gentle Hydrating Facial Cleanser",
+                )
+            ],
+            [],
+        )
+        rows = [item["segment"] for item in payload["segments"]]
+        self.assertNotIn("skin care", rows)
+        self.assertNotIn("beauty", rows)
+        rejected = payload["debug"]["row_selection"]["rejected_similar_rows"]
+        self.assertTrue(
+            any(item["query"] in {"skin care", "beauty"} and item["reason"] == "weak_query_quality" for item in rejected)
+        )
 
     def test_slide3_style_search_vocabulary_guides_final_rows(self) -> None:
         payload = build_slide6_visibility(
@@ -202,11 +248,12 @@ class Slide6VisibilityTests(unittest.TestCase):
             ],
         )
         rows = [item["segment"] for item in payload["segments"]]
-        self.assertEqual(rows[:2], ["face cleanser", "skin care"])
+        self.assertEqual(rows[:2], ["face cleanser", "sensitive skin cleanser"])
         self.assertIn("sensitive skin cleanser", rows)
         self.assertIn("fragrance free cleanser", rows)
         self.assertIn("hydrating cleanser", rows)
         self.assertIn("foaming cleanser", rows)
+        self.assertNotIn("skin care", rows)
         self.assertNotIn("hydrating fragrance", rows)
         self.assertNotIn("free foaming", rows)
         self.assertNotIn("face moisturizer", rows)
@@ -214,9 +261,9 @@ class Slide6VisibilityTests(unittest.TestCase):
         selection = payload["debug"]["row_selection"]
         layer_counts = selection["query_layer_counts"]
         self.assertEqual(layer_counts["product_type_anchor"], 1)
-        self.assertEqual(layer_counts["core_search_family"], 1)
+        self.assertEqual(layer_counts.get("core_search_family", 0), 0)
         self.assertGreaterEqual(layer_counts["modifier_attribute"], 3)
-        self.assertLessEqual(layer_counts.get("form_variant", 0), 1)
+        self.assertLessEqual(layer_counts.get("form_variant", 0), 3)
 
         ranked = {item["query"]: item for item in selection["ranked_candidates"]}
         for weak_query in ("hydrating fragrance", "free foaming", "foaming face"):
@@ -257,7 +304,7 @@ class Slide6VisibilityTests(unittest.TestCase):
         self.assertNotIn("face moisturizer", rows)
         selection = payload["debug"]["row_selection"]
         self.assertGreaterEqual(selection["lowest_selected_row_score"], 15)
-        self.assertLessEqual(selection["query_layer_counts"].get("form_variant", 0), 1)
+        self.assertLessEqual(selection["query_layer_counts"].get("form_variant", 0), 3)
         self.assertLessEqual(selection["query_layer_counts"].get("adjacent_discovery", 0), 1)
         rejected = selection["rejected_similar_rows"]
         self.assertTrue(

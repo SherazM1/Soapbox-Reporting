@@ -541,6 +541,43 @@ def _fit_bullet(text: str) -> str:
     return text[:75].rsplit(" ", 1)[0].rstrip(" ,;-") + "..."
 
 
+def _beauty_context(evidence: dict[str, Any]) -> bool:
+    blob = _normalize(
+        " ".join(
+            [
+                *evidence.get("categories", [])[:8],
+                *evidence.get("headings", [])[:8],
+                *evidence.get("descriptions", [])[:8],
+            ]
+        )
+    )
+    return any(
+        term in blob
+        for term in (
+            "beauty",
+            "skin care",
+            "skincare",
+            "face care",
+            "body care",
+            "hair care",
+            "hydration",
+            "moisture",
+        )
+    )
+
+
+def _wrong_category_language_reason(text: str, evidence: dict[str, Any]) -> str:
+    if not _beauty_context(evidence):
+        return ""
+    normalized = _normalize(text)
+    tokens = set(normalized.split())
+    pet_phrases = {"breed size", "life stage"}
+    pet_tokens = {"animal", "breed", "cat", "dog", "kitten", "lifestage", "pet", "puppy"}
+    if any(phrase in normalized for phrase in pet_phrases) or bool(tokens & pet_tokens):
+        return "beauty_context_blocked_pet_language"
+    return ""
+
+
 def _mirrored_bullet_key(text: str) -> str:
     normalized = normalize_bullet_text(text)
     tokens = [
@@ -1043,7 +1080,12 @@ def _brand_shop_cue_bullets(
     ]
     debug_items: list[dict[str, Any]] = []
     used: set[str] = set()
+    def visible_count() -> int:
+        return sum(1 for item in debug_items if not item.get("_rejected"))
+
     for candidate in sorted(candidates, key=_slide5_candidate_sort_key):
+        if visible_count() >= SLIDE5_TARGET_BULLET_COUNT:
+            break
         text = _fit_bullet(
             _slide5_candidate_text(
                 candidate.get("cue_key", ""),
@@ -1052,6 +1094,24 @@ def _brand_shop_cue_bullets(
                 context.get("identity", {}),
             )
         )
+        wrong_category_reason = _wrong_category_language_reason(text, evidence)
+        if wrong_category_reason:
+            debug_items.append(
+                {
+                    "text": "",
+                    "side": side,
+                    "type": "rejected",
+                    "dimension": candidate.get("cue_key", "cue"),
+                    "score": candidate.get("classification", "context"),
+                    "template_id": f"strategic_cue_{candidate.get('cue_key')}",
+                    "signals": [wrong_category_reason],
+                    "supporting_count": 0,
+                    "reason": "Rejected because the wording did not match the Brand Shop category context.",
+                    "cue_debug": candidate,
+                    "_rejected": True,
+                }
+            )
+            continue
         key = normalize_bullet_text(text)
         if not text or key in used:
             continue
@@ -1074,7 +1134,7 @@ def _brand_shop_cue_bullets(
                 "cue_debug": candidate,
             }
         )
-        if len(debug_items) >= SLIDE5_TARGET_BULLET_COUNT:
+        if visible_count() >= SLIDE5_TARGET_BULLET_COUNT:
             break
     fallback_texts = [
         "Cohesive visual identity anchors the Brand Shop",
@@ -1086,7 +1146,7 @@ def _brand_shop_cue_bullets(
         "Conversion guidance helps shoppers compare products",
     ]
     for text in fallback_texts:
-        if len(debug_items) >= SLIDE5_TARGET_BULLET_COUNT:
+        if visible_count() >= SLIDE5_TARGET_BULLET_COUNT:
             break
         key = normalize_bullet_text(text)
         if key in used:
@@ -1106,7 +1166,12 @@ def _brand_shop_cue_bullets(
                 "cue_debug": {},
             }
         )
-    return debug_items[:SLIDE5_TARGET_BULLET_COUNT], context.get("debug", {})
+    visible_items = [item for item in debug_items if not item.get("_rejected")]
+    rejected_items = [item for item in debug_items if item.get("_rejected")]
+    return visible_items[:SLIDE5_TARGET_BULLET_COUNT], {
+        **(context.get("debug", {}) or {}),
+        "wrong_category_rejections": rejected_items,
+    }
 
 
 def _build_side(record: dict[str, Any], side: str, role_path: str) -> dict[str, Any]:

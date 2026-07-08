@@ -12,6 +12,7 @@ from pptx.util import Inches, Pt
 
 from app.audit_helpers.slide5_brand_shop import (
     DIMENSION_PRIORITY,
+    _wrong_category_language_reason,
     build_slide5_brand_shop,
 )
 from audit_powerpoint_new import _decode_data_image, generate_new_audit_powerpoint_from_template
@@ -280,6 +281,28 @@ class Slide5BrandShopTests(unittest.TestCase):
             self.assertLessEqual(len(item["text"]), 78)
             self.assertLessEqual(len(item["text"].split()), 11)
 
+    def test_beauty_brand_shop_blocks_pet_category_language(self) -> None:
+        noisy_beauty = _rich_capture("Client", 7, "Beauty Brand", (20, 80, 140))
+        noisy_beauty["editorialHeadings"] = [
+            "Skin Care for Every Routine",
+            "Breed size life stage pet formula",
+        ]
+        noisy_beauty["promotionalCopy"] = [
+            "Hydration for face care",
+            "Pet lifestage formula",
+        ]
+        payload = build_slide5_brand_shop([noisy_beauty], [])
+        bullets = " ".join(payload["client"]["bullets"]).lower()
+        for phrase in ("breed", "life stage", "lifestage", " pet ", "puppy", "kitten"):
+            self.assertNotIn(phrase, f" {bullets} ")
+        self.assertEqual(
+            _wrong_category_language_reason(
+                "Breed-size life-stage segmentation supports pet formula discovery",
+                payload["client"]["evidence"],
+            ),
+            "beauty_context_blocked_pet_language",
+        )
+
     def test_weak_evidence_uses_restrained_language(self) -> None:
         payload = build_slide5_brand_shop(
             [_weak_capture("Client", 2)],
@@ -381,6 +404,13 @@ class Slide5BrandShopTests(unittest.TestCase):
             for run in paragraph.runs
             if paragraph.text.strip() and run.text.strip()
         }
+        rendered_font_names = {
+            run.font.name
+            for box in bullet_boxes
+            for paragraph in box.text_frame.paragraphs
+            for run in paragraph.runs
+            if paragraph.text.strip() and run.text.strip()
+        }
         rendered_line_spacing = {
             paragraph.line_spacing
             for box in bullet_boxes
@@ -394,13 +424,15 @@ class Slide5BrandShopTests(unittest.TestCase):
             if paragraph.text.strip()
         }
         self.assertEqual(len(rendered_font_sizes), 1)
-        self.assertEqual(rendered_font_sizes, {Pt(11)})
-        self.assertEqual(rendered_line_spacing, {0.86})
-        self.assertEqual(len(rendered_space_after), 1)
+        self.assertEqual(rendered_font_sizes, {Pt(14)})
+        self.assertEqual(rendered_font_names, {"Raleway"})
+        self.assertEqual(rendered_line_spacing, {0.9})
+        self.assertEqual(rendered_space_after, {Pt(1)})
         render_fit = payload["debug"]["render_fit"]
         self.assertEqual({item["target_bullet_count"] for item in render_fit.values()}, {7})
         self.assertEqual({item["rendered_bullet_count"] for item in render_fit.values()}, {7})
-        self.assertEqual({item["font_size_selected"] for item in render_fit.values()}, {11})
+        self.assertEqual({item["font_size_selected"] for item in render_fit.values()}, {14})
+        self.assertEqual({item["font_name_selected"] for item in render_fit.values()}, {"Raleway"})
         self.assertEqual({item["shared_fallback_font_size_used"] for item in render_fit.values()}, {False})
         self.assertTrue(all(item["visible_count_expectation_met"] for item in render_fit.values()))
         for sample in (*CLIENT_SAMPLE_BULLETS, *COMPETITOR_SAMPLE_BULLETS):
@@ -608,7 +640,25 @@ class Slide5BrandShopTests(unittest.TestCase):
         self.assertEqual(bullet_text, payload["competitor"]["bullets"])
         self.assertEqual(
             {paragraph.line_spacing for paragraph in bullet_box.text_frame.paragraphs if paragraph.text.strip()},
-            {0.86},
+            {0.9},
+        )
+        self.assertEqual(
+            {
+                run.font.size
+                for paragraph in bullet_box.text_frame.paragraphs
+                for run in paragraph.runs
+                if paragraph.text.strip() and run.text.strip()
+            },
+            {Pt(14)},
+        )
+        self.assertEqual(
+            {
+                run.font.name
+                for paragraph in bullet_box.text_frame.paragraphs
+                for run in paragraph.runs
+                if paragraph.text.strip() and run.text.strip()
+            },
+            {"Raleway"},
         )
         text_box_count = sum(
             1 for shape in slide.shapes if str(shape.shape_type).endswith("TEXT_BOX (17)")

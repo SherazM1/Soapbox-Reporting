@@ -1851,6 +1851,7 @@ def _apply_bullet_spacing_and_font(
     shape: Any,
     font_size: int | None,
     *,
+    font_name: str | None = None,
     line_spacing: float = 1.0,
     space_after: int = 0,
 ) -> None:
@@ -1863,9 +1864,13 @@ def _apply_bullet_spacing_and_font(
         paragraph.space_after = Pt(space_after)
         paragraph.line_spacing = line_spacing
         if font_size is None:
-            continue
+            if font_name is None:
+                continue
         for run in paragraph.runs:
-            run.font.size = Pt(font_size)
+            if font_name is not None:
+                run.font.name = font_name
+            if font_size is not None:
+                run.font.size = Pt(font_size)
 
 
 def _fit_bullet_shape_group(
@@ -1878,6 +1883,7 @@ def _fit_bullet_shape_group(
     fallback_font_size: int = 10,
     allow_drop: bool = False,
     ensure_paragraph_count: bool = False,
+    font_name: str | None = None,
     line_spacing: float = 1.0,
     space_after: int = 0,
 ) -> dict[str, dict[str, Any]]:
@@ -1918,11 +1924,13 @@ def _fit_bullet_shape_group(
         _apply_bullet_spacing_and_font(
             shape,
             global_font,
+            font_name=font_name,
             line_spacing=line_spacing,
             space_after=space_after,
         )
         data["font_fallback"] = global_font
         data["font_size_selected"] = global_font
+        data["font_name_selected"] = font_name
         data["shared_fallback_font_size_used"] = (
             base_font_size is not None
             and global_font != base_font_size
@@ -2409,7 +2417,7 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
             fallback_font_size=10,
             ensure_paragraph_count=True,
             line_spacing=0.9,
-            space_after=0,
+            space_after=2,
         )
 
 
@@ -2583,11 +2591,12 @@ def _apply_slide5_no_brand_shop(
         max_lines=7,
         drop_threshold=640,
         font_threshold=590,
-        base_font_size=11,
-        fallback_font_size=10,
+        base_font_size=14,
+        fallback_font_size=14,
         ensure_paragraph_count=True,
-        line_spacing=0.86,
-        space_after=0,
+        font_name="Raleway",
+        line_spacing=0.9,
+        space_after=1,
     )
 
 
@@ -2661,11 +2670,12 @@ def _apply_slide5_brand_shop(prs: Any, slide: Any, payload: dict[str, Any]) -> N
             max_lines=7,
             drop_threshold=640,
             font_threshold=590,
-            base_font_size=11,
-            fallback_font_size=10,
+            base_font_size=14,
+            fallback_font_size=14,
             ensure_paragraph_count=True,
-            line_spacing=0.86,
-            space_after=0,
+            font_name="Raleway",
+            line_spacing=0.9,
+            space_after=1,
         )
 
 

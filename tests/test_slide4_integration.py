@@ -482,7 +482,7 @@ class Slide4IntegrationTest(unittest.TestCase):
             self.assertEqual(len(rendered_font_sizes), 1)
             self.assertEqual(rendered_font_sizes, {Pt(11)})
             self.assertEqual(rendered_line_spacing, {0.9})
-            self.assertEqual(len(rendered_space_after), 1)
+            self.assertEqual(rendered_space_after, {Pt(2)})
             self.assertEqual(payload["debug"]["render_targets"]["target_bullet_count"], 6)
             self.assertEqual(
                 set(payload["debug"]["render_targets"]["final_bullet_counts"].values()),

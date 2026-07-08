@@ -63,6 +63,39 @@ ATTRIBUTE_STOPWORDS = {
     "product",
     "type",
 }
+PRODUCT_ANCHOR_WORDS = {
+    "balm",
+    "butter",
+    "cleaner",
+    "cleanser",
+    "cream",
+    "diaper",
+    "gel",
+    "jam",
+    "jelly",
+    "lotion",
+    "moisturizer",
+    "preserve",
+    "serum",
+    "spread",
+    "wash",
+    "wipes",
+}
+MODIFIER_ANCHOR_WORDS = {
+    "fragrance",
+    "free",
+    "gentle",
+    "hydrating",
+    "hypoallergenic",
+    "low",
+    "natural",
+    "normal",
+    "oily",
+    "organic",
+    "protein",
+    "sensitive",
+    "sugar",
+}
 
 
 def _segment(
@@ -622,6 +655,8 @@ def _build_query_candidates(
     if product_anchor:
         modifier_phrases = (
             "sensitive skin",
+            "normal to oily skin",
+            "oily skin",
             "fragrance free",
             "hydrating",
             "foaming",
@@ -861,6 +896,7 @@ def _product_type_fit_score(definition: dict[str, Any]) -> float:
 def _query_distinctiveness_score(query: str, bucket: str) -> float:
     normalized = _normalize(query)
     words = normalized.split()
+    word_set = set(words)
     if bucket == "category_anchor" and len(words) <= 2:
         return -1.0
     if bucket == "adjacent_discovery":
@@ -868,7 +904,7 @@ def _query_distinctiveness_score(query: str, bucket: str) -> float:
     score = 0.0
     if 2 <= len(words) <= 4:
         score += 1.5
-    if any(term in normalized for term in ("sensitive", "fragrance free", "low sugar", "natural", "hydrating", "foaming")):
+    if any(term in normalized for term in ("sensitive", "fragrance free", "low sugar", "natural", "organic", "hydrating", "foaming")):
         score += 1.0
     if normalized in {"product", "category", "option", "routine"}:
         score -= 4.0
@@ -879,6 +915,7 @@ def _query_quality_penalty(definition: dict[str, Any], evidence_support: int) ->
     query = str(definition.get("display_name") or "")
     normalized = _normalize(query)
     words = normalized.split()
+    word_set = set(words)
     source = str(definition.get("candidate_source") or "")
     row_type = str(definition.get("row_type") or "")
     reasons: list[str] = []
@@ -902,6 +939,14 @@ def _query_quality_penalty(definition: dict[str, Any], evidence_support: int) ->
         "flavor jam",
         "option cleanser",
         "product cleanser",
+        "normal oily",
+        "normal to oily",
+        "oily skin",
+        "fragrance free face",
+        "free face",
+        "sensitive face",
+        "skin care concern",
+        "beauty skin care",
     }
     if normalized in weak_pairs:
         penalty += 8.0
@@ -946,7 +991,7 @@ def _query_quality_penalty(definition: dict[str, Any], evidence_support: int) ->
             "moisturizer",
             "cleaner",
         }
-        if benefit_or_concern_terms & set(words) and not (product_or_concern_anchors & set(words)):
+        if benefit_or_concern_terms & word_set and not (product_or_concern_anchors & word_set):
             penalty += 4.0
             reasons.append("benefit_fragment_without_product_anchor")
         elif not (benefit_or_concern_terms & set(words)):
@@ -977,11 +1022,23 @@ def _query_quality_penalty(definition: dict[str, Any], evidence_support: int) ->
         if benefit_or_concern_terms & set(words) and not (product_or_concern_anchors & set(words)):
             penalty += 2.0
             reasons.append("prefer_product_anchored_modifier")
-    if str(definition.get("candidate_bucket") or "") == "modifier" and len(words) <= 2:
-        product_anchors = {"cleanser", "wash", "butter", "jam", "spread", "moisturizer", "cleaner"}
-        if not (product_anchors & set(words)):
-            penalty += 1.5
-            reasons.append("modifier_without_product_anchor")
+    bucket = str(definition.get("candidate_bucket") or "")
+    if "concern" in words and not (PRODUCT_ANCHOR_WORDS & word_set):
+        penalty += 8.0
+        reasons.append("incomplete_concern_fragment")
+    if bucket in {"category_anchor", "family_anchor"} and len(words) <= 2:
+        penalty += 8.0
+        reasons.append("broad_category_or_family_row")
+    if bucket == "product_type_anchor" and not (PRODUCT_ANCHOR_WORDS & word_set) and word_set & {"beauty", "skin", "care"}:
+        penalty += 8.0
+        reasons.append("broad_product_type_anchor")
+    if bucket == "modifier":
+        if not (PRODUCT_ANCHOR_WORDS & word_set):
+            penalty += 8.5
+            reasons.append("incomplete_modifier_without_product_anchor")
+        elif len(words) <= 2 and MODIFIER_ANCHOR_WORDS & word_set:
+            penalty += 2.5
+            reasons.append("modifier_phrase_too_thin")
     if source == "segment_pack_fallback_seed" and evidence_support <= 0 and row_type != "adjacent":
         penalty += 3.0
         reasons.append("unsupported_fallback_attribute")
@@ -1040,7 +1097,7 @@ def _select_final_query_rows(
             "family_anchor": 1,
             "product_type_anchor": 2,
             "modifier": 4,
-            "attribute_form": 1,
+            "attribute_form": 3,
             "adjacent_discovery": 1,
         }
         if bucket in bucket_caps and bucket_counts[bucket] >= bucket_caps[bucket]:
@@ -1049,13 +1106,13 @@ def _select_final_query_rows(
             return False, "core_row_quota_met"
         if row_type == "attribute" and type_counts[row_type] >= 4:
             return False, "attribute_row_quota_met"
-        if row_type == "variant" and type_counts[row_type] >= 1:
+        if row_type == "variant" and type_counts[row_type] >= 3:
             return False, "variant_row_quota_met"
         if row_type == "adjacent" and type_counts[row_type] >= 1:
             return False, "adjacent_row_quota_met"
         if layer == "adjacent_discovery" and layer_counts[layer] >= 1:
             return False, "adjacent_layer_quota_met"
-        if layer == "form_variant" and layer_counts[layer] >= 1:
+        if layer == "form_variant" and layer_counts[layer] >= 3:
             return False, "form_variant_quota_met"
         penalty = float(((candidate.get("ranking_factors") or {}).get("quality_penalty", 0)) or 0)
         if penalty >= 8:
@@ -1069,7 +1126,9 @@ def _select_final_query_rows(
                 return False, "weak_trailing_score"
             if source == "segment_pack_fallback_seed" and evidence_support <= 0 and penalty >= 5:
                 return False, "weak_trailing_fallback_row"
-            if layer in {"form_variant", "adjacent_discovery"} and evidence_support <= 0:
+            if layer == "adjacent_discovery" and evidence_support <= 0:
+                return False, "weak_trailing_layer_row"
+            if layer == "form_variant" and evidence_support <= 0 and score < 20:
                 return False, "weak_trailing_layer_row"
         return True, "selected"
 
@@ -1271,6 +1330,20 @@ def _definition_has_record_signal(definition: dict[str, Any], records: list[dict
     return False
 
 
+def _fallback_definition_rejection(definition: dict[str, Any]) -> str:
+    normalized = _normalize(definition.get("display_name"))
+    words = set(normalized.split())
+    if normalized in {"skin care", "beauty", "beauty skin care", "baby care", "clean lifestyle", "daily skin routine"}:
+        return "broad_fallback_row"
+    if words and words <= {"beauty", "skin", "care"}:
+        return "broad_fallback_row"
+    if words & {"solutions", "options", "alignment", "coverage", "language"} and not (words & PRODUCT_ANCHOR_WORDS):
+        return "generic_fallback_row"
+    if words & MODIFIER_ANCHOR_WORDS and not (words & PRODUCT_ANCHOR_WORDS):
+        return "incomplete_fallback_modifier"
+    return ""
+
+
 def _six_distinct_segments(
     selected_segments: Any,
     records: list[dict[str, Any]],
@@ -1280,6 +1353,7 @@ def _six_distinct_segments(
     distinct: list[dict[str, Any]] = []
     seen_names: set[str] = set()
     seen_ids: set[str] = set()
+    seen_clusters: set[str] = set()
     selected_count = 0
     selected_distinct_count = 0
     duplicate_or_blank_replaced = False
@@ -1292,10 +1366,16 @@ def _six_distinct_segments(
             selected_count += 1
         name_key = _normalize(definition.get("display_name"))
         id_key = _normalize(definition.get("segment_id"))
-        if not name_key or not id_key or name_key in seen_names or id_key in seen_ids:
+        cluster_key = _query_cluster_key(definition.get("display_name", ""))
+        if not name_key or not id_key or name_key in seen_names or id_key in seen_ids or cluster_key in seen_clusters:
             duplicate_or_blank_replaced = True
             continue
+        is_filler = index >= selected_limit
         is_raw_pack_filler = selected_limit <= index < len(selected_list)
+        fallback_rejection = _fallback_definition_rejection(definition) if is_raw_pack_filler else ""
+        if fallback_rejection:
+            duplicate_or_blank_replaced = True
+            continue
         if is_raw_pack_filler and len(distinct) >= 4 and not _definition_has_record_signal(definition, records):
             continue
         normalized_definition = dict(definition)
@@ -1305,6 +1385,7 @@ def _six_distinct_segments(
             selected_distinct_count += 1
         seen_names.add(name_key)
         seen_ids.add(id_key)
+        seen_clusters.add(cluster_key)
         if len(distinct) == 6:
             break
     if len(distinct) < 6:
