@@ -128,6 +128,8 @@ MALFORMED_PHRASE_BLOCKLIST = (
     "benchmark cue",
     "cue translation",
     "benchmark shelf breadth is still concentrated",
+    "benchmark shelf breadth is limited",
+    "shelf breadth is concentrated",
     "higher review threshold reaches",
     "presence is narrow for",
 )
@@ -179,7 +181,11 @@ def _client_display_name(value: Any) -> str:
     return name
 
 
-def _representative_valid_record(selected: dict[str, Any], valid_records: list[dict[str, Any]]) -> dict[str, Any]:
+def _representative_valid_record(
+    selected: dict[str, Any],
+    valid_records: list[dict[str, Any]],
+    search_framework: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     records = [record for record in valid_records if isinstance(record, dict)] or [selected]
     merged = dict(selected)
     merged_products: list[dict[str, Any]] = []
@@ -194,7 +200,24 @@ def _representative_valid_record(selected: dict[str, Any], valid_records: list[d
         if term:
             term_counts[term] = term_counts.get(term, 0) + 1
     if term_counts:
-        representative_term = sorted(term_counts.items(), key=lambda item: (-item[1], search_terms.index(item[0])))[0][0]
+        framework_terms = [
+            _normalize_term(term).lower()
+            for term in (search_framework or {}).get("query_terms", [])
+            if _normalize_term(term)
+        ]
+
+        def term_rank(item: tuple[str, int]) -> tuple[int, int, int]:
+            term, count = item
+            normalized = _normalize_term(term).lower()
+            framework_match = any(
+                normalized == candidate
+                or normalized in candidate
+                or candidate in normalized
+                for candidate in framework_terms
+            )
+            return (-count, 0 if framework_match else 1, search_terms.index(term))
+
+        representative_term = sorted(term_counts.items(), key=term_rank)[0][0]
         merged["searchTerm"] = representative_term
     merged["_slide3_representative_debug"] = {
         "valid_capture_count": len(records),
@@ -202,6 +225,7 @@ def _representative_valid_record(selected: dict[str, Any], valid_records: list[d
         "search_terms": search_terms,
         "product_count": len(merged_products),
         "selected_source_row_for_screenshot": _source_row(selected),
+        "framework_terms_considered": (search_framework or {}).get("query_terms", [])[:8],
     }
     return merged
 
@@ -560,6 +584,129 @@ def _score_rank(score: str) -> int:
     return {"Strong": 4, "Moderate": 3, "Limited": 2, "Unknown": 1, "Missing": 0}.get(score, 1)
 
 
+def _visibility_rank(label: Any) -> int:
+    return {"Strong": 4, "Moderate": 3, "Partial": 2, "Limited": 1}.get(_safe_text(label), 0)
+
+
+def _clean_framework_term(value: Any) -> str:
+    term = _normalize_term(value).lower()
+    term = re.sub(r"\s+", " ", term).strip(" .;:-")
+    if not term or term in {"category search", "product type", "category"}:
+        return ""
+    return term
+
+
+def _search_framework_from_slide6(slide6_visibility: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(slide6_visibility, dict):
+        return {}
+    row_generation = ((slide6_visibility.get("debug") or {}).get("row_generation") or {})
+    identity = row_generation.get("shared_search_identity") or {}
+    if not isinstance(identity, dict):
+        identity = {}
+    segments = [item for item in slide6_visibility.get("segments", []) or [] if isinstance(item, dict)]
+    query_terms = [
+        *identity.get("product_type_anchor_terms", [])[:4],
+        *identity.get("family_anchor_terms", [])[:3],
+        *identity.get("category_anchor_terms", [])[:3],
+        *(item.get("segment") for item in segments[:6]),
+    ]
+    query_terms = list(dict.fromkeys(term for term in (_clean_framework_term(term) for term in query_terms) if term))
+
+    def side_summary(side_key: str) -> dict[str, Any]:
+        visibility_key = "client_visibility" if side_key == "current" else "competitor_visibility"
+        ranked_rows: list[dict[str, Any]] = []
+        for index, row in enumerate(segments):
+            term = _clean_framework_term(row.get("segment"))
+            if not term:
+                continue
+            debug = row.get("debug") or {}
+            label = _safe_text(row.get(visibility_key))
+            rank = _visibility_rank(label)
+            ranked_rows.append(
+                {
+                    "term": term,
+                    "label": label,
+                    "rank": rank,
+                    "family": debug.get("candidate_bucket") or debug.get("query_layer") or "search_path",
+                    "index": index,
+                }
+            )
+        ranked_rows.sort(key=lambda item: (-item["rank"], item["index"]))
+        meaningful = [item for item in ranked_rows if item["rank"] >= _visibility_rank("Partial")]
+        strong = [item for item in ranked_rows if item["rank"] >= _visibility_rank("Moderate")]
+        return {
+            "top_terms": [item["term"] for item in ranked_rows[:4]],
+            "meaningful_terms": [item["term"] for item in meaningful[:5]],
+            "strong_terms": [item["term"] for item in strong[:4]],
+            "strong_path_count": len(strong),
+            "meaningful_path_count": len(meaningful),
+            "top_label": ranked_rows[0]["label"] if ranked_rows else "",
+            "top_family": ranked_rows[0]["family"] if ranked_rows else "",
+        }
+
+    product_type = next((term for term in query_terms if term), "")
+    return {
+        "available": bool(query_terms or segments),
+        "product_type": product_type,
+        "query_terms": query_terms[:10],
+        "modifier_terms": [
+            term for term in (_clean_framework_term(term) for term in identity.get("modifier_terms", [])[:8]) if term
+        ],
+        "attribute_form_terms": [
+            term for term in (_clean_framework_term(term) for term in identity.get("attribute_form_terms", [])[:8]) if term
+        ],
+        "current": side_summary("current"),
+        "benchmark": side_summary("benchmark"),
+        "source": "slide6_shared_search_framework",
+    }
+
+
+def _framework_product_type(search_framework: dict[str, Any] | None, fallback: str) -> str:
+    term = _clean_framework_term((search_framework or {}).get("product_type"))
+    return term or fallback
+
+
+def _framework_side_summary(search_framework: dict[str, Any] | None, side: str) -> dict[str, Any]:
+    if not isinstance(search_framework, dict):
+        return {}
+    summary = search_framework.get(side) or {}
+    return summary if isinstance(summary, dict) else {}
+
+
+def _framework_query_alignment_insight(side: str, summary: dict[str, Any], product_type: str) -> str:
+    terms = [term for term in summary.get("strong_terms", []) if term]
+    strongest = terms[0] if terms else product_type
+    if summary.get("strong_path_count", 0) >= 2:
+        if side == "benchmark":
+            return f"Competitors track core {strongest} queries"
+        return f"Core {strongest} queries carry the search story"
+    if summary.get("meaningful_path_count", 0) >= 2:
+        return f"Query fit is clearest around {strongest}"
+    return f"Query fit is uneven across {product_type} searches"
+
+
+def _framework_breadth_insight(side: str, summary: dict[str, Any], product_type: str) -> str:
+    if summary.get("strong_path_count", 0) >= 3:
+        return f"Coverage extends across related {product_type} paths"
+    if summary.get("meaningful_path_count", 0) >= 3:
+        return f"Coverage is strongest in core {product_type} paths"
+    if side == "benchmark":
+        return "Benchmark visibility is focused on fewer search paths"
+    return f"Coverage is tighter across related {product_type} searches"
+
+
+def _framework_differentiator_insight(side: str, summary: dict[str, Any], product_type: str) -> str:
+    top_terms = [term for term in summary.get("top_terms", []) if term]
+    top_term = top_terms[0] if top_terms else product_type
+    if side == "benchmark":
+        if summary.get("strong_path_count", 0) >= 2:
+            return f"{top_term} adds clear competitive pressure"
+        return f"{top_term} is the clearest benchmark search lane"
+    if summary.get("strong_path_count", 0) >= 2:
+        return f"{top_term} is the clearest client search lane"
+    return f"{top_term} needs stronger client shelf support"
+
+
 def _client_presence_insight(client_display: str, client_positions: list[int], product_type: str) -> str:
     if not client_positions:
         return f"{client_display} is missing from leading {product_type} results"
@@ -577,12 +724,12 @@ def _shelf_breadth_insight(side: str, brand_count: int, product_type: str) -> st
             return "Brand variety gives shoppers a broader comparison set"
         if brand_count >= 2:
             return "Shelf variety supports basic shopper comparison"
-        return f"Shelf breadth is still narrow for {product_type}"
+        return f"Coverage is tighter across related {product_type} searches"
     if brand_count >= 3:
         return "Competing brands create a broader comparison set"
     if brand_count >= 2:
         return "Benchmark results show moderate brand variety"
-    return "Benchmark shelf breadth is limited"
+    return "Benchmark visibility is focused on fewer search paths"
 
 
 def _review_depth_insight(side: str, review_counts: list[int]) -> str:
@@ -655,6 +802,7 @@ def _add_search_candidate(
     reason: str,
     search_term: str,
     product_type: str,
+    framework_source: str = "",
 ) -> None:
     fitted = _fit_search_bullet(text)
     allowed, guard_reason = _search_language_allowed(fitted)
@@ -673,6 +821,7 @@ def _add_search_candidate(
             "reason": reason,
             "search_term": search_term,
             "product_type": product_type,
+            "framework_source": framework_source,
         }
     )
 
@@ -683,6 +832,7 @@ def _build_side_candidates(
     products: list[dict[str, Any]],
     client_brand: str,
     search_term: str,
+    search_framework: dict[str, Any] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     brands = _top_brands(products)
     badges = _badges(products)
@@ -696,7 +846,9 @@ def _build_side_candidates(
     median_reviews = int(median(review_counts)) if review_counts else 0
     max_reviews = max(review_counts) if review_counts else 0
     phrase_context = _search_phrase_context(search_term)
-    product_type = phrase_context["product_type"]
+    product_type = _framework_product_type(search_framework, phrase_context["product_type"])
+    framework_summary = _framework_side_summary(search_framework, side)
+    framework_available = bool((search_framework or {}).get("available") and framework_summary)
     candidates: list[dict[str, Any]] = []
     rejected: list[dict[str, str]] = []
 
@@ -714,6 +866,38 @@ def _build_side_candidates(
     assortment_score = scores.get("assortment_breadth", "Limited")
     review_score = scores.get("review_authority", "Missing")
     sponsored_score = scores.get("sponsored_competition", "Unknown")
+
+    if framework_available:
+        add(
+            text=_framework_query_alignment_insight(side, framework_summary, product_type),
+            family="query_alignment",
+            dimension="shared_search_query_alignment",
+            score=framework_summary.get("top_label") or keyword_score,
+            rank=94,
+            evidence=framework_summary.get("strong_terms", [])[:3] or framework_summary.get("top_terms", [])[:3],
+            reason="Slide 3 translated Slide 6 selected search paths into a query-alignment takeaway.",
+            framework_source="slide6_shared_search_framework",
+        )
+        add(
+            text=_framework_breadth_insight(side, framework_summary, product_type),
+            family="shelf_breadth",
+            dimension="shared_search_breadth",
+            score=framework_summary.get("top_label") or assortment_score,
+            rank=92,
+            evidence=framework_summary.get("meaningful_terms", [])[:4] or framework_summary.get("top_terms", [])[:4],
+            reason="Slide 3 summarized the representative breadth of Slide 6 search paths.",
+            framework_source="slide6_shared_search_framework",
+        )
+        add(
+            text=_framework_differentiator_insight(side, framework_summary, product_type),
+            family="side_specific",
+            dimension="shared_search_differentiator",
+            score=framework_summary.get("top_label") or sponsored_score,
+            rank=73,
+            evidence=framework_summary.get("top_terms", [])[:3],
+            reason="Slide 3 used the strongest Slide 6 row as a side-specific search takeaway.",
+            framework_source="slide6_shared_search_framework",
+        )
 
     if side == "current":
         if client_brand:
@@ -857,6 +1041,8 @@ def _build_side_candidates(
         },
         "client_positions": client_positions,
         "scores": scores,
+        "shared_search_framework_used": framework_available,
+        "shared_search_framework_summary": framework_summary,
         "ranked_candidate_themes": [
             {
                 "text": item["text"],
@@ -865,6 +1051,7 @@ def _build_side_candidates(
                 "rank": item["rank"],
                 "evidence": item["evidence"],
                 "reason": item["reason"],
+                "framework_source": item.get("framework_source", ""),
             }
             for item in ranked[:12]
         ],
@@ -931,6 +1118,7 @@ def _candidate_to_debug(candidate: dict[str, Any], *, overlap_note: str = "") ->
             "search_term": candidate["search_term"],
             "product_type": candidate["product_type"],
             "evidence": candidate["evidence"],
+            "framework_source": candidate.get("framework_source", ""),
         },
         "overlap_note": overlap_note,
     }
@@ -1210,7 +1398,12 @@ def _review_counts(products: list[dict[str, Any]]) -> list[int]:
     return counts
 
 
-def _build_side_payload(record: dict[str, Any] | None, side: str, client_name: str) -> dict[str, Any]:
+def _build_side_payload(
+    record: dict[str, Any] | None,
+    side: str,
+    client_name: str,
+    search_framework: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     if record is None:
         return {
             "source_row": None,
@@ -1246,7 +1439,7 @@ def _build_side_payload(record: dict[str, Any] | None, side: str, client_name: s
         client_brand=client_name,
         side=side,
     )
-    candidate_themes, side_debug = _build_side_candidates(side, scores, products, client_name, search_term)
+    candidate_themes, side_debug = _build_side_candidates(side, scores, products, client_name, search_term, search_framework)
     selected_candidates, selection_debug = _select_side_candidates(candidate_themes)
     bullets = [candidate["text"] for candidate in selected_candidates[:4]]
     bullet_debug = [_candidate_to_debug(candidate) for candidate in selected_candidates[:4]]
@@ -1284,11 +1477,16 @@ def _build_side_payload(record: dict[str, Any] | None, side: str, client_name: s
             "side_candidate_debug": side_debug,
             "selection_debug": selection_debug,
             "strategic_cue_debug": cue_context.get("debug", {}),
+            "shared_search_framework_used": side_debug.get("shared_search_framework_used", False),
         },
     }
 
 
-def build_slide3_search_benchmark(search_evidence: Any, client_name: str = "") -> dict[str, Any]:
+def build_slide3_search_benchmark(
+    search_evidence: Any,
+    client_name: str = "",
+    slide6_visibility: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     if isinstance(search_evidence, dict):
         current_records = list(search_evidence.get("current", []) or [])
         benchmark_records = list(search_evidence.get("benchmark", []) or [])
@@ -1298,20 +1496,21 @@ def build_slide3_search_benchmark(search_evidence: Any, client_name: str = "") -
 
     current_record, current_valid_records, current_warnings = _select_earliest_valid(current_records, "Current")
     benchmark_record, benchmark_valid_records, benchmark_warnings = _select_earliest_valid(benchmark_records, "Benchmark")
+    search_framework = _search_framework_from_slide6(slide6_visibility)
 
     client_label = _safe_text(client_name or "")
     current_representative = (
-        _representative_valid_record(current_record, current_valid_records)
+        _representative_valid_record(current_record, current_valid_records, search_framework)
         if current_record is not None
         else None
     )
     benchmark_representative = (
-        _representative_valid_record(benchmark_record, benchmark_valid_records)
+        _representative_valid_record(benchmark_record, benchmark_valid_records, search_framework)
         if benchmark_record is not None
         else None
     )
-    current_payload = _build_side_payload(current_representative, "current", client_label)
-    benchmark_payload = _build_side_payload(benchmark_representative, "benchmark", client_label)
+    current_payload = _build_side_payload(current_representative, "current", client_label, search_framework)
+    benchmark_payload = _build_side_payload(benchmark_representative, "benchmark", client_label, search_framework)
     overlap_debug = _apply_cross_side_overlap_suppression(current_payload, benchmark_payload)
 
     if current_record is None:
@@ -1361,5 +1560,6 @@ def build_slide3_search_benchmark(search_evidence: Any, client_name: str = "") -
                 .get("ranked_candidate_themes", [])
             ),
             "overlap_suppression": overlap_debug,
+            "shared_search_framework": search_framework,
         },
     }

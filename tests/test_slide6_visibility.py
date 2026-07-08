@@ -400,6 +400,48 @@ class Slide6VisibilityTests(unittest.TestCase):
         self.assertIn("row_generation", payload["debug"])
         self.assertIn("row_selection", payload["debug"])
 
+    def test_shared_search_identity_and_candidate_buckets_are_debugged(self) -> None:
+        payload = build_slide6_visibility(
+            [
+                _record(
+                    category="Beauty/Skin Care",
+                    product_type="Facial Cleansers",
+                    title="Hydrating Fragrance Free Foaming Face Cleanser for Sensitive Skin",
+                )
+            ],
+            [],
+            audit_metadata={"client_company_name": "Example Brand"},
+        )
+        identity = payload["debug"]["row_generation"]["shared_search_identity"]
+        self.assertIn("face cleanser", identity["product_type_anchor_terms"])
+        self.assertIn("skin care", identity["family_anchor_terms"])
+        self.assertTrue(identity["modifier_terms"])
+        self.assertTrue(identity["banned_negative_terms"])
+        self.assertIn("example brand", identity["client_brand_context"])
+        self.assertEqual(payload["debug"]["segment_packs_role"], "fallback_seed_only")
+
+        selection = payload["debug"]["row_selection"]
+        self.assertIn("product_type_anchor", selection["candidate_bucket_counts"])
+        self.assertTrue(selection["selected_rows"])
+        for row in payload["segments"]:
+            self.assertIn("candidate_bucket", row["debug"])
+            self.assertIn("identity_support", row["debug"])
+
+    def test_structured_only_category_membership_cannot_become_strong(self) -> None:
+        payload = build_slide6_visibility(
+            [
+                _record(category="Skin Care"),
+                _record(category="Skin Care"),
+                _record(category="Skin Care"),
+            ],
+            [],
+        )
+        skin_care = next(item for item in payload["segments"] if item["segment"] == "skin care")
+        self.assertEqual(skin_care["client_visibility"], "Moderate")
+        self.assertNotEqual(skin_care["client_visibility"], "Strong")
+        self.assertEqual(skin_care["debug"]["score_inputs"]["client"]["pdp_content_support"], 0)
+        self.assertEqual(skin_care["debug"]["score_inputs"]["client"]["guide_keyword_support"], 0)
+
     def test_generic_fallback_is_restrained_and_non_repetitive(self) -> None:
         payload = build_slide6_visibility(
             [

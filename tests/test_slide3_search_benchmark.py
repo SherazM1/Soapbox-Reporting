@@ -10,6 +10,7 @@ from PIL import Image
 from pptx import Presentation
 
 from app.audit_helpers.slide3_search_benchmark import build_slide3_search_benchmark
+from app.audit_helpers.slide6_visibility import build_slide6_visibility
 from audit_powerpoint_new import generate_new_audit_powerpoint_from_template
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -384,6 +385,133 @@ class Slide3SearchBenchmarkTests(unittest.TestCase):
         self.assertEqual(representative["benchmark"]["valid_capture_count"], 2)
         self.assertEqual(payload["current"]["product_count"], 3)
         self.assertEqual(payload["benchmark"]["product_count"], 3)
+
+    def test_slide3_uses_slide6_shared_search_framework_for_theme_selection(self) -> None:
+        slide6_payload = build_slide6_visibility(
+            [
+                {
+                    "category": "Beauty/Skin Care",
+                    "product_type": "Facial Cleansers",
+                    "product_title": "Hydrating Fragrance Free Face Cleanser for Sensitive Skin",
+                    "description": "Sensitive skin cleanser with hydrating fragrance free positioning.",
+                }
+            ],
+            [
+                {
+                    "category": "Beauty/Skin Care",
+                    "product_type": "Facial Cleansers",
+                    "product_title": "CeraVe Hydrating Facial Cleanser",
+                    "description": "Gentle facial cleanser for sensitive skin.",
+                }
+            ],
+            audit_metadata={"client_company_name": "Glow"},
+        )
+        payload = build_slide3_search_benchmark(
+            {
+                "current": [
+                    {
+                        "role": "Current",
+                        "sourceRow": 1,
+                        "searchTerm": "face cleanser",
+                        "screenshotDataUrl": _image_data_url((10, 20, 30)),
+                        "orderedMainResultProducts": [
+                            {"position": 6, "title": "Glow Face Cleanser Sensitive Skin", "brand": "Glow", "reviewCount": 28},
+                        ],
+                    }
+                ],
+                "benchmark": [
+                    {
+                        "role": "Benchmark",
+                        "sourceRow": 2,
+                        "searchTerm": "face cleanser",
+                        "screenshotDataUrl": _image_data_url((30, 20, 10)),
+                        "orderedMainResultProducts": [
+                            {"position": 1, "title": "CeraVe Hydrating Facial Cleanser", "brand": "CeraVe", "reviewCount": 1200, "sponsored": True},
+                            {"position": 2, "title": "Cetaphil Gentle Skin Cleanser", "brand": "Cetaphil", "reviewCount": 900, "sponsored": True},
+                        ],
+                    }
+                ],
+            },
+            client_name="Glow",
+            slide6_visibility=slide6_payload,
+        )
+        self.assertEqual(len(payload["current"]["bullets"]), 4)
+        self.assertEqual(len(payload["benchmark"]["bullets"]), 4)
+        all_text = " ".join(payload["current"]["bullets"] + payload["benchmark"]["bullets"]).lower()
+        self.assertIn("face cleanser", all_text)
+        self.assertNotIn("product_type_anchor", all_text)
+        self.assertNotIn("candidate_bucket", all_text)
+        self.assertNotIn("benchmark shelf breadth is limited", all_text)
+        self.assertNotIn("shelf breadth is concentrated", all_text)
+        self.assertTrue(payload["current"]["debug"]["shared_search_framework_used"])
+        self.assertTrue(payload["benchmark"]["debug"]["shared_search_framework_used"])
+        self.assertEqual(
+            payload["debug"]["shared_search_framework"]["source"],
+            "slide6_shared_search_framework",
+        )
+        current_framework_dims = {
+            row["dimension"]
+            for row in payload["current"]["bullet_debug"]
+            if row["evidence_summary"]["framework_source"]
+        }
+        self.assertIn("shared_search_query_alignment", current_framework_dims)
+        self.assertIn("shared_search_breadth", current_framework_dims)
+
+    def test_slide3_shared_framework_keeps_outlier_query_from_dominating(self) -> None:
+        slide6_payload = build_slide6_visibility(
+            [
+                {
+                    "category": "Beauty/Skin Care",
+                    "product_type": "Facial Cleansers",
+                    "product_title": "Hydrating Face Cleanser",
+                }
+            ],
+            [],
+            audit_metadata={"client_company_name": "Glow"},
+        )
+        payload = build_slide3_search_benchmark(
+            {
+                "current": [
+                    {
+                        "role": "Current",
+                        "sourceRow": 1,
+                        "searchTerm": "moisturizer",
+                        "screenshotDataUrl": _image_data_url((1, 2, 3)),
+                        "orderedMainResultProducts": [
+                            {"position": 9, "title": "Unrelated Moisturizer", "brand": "Other", "reviewCount": 12},
+                        ],
+                    },
+                    {
+                        "role": "Current",
+                        "sourceRow": 2,
+                        "searchTerm": "face cleanser",
+                        "screenshotDataUrl": _image_data_url((4, 5, 6)),
+                        "orderedMainResultProducts": [
+                            {"position": 5, "title": "Glow Hydrating Face Cleanser", "brand": "Glow", "reviewCount": 34},
+                        ],
+                    },
+                    {
+                        "role": "Current",
+                        "sourceRow": 3,
+                        "searchTerm": "face cleanser",
+                        "screenshotDataUrl": _image_data_url((7, 8, 9)),
+                        "orderedMainResultProducts": [
+                            {"position": 7, "title": "Glow Sensitive Face Cleanser", "brand": "Glow", "reviewCount": 42},
+                        ],
+                    },
+                ],
+                "benchmark": [],
+            },
+            client_name="Glow",
+            slide6_visibility=slide6_payload,
+        )
+        self.assertEqual(payload["current"]["search_term"], "face cleanser")
+        all_text = " ".join(payload["current"]["bullets"]).lower()
+        self.assertIn("face cleanser", all_text)
+        self.assertNotIn("moisturizer queries carry", all_text)
+        representative = payload["debug"]["representative_evidence"]["current"]
+        self.assertEqual(representative["valid_capture_count"], 3)
+        self.assertIn("face cleanser", representative["framework_terms_considered"])
 
     @unittest.skipUnless(TEMPLATE.exists(), "New strategic template is unavailable")
     def test_slide3_generation_populates_screenshots_and_text_without_changing_constants(self) -> None:

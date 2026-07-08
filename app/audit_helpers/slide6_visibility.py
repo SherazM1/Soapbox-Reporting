@@ -334,26 +334,205 @@ def _guide_product_data(identity: dict[str, Any]) -> dict[str, Any]:
     return data if isinstance(data, dict) else {}
 
 
+def _unique_queries(values: list[Any], limit: int | None = None) -> list[str]:
+    seen: set[str] = set()
+    queries: list[str] = []
+    for value in values:
+        query = _display_query(value)
+        key = _normalize(query)
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        queries.append(query)
+        if limit is not None and len(queries) >= limit:
+            break
+    return queries
+
+
+def _brand_terms(records: list[dict[str, Any]], metadata: dict[str, Any] | None = None) -> list[str]:
+    metadata = metadata or {}
+    values: list[Any] = [
+        metadata.get("client_company_name"),
+        metadata.get("client_name"),
+        metadata.get("brand"),
+        metadata.get("client_brand"),
+    ]
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        values.extend(
+            [
+                record.get("brand"),
+                record.get("brand_name"),
+                record.get("manufacturer"),
+                record.get("seller_name"),
+            ]
+        )
+    return _unique_queries(values, 8)
+
+
+def _support_terms(*groups: list[str]) -> dict[str, int]:
+    support: Counter[str] = Counter()
+    for weight, terms in enumerate(groups, start=1):
+        for term in terms:
+            normalized = _normalize(term)
+            if normalized:
+                support[normalized] += weight
+    return dict(support)
+
+
+def _build_search_identity(
+    records: list[dict[str, Any]],
+    identity: dict[str, Any],
+    pack: dict[str, Any],
+    audit_metadata: dict[str, Any] | None = None,
+    competitor_records: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    product_data = _guide_product_data(identity)
+    negative_keywords = _unique_queries(_as_list(product_data.get("negative_keywords")), 20)
+    product = _singular_query(identity.get("product_type_display") or _common_value(records, "product_type", "subcategory"))
+    family = _singular_query(identity.get("family_display") or "")
+    category = _singular_query(identity.get("category_display") or _common_value(records, "category") or pack.get("category_phrase"))
+    aliases = _unique_queries(_as_list(product_data.get("aliases")), 12)
+    title_keywords = _unique_queries(_as_list(product_data.get("title_keywords")), 16)
+    context_keywords = _unique_queries(_as_list(product_data.get("context_keywords")), 16)
+    attributes = _unique_queries(
+        [
+            value
+            for value in _as_list(product_data.get("attributes"))
+            if _normalize(value) and _normalize(value) not in ATTRIBUTE_STOPWORDS
+        ],
+        12,
+    )
+    search_terms = _unique_queries(_extract_search_evidence(records), 16)
+    title_phrases = _unique_queries(_best_title_phrases(records, tuple(negative_keywords)), 12)
+    modifier_markers = {
+        "sensitive",
+        "hydrating",
+        "fragrance",
+        "free",
+        "natural",
+        "organic",
+        "low",
+        "sugar",
+        "protein",
+        "creamy",
+        "gentle",
+    }
+    form_markers = {"wash", "foam", "foaming", "gel", "cream", "stick", "bar", "spray"}
+    modifier_terms = _unique_queries(
+        [
+            term
+            for term in [*context_keywords, *attributes, *title_phrases, *search_terms]
+            if set(_normalize(term).split()) & modifier_markers
+        ],
+        16,
+    )
+    form_terms = _unique_queries(
+        [
+            term
+            for term in [*title_keywords, *context_keywords, *attributes, *title_phrases, *search_terms]
+            if set(_normalize(term).split()) & form_markers
+        ],
+        12,
+    )
+    category_anchors = _unique_queries([category, pack.get("category_phrase")], 6)
+    family_anchors = _unique_queries([family], 6)
+    product_type_anchors = _unique_queries([product, *aliases[:6], *title_keywords[:8]], 12)
+    adjacent_terms = _unique_queries(
+        [
+            segment.get("display_name")
+            for segment in pack.get("segments", ())
+            if isinstance(segment, dict)
+        ],
+        10,
+    )
+    support_by_family = {
+        "category_anchors": _support_terms(category_anchors, search_terms),
+        "family_anchors": _support_terms(family_anchors, search_terms),
+        "product_type_anchors": _support_terms(product_type_anchors, title_phrases, search_terms),
+        "modifier_terms": _support_terms(modifier_terms, title_phrases, context_keywords),
+        "attribute_form_terms": _support_terms(form_terms, attributes, title_phrases),
+        "adjacent_discovery_terms": _support_terms(adjacent_terms),
+    }
+    return {
+        "category_key": identity.get("category_key"),
+        "category_anchor_terms": category_anchors,
+        "family_anchor_terms": family_anchors,
+        "product_type_anchor_terms": product_type_anchors,
+        "modifier_terms": modifier_terms,
+        "attribute_form_terms": form_terms,
+        "adjacent_discovery_terms": adjacent_terms,
+        "banned_negative_terms": negative_keywords,
+        "client_brand_context": _brand_terms(records, audit_metadata),
+        "competitor_brand_context": _brand_terms(competitor_records or []),
+        "source_terms": {
+            "aliases": aliases,
+            "title_keywords": title_keywords,
+            "context_keywords": context_keywords,
+            "attributes": attributes,
+            "search_evidence": search_terms,
+            "title_phrases": title_phrases,
+        },
+        "support_by_term_family": support_by_family,
+        "confidence": {
+            "style_product_type_score": identity.get("style_product_type_score"),
+            "has_search_evidence": bool(search_terms),
+            "has_guide_product_type": bool(product_data),
+            "has_title_language": bool(title_phrases),
+        },
+    }
+
+
+def _candidate_bucket(query: str, row_type: str, source: str, layer: str, search_identity: dict[str, Any]) -> str:
+    normalized = _normalize(query)
+    if source == "resolved_category_anchor":
+        return "category_anchor"
+    if source == "resolved_family_anchor":
+        return "family_anchor"
+    if layer == "product_type_anchor" or source == "resolved_identity":
+        return "product_type_anchor"
+    if layer == "modifier_attribute":
+        return "modifier"
+    if layer == "form_variant" or row_type == "variant":
+        return "attribute_form"
+    if layer == "adjacent_discovery" or row_type == "adjacent":
+        return "adjacent_discovery"
+    if normalized in {_normalize(term) for term in search_identity.get("product_type_anchor_terms", [])}:
+        return "product_type_anchor"
+    return "modifier" if row_type == "attribute" else "adjacent_discovery"
+
+
+def _support_family_for_bucket(bucket: str) -> str:
+    return {
+        "category_anchor": "category_anchors",
+        "family_anchor": "family_anchors",
+        "product_type_anchor": "product_type_anchors",
+        "modifier": "modifier_terms",
+        "attribute_form": "attribute_form_terms",
+        "adjacent_discovery": "adjacent_discovery_terms",
+    }.get(bucket, bucket)
+
+
 def _build_query_candidates(
     records: list[dict[str, Any]],
     identity: dict[str, Any],
     pack: dict[str, Any],
+    audit_metadata: dict[str, Any] | None = None,
+    competitor_records: list[dict[str, Any]] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    product_data = _guide_product_data(identity)
-    negative_keywords = tuple(_display_query(value) for value in _as_list(product_data.get("negative_keywords")))
-    product = _singular_query(identity.get("product_type_display") or _common_value(records, "product_type", "subcategory"))
-    family = _singular_query(identity.get("family_display") or "")
-    category = _singular_query(identity.get("category_display") or _common_value(records, "category"))
-    aliases = [_display_query(value) for value in _as_list(product_data.get("aliases"))]
-    title_keywords = [_display_query(value) for value in _as_list(product_data.get("title_keywords"))]
-    context_keywords = [_display_query(value) for value in _as_list(product_data.get("context_keywords"))]
-    attributes = [
-        _display_query(value)
-        for value in _as_list(product_data.get("attributes"))
-        if _normalize(value) and _normalize(value) not in ATTRIBUTE_STOPWORDS
-    ]
-    search_terms = _extract_search_evidence(records)
-    title_phrases = _best_title_phrases(records, negative_keywords)
+    search_identity = _build_search_identity(records, identity, pack, audit_metadata, competitor_records)
+    source_terms = search_identity["source_terms"]
+    negative_keywords = tuple(search_identity["banned_negative_terms"])
+    product = (search_identity["product_type_anchor_terms"] or [""])[0]
+    family = (search_identity["family_anchor_terms"] or [""])[0]
+    category = (search_identity["category_anchor_terms"] or [""])[0]
+    aliases = source_terms["aliases"]
+    title_keywords = source_terms["title_keywords"]
+    context_keywords = source_terms["context_keywords"]
+    attributes = source_terms["attributes"]
+    search_terms = source_terms["search_evidence"]
+    title_phrases = source_terms["title_phrases"]
     pool: list[dict[str, Any]] = []
 
     def add(
@@ -369,8 +548,11 @@ def _build_query_candidates(
         if not ok:
             rejected.append({"query": _display_query(query), "source": source, "reason": reason})
             return
-        base = product if product and product != "category" else query
         support = tuple(term for term in (product, family, category) if term and _normalize(term) != _normalize(query))
+        resolved_layer = layer or _query_layer(query, row_type, source)
+        bucket = _candidate_bucket(query, row_type, source, resolved_layer, search_identity)
+        term_support = search_identity["support_by_term_family"].get(_support_family_for_bucket(bucket), {})
+        support_key = _normalize(query)
         pool.append(
             _candidate(
                 query,
@@ -381,9 +563,15 @@ def _build_query_candidates(
                 negative_terms=negative_keywords,
                 base_score=score,
                 guide_support=guide_support,
-                layer=layer,
+                layer=resolved_layer,
             )
         )
+        pool[-1]["candidate_bucket"] = bucket
+        pool[-1]["identity_support"] = {
+            "bucket": bucket,
+            "term_family_support": term_support.get(support_key, 0),
+            "brand_context_available": bool(search_identity["client_brand_context"]),
+        }
 
     rejected: list[dict[str, str]] = []
     for query in (product,):
@@ -504,9 +692,17 @@ def _build_query_candidates(
         key = _query_cluster_key(item["display_name"])
         existing = deduped.get(key)
         if not existing or float(item.get("base_score", 0)) > float(existing.get("base_score", 0)):
+            if existing:
+                item["positive_terms"] = tuple(dict.fromkeys((*item.get("positive_terms", ()), *existing.get("positive_terms", ()))))
+                item["supporting_terms"] = tuple(dict.fromkeys((*item.get("supporting_terms", ()), *existing.get("supporting_terms", ()))))
+                item["guide_support"] = list(dict.fromkeys([*item.get("guide_support", []), *existing.get("guide_support", [])]))
+                item["merged_sources"] = list(dict.fromkeys([*existing.get("merged_sources", []), existing.get("candidate_source")]))
             deduped[key] = item
         elif existing:
             existing.setdefault("merged_sources", []).append(item.get("candidate_source"))
+            existing["positive_terms"] = tuple(dict.fromkeys((*existing.get("positive_terms", ()), *item.get("positive_terms", ()))))
+            existing["supporting_terms"] = tuple(dict.fromkeys((*existing.get("supporting_terms", ()), *item.get("supporting_terms", ()))))
+            existing["guide_support"] = list(dict.fromkeys([*existing.get("guide_support", []), *item.get("guide_support", [])]))
     return list(deduped.values()), {
         "identity": {
             "category_key": identity.get("category_key"),
@@ -515,6 +711,7 @@ def _build_query_candidates(
             "style_guide_path": identity.get("style_guide_path"),
             "style_product_type_score": identity.get("style_product_type_score"),
         },
+        "shared_search_identity": search_identity,
         "guide_terms_used": {
             "aliases": aliases[:8],
             "title_keywords": title_keywords[:8],
@@ -601,6 +798,10 @@ def _rank_candidate(
         "adjacent_discovery": -0.5,
     }.get(layer, 0.0)
     realism = _query_realism_score(str(definition.get("display_name")))
+    product_type_fit = _product_type_fit_score(definition)
+    guide_support_score = min(len(definition.get("guide_support") or []) * 1.5, 3.0)
+    identity_support_score = min(float(((definition.get("identity_support") or {}).get("term_family_support", 0)) or 0), 4.0)
+    distinctiveness = _query_distinctiveness_score(str(definition.get("display_name")), str(definition.get("candidate_bucket") or ""))
     quality_penalty, quality_reasons = _query_quality_penalty(definition, evidence_support)
     score = (
         float(definition.get("base_score", 0))
@@ -610,6 +811,10 @@ def _rank_candidate(
         + evidence_support * 3
         + benchmark_usefulness
         + realism
+        + product_type_fit
+        + guide_support_score
+        + identity_support_score
+        + distinctiveness
         - quality_penalty
     )
     factors = {
@@ -620,13 +825,54 @@ def _rank_candidate(
         "evidence_support": evidence_support,
         "benchmark_usefulness": benchmark_usefulness,
         "shopper_query_realism": realism,
+        "product_type_fit": product_type_fit,
+        "guide_support": guide_support_score,
+        "identity_support": identity_support_score,
+        "distinctiveness": distinctiveness,
         "quality_penalty": quality_penalty,
         "quality_penalty_reasons": quality_reasons,
         "query_layer": layer,
+        "candidate_bucket": definition.get("candidate_bucket"),
         "client_supporting_records": client_summary["supporting_records"],
         "competitor_supporting_records": competitor_summary["supporting_records"],
     }
     return score, factors
+
+
+def _product_type_fit_score(definition: dict[str, Any]) -> float:
+    bucket = str(definition.get("candidate_bucket") or "")
+    source = str(definition.get("candidate_source") or "")
+    layer = str(definition.get("query_layer") or "")
+    if bucket == "product_type_anchor" or source == "resolved_identity":
+        return 4.0
+    if bucket == "modifier" and layer == "modifier_attribute":
+        return 3.0
+    if bucket == "attribute_form":
+        return 2.0
+    if bucket == "family_anchor":
+        return 1.5
+    if bucket == "category_anchor":
+        return 0.5
+    if bucket == "adjacent_discovery":
+        return -0.5
+    return 0.0
+
+
+def _query_distinctiveness_score(query: str, bucket: str) -> float:
+    normalized = _normalize(query)
+    words = normalized.split()
+    if bucket == "category_anchor" and len(words) <= 2:
+        return -1.0
+    if bucket == "adjacent_discovery":
+        return -0.5
+    score = 0.0
+    if 2 <= len(words) <= 4:
+        score += 1.5
+    if any(term in normalized for term in ("sensitive", "fragrance free", "low sugar", "natural", "hydrating", "foaming")):
+        score += 1.0
+    if normalized in {"product", "category", "option", "routine"}:
+        score -= 4.0
+    return score
 
 
 def _query_quality_penalty(definition: dict[str, Any], evidence_support: int) -> tuple[float, list[str]]:
@@ -694,7 +940,6 @@ def _query_quality_penalty(definition: dict[str, Any], evidence_support: int) ->
         product_or_concern_anchors = {
             "cleanser",
             "wash",
-            "skin",
             "butter",
             "jam",
             "spread",
@@ -707,6 +952,36 @@ def _query_quality_penalty(definition: dict[str, Any], evidence_support: int) ->
         elif not (benefit_or_concern_terms & set(words)):
             penalty += 5.0
             reasons.append("unsupported_title_fragment")
+    if source == "actual_pdp_title_language" and row_type == "attribute" and len(words) <= 2:
+        product_or_concern_anchors = {
+            "cleanser",
+            "wash",
+            "butter",
+            "jam",
+            "spread",
+            "moisturizer",
+            "cleaner",
+        }
+        benefit_or_concern_terms = {
+            "hydrating",
+            "sensitive",
+            "gentle",
+            "natural",
+            "organic",
+            "low",
+            "sugar",
+            "protein",
+            "fragrance",
+            "free",
+        }
+        if benefit_or_concern_terms & set(words) and not (product_or_concern_anchors & set(words)):
+            penalty += 2.0
+            reasons.append("prefer_product_anchored_modifier")
+    if str(definition.get("candidate_bucket") or "") == "modifier" and len(words) <= 2:
+        product_anchors = {"cleanser", "wash", "butter", "jam", "spread", "moisturizer", "cleaner"}
+        if not (product_anchors & set(words)):
+            penalty += 1.5
+            reasons.append("modifier_without_product_anchor")
     if source == "segment_pack_fallback_seed" and evidence_support <= 0 and row_type != "adjacent":
         penalty += 3.0
         reasons.append("unsupported_fallback_attribute")
@@ -747,6 +1022,7 @@ def _select_final_query_rows(
     selected_keys: set[str] = set()
     type_counts: Counter[str] = Counter()
     layer_counts: Counter[str] = Counter()
+    bucket_counts: Counter[str] = Counter()
     rejected_similar: list[dict[str, str]] = []
 
     def can_add(candidate: dict[str, Any]) -> tuple[bool, str]:
@@ -758,6 +1034,17 @@ def _select_final_query_rows(
             return False, similarity_reason
         row_type = str(candidate.get("row_type"))
         layer = str(candidate.get("query_layer") or "")
+        bucket = str(candidate.get("candidate_bucket") or "")
+        bucket_caps = {
+            "category_anchor": 1,
+            "family_anchor": 1,
+            "product_type_anchor": 2,
+            "modifier": 4,
+            "attribute_form": 1,
+            "adjacent_discovery": 1,
+        }
+        if bucket in bucket_caps and bucket_counts[bucket] >= bucket_caps[bucket]:
+            return False, f"{bucket}_quota_met"
         if row_type == "core" and type_counts[row_type] >= 2:
             return False, "core_row_quota_met"
         if row_type == "attribute" and type_counts[row_type] >= 4:
@@ -777,13 +1064,28 @@ def _select_final_query_rows(
             factors = candidate.get("ranking_factors") or {}
             evidence_support = int(factors.get("evidence_support", 0) or 0)
             source = str(candidate.get("candidate_source") or "")
+            score = float(candidate.get("selection_score", 0) or 0)
+            if score < 10:
+                return False, "weak_trailing_score"
             if source == "segment_pack_fallback_seed" and evidence_support <= 0 and penalty >= 5:
                 return False, "weak_trailing_fallback_row"
             if layer in {"form_variant", "adjacent_discovery"} and evidence_support <= 0:
                 return False, "weak_trailing_layer_row"
         return True, "selected"
 
-    for score, candidate, factors in ranked:
+    def ranked_in_bucket(bucket: str) -> list[tuple[float, dict[str, Any], dict[str, Any]]]:
+        return [item for item in ranked if str(item[1].get("candidate_bucket") or "") == bucket]
+
+    selection_passes: list[tuple[float, dict[str, Any], dict[str, Any]]] = [
+        *ranked_in_bucket("product_type_anchor")[:1],
+        *ranked_in_bucket("family_anchor")[:1],
+    ]
+    if len(selection_passes) < 2:
+        selection_passes.extend(ranked_in_bucket("category_anchor")[: 2 - len(selection_passes)])
+    seen_pass_ids = {id(item[1]) for item in selection_passes}
+    selection_passes.extend(item for item in ranked if id(item[1]) not in seen_pass_ids)
+
+    for score, candidate, factors in selection_passes:
         candidate = dict(candidate)
         candidate["ranking_factors"] = factors
         candidate["selection_score"] = round(score, 2)
@@ -795,6 +1097,7 @@ def _select_final_query_rows(
         selected_keys.add(_query_cluster_key(candidate["display_name"]))
         type_counts[str(candidate.get("row_type"))] += 1
         layer_counts[str(candidate.get("query_layer") or "")] += 1
+        bucket_counts[str(candidate.get("candidate_bucket") or "")] += 1
         if len(selected) == 6:
             break
     if len(selected) < 6:
@@ -820,6 +1123,7 @@ def _select_final_query_rows(
             selected_keys.add(key)
             type_counts[str(candidate.get("row_type"))] += 1
             layer_counts[str(candidate.get("query_layer") or "")] += 1
+            bucket_counts[str(candidate.get("candidate_bucket") or "")] += 1
     return selected[:6], {
         "ranked_candidates": [
             {
@@ -827,6 +1131,7 @@ def _select_final_query_rows(
                 "source": candidate.get("candidate_source"),
                 "row_type": candidate.get("row_type"),
                 "query_layer": candidate.get("query_layer"),
+                "candidate_bucket": candidate.get("candidate_bucket"),
                 "score": round(score, 2),
                 "ranking_factors": factors,
             }
@@ -835,6 +1140,17 @@ def _select_final_query_rows(
         "rejected_similar_rows": rejected_similar[:20],
         "row_type_counts": dict(type_counts),
         "query_layer_counts": dict(layer_counts),
+        "candidate_bucket_counts": dict(bucket_counts),
+        "selected_rows": [
+            {
+                "query": item.get("display_name"),
+                "candidate_bucket": item.get("candidate_bucket"),
+                "query_layer": item.get("query_layer"),
+                "score": item.get("selection_score"),
+                "reason": "balanced_row_mix",
+            }
+            for item in selected[:6]
+        ],
         "selected_row_scores": [item.get("selection_score") for item in selected[:6]],
         "lowest_selected_row_score": min(
             (float(item.get("selection_score", 0) or 0) for item in selected[:6]),
@@ -1080,6 +1396,8 @@ def _score_record(record: dict[str, Any], definition: dict[str, Any]) -> dict[st
         "structured": bool(structured_match_count),
         "score_components": {
             "direct_query_match": bool(structured_match_count or title_match_count),
+            "structured_query_match": bool(structured_match_count),
+            "title_query_match": bool(title_match_count),
             "title_product_type_support": bool(title_match_count or structured_match_count),
             "pdp_content_support": bool(text_match_count),
             "guide_keyword_support": bool(guide_match_count),
@@ -1094,6 +1412,10 @@ def _visibility_label(
     analyzed_count: int,
     meaningful_count: int,
     structured_support_count: int = 0,
+    direct_fit_count: int = 0,
+    pdp_support_count: int = 0,
+    guide_support_count: int = 0,
+    broad_category_only: bool = False,
 ) -> str:
     if analyzed_count <= 0:
         return "Limited"
@@ -1115,6 +1437,11 @@ def _visibility_label(
         if meaningful_count <= 0:
             return "Partial" if weighted_support > 0 else "Limited"
         if label == "Strong" and (meaningful_count < 2 or structured_support_count < 2):
+            return "Moderate"
+    if label == "Strong":
+        aligned_signal_count = sum(1 for value in (direct_fit_count, pdp_support_count, guide_support_count) if value > 0)
+        has_signal_context = any(value > 0 for value in (direct_fit_count, pdp_support_count, guide_support_count))
+        if broad_category_only or (has_signal_context and aligned_signal_count < 2):
             return "Moderate"
     return label
 
@@ -1153,6 +1480,8 @@ def _score_group(records: list[dict[str, Any]], definition: dict[str, Any]) -> d
         )
     score_components = {
         "direct_query_fit": sum(1 for match in supporting if (match.get("score_components") or {}).get("direct_query_match")),
+        "structured_query_fit": sum(1 for match in supporting if (match.get("score_components") or {}).get("structured_query_match")),
+        "title_query_fit": sum(1 for match in supporting if (match.get("score_components") or {}).get("title_query_match")),
         "title_product_type_support": sum(
             1 for match in supporting if (match.get("score_components") or {}).get("title_product_type_support")
         ),
@@ -1164,12 +1493,23 @@ def _score_group(records: list[dict[str, Any]], definition: dict[str, Any]) -> d
         "meaningful_count": meaningful_count,
         "structured_support_count": structured_support_count,
     }
+    broad_category_only = bool(
+        definition.get("candidate_bucket") == "category_anchor"
+        and score_components["structured_query_fit"] > 0
+        and score_components["title_query_fit"] == 0
+        and score_components["pdp_content_support"] == 0
+        and score_components["guide_keyword_support"] == 0
+    )
     label = _validate_visibility_label(
         _visibility_label(
             weighted_support,
             analyzed_count,
             meaningful_count,
             structured_support_count,
+            score_components["direct_query_fit"],
+            score_components["pdp_content_support"],
+            score_components["guide_keyword_support"],
+            broad_category_only,
         ),
         warnings,
         str(definition.get("segment_id") or "segment"),
@@ -1186,12 +1526,14 @@ def _score_group(records: list[dict[str, Any]], definition: dict[str, Any]) -> d
         "ocr_only_count": ocr_only_count,
         "weighted_support": round(weighted_support, 2),
         "score_components": score_components,
-        "label_reason": _label_reason(label, score_components),
+        "label_reason": _label_reason(label, score_components, broad_category_only),
         "warnings": warnings,
     }
 
 
-def _label_reason(label: str, components: dict[str, Any]) -> str:
+def _label_reason(label: str, components: dict[str, Any], broad_category_only: bool = False) -> str:
+    if broad_category_only:
+        return "Capped below Strong because broad category membership was not supported by row-specific title, PDP, or guide signals."
     if label == "Strong":
         return "Strong because direct row fit is supported by multiple aligned evidence sources."
     if label == "Moderate":
@@ -1243,7 +1585,14 @@ def build_slide6_visibility(
         warnings.append("No controlled category pack matched; restrained generic segments were used.")
 
     segments: list[dict[str, Any]] = []
-    query_candidates, candidate_debug = _build_query_candidates(primary or competitors, identity, pack)
+    candidate_records = [*primary, *competitors] or (primary or competitors)
+    query_candidates, candidate_debug = _build_query_candidates(
+        candidate_records,
+        identity,
+        pack,
+        audit_metadata,
+        competitors,
+    )
     definitions, selection_debug = _select_final_query_rows(query_candidates, primary, competitors, warnings)
     if len(definitions) < 6:
         definitions = _six_distinct_segments(
@@ -1293,6 +1642,8 @@ def build_slide6_visibility(
                     "candidate_source": definition.get("candidate_source", "segment_pack_fallback"),
                     "row_type": definition.get("row_type", "fallback"),
                     "query_layer": definition.get("query_layer", ""),
+                    "candidate_bucket": definition.get("candidate_bucket", ""),
+                    "identity_support": definition.get("identity_support", {}),
                     "ranking_factors": definition.get("ranking_factors", {}),
                     "selection_score": definition.get("selection_score"),
                     "guide_support_used": definition.get("guide_support", []),

@@ -574,6 +574,7 @@ def build_audit_export_plan(
     slide3_search_benchmark = build_slide3_search_benchmark(
         search_evidence or {"current": [], "benchmark": [], "all": []},
         client_name=audit_metadata.get("client_company_name") or audit_metadata.get("client_name") or "",
+        slide6_visibility=slide6_visibility,
     )
     brand_shop_payload = brand_shop_evidence or {
         "client": [],
