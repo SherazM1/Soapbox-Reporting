@@ -266,6 +266,9 @@ class Slide3SearchBenchmarkTests(unittest.TestCase):
             "visible reviews average near",
             "median review count near",
             "review counts near",
+            "query fit is uneven",
+            "query fit is clearest",
+            "query fit varies",
         ):
             self.assertNotIn(phrase, forbidden)
         self.assertFalse(any(re.search(r"\d{3,}", bullet) for bullet in all_bullets))
@@ -456,6 +459,13 @@ class Slide3SearchBenchmarkTests(unittest.TestCase):
         }
         self.assertIn("shared_search_query_alignment", current_framework_dims)
         self.assertIn("shared_search_breadth", current_framework_dims)
+        current_lead = payload["current"]["bullet_debug"][0]
+        benchmark_lead = payload["benchmark"]["bullet_debug"][0]
+        self.assertNotEqual(current_lead["bullet_family"], benchmark_lead["bullet_family"])
+        self.assertEqual(current_lead["bullet_family"], "side_specific")
+        self.assertEqual(benchmark_lead["bullet_family"], "shelf_breadth")
+        self.assertNotIn("query fit", payload["current"]["bullets"][0].lower())
+        self.assertNotIn("query fit", payload["benchmark"]["bullets"][0].lower())
 
     def test_slide3_shared_framework_keeps_outlier_query_from_dominating(self) -> None:
         slide6_payload = build_slide6_visibility(

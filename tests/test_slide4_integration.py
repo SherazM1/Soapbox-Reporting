@@ -479,15 +479,26 @@ class Slide4IntegrationTest(unittest.TestCase):
                 for paragraph in shape.text_frame.paragraphs
                 if paragraph.text.strip()
             }
+            rendered_margins = {
+                (
+                    shape.text_frame.margin_top,
+                    shape.text_frame.margin_bottom,
+                    shape.text_frame.margin_left,
+                    shape.text_frame.margin_right,
+                )
+                for shape in bullet_shapes
+            }
             self.assertEqual(len(rendered_font_sizes), 1)
             self.assertEqual(rendered_font_sizes, {Pt(11)})
             self.assertEqual(rendered_line_spacing, {0.9})
             self.assertEqual(rendered_space_after, {Pt(2)})
+            self.assertEqual(rendered_margins, {(Pt(0), Pt(0), Pt(0), Pt(0))})
             self.assertEqual(payload["debug"]["render_targets"]["target_bullet_count"], 6)
             self.assertEqual(
                 set(payload["debug"]["render_targets"]["final_bullet_counts"].values()),
                 {6},
             )
+            self.assertEqual(len({shape.top for shape in bullet_shapes}), 1)
             centers = [shape.left + shape.width / 2 for shape in bullet_shapes]
             self.assertAlmostEqual(
                 sum(centers) / 2,

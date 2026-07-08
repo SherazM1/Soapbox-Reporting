@@ -1854,9 +1854,21 @@ def _apply_bullet_spacing_and_font(
     font_name: str | None = None,
     line_spacing: float = 1.0,
     space_after: int = 0,
+    margin_top: int | None = None,
+    margin_bottom: int | None = None,
+    margin_left: int | None = None,
+    margin_right: int | None = None,
 ) -> None:
     text_frame = shape.text_frame
     text_frame.word_wrap = True
+    if margin_top is not None:
+        text_frame.margin_top = Pt(margin_top)
+    if margin_bottom is not None:
+        text_frame.margin_bottom = Pt(margin_bottom)
+    if margin_left is not None:
+        text_frame.margin_left = Pt(margin_left)
+    if margin_right is not None:
+        text_frame.margin_right = Pt(margin_right)
     if font_size is not None:
         text_frame.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
     for paragraph in text_frame.paragraphs:
@@ -1886,6 +1898,10 @@ def _fit_bullet_shape_group(
     font_name: str | None = None,
     line_spacing: float = 1.0,
     space_after: int = 0,
+    margin_top: int | None = None,
+    margin_bottom: int | None = None,
+    margin_left: int | None = None,
+    margin_right: int | None = None,
 ) -> dict[str, dict[str, Any]]:
     prepared: dict[str, dict[str, Any]] = {}
     global_font = base_font_size
@@ -1927,10 +1943,20 @@ def _fit_bullet_shape_group(
             font_name=font_name,
             line_spacing=line_spacing,
             space_after=space_after,
+            margin_top=margin_top,
+            margin_bottom=margin_bottom,
+            margin_left=margin_left,
+            margin_right=margin_right,
         )
         data["font_fallback"] = global_font
         data["font_size_selected"] = global_font
         data["font_name_selected"] = font_name
+        data["line_spacing_selected"] = line_spacing
+        data["space_after_selected"] = space_after
+        data["margin_top_selected"] = margin_top
+        data["margin_bottom_selected"] = margin_bottom
+        data["margin_left_selected"] = margin_left
+        data["margin_right_selected"] = margin_right
         data["shared_fallback_font_size_used"] = (
             base_font_size is not None
             and global_font != base_font_size
@@ -2377,6 +2403,13 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
         }
         render_pairs = [(index, column) for index, column in enumerate(columns)]
 
+    shared_bullet_top = min(
+        int((two_column_bounds.get(index, {}) or {}).get("bullet", bullet_bounds[index])[1])
+        if two_column_bounds
+        else int(bullet_bounds[index][1])
+        for index, _column in render_pairs
+    )
+    layout_debug["shared_bullet_block_top"] = shared_bullet_top
     slide4_bullet_render_items: list[tuple[str, Any, list[str]]] = []
     for target_index, column in render_pairs:
         if not column.get("active", True):
@@ -2390,6 +2423,7 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
         bullets[target_index].left, bullets[target_index].top, bullets[target_index].width, bullets[target_index].height = (
             bounds["bullet"] if bounds else bullet_bounds[target_index]
         )
+        bullets[target_index].top = shared_bullet_top
         _replace_shape_text_preserve_style(labels[target_index], column.get("label", ""))
         _fit_slide4_label(labels[target_index])
         slide4_bullet_render_items.append(
@@ -2418,6 +2452,10 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
             ensure_paragraph_count=True,
             line_spacing=0.9,
             space_after=2,
+            margin_top=0,
+            margin_bottom=0,
+            margin_left=0,
+            margin_right=0,
         )
 
 

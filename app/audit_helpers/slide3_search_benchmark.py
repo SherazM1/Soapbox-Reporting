@@ -681,8 +681,10 @@ def _framework_query_alignment_insight(side: str, summary: dict[str, Any], produ
             return f"Competitors track core {strongest} queries"
         return f"Core {strongest} queries carry the search story"
     if summary.get("meaningful_path_count", 0) >= 2:
-        return f"Query fit is clearest around {strongest}"
-    return f"Query fit is uneven across {product_type} searches"
+        return f"Core {strongest} searches show clearer visibility"
+    if side == "benchmark":
+        return f"Competitor presence is thin across {product_type} searches"
+    return f"Client visibility is thin across {product_type} searches"
 
 
 def _framework_breadth_insight(side: str, summary: dict[str, Any], product_type: str) -> str:
@@ -752,10 +754,10 @@ def _query_alignment_insight(side: str, keyword_score: str, product_type: str) -
     if side == "benchmark":
         if keyword_score in {"Strong", "Moderate"}:
             return f"Titles match core {product_type} query intent"
-        return f"Query fit varies across {product_type} results"
+        return f"Leading titles vary across {product_type} searches"
     if keyword_score in {"Strong", "Moderate"}:
         return f"Titles connect clearly to {product_type} queries"
-    return f"Query alignment is thin for {product_type}"
+    return f"Titles need clearer {product_type} search language"
 
 
 def _candidate_overlap_key(text: str) -> set[str]:
@@ -1059,11 +1061,23 @@ def _build_side_candidates(
     }
 
 
-def _select_side_candidates(candidates: list[dict[str, Any]], used_texts: set[str] | None = None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+def _select_side_candidates(
+    candidates: list[dict[str, Any]],
+    used_texts: set[str] | None = None,
+    *,
+    side: str = "",
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     selected: list[dict[str, Any]] = []
     family_counts: dict[str, int] = {}
     used = set(used_texts or set())
     rejected: list[dict[str, str]] = []
+    family_order = (
+        ("side_specific", "query_alignment", "shelf_breadth", "trust_authority")
+        if side == "current"
+        else ("shelf_breadth", "trust_authority", "query_alignment", "side_specific")
+        if side == "benchmark"
+        else SEARCH_BULLET_FAMILIES
+    )
 
     def try_add(candidate: dict[str, Any], *, allow_second_family: bool) -> bool:
         text = candidate["text"]
@@ -1082,7 +1096,7 @@ def _select_side_candidates(candidates: list[dict[str, Any]], used_texts: set[st
         selected.append(candidate)
         return True
 
-    for family in SEARCH_BULLET_FAMILIES:
+    for family in family_order:
         for candidate in candidates:
             if candidate["family"] == family and try_add(candidate, allow_second_family=False):
                 break
@@ -1098,6 +1112,7 @@ def _select_side_candidates(candidates: list[dict[str, Any]], used_texts: set[st
 
     return selected[:4], {
         "accepted_bullets": [item["text"] for item in selected[:4]],
+        "lead_family_order": family_order,
         "family_counts": family_counts,
         "rejected_bullets": rejected[:12],
     }
@@ -1440,7 +1455,7 @@ def _build_side_payload(
         side=side,
     )
     candidate_themes, side_debug = _build_side_candidates(side, scores, products, client_name, search_term, search_framework)
-    selected_candidates, selection_debug = _select_side_candidates(candidate_themes)
+    selected_candidates, selection_debug = _select_side_candidates(candidate_themes, side=side)
     bullets = [candidate["text"] for candidate in selected_candidates[:4]]
     bullet_debug = [_candidate_to_debug(candidate) for candidate in selected_candidates[:4]]
     if len(bullets) != 4:
