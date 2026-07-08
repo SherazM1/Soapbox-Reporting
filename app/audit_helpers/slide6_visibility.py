@@ -96,6 +96,17 @@ MODIFIER_ANCHOR_WORDS = {
     "sensitive",
     "sugar",
 }
+FORM_ANCHOR_WORDS = {
+    "bar",
+    "cleansing",
+    "cream",
+    "foam",
+    "foaming",
+    "gel",
+    "spray",
+    "stick",
+    "wash",
+}
 
 
 def _segment(
@@ -796,7 +807,11 @@ def _row_similarity_reason(candidate_key: str, selected_keys: set[str]) -> str:
 
 
 def _candidate_evidence_summary(records: list[dict[str, Any]], definition: dict[str, Any]) -> dict[str, Any]:
-    matches = [_score_record(record, definition) for record in records if isinstance(record, dict)]
+    matches = [
+        _score_record(record, definition, include_concept_support=False)
+        for record in records
+        if isinstance(record, dict)
+    ]
     return {
         "matched_terms": list(dict.fromkeys(term for match in matches for term in match.get("matched_terms", []))),
         "matched_fields": list(dict.fromkeys(field for match in matches for field in match.get("matched_fields", []))),
@@ -1324,7 +1339,7 @@ def _definition_has_record_signal(definition: dict[str, Any], records: list[dict
     for record in records:
         if not isinstance(record, dict):
             continue
-        scored = _score_record(record, definition)
+        scored = _score_record(record, definition, include_concept_support=False)
         if scored.get("matched_fields") or scored.get("weight", 0) > 0:
             return True
     return False
@@ -1401,7 +1416,66 @@ def _term_matches(text: str, terms: tuple[str, ...]) -> list[str]:
     return [term for term in terms if _normalize(term) and _normalize(term) in text]
 
 
-def _score_record(record: dict[str, Any], definition: dict[str, Any]) -> dict[str, Any]:
+def _term_variants(term: str) -> set[str]:
+    normalized = _normalize(term)
+    if not normalized:
+        return set()
+    variants = {normalized}
+    words = normalized.split()
+    singular_words = [word[:-1] if word.endswith("s") and not word.endswith("ss") else word for word in words]
+    variants.add(" ".join(singular_words))
+    if normalized.startswith("facial "):
+        variants.add(normalized.replace("facial ", "face ", 1))
+    if " face wash" in normalized or normalized.endswith("face wash"):
+        variants.add(normalized.replace("face wash", "face cleanser"))
+    return {value for value in variants if value}
+
+
+def _concept_matches(text: str, terms: set[str]) -> list[str]:
+    normalized = _normalize(text)
+    matches: list[str] = []
+    for term in terms:
+        if any(variant and variant in normalized for variant in _term_variants(term)):
+            matches.append(term)
+    return list(dict.fromkeys(matches))
+
+
+def _row_concept_terms(definition: dict[str, Any]) -> dict[str, set[str]]:
+    display = _normalize(definition.get("display_name"))
+    positives = {_normalize(term) for term in definition.get("positive_terms", ()) if _normalize(term)}
+    supporting = {_normalize(term) for term in definition.get("supporting_terms", ()) if _normalize(term)}
+    guide = {_normalize(term) for term in definition.get("guide_support", []) if _normalize(term)}
+    query_words = set(display.split())
+    product_terms = {
+        term
+        for term in (*positives, *supporting, display)
+        if set(term.split()) & PRODUCT_ANCHOR_WORDS
+    }
+    modifier_terms = {
+        term
+        for term in (*positives, *guide, display)
+        if set(term.split()) & MODIFIER_ANCHOR_WORDS
+    }
+    form_terms = {
+        term
+        for term in (*positives, *guide, display)
+        if set(term.split()) & FORM_ANCHOR_WORDS
+    }
+    if query_words & MODIFIER_ANCHOR_WORDS:
+        modifier_terms.update(query_words & MODIFIER_ANCHOR_WORDS)
+    if query_words & FORM_ANCHOR_WORDS:
+        form_terms.update(query_words & FORM_ANCHOR_WORDS)
+    if query_words & PRODUCT_ANCHOR_WORDS:
+        product_terms.update(query_words & PRODUCT_ANCHOR_WORDS)
+    return {
+        "product_type": {term for term in product_terms if term},
+        "modifier": {term for term in modifier_terms if term},
+        "form": {term for term in form_terms if term},
+        "guide": guide,
+    }
+
+
+def _score_record(record: dict[str, Any], definition: dict[str, Any], *, include_concept_support: bool = True) -> dict[str, Any]:
     fields = definition["fields"]
     positives = tuple(definition["positive_terms"])
     supporting = tuple(definition["supporting_terms"])
@@ -1412,10 +1486,16 @@ def _score_record(record: dict[str, Any], definition: dict[str, Any]) -> dict[st
     text_match_count = 0
     title_match_count = 0
     guide_match_count = 0
+    product_type_match_count = 0
+    modifier_match_count = 0
+    form_match_count = 0
+    concept_matched_fields: list[str] = []
+    concept_matched_terms: list[str] = []
     analyzed_fields: list[str] = []
     ocr = _ocr_text(record)
     ocr_terms = _term_matches(ocr, positives)
     ocr_context = _term_matches(ocr, supporting)
+    concept_terms = _row_concept_terms(definition)
 
     for field in fields:
         text = _record_field_text(record, field)
@@ -1446,6 +1526,19 @@ def _score_record(record: dict[str, Any], definition: dict[str, Any]) -> dict[st
                 text_match_count += len(terms)
             if context:
                 guide_match_count += len(context)
+        if include_concept_support:
+            product_matches = _concept_matches(text, concept_terms["product_type"])
+            modifier_matches = _concept_matches(text, concept_terms["modifier"])
+            form_matches = _concept_matches(text, concept_terms["form"])
+            if product_matches or modifier_matches or form_matches:
+                concept_matched_fields.append(field)
+                concept_matched_terms.extend(product_matches + modifier_matches + form_matches)
+                if product_matches:
+                    product_type_match_count += len(product_matches)
+                if modifier_matches:
+                    modifier_match_count += len(modifier_matches)
+                if form_matches:
+                    form_match_count += len(form_matches)
 
     if ocr:
         analyzed_fields.append("image_analysis.ocr")
@@ -1459,13 +1552,32 @@ def _score_record(record: dict[str, Any], definition: dict[str, Any]) -> dict[st
         weight = 1.0
     elif text_match_count:
         weight = 0.90 if (ocr_match or ocr_corroborates) else 0.85
+    elif product_type_match_count and (modifier_match_count or form_match_count):
+        weight = 0.55
     else:
         weight = 0.0
+    matched_fields.extend(field for field in concept_matched_fields if field not in matched_fields)
+    matched_terms.extend(term for term in concept_matched_terms if term not in matched_terms)
     non_ocr_fields = set(matched_fields) - {"image_analysis.ocr"}
+    support_family_count = sum(
+        1
+        for value in (
+            bool(structured_match_count or title_match_count),
+            bool(product_type_match_count),
+            bool(modifier_match_count),
+            bool(form_match_count),
+            bool(text_match_count),
+            bool(guide_match_count),
+            bool(ocr_match or ocr_corroborates),
+            bool((definition.get("identity_support") or {}).get("term_family_support")),
+        )
+        if value
+    )
     meaningful = bool(
         structured_match_count
         or text_match_count >= 2
         or len(non_ocr_fields) >= 2
+        or (product_type_match_count and (modifier_match_count or form_match_count))
     )
     return {
         "weight": weight,
@@ -1480,9 +1592,24 @@ def _score_record(record: dict[str, Any], definition: dict[str, Any]) -> dict[st
             "structured_query_match": bool(structured_match_count),
             "title_query_match": bool(title_match_count),
             "title_product_type_support": bool(title_match_count or structured_match_count),
+            "direct_phrase_support": bool(structured_match_count or title_match_count or text_match_count),
+            "product_type_support": bool(product_type_match_count),
+            "modifier_support": bool(modifier_match_count),
+            "form_support": bool(form_match_count),
             "pdp_content_support": bool(text_match_count),
             "guide_keyword_support": bool(guide_match_count),
             "image_ocr_support": bool(ocr_match or ocr_corroborates),
+            "search_framework_support": bool(
+                definition.get("candidate_source") == "actual_search_evidence"
+                or (definition.get("identity_support") or {}).get("term_family_support")
+            ),
+            "support_family_count": support_family_count,
+            "field_support_count": len(non_ocr_fields),
+            "concept_support_only": bool(
+                not (structured_match_count or title_match_count or text_match_count)
+                and product_type_match_count
+                and (modifier_match_count or form_match_count)
+            ),
             "weight": weight,
         },
     }
@@ -1497,15 +1624,19 @@ def _visibility_label(
     pdp_support_count: int = 0,
     guide_support_count: int = 0,
     broad_category_only: bool = False,
+    support_family_count: int = 0,
+    concept_only_count: int = 0,
+    field_support_count: int = 0,
+    image_support_count: int = 0,
 ) -> str:
     if analyzed_count <= 0:
         return "Limited"
     ratio = weighted_support / analyzed_count
     if ratio >= 0.70:
         label = "Strong"
-    elif ratio >= 0.40:
+    elif ratio >= 0.40 or support_family_count >= 3:
         label = "Moderate"
-    elif ratio >= 0.15:
+    elif ratio >= 0.15 or support_family_count >= 2:
         label = "Partial"
     else:
         label = "Limited"
@@ -1513,6 +1644,10 @@ def _visibility_label(
     if analyzed_count == 1:
         if meaningful_count <= 0:
             return "Partial" if weighted_support > 0 else "Limited"
+        if label in {"Strong", "Moderate"} and structured_support_count <= 0 and field_support_count < 2:
+            return "Partial"
+        if label in {"Strong", "Moderate"} and image_support_count > 0 and structured_support_count <= 0 and field_support_count <= 2:
+            return "Partial"
         return "Moderate" if label == "Strong" else label
     if analyzed_count == 2:
         if meaningful_count <= 0:
@@ -1522,7 +1657,7 @@ def _visibility_label(
     if label == "Strong":
         aligned_signal_count = sum(1 for value in (direct_fit_count, pdp_support_count, guide_support_count) if value > 0)
         has_signal_context = any(value > 0 for value in (direct_fit_count, pdp_support_count, guide_support_count))
-        if broad_category_only or (has_signal_context and aligned_signal_count < 2):
+        if broad_category_only or (support_family_count > 0 and direct_fit_count <= 0) or concept_only_count > 0 or (has_signal_context and aligned_signal_count < 2):
             return "Moderate"
     return label
 
@@ -1566,14 +1701,40 @@ def _score_group(records: list[dict[str, Any]], definition: dict[str, Any]) -> d
         "title_product_type_support": sum(
             1 for match in supporting if (match.get("score_components") or {}).get("title_product_type_support")
         ),
+        "direct_phrase_support": sum(1 for match in supporting if (match.get("score_components") or {}).get("direct_phrase_support")),
+        "product_type_support": sum(1 for match in supporting if (match.get("score_components") or {}).get("product_type_support")),
+        "modifier_support": sum(1 for match in supporting if (match.get("score_components") or {}).get("modifier_support")),
+        "form_support": sum(1 for match in supporting if (match.get("score_components") or {}).get("form_support")),
         "pdp_content_support": sum(1 for match in supporting if (match.get("score_components") or {}).get("pdp_content_support")),
         "guide_keyword_support": sum(1 for match in supporting if (match.get("score_components") or {}).get("guide_keyword_support")),
         "image_ocr_support": sum(1 for match in observed if (match.get("score_components") or {}).get("image_ocr_support")),
+        "search_framework_support": sum(1 for match in supporting if (match.get("score_components") or {}).get("search_framework_support")),
+        "concept_support_only": sum(1 for match in supporting if (match.get("score_components") or {}).get("concept_support_only")),
+        "field_support_count": max(
+            ((match.get("score_components") or {}).get("field_support_count", 0) for match in supporting),
+            default=0,
+        ),
         "weighted_support": round(weighted_support, 2),
         "analyzed_count": analyzed_count,
         "meaningful_count": meaningful_count,
         "structured_support_count": structured_support_count,
     }
+    support_families = {
+        "direct_phrase_support": score_components["direct_phrase_support"] > 0,
+        "product_type_support": score_components["product_type_support"] > 0,
+        "modifier_support": score_components["modifier_support"] > 0,
+        "form_support": score_components["form_support"] > 0,
+        "pdp_content_support": score_components["pdp_content_support"] > 0,
+        "guide_support": score_components["guide_keyword_support"] > 0,
+        "image_or_pdp_visual_support": score_components["image_ocr_support"] > 0,
+        "search_framework_support": score_components["search_framework_support"] > 0,
+    }
+    score_components["support_families"] = support_families
+    score_components["support_family_count"] = sum(
+        1
+        for key, value in support_families.items()
+        if value and key != "image_or_pdp_visual_support"
+    )
     broad_category_only = bool(
         definition.get("candidate_bucket") == "category_anchor"
         and score_components["structured_query_fit"] > 0
@@ -1591,6 +1752,10 @@ def _score_group(records: list[dict[str, Any]], definition: dict[str, Any]) -> d
             score_components["pdp_content_support"],
             score_components["guide_keyword_support"],
             broad_category_only,
+            score_components["support_family_count"],
+            score_components["concept_support_only"],
+            score_components["field_support_count"],
+            score_components["image_ocr_support"],
         ),
         warnings,
         str(definition.get("segment_id") or "segment"),
@@ -1615,13 +1780,19 @@ def _score_group(records: list[dict[str, Any]], definition: dict[str, Any]) -> d
 def _label_reason(label: str, components: dict[str, Any], broad_category_only: bool = False) -> str:
     if broad_category_only:
         return "Capped below Strong because broad category membership was not supported by row-specific title, PDP, or guide signals."
+    family_count = int(components.get("support_family_count", 0) or 0)
+    if components.get("concept_support_only"):
+        return (
+            f"{label} because product-type and modifier/form evidence align, "
+            "but direct phrase support was not strong enough for Strong."
+        )
     if label == "Strong":
         return "Strong because direct row fit is supported by multiple aligned evidence sources."
     if label == "Moderate":
-        return "Moderate because meaningful row-specific support exists but is not dominant across the evidence set."
+        return f"Moderate because {family_count} aligned evidence families support the row without meeting the strict Strong bar."
     if label == "Partial":
-        return "Partial because support exists but is limited, indirect, or small-sample capped."
-    return "Limited because little row-specific evidence was available for this side."
+        return f"Partial because {family_count} evidence family or lighter indirect support exists, but row support is not yet broad."
+    return "Limited because direct phrase, product-type, modifier, PDP, guide, and search-framework support were weak or mostly absent."
 
 
 def _rating_rank(label: str) -> int:

@@ -272,6 +272,58 @@ class Slide6VisibilityTests(unittest.TestCase):
                 8,
             )
 
+    def test_modifier_product_type_support_lifts_rows_above_limited(self) -> None:
+        payload = build_slide6_visibility(
+            [
+                _record(
+                    category="Beauty/Skin Care",
+                    product_type="Facial Cleansers",
+                    title="Hydrating Face Cleanser for Sensitive Skin",
+                    description="Gentle cleanser for sensitive skin with hydrating moisture support.",
+                    key_features=["sensitive skin", "hydrating", "gentle"],
+                )
+            ],
+            [],
+        )
+        rows = {item["segment"]: item for item in payload["segments"]}
+        sensitive = rows["sensitive skin cleanser"]
+        hydrating = rows["hydrating cleanser"]
+
+        self.assertIn(sensitive["client_visibility"], {"Partial", "Moderate"})
+        self.assertNotEqual(sensitive["client_visibility"], "Limited")
+        self.assertIn(hydrating["client_visibility"], {"Partial", "Moderate"})
+        self.assertNotEqual(hydrating["client_visibility"], "Limited")
+
+        sensitive_inputs = sensitive["debug"]["score_inputs"]["client"]
+        self.assertGreaterEqual(sensitive_inputs["product_type_support"], 1)
+        self.assertGreaterEqual(sensitive_inputs["modifier_support"], 1)
+        self.assertTrue(sensitive_inputs["support_families"]["product_type_support"])
+        self.assertTrue(sensitive_inputs["support_families"]["modifier_support"])
+        self.assertIn("evidence families", sensitive["debug"]["label_reason"]["client"])
+
+    def test_form_support_can_lift_without_exact_full_phrase_but_not_to_strong(self) -> None:
+        payload = build_slide6_visibility(
+            [
+                _record(
+                    category="Beauty/Skin Care",
+                    product_type="Facial Cleansers",
+                    title="Foaming Face Cleanser",
+                    description="Gel texture cleanser with cleansing foam lather.",
+                    key_features=["gel texture", "foaming"],
+                )
+            ],
+            [],
+        )
+        rows = {item["segment"]: item for item in payload["segments"]}
+        form_rows = [row for name, row in rows.items() if name in {"cleansing gel", "cleansing foam", "foaming cleanser"}]
+        self.assertTrue(form_rows)
+        for row in form_rows:
+            inputs = row["debug"]["score_inputs"]["client"]
+            self.assertGreaterEqual(inputs["product_type_support"], 1)
+            self.assertGreaterEqual(inputs["form_support"], 1)
+            self.assertNotEqual(row["client_visibility"], "Limited")
+            self.assertNotEqual(row["client_visibility"], "Strong")
+
     def test_trailing_rows_prefer_stronger_non_redundant_queries(self) -> None:
         payload = build_slide6_visibility(
             [
