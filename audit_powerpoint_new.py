@@ -591,19 +591,40 @@ SLIDE4_SURFACE_TERM_BLOCKLIST = {
 SLIDE4_SURFACE_BLOCKED_TOKENS = {
     "acupressure",
     "audience",
+    "recommended",
     "taxonomy",
     "vaccaria",
 }
+SLIDE4_METADATA_RE = re.compile(
+    r"\b\d{3,5}\s*x\s*\d{3,5}\b|\b[\w-]+\.(?:jpg|jpeg|png|webp)\b|\b(?:jpg|jpeg|png|webp)\b",
+    re.I,
+)
+SLIDE4_INTERNAL_RE = re.compile(
+    r"\b(?:framework|resolution path|signal bucket|taxonomy path|inferred category node)\b",
+    re.I,
+)
+
+
+def _slide4_sanitize_surface_text(text: Any, fallback: str = "PDP content can work harder") -> str:
+    clean = re.sub(r"\s+", " ", _safe_text(text)).strip()
+    clean = SLIDE4_METADATA_RE.sub("", clean)
+    clean = SLIDE4_INTERNAL_RE.sub("", clean)
+    clean = re.sub(r"\s+", " ", clean).strip(" .;:-")
+    return clean or fallback
 
 
 def _slide4_sane_surface_phrase(term: Any, evidence: str) -> str:
     cleaned = re.sub(r"\s+", " ", _safe_text(term).replace("&", " and ")).strip().lower()
     if not cleaned or cleaned in {"category", "product", "product type"}:
         return ""
+    if SLIDE4_METADATA_RE.search(cleaned) or SLIDE4_INTERNAL_RE.search(cleaned):
+        return ""
     normalized_tokens = [token for token in re.split(r"[^a-z0-9]+", cleaned) if token]
     if cleaned in SLIDE4_SURFACE_TERM_BLOCKLIST:
         return ""
     if any(token in SLIDE4_SURFACE_BLOCKED_TOKENS for token in normalized_tokens):
+        return ""
+    if cleaned in {"dermatologist recommended", "doctor recommended", "clinically tested"}:
         return ""
     if len(normalized_tokens) > 5:
         return ""
@@ -634,6 +655,8 @@ def _slide4_safe_fallback_phrase(facts: dict[str, Any]) -> str:
         if "stomach" in blob:
             return "stomach relief"
         return "antacid"
+    if any(term in blob for term in ("face cleanser", "facial cleanser", "face wash", "skin cleanser")):
+        return "facial cleanser"
     if any(term in blob for term in ("hazelnut", "cocoa", "nutella")):
         return "hazelnut-and-cocoa spread"
     if any(term in blob for term in ("peanut butter", "jif", "fresh roasted", "fresh-roasted")):
@@ -820,7 +843,7 @@ def _slide4_add_candidate(
     category_context: str,
     guide_context: dict[str, Any],
 ) -> None:
-    clean = _safe_text(text)
+    clean = _slide4_sanitize_surface_text(text)
     if not clean:
         return
     allowed, guard_reason = _slide4_language_allowed(clean, category_context)
@@ -948,7 +971,7 @@ def _slide4_build_candidate_pool(
         )
     elif _slide4_title_has_product(facts, identity, product_phrase):
         add(
-            text=f"{product_phrase.title()} title clarifies product role",
+            text=f"Title clarity makes the {product_phrase} role easier to understand",
             family="positioning_title",
             evidence_source="title_formula",
             score=90,
@@ -959,7 +982,7 @@ def _slide4_build_candidate_pool(
         )
     else:
         add(
-            text=f"Title can name {product_phrase} more directly",
+            text="Title wording can make the product role more direct",
             family="positioning_title",
             evidence_source="title_formula",
             score=82,
@@ -994,9 +1017,9 @@ def _slide4_build_candidate_pool(
         )
     elif category_context == "beauty":
         detail_text = (
-            f"Formula and skin-benefit details support {product_phrase} comparison"
+            "Formula and skin-benefit details make comparison easier"
             if _has_any(blob, "hydrating", "sensitive", "fragrance", "ingredient", "formula")
-            else f"{product_phrase.title()} detail can clarify skin-benefit fit"
+            else "Benefit detail can clarify skin-fit and routine relevance"
         )
         add(
             text=detail_text,
@@ -1010,7 +1033,7 @@ def _slide4_build_candidate_pool(
         )
     elif category_context == "electronics":
         add(
-            text=f"Spec detail helps shoppers compare {product_phrase}",
+            text="Spec detail helps shoppers compare options",
             family="detail_compliance",
             evidence_source="pdp_detail_compliance",
             score=86,
@@ -1021,7 +1044,7 @@ def _slide4_build_candidate_pool(
         )
     elif description or key_features:
         add(
-            text=f"Feature detail supports {product_phrase} comparison",
+            text="Feature detail supports easier comparison",
             family="detail_compliance",
             evidence_source="pdp_detail_compliance",
             score=84,
@@ -1032,7 +1055,7 @@ def _slide4_build_candidate_pool(
         )
     else:
         add(
-            text=f"Description detail can make {product_phrase} easier to compare",
+            text="Description detail can make comparison easier",
             family="detail_compliance",
             evidence_source="pdp_detail_compliance",
             score=76,
@@ -1055,7 +1078,7 @@ def _slide4_build_candidate_pool(
         )
     elif category_context == "beauty" and _has_any(blob, "daily", "routine", "use", "sensitive", "hydrating"):
         add(
-            text=f"{product_phrase.title()} usage cues clarify routine fit",
+            text="Usage cues help connect the product to routine fit",
             family="education_storytelling",
             evidence_source="pdp_storytelling",
             score=88,
@@ -1066,7 +1089,7 @@ def _slide4_build_candidate_pool(
         )
     elif image_facts["has_usage"] or image_facts["has_lifestyle"]:
         add(
-            text=f"Image stack extends {product_phrase} usage education",
+            text="Image variety adds usage and routine context",
             family="education_storytelling",
             evidence_source="image_support",
             score=83,
@@ -1077,7 +1100,7 @@ def _slide4_build_candidate_pool(
         )
     else:
         add(
-            text=f"Usage storytelling can make {product_phrase} occasions clearer",
+            text="Usage storytelling can make product fit clearer",
             family="education_storytelling",
             evidence_source="pdp_storytelling",
             score=77,
@@ -1092,7 +1115,7 @@ def _slide4_build_candidate_pool(
             text=(
                 f"{brand} review volume raises comparison confidence"
                 if not is_client
-                else f"Review depth supports {product_phrase} confidence"
+                else "Review depth helps reinforce shopper confidence"
             ),
             family="trust_visual",
             evidence_source="review_trust",
@@ -1119,7 +1142,7 @@ def _slide4_build_candidate_pool(
         )
     if facts["sold_by_walmart"] or facts["shipped_by_walmart"] or facts["ebc_present"] or image_facts["has_trust"]:
         add(
-            text=f"Trust cues strengthen {product_phrase} purchase confidence",
+            text="Trust cues help reduce hesitation at purchase",
             family="trust_visual",
             evidence_source="review_trust",
             score=82,
@@ -1428,9 +1451,9 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                f"{facts['image_count']}-image carousel sequences client shopper education"
+                "Image variety adds usage and routine context"
                 if is_client
-                else f"{brand} gives shoppers {facts['image_count']} visual comparison points"
+                else f"{brand} uses the carousel to add comparison context"
             ),
             bullet_type="opportunity",
             dimension="image_sequence",
@@ -1443,7 +1466,7 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                f"Pack and nutrition cues sharpen {phrases['education']}"
+                "Pack and nutrition cues make product value clearer"
                 if is_client
                 else f"{brand} uses pack and nutrition as proof points"
             ),
@@ -1460,7 +1483,7 @@ def _build_slide4_evidence_bullets(
             text=(
                 f"{product_phrase.title()} cues connect PDP content to breakfast"
                 if is_client
-                else f"{brand} ties {product_phrase} discovery to pantry occasions"
+                else f"{brand} ties discovery to pantry occasions"
             ),
             bullet_type="strength",
             dimension="usage_occasions",
@@ -1473,9 +1496,9 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                f"Client {phrases['content']} can clarify usage occasions"
+                "PDP content can clarify usage occasions"
                 if is_client
-                else f"{brand} can make {product_phrase} occasions clearer"
+                else f"{brand} can make usage occasions clearer"
             ),
             bullet_type="opportunity",
             dimension="usage_occasions",
@@ -1488,7 +1511,7 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                f"Client review volume supports {phrases['product']} confidence"
+                "Review depth helps reinforce shopper confidence"
                 if is_client
                 else f"{brand} review volume raises comparison expectations"
             ),
@@ -1503,7 +1526,7 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                f"Enhanced content deepens client {phrases['education']}"
+                "Enhanced content can deepen usage guidance"
                 if is_client
                 else f"{brand} enhanced content strengthens shopper education"
             ),
@@ -1518,7 +1541,7 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                f"Walmart fulfillment cues support {phrases['product']} trust"
+                "Walmart fulfillment cues support purchase confidence"
                 if is_client
                 else f"{brand} fulfillment cues support purchase confidence"
             ),
@@ -1533,9 +1556,9 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                f"Client recipe imagery can strengthen {phrases['positioning']}"
+                "Usage imagery can make product fit easier to picture"
                 if is_client
-                else f"{brand} can add recipe context to {product_phrase} discovery"
+                else f"{brand} can add usage context to discovery"
             ),
             bullet_type="opportunity",
             dimension="visual_storytelling",
@@ -1548,7 +1571,7 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                f"Enhanced storytelling can add client {phrases['education']}"
+                "Enhanced storytelling can add clearer usage guidance"
                 if is_client
                 else f"{brand} can add richer shopper education"
             ),
@@ -1561,7 +1584,7 @@ def _build_slide4_evidence_bullets(
 
     fallback_candidates = [
         (
-            f"{brand} keeps {phrases['positioning']} visible",
+            f"{brand} keeps the product role visible",
             "strength",
             "brand_specificity",
             ["brand", product_phrase],
@@ -1575,7 +1598,7 @@ def _build_slide4_evidence_bullets(
             "Controlled fallback opportunity used when richer evidence was limited.",
         ),
         (
-            f"Carousel education can strengthen {phrases['content']}",
+            "Carousel education can strengthen PDP content",
             "opportunity",
             "shopper_education",
             ["carousel_education"],
@@ -1614,7 +1637,7 @@ def _build_slide4_evidence_bullets(
             _append_unique_bullet(
                 bullets,
                 debug,
-                text=f"{facts['brand'] or side.title()} PDP evidence supports focused content cleanup {index + 1}",
+                text=f"{facts['brand'] or side.title()} can add clearer shopper-facing detail",
                 bullet_type="opportunity",
                 dimension=f"controlled_fallback_{index + 1}",
                 signals=["controlled_fallback"],
@@ -1631,11 +1654,10 @@ def _build_slide4_bullets(images: list[dict[str, Any]], guide_match: dict[str, A
     dimensions = [dims for image in images if (dims := _parse_image_dimensions(image))]
     unique_dimensions = list(dict.fromkeys(dimensions))
     if len(unique_dimensions) == 1:
-        width, height = unique_dimensions[0]
         suffix = " throughout" if len(dimensions) == len(images) else " detected"
-        bullets.append(f"Dimensions: {width} x {height}{suffix}")
+        bullets.append(f"Asset sizing is consistent{suffix}")
     elif len(unique_dimensions) > 1:
-        bullets.append(f"Dimensions: {len(unique_dimensions)} detected asset sizes")
+        bullets.append("Asset sizing varies across the image stack")
 
     if guide_match.get("matched"):
         labels = list(guide_match.get("required_slot_labels", []) or [])

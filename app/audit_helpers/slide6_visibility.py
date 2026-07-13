@@ -62,6 +62,7 @@ QUERY_BLOCKLIST = {
     "category path",
     "attribute path",
     "internal category",
+    "dermatologist recommended",
 }
 ATTRIBUTE_STOPWORDS = {
     "brand",
@@ -127,6 +128,7 @@ FORM_ANCHOR_WORDS = {
 UNREALISTIC_QUERY_TERMS = {
     "acupressure",
     "audience",
+    "dermatologist recommended",
     "ingredient needs",
     "taxonomy",
     "vaccaria",
@@ -146,6 +148,8 @@ RELATED_QUERY_GROUPS = (
     {"cleanser", "cleansing", "face", "facial", "foaming", "skin", "wash"},
     {"butter", "hazelnut", "jam", "jelly", "peanut", "preserve", "spread"},
 )
+METADATA_QUERY_RE = re.compile(r"\b\d{3,5}\s*x\s*\d{3,5}\b|\b(?:jpg|jpeg|png|webp)\b", re.I)
+FILE_FRAGMENT_RE = re.compile(r"\b[\w-]+\.(?:jpg|jpeg|png|webp)\b", re.I)
 
 
 def _segment(
@@ -349,6 +353,8 @@ def _query_like(value: str, negative_keywords: tuple[str, ...] = ()) -> tuple[bo
     normalized = _normalize(query)
     if not normalized:
         return False, "blank"
+    if METADATA_QUERY_RE.search(query) or FILE_FRAGMENT_RE.search(query):
+        return False, "metadata_or_file_fragment"
     if any(blocked in normalized for blocked in QUERY_BLOCKLIST):
         return False, "strategist_or_internal_label"
     if any(_normalize(term) and _normalize(term) in normalized for term in negative_keywords):
@@ -366,7 +372,24 @@ def _query_like(value: str, negative_keywords: tuple[str, ...] = ()) -> tuple[bo
         return False, "too_short"
     if normalized in {"beauty shelf", "category core", "product type"}:
         return False, "too_broad"
+    if normalized in {"dermatologist recommended", "clinically tested", "doctor recommended"}:
+        return False, "attribute_fragment_not_query"
     return True, "query_like"
+
+
+def _sanitize_surface_text(text: Any, fallback: str = "") -> str:
+    clean = re.sub(r"\s+", " ", _safe_text(text)).strip()
+    clean = re.sub(r"\b\d{3,5}\s*x\s*\d{3,5}\b", "", clean, flags=re.I)
+    clean = re.sub(r"\b[\w-]+\.(?:jpg|jpeg|png|webp)\b", "", clean, flags=re.I)
+    clean = re.sub(r"\b(?:jpg|jpeg|png|webp)\b", "", clean, flags=re.I)
+    clean = re.sub(
+        r"\b(?:framework|resolution path|signal bucket|taxonomy path|inferred category node)\b",
+        "",
+        clean,
+        flags=re.I,
+    )
+    clean = re.sub(r"\s+", " ", clean).strip(" .;:-")
+    return clean or fallback
 
 
 def _query_has_context_support(definition: dict[str, Any], factors: dict[str, Any] | None = None) -> bool:
@@ -1756,7 +1779,10 @@ def _six_distinct_segments(
         if is_raw_pack_filler and len(distinct) >= 4 and not _definition_has_record_signal(definition, records):
             continue
         normalized_definition = dict(definition)
-        normalized_definition["display_name"] = _display_query(definition.get("display_name"))
+        normalized_definition["display_name"] = _sanitize_surface_text(
+            _display_query(definition.get("display_name")),
+            "category search",
+        )
         distinct.append(normalized_definition)
         if index < selected_limit:
             selected_distinct_count += 1
@@ -2167,25 +2193,22 @@ def _label_reason(label: str, components: dict[str, Any], broad_category_only: b
         direct_rows = int(shelf.get("direct_search_rows", 0) or 0)
         pressure = int(shelf.get("sponsored_pressure_count", 0) or 0) + int(shelf.get("badge_pressure_count", 0) or 0)
         rank_phrase = f"best visible rank {rank}" if rank else "top-10 shelf presence"
-        return (
-            f"{label} because {rank_phrase}, {matches} visible brand match(es), "
-            f"{direct_rows} direct search row(s), and {pressure} shelf pressure signal(s) support this row."
+        return _sanitize_surface_text(
+            f"{label}: {rank_phrase} with {matches} visible brand match(es), "
+            f"{direct_rows} direct search row(s), and {pressure} shelf pressure cue(s)."
         )
     if broad_category_only:
-        return "Capped below Strong because broad category membership was not supported by row-specific title, PDP, or guide signals."
+        return "Capped below Strong because row-specific title and PDP evidence was limited."
     family_count = int(components.get("support_family_count", 0) or 0)
     if components.get("concept_support_only"):
-        return (
-            f"{label} because product-type and modifier/form evidence align, "
-            "but direct phrase support was not strong enough for Strong."
-        )
+        return f"{label}: product and modifier evidence aligns, but direct shelf support is lighter."
     if label == "Strong":
-        return "Strong because direct row fit is supported by multiple aligned evidence sources."
+        return "Strong: multiple shelf and PDP signals align to this shopper query."
     if label == "Moderate":
-        return f"Moderate because {family_count} aligned evidence families support the row without meeting the strict Strong bar."
+        return f"Moderate: {family_count} evidence families align, but support is not broad enough for Strong."
     if label == "Partial":
-        return f"Partial because {family_count} evidence family or lighter indirect support exists, but row support is not yet broad."
-    return "Limited because direct phrase, product-type, modifier, PDP, guide, and search-framework support were weak or mostly absent."
+        return "Partial: some query support exists, but coverage is still narrow."
+    return "Limited: shelf and PDP support is weak or mostly absent for this query."
 
 
 def _rating_rank(label: str) -> int:
@@ -2265,7 +2288,7 @@ def build_slide6_visibility(
         )
         segments.append(
             {
-                "segment": definition["display_name"],
+                "segment": _sanitize_surface_text(definition["display_name"], "category search"),
                 "competitor_visibility": competitor_label,
                 "client_visibility": client_visibility,
                 "competitor_supporting_count": competitor["supporting_count"],
@@ -2334,24 +2357,22 @@ def build_slide6_visibility(
         _rating_rank(item["client_visibility"]) > _rating_rank(item["competitor_visibility"])
         for item in segments
     )
+    safe_category_phrase = _sanitize_surface_text(category_phrase, "category")
     intro = (
-        f"Competitor and {client_label} PDP content is compared for alignment with {category_phrase} "
-        "search paths using product-type, benefit, use-case, and supporting visual evidence."
+        f"Competitor and {client_label} PDP content is compared across {safe_category_phrase} "
+        "shopper queries using title, benefit, use-case, and visual evidence."
     )
     if competitor_wins >= 4:
         takeaway = (
-            f"Broader {category_phrase} product-type and need-state language supports stronger search-path "
-            "coverage and long-term digital shelf alignment."
+            f"Benchmark products appear more consistently across {safe_category_phrase} shopper searches."
         )
     elif client_wins >= 4:
         takeaway = (
-            f"{client_label} PDP content aligns with more core {category_phrase} search paths, with an "
-            "opportunity to maintain that coverage through broader benefit and use-case language."
+            f"{client_label} is more visible in core {safe_category_phrase} searches, with room to extend across related needs."
         )
     else:
         takeaway = (
-            f"{client_label} and competitor PDP content shows comparable digital shelf alignment across "
-            f"core {category_phrase} search paths, with targeted content-coverage opportunities remaining."
+            f"{client_label} and competitors show similar coverage across core {safe_category_phrase} shopper searches."
         )
     return {
         "category_phrase": category_phrase,

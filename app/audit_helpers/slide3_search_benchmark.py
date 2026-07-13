@@ -326,6 +326,19 @@ SURFACED_TERM_INTERNAL_TOKENS = {
     "taxonomy",
     "visibility",
 }
+SURFACE_METADATA_RE = re.compile(r"\b\d{3,5}\s*x\s*\d{3,5}\b|\b[\w-]+\.(?:jpg|jpeg|png|webp)\b|\b(?:jpg|jpeg|png|webp)\b", re.I)
+SURFACE_INTERNAL_RE = re.compile(
+    r"\b(?:framework|resolution path|signal bucket|taxonomy path|inferred category node)\b",
+    re.I,
+)
+
+
+def _sanitize_slide3_surface_text(text: Any, fallback: str = "Search language remains category-focused") -> str:
+    clean = re.sub(r"\s+", " ", _safe_text(text)).strip()
+    clean = SURFACE_METADATA_RE.sub("", clean)
+    clean = SURFACE_INTERNAL_RE.sub("", clean)
+    clean = re.sub(r"\s+", " ", clean).strip(" .;:-")
+    return clean or fallback
 
 
 def _surface_term_supported(term: str, evidence: str) -> bool:
@@ -340,6 +353,8 @@ def _safe_slide3_surface_term(term: Any, evidence: str = "") -> str:
     cleaned = _normalize_term(term).lower()
     normalized = " ".join(_normalize_tokens(cleaned))
     if not cleaned or cleaned in {"category search", "product type", "category"}:
+        return ""
+    if SURFACE_METADATA_RE.search(cleaned) or SURFACE_INTERNAL_RE.search(cleaned):
         return ""
     if cleaned in SURFACED_TERM_BLOCKLIST:
         return ""
@@ -941,9 +956,13 @@ def _framework_query_alignment_insight(side: str, summary: dict[str, Any], produ
 
 def _framework_range_insight(side: str, summary: dict[str, Any], product_type: str) -> str:
     if summary.get("strong_path_count", 0) >= 3:
-        return f"Coverage extends across related {product_type} paths"
+        if side == "benchmark":
+            return "Benchmark visibility spans more shopper need states"
+        return "Client visibility varies by shopper need"
     if summary.get("meaningful_path_count", 0) >= 3:
-        return f"Coverage is strongest in core {product_type} paths"
+        if side == "benchmark":
+            return "Benchmark visibility is clearest in core searches"
+        return "Core searches show the clearest client visibility"
     if side == "benchmark":
         return "Benchmark visibility is focused on fewer search paths"
     return f"Discovery range is narrower across related {product_type} searches"
@@ -1100,12 +1119,12 @@ def _range_from_shelf(side: str, shelf: dict[str, Any], brand_count: int, produc
             return f"Competitive coverage extends across {solutions} needs"
         if brand_count >= 3:
             return "Benchmark brands create a wider comparison set"
-        return f"Benchmark shelf selection is focused in {product_type}"
+        return f"Benchmark products are concentrated in core {product_type} searches"
     if forms:
-        return f"Client comparison range is clearer in {forms}"
+        return f"Client visibility is clearest in {forms} formats"
     if brand_count >= 2:
         return "Shelf variety supports basic shopper comparison"
-    return f"Client comparison range is narrow in {product_type}"
+    return f"Client visibility is thinner across {product_type} searches"
 
 
 def _candidate_overlap_key(text: str) -> set[str]:
@@ -1154,7 +1173,7 @@ def _add_search_candidate(
     product_type: str,
     framework_source: str = "",
 ) -> None:
-    fitted = _fit_search_bullet(text)
+    fitted = _sanitize_slide3_surface_text(_fit_search_bullet(text))
     allowed, guard_reason = _search_language_allowed(fitted)
     if not allowed:
         rejected.append({"text": fitted, "reason": guard_reason, "family": family})
@@ -1591,7 +1610,20 @@ def _apply_cross_side_overlap_suppression(current_payload: dict[str, Any], bench
                     )
             else:
                 replaced = False
-                if current_item.get("dimension") != "shared_search_query_alignment":
+                protected_dimensions = {"shared_search_query_alignment", "shared_search_breadth"}
+                current_protected = current_item.get("dimension") in protected_dimensions
+                benchmark_protected = benchmark_item.get("dimension") in protected_dimensions
+                if current_protected and benchmark_protected:
+                    rejected_overlap.append(
+                        {
+                            "side": "shared",
+                            "current": current_item["text"],
+                            "benchmark": benchmark_item["text"],
+                            "reason": "Shared framework themes kept because both sides intentionally selected them.",
+                        }
+                    )
+                    continue
+                if not current_protected:
                     replaced = replace_candidate(
                         "current",
                         current_selected,
@@ -1599,7 +1631,7 @@ def _apply_cross_side_overlap_suppression(current_payload: dict[str, Any], bench
                         current_index,
                         [item["text"] for item in benchmark_selected],
                     )
-                if not replaced:
+                if not replaced and not benchmark_protected:
                     replaced = replace_candidate(
                         "benchmark",
                         benchmark_selected,
@@ -1659,14 +1691,14 @@ def _dynamic_intro(current_payload: dict[str, Any], benchmark_payload: dict[str,
     if current_visibility <= _score_rank("Limited") and (
         benchmark_trust > current_trust or benchmark_range > current_range or pressure
     ):
-        return (
+        return _sanitize_slide3_surface_text(
             f"Walmart search is highly competitive in {category}, with benchmark brands holding stronger visibility and trust signals across leading results."
         )
     if current_visibility >= _score_rank("Strong"):
-        return (
+        return _sanitize_slide3_surface_text(
             f"Walmart search shows the client holding strong visibility in {category}, while benchmark brands continue to shape comparison through trust and assortment signals."
         )
-    return (
+    return _sanitize_slide3_surface_text(
         f"Walmart search shows a competitive but mixed {category} shelf, where the client remains visible while benchmark brands reinforce discovery with stronger trust and promotional cues."
     )
 
@@ -1710,7 +1742,11 @@ def _select_bullets(
         if len(bullets) >= 4:
             return
         rendered = text.format(**phrase_context)
-        unique_text, changed = make_unique_bullet_text(fit(rendered), used_texts, fallback_subject=f"{side} search")
+        unique_text, changed = make_unique_bullet_text(
+            _sanitize_slide3_surface_text(fit(rendered)),
+            used_texts,
+            fallback_subject=f"{side} search",
+        )
         bullets.append(unique_text)
         if changed:
             signals = [*signals, "duplicate_bullet_reworded"]
