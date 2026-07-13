@@ -63,6 +63,7 @@ QUERY_BLOCKLIST = {
     "attribute path",
     "internal category",
     "dermatologist recommended",
+    "good molecules hydrating facial cleansing gel",
 }
 ATTRIBUTE_STOPWORDS = {
     "brand",
@@ -142,6 +143,15 @@ INTERNAL_QUERY_TERMS = {
     "need state",
     "product detail language",
     "shopper education",
+}
+WEAK_STANDALONE_QUERY_TERMS = {
+    "bar",
+    "cream",
+    "foam",
+    "gel",
+    "recommended",
+    "spray",
+    "stick",
 }
 RELATED_QUERY_GROUPS = (
     {"acid", "antacid", "digestive", "heartburn", "reducer", "relief", "stomach", "upset"},
@@ -364,8 +374,10 @@ def _query_like(value: str, negative_keywords: tuple[str, ...] = ()) -> tuple[bo
     if any(term in normalized for term in INTERNAL_QUERY_TERMS):
         return False, "internal_or_taxonomy_label"
     words = normalized.split()
-    if len(words) > 5:
+    if len(words) > 4:
         return False, "too_long_for_search_query"
+    if normalized in WEAK_STANDALONE_QUERY_TERMS:
+        return False, "attribute_fragment_not_query"
     if normalized.endswith(" type") or " type " in normalized:
         return False, "attribute_taxonomy_label"
     if len(words) == 1 and len(words[0]) < 4 and words[0] not in {"jam", "bbq", "tea"}:

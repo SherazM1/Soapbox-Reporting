@@ -548,7 +548,7 @@ def _append_unique_bullet(
     reason: str,
     used: set[str],
 ) -> None:
-    clean = _safe_text(text)
+    clean = _slide4_sanitize_surface_text(text)
     key = normalize_bullet_text(clean)
     if not clean or key in used:
         return
@@ -682,6 +682,40 @@ def _slide4_product_phrase(facts: dict[str, Any]) -> str:
     category = _safe_text(facts.get("category")).split("/")[-1].lower()
     safe_category = _slide4_sane_surface_phrase(category.replace("&", "and"), content_blob)
     return safe_category or _slide4_safe_fallback_phrase(facts)
+
+
+def _slide4_limit_product_phrase_repetition(
+    bullets: list[str],
+    debug: list[dict[str, Any]],
+    product_phrase: str,
+) -> tuple[list[str], list[dict[str, Any]]]:
+    clean_bullets = [_slide4_sanitize_surface_text(bullet) for bullet in bullets]
+    safe_phrase = _slide4_sane_surface_phrase(product_phrase, " ".join(clean_bullets))
+    if not safe_phrase or safe_phrase == "product role":
+        return clean_bullets, [
+            {**item, "text": clean_bullets[index]}
+            if index < len(clean_bullets)
+            else dict(item)
+            for index, item in enumerate(debug)
+        ]
+    pattern = re.compile(rf"\b{re.escape(safe_phrase)}\b", re.I)
+    phrase_count = 0
+    reduced: list[str] = []
+    for text in clean_bullets:
+        updated = text
+        if pattern.search(updated):
+            phrase_count += 1
+            if phrase_count > 2:
+                updated = pattern.sub("the product", updated)
+                updated = re.sub(r"\bthe product product\b", "the product", updated, flags=re.I)
+                updated = re.sub(r"\s+", " ", updated).strip()
+        reduced.append(updated)
+    return reduced, [
+        {**item, "text": reduced[index]}
+        if index < len(reduced)
+        else dict(item)
+        for index, item in enumerate(debug)
+    ]
 
 
 def _slide4_content_phrases(facts: dict[str, Any]) -> dict[str, str]:
@@ -1368,33 +1402,41 @@ def _build_slide4_evidence_bullets(
         candidates,
         existing_texts=existing_texts,
     )
+    product_phrase = _slide4_product_phrase(facts)
     if len(selected_candidates) == 6:
-        for candidate in selected_candidates:
-            existing_texts.add(normalize_bullet_text(candidate["text"]))
+        selected_texts = [candidate["text"] for candidate in selected_candidates]
+        selected_debug = [
+            {
+                "text": candidate["text"],
+                "type": candidate.get("type", "context"),
+                "dimension": candidate.get("dimension", candidate.get("family", "")),
+                "signals": candidate.get("signals", []),
+                "reason": candidate.get("reason", ""),
+                "bullet_family": candidate.get("family", ""),
+                "evidence_family_source": candidate.get("evidence_source", ""),
+                "selected_because": (
+                    "Chosen by Slide 4 balanced PDP selection using supported evidence, "
+                    "family diversity, product-type fit, and cross-column uniqueness."
+                ),
+                "product_type_context": candidate.get("product_context", ""),
+                "category_context": candidate.get("category_context", ""),
+                "guide_context": candidate.get("guide_context", {}),
+                "selection_debug": selection_debug,
+                "evidence_context": evidence_context,
+                "rejected_language": rejected_language,
+            }
+            for candidate in selected_candidates
+        ]
+        selected_texts, selected_debug = _slide4_limit_product_phrase_repetition(
+            selected_texts,
+            selected_debug,
+            product_phrase,
+        )
+        for text in selected_texts:
+            existing_texts.add(normalize_bullet_text(text))
         return (
-            [candidate["text"] for candidate in selected_candidates],
-            [
-                {
-                    "text": candidate["text"],
-                    "type": candidate.get("type", "context"),
-                    "dimension": candidate.get("dimension", candidate.get("family", "")),
-                    "signals": candidate.get("signals", []),
-                    "reason": candidate.get("reason", ""),
-                    "bullet_family": candidate.get("family", ""),
-                    "evidence_family_source": candidate.get("evidence_source", ""),
-                    "selected_because": (
-                        "Chosen by Slide 4 balanced PDP selection using supported evidence, "
-                        "family diversity, product-type fit, and cross-column uniqueness."
-                    ),
-                    "product_type_context": candidate.get("product_context", ""),
-                    "category_context": candidate.get("category_context", ""),
-                    "guide_context": candidate.get("guide_context", {}),
-                    "selection_debug": selection_debug,
-                    "evidence_context": evidence_context,
-                    "rejected_language": rejected_language,
-                }
-                for candidate in selected_candidates
-            ],
+            selected_texts,
+            selected_debug,
             [],
         )
     blob = _slide4_content_blob(facts)
@@ -1403,7 +1445,6 @@ def _build_slide4_evidence_bullets(
     debug: list[dict[str, Any]] = []
     warnings: list[str] = []
     used = existing_texts
-    product_phrase = _slide4_product_phrase(facts)
     phrases = _slide4_content_phrases(facts)
     brand = facts["brand"] or side.replace("_", " ").title()
     is_client = side == "client"
@@ -1414,6 +1455,7 @@ def _build_slide4_evidence_bullets(
         existing_texts=used,
     )
     if len(cue_bullets) == 6:
+        cue_bullets, cue_debug = _slide4_limit_product_phrase_repetition(cue_bullets, cue_debug[:6], product_phrase)
         return cue_bullets, cue_debug[:6], warnings
 
     if _has_any(blob, "hazelnut", "cocoa", "nutella"):
@@ -1646,6 +1688,7 @@ def _build_slide4_evidence_bullets(
             )
     if len(bullets) < 6:
         warnings.append("Slide 4 used restrained fallback bullets because PDP evidence was sparse.")
+    bullets, debug = _slide4_limit_product_phrase_repetition(bullets[:6], debug[:6], product_phrase)
     return bullets[:6], debug[:6], warnings
 
 

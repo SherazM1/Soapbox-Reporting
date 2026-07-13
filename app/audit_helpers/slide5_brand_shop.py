@@ -86,6 +86,41 @@ def _safe_text(value: Any) -> str:
     return str(value or "").strip()
 
 
+SLIDE5_METADATA_RE = re.compile(
+    r"\b\d{3,5}\s*x\s*\d{3,5}\b|\b[\w-]+\.(?:jpg|jpeg|png|webp)\b|\b(?:jpg|jpeg|png|webp)\b",
+    re.I,
+)
+SLIDE5_INTERNAL_RE = re.compile(
+    r"\b(?:framework|resolution path|signal bucket|taxonomy path|inferred category node)\b",
+    re.I,
+)
+
+
+def _slide5_sanitize_surface_text(text: Any, fallback: str = "Focused Brand Shop merchandising") -> str:
+    clean = re.sub(r"\s+", " ", _safe_text(text)).strip()
+    clean = SLIDE5_METADATA_RE.sub("", clean)
+    clean = SLIDE5_INTERNAL_RE.sub("", clean)
+    clean = re.sub(r"\b(?:through|across|with|via)\s*$", "", clean, flags=re.I)
+    clean = re.sub(r"\s+", " ", clean).strip(" .;:-")
+    if len(clean.split()) < 3:
+        return fallback
+    return clean
+
+
+def _slide5_surface_text_allowed(text: Any) -> bool:
+    raw = _safe_text(text)
+    if not raw:
+        return False
+    if SLIDE5_METADATA_RE.search(raw) or SLIDE5_INTERNAL_RE.search(raw):
+        return False
+    return bool(_slide5_sanitize_surface_text(raw, ""))
+
+
+def _slide5_clean_topic(text: Any, fallback: str) -> str:
+    clean = _slide5_sanitize_surface_text(text, "")
+    return clean if clean and len(clean.split()) <= 5 else fallback
+
+
 def _normalize(value: Any) -> str:
     return re.sub(r"[^a-z0-9]+", " ", _safe_text(value).lower()).strip()
 
@@ -698,7 +733,7 @@ def _navigation_context(categories: list[str]) -> str:
 
 
 def _fit_bullet(text: str) -> str:
-    text = re.sub(r"\s+", " ", text).strip()
+    text = _slide5_sanitize_surface_text(text)
     words = text.split()
     if len(words) > 11:
         text = " ".join(words[:11]).rstrip(" ,;-")
@@ -797,8 +832,11 @@ def _alternate_competitor_bullet(
 ) -> str:
     brand = brand_name or "Competitor"
     categories = _short_phrase(evidence.get("categories", []) or [], 2)
-    topic = _short_phrase([*evidence.get("headings", []), *evidence.get("descriptions", [])], 1)
-    video_title = _short_phrase(evidence.get("videos", []) or [], 1)
+    topic = _slide5_clean_topic(
+        _short_phrase([*evidence.get("headings", []), *evidence.get("descriptions", [])], 1),
+        "editorial copy",
+    )
+    video_title = _slide5_clean_topic(_short_phrase(evidence.get("videos", []) or [], 1), "video content")
     module_count = int(evidence.get("module_count", 0) or 0)
     product_count = int(evidence.get("product_count", 0) or 0)
     dimension = item.get("dimension")
@@ -1330,14 +1368,30 @@ def _brand_shop_cue_bullets(
     for candidate in sorted(candidates, key=_slide5_candidate_sort_key):
         if visible_count() >= SLIDE5_TARGET_BULLET_COUNT:
             break
-        text = _fit_bullet(
-            _slide5_candidate_text(
-                candidate.get("cue_key", ""),
-                evidence,
-                candidate.get("classification", "context"),
-                context.get("identity", {}),
-            )
+        raw_text = _slide5_candidate_text(
+            candidate.get("cue_key", ""),
+            evidence,
+            candidate.get("classification", "context"),
+            context.get("identity", {}),
         )
+        if not _slide5_surface_text_allowed(raw_text):
+            debug_items.append(
+                {
+                    "text": "",
+                    "side": side,
+                    "type": "rejected",
+                    "dimension": candidate.get("cue_key", "cue"),
+                    "score": candidate.get("classification", "context"),
+                    "template_id": f"strategic_cue_{candidate.get('cue_key')}",
+                    "signals": ["surface_text_sanitizer"],
+                    "supporting_count": 0,
+                    "reason": "Rejected because surfaced Brand Shop wording contained file metadata, internal labels, or non-shopper text.",
+                    "cue_debug": candidate,
+                    "_rejected": True,
+                }
+            )
+            continue
+        text = _fit_bullet(raw_text)
         wrong_category_reason = _wrong_category_language_reason(text, evidence)
         if wrong_category_reason:
             debug_items.append(
@@ -1445,6 +1499,54 @@ def _cue_bullets_have_strong_support(
     )
 
 
+def _sanitize_slide5_bullet_debug(items: list[dict[str, Any]], *, side: str) -> list[dict[str, Any]]:
+    cleaned: list[dict[str, Any]] = []
+    used: set[str] = set()
+    for item in items:
+        text = _safe_text(item.get("text"))
+        if not _slide5_surface_text_allowed(text):
+            continue
+        clean_text = _fit_bullet(text)
+        key = normalize_bullet_text(clean_text)
+        if not key or key in used:
+            continue
+        used.add(key)
+        cleaned.append({**item, "text": clean_text})
+        if len(cleaned) >= SLIDE5_TARGET_BULLET_COUNT:
+            break
+    fallback_texts = [
+        "Cohesive visual identity anchors the Brand Shop",
+        "Structured category grouping supports navigation",
+        "Broad assortment depth supports product discovery",
+        "Educational storytelling builds shopper confidence",
+        "Cross-category pathways support broader exploration",
+        "Rich-media cues make the shop feel more immersive",
+        "Conversion guidance helps shoppers compare products",
+    ]
+    for text in fallback_texts:
+        if len(cleaned) >= SLIDE5_TARGET_BULLET_COUNT:
+            break
+        clean_text = _fit_bullet(text)
+        key = normalize_bullet_text(clean_text)
+        if key in used:
+            continue
+        used.add(key)
+        cleaned.append(
+            {
+                "text": clean_text,
+                "side": side,
+                "type": "context",
+                "dimension": "fallback",
+                "score": "context",
+                "template_id": "surface_sanitizer_fallback",
+                "signals": ["surface_text_sanitizer"],
+                "supporting_count": 0,
+                "reason": "Controlled fallback used after removing unsafe surfaced Brand Shop wording.",
+            }
+        )
+    return cleaned[:SLIDE5_TARGET_BULLET_COUNT]
+
+
 def _build_side(record: dict[str, Any], side: str, role_path: str) -> dict[str, Any]:
     evidence = _evidence(record)
     dimensions = _score_dimensions(evidence)
@@ -1457,6 +1559,7 @@ def _build_side(record: dict[str, Any], side: str, role_path: str) -> dict[str, 
     )
     use_cue_bullets = _cue_bullets_have_strong_support(cue_bullets, dimensions)
     bullet_debug = cue_bullets if use_cue_bullets else fallback_bullets
+    bullet_debug = _sanitize_slide5_bullet_debug(bullet_debug, side=side)
     warnings: list[str] = []
     if sum(SCORE_ORDER[data["score"]] >= 2 for data in dimensions.values()) < 2:
         warnings.append(

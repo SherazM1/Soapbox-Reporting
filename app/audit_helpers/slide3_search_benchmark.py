@@ -326,6 +326,14 @@ SURFACED_TERM_INTERNAL_TOKENS = {
     "taxonomy",
     "visibility",
 }
+WEAK_STANDALONE_SURFACE_TERMS = {
+    "bar",
+    "cream",
+    "foam",
+    "gel",
+    "spray",
+    "stick",
+}
 SURFACE_METADATA_RE = re.compile(r"\b\d{3,5}\s*x\s*\d{3,5}\b|\b[\w-]+\.(?:jpg|jpeg|png|webp)\b|\b(?:jpg|jpeg|png|webp)\b", re.I)
 SURFACE_INTERNAL_RE = re.compile(
     r"\b(?:framework|resolution path|signal bucket|taxonomy path|inferred category node)\b",
@@ -363,6 +371,10 @@ def _safe_slide3_surface_term(term: Any, evidence: str = "") -> str:
     words = normalized.split()
     if len(words) > 5:
         return ""
+    if len(words) >= 5 and not evidence:
+        return ""
+    if normalized in WEAK_STANDALONE_SURFACE_TERMS:
+        return ""
     if " and " in f" {cleaned} " and not any(
         phrase in cleaned
         for phrase in ("jams jellies", "nut butters", "fragrance free", "normal to oily")
@@ -371,6 +383,13 @@ def _safe_slide3_surface_term(term: Any, evidence: str = "") -> str:
     if len(words) >= 3 and any(token in words for token in SURFACED_TERM_INTERNAL_TOKENS):
         return ""
     if evidence and not _surface_term_supported(cleaned, evidence):
+        return ""
+    return cleaned
+
+
+def _safe_slide3_inline_phrase(term: Any, evidence: str = "") -> str:
+    cleaned = _safe_slide3_surface_term(term, evidence)
+    if cleaned in WEAK_STANDALONE_SURFACE_TERMS:
         return ""
     return cleaned
 
@@ -1093,25 +1112,26 @@ def _trust_from_shelf(side: str, shelf: dict[str, Any], review_counts: list[int]
 def _pressure_from_shelf(side: str, shelf: dict[str, Any]) -> str:
     sponsored = int(shelf.get("sponsored_count", 0) or 0)
     badges = int(shelf.get("badge_count", 0) or 0)
-    dominant = _short_join(shelf.get("dominant_brand_names", []), "competitor")
     if side == "benchmark":
         if sponsored:
             return "Sponsored visibility adds benchmark pressure"
         if badges:
             return "Competitive callouts sharpen shelf differentiation"
-        return f"{dominant} brands shape the benchmark comparison set"
+        return "Leading benchmark brands create a wider comparison set"
     if sponsored and badges:
         return "Sponsored and retail callouts increase competitive pressure"
     if sponsored:
         return "Sponsored placements increase competitive pressure"
     if badges:
         return "Retail callouts make the shelf harder to break through"
-    return f"{dominant} keeps comparison pressure visible"
+    return "Competitive brands keep comparison pressure visible"
 
 
 def _range_from_shelf(side: str, shelf: dict[str, Any], brand_count: int, product_type: str) -> str:
-    forms = _short_join(shelf.get("form_terms", []), "")
-    solutions = _short_join(shelf.get("solution_terms", []), "")
+    evidence = f"{product_type} {_short_join(shelf.get('query_terms', []), '')}"
+    forms = _safe_slide3_inline_phrase(_short_join(shelf.get("form_terms", []), ""), evidence)
+    solutions = _safe_slide3_inline_phrase(_short_join(shelf.get("solution_terms", []), ""), evidence)
+    safe_product_type = _safe_slide3_inline_phrase(product_type, evidence) or _safe_slide3_fallback_phrase(evidence, product_type)
     if side == "benchmark":
         if forms:
             return f"Benchmark assortment spans {forms} formats"
@@ -1119,12 +1139,12 @@ def _range_from_shelf(side: str, shelf: dict[str, Any], brand_count: int, produc
             return f"Competitive coverage extends across {solutions} needs"
         if brand_count >= 3:
             return "Benchmark brands create a wider comparison set"
-        return f"Benchmark products are concentrated in core {product_type} searches"
+        return f"Benchmark products are concentrated in core {safe_product_type} searches"
     if forms:
         return f"Client visibility is clearest in {forms} formats"
     if brand_count >= 2:
         return "Shelf variety supports basic shopper comparison"
-    return f"Client visibility is thinner across {product_type} searches"
+    return f"Client visibility is thinner across {safe_product_type} searches"
 
 
 def _candidate_overlap_key(text: str) -> set[str]:
