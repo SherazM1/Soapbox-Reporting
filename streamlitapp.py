@@ -669,10 +669,28 @@ def _dedupe_combined_messages(messages: list[Any]) -> list[Any]:
     return deduped
 
 
+def _combined_is_nonfatal_message(message: Any) -> bool:
+    text = _combined_message_text(message).lower()
+    if not text:
+        return True
+    return any(
+        phrase in text
+        for phrase in (
+            "warning:",
+            "navigation readiness used url-match fallback",
+            "role current was normalized to client",
+            "role benchmark was normalized to competitor",
+            "was normalized",
+        )
+    )
+
+
 def _combined_blocking_errors(result: dict[str, Any]) -> list[Any]:
     blocking: list[Any] = []
     for error in result.get("errors", []) or []:
         if isinstance(error, dict) and error.get("source"):
+            continue
+        if _combined_is_nonfatal_message(error):
             continue
         blocking.append(error)
     return blocking
@@ -682,8 +700,189 @@ def _combined_nonblocking_errors(result: dict[str, Any]) -> list[Any]:
     return [
         error
         for error in result.get("errors", []) or []
-        if isinstance(error, dict) and error.get("source")
+        if (isinstance(error, dict) and error.get("source")) or _combined_is_nonfatal_message(error)
     ]
+
+
+def _combined_value(record: dict[str, Any], *keys: str, default: Any = "") -> Any:
+    for key in keys:
+        current: Any = record
+        found = True
+        for part in key.split("."):
+            if not isinstance(current, dict) or part not in current:
+                found = False
+                break
+            current = current[part]
+        if found and current not in (None, "", [], {}):
+            return current
+    return default
+
+
+def _combined_text(value: Any) -> str:
+    return str(value or "").strip()
+
+
+def _combined_list(value: Any) -> list[Any]:
+    if isinstance(value, list):
+        return value
+    if value in (None, ""):
+        return []
+    return [value]
+
+
+def _combined_records_from_section(value: Any) -> list[dict[str, Any]]:
+    if isinstance(value, dict):
+        value = _combined_value(value, "records", "items", "captures", "evidence", default=[])
+    records: list[dict[str, Any]] = []
+    for source_index, item in enumerate(_combined_list(value)):
+        if not isinstance(item, dict):
+            continue
+        nested_data = item.get("data")
+        copied = dict(nested_data) if isinstance(nested_data, dict) else {}
+        copied.update({key: value for key, value in item.items() if key != "data"})
+        if isinstance(nested_data, dict):
+            copied["data"] = nested_data
+        copied.setdefault("_combined_source_index", source_index)
+        records.append(copied)
+    return records
+
+
+def _combined_pdp_role(record: dict[str, Any], fallback: str = "") -> str:
+    raw_role = _combined_text(
+        _combined_value(
+            record,
+            "role",
+            "inputRole",
+            "sourceRole",
+            "auditRole",
+            "pdpRole",
+            "input.role",
+            "source.role",
+            default=fallback,
+        )
+    ).lower()
+    raw_role = " ".join(raw_role.replace("_", " ").replace("-", " ").split())
+    if raw_role in {"client", "primary", "current", "current search"}:
+        return "Client"
+    if raw_role in {"competitor", "benchmark", "benchmark search"}:
+        return "Competitor"
+    return ""
+
+
+def _combined_pdp_identity(record: dict[str, Any]) -> tuple[str, str]:
+    product_id = _combined_text(
+        _combined_value(
+            record,
+            "productId",
+            "productID",
+            "itemId",
+            "sku",
+            "data.productId",
+            "data.productID",
+            "data.itemId",
+            "data.sku",
+        )
+    )
+    product_title = _combined_text(
+        _combined_value(
+            record,
+            "productTitle",
+            "title",
+            "name",
+            "data.productTitle",
+            "data.title",
+            "data.name",
+        )
+    )
+    return product_id, product_title
+
+
+def _combined_pdp_record_key(record: dict[str, Any], fallback_role: str = "") -> tuple[str, str, str, str]:
+    product_id, product_title = _combined_pdp_identity(record)
+    return (
+        _combined_text(_combined_value(record, "sourceRow", "rowNumber", "_combined_source_index")),
+        _combined_pdp_role(record, fallback_role),
+        product_id,
+        product_title,
+    )
+
+
+def _combined_raw_pdp_records(result: dict[str, Any]) -> list[dict[str, Any]]:
+    payload = result.get("raw_payload", {}) or {}
+    if not isinstance(payload, dict):
+        return []
+    records: list[dict[str, Any]] = []
+    for key in (
+        "pdpEvidence",
+        "pdp_evidence",
+        "productEvidence",
+        "product_evidence",
+        "productDetailEvidence",
+        "product_detail_evidence",
+    ):
+        if key in payload:
+            records.extend(_combined_records_from_section(payload.get(key)))
+    for record in _combined_records_from_section(payload.get("evidence", [])):
+        evidence_type = _combined_text(
+            _combined_value(record, "evidenceType", "type", "kind", "sourceType")
+        ).lower()
+        normalized_type = evidence_type.replace("_", " ").replace("-", " ")
+        if "pdp" in normalized_type or "product detail" in normalized_type:
+            records.append(record)
+    return records
+
+
+def _combined_pdp_record_buckets(result: dict[str, Any]) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
+    client_records: list[dict[str, Any]] = []
+    competitor_records: list[dict[str, Any]] = []
+    rejected: list[dict[str, Any]] = []
+    seen_keys: set[tuple[str, str, str, str]] = set()
+    total_seen = 0
+
+    def add_record(source_record: dict[str, Any], fallback_role: str = "") -> None:
+        nonlocal total_seen
+        role = _combined_pdp_role(source_record, fallback_role)
+        product_id, product_title = _combined_pdp_identity(source_record)
+        row = _combined_value(
+            source_record,
+            "sourceRow",
+            "rowNumber",
+            "_combined_source_index",
+            default=total_seen + 1,
+        )
+        key = _combined_pdp_record_key(source_record, role)
+        if key in seen_keys:
+            return
+        seen_keys.add(key)
+        total_seen += 1
+        if not role:
+            rejected.append({"row": row, "reason": "unsupported PDP role"})
+            return
+        if not product_id or not product_title:
+            rejected.append({"row": row, "role": role, "reason": "missing product identity"})
+            return
+        if role == "Client":
+            client_records.append(source_record)
+        else:
+            competitor_records.append(source_record)
+
+    for source_record in result.get("client_pdps", []) or []:
+        if isinstance(source_record, dict):
+            add_record(source_record, "Client")
+    for source_record in result.get("competitor_pdps", []) or []:
+        if isinstance(source_record, dict):
+            add_record(source_record, "Competitor")
+    for source_record in _combined_raw_pdp_records(result):
+        add_record(source_record)
+
+    debug = {
+        "total_pdp_records_seen": total_seen,
+        "client_pdp_records_mapped": len(client_records),
+        "competitor_pdp_records_mapped": len(competitor_records),
+        "pdp_records_rejected": len(rejected),
+        "rejection_reasons": rejected,
+    }
+    return client_records, competitor_records, debug
 
 
 def _process_combined_pdp_records_v2(
@@ -809,6 +1008,19 @@ def _render_combined_evidence_preview_v2(result: dict[str, Any]) -> None:
                     }
                 )
         st.markdown("##### PDP Summary")
+        debug = result.get("pdp_mapping_debug", {}) or {}
+        if debug:
+            st.caption(
+                "PDP mapping: "
+                f"{debug.get('total_pdp_records_seen', 0)} seen, "
+                f"{debug.get('client_pdp_records_mapped', 0)} client mapped, "
+                f"{debug.get('competitor_pdp_records_mapped', 0)} competitor mapped, "
+                f"{debug.get('pdp_records_rejected', 0)} rejected."
+            )
+            rejected = debug.get("rejection_reasons", []) or []
+            if rejected:
+                with st.expander("Show rejected PDP mapping rows", expanded=False):
+                    st.dataframe(pd.DataFrame(rejected), hide_index=True, use_container_width=True)
         if pdp_rows:
             st.dataframe(pd.DataFrame(pdp_rows), hide_index=True, use_container_width=True)
         else:
@@ -932,16 +1144,22 @@ def render_combined_strategic_audit_upload_v2() -> None:
                     st.error(_combined_message_text(error))
             else:
                 reset_combined_audit_state(st.session_state)
+                client_pdp_records, competitor_pdp_records, pdp_mapping_debug = _combined_pdp_record_buckets(result)
+                result["client_pdps"] = client_pdp_records
+                result["competitor_pdps"] = competitor_pdp_records
+                result["pdp_mapping_debug"] = pdp_mapping_debug
                 primary_entries, primary_map, primary_messages = _process_combined_pdp_records_v2(
-                    result.get("client_pdps", []) or [],
+                    client_pdp_records,
                     role="Client",
                     schema_version=result.get("schema_version", ""),
                 )
                 competitor_entries, competitor_map, competitor_messages = _process_combined_pdp_records_v2(
-                    result.get("competitor_pdps", []) or [],
+                    competitor_pdp_records,
                     role="Competitor",
                     schema_version=result.get("schema_version", ""),
                 )
+                pdp_mapping_debug["client_pdp_entries_mapped"] = len(primary_entries)
+                pdp_mapping_debug["competitor_pdp_entries_mapped"] = len(competitor_entries)
                 all_records = [
                     *(entry.get("cached_record", {}) for entry in primary_entries),
                     *competitor_entries,
@@ -976,9 +1194,13 @@ def render_combined_strategic_audit_upload_v2() -> None:
                 if not primary_entries:
                     st.error("No valid Client PDPs were processed. Client PDPs are required.")
                 if not competitor_entries:
-                    st.error("No valid Competitor PDPs were processed. Competitor PDPs are required.")
+                    result.setdefault("warnings", []).append(
+                        "No valid Competitor PDPs were processed. Competitor PDPs are recommended but do not block audit generation."
+                    )
                 if primary_entries and competitor_entries:
                     st.success("Combined strategic audit ingestion complete.")
+                elif primary_entries:
+                    st.success("Combined strategic audit ingestion complete with client PDP evidence.")
 
         result = st.session_state.get("audit_combined_extract_result", {}) or {}
         if result:
