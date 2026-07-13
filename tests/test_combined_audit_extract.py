@@ -18,7 +18,11 @@ from audit_helpers import (
     process_competitor_audit_extract_sheet,
     process_primary_audit_extract_sheet,
 )
-from streamlitapp import _process_combined_pdp_records_v2
+from streamlitapp import (
+    _combined_blocking_errors,
+    _dedupe_combined_messages,
+    _process_combined_pdp_records_v2,
+)
 
 
 class _Upload(io.BytesIO):
@@ -532,6 +536,39 @@ class CombinedAuditExtractTests(unittest.TestCase):
         self.assertEqual(len(result["competitor_pdps"]), 2)
         self.assertTrue(any("Slide 3" in str(item) for item in result["warnings"]))
         self.assertTrue(any("Slide 5" in str(item) for item in result["warnings"]))
+
+    def test_warning_only_combined_result_has_no_blocking_errors(self) -> None:
+        payload = _valid_payload()
+        payload["warnings"] = [
+            "Navigation readiness used URL-match fallback for Search; Chrome status was loading.",
+            "Navigation readiness used URL-match fallback for Search; Chrome status was loading.",
+            "Role Current was normalized to Client for Brand Shop.",
+        ]
+        result = parse_combined_audit_html(_html(payload))
+        self.assertEqual(_combined_blocking_errors(result), [])
+        deduped = _dedupe_combined_messages(result["warnings"])
+        deduped_text = [str(item) for item in deduped]
+        self.assertEqual(
+            deduped_text.count(
+                "Navigation readiness used URL-match fallback for Search; Chrome status was loading."
+            ),
+            1,
+        )
+        self.assertTrue(
+            any("Role Current was normalized to Client for Brand Shop." in item for item in deduped_text)
+        )
+
+    def test_row_level_evidence_errors_are_not_upload_blockers(self) -> None:
+        payload = _valid_payload()
+        payload["pdpEvidence"][0]["errors"] = ["Image capture failed"]
+        result = parse_combined_audit_html(_html(payload))
+        self.assertTrue(result["errors"])
+        self.assertEqual(_combined_blocking_errors(result), [])
+
+    def test_parser_errors_remain_upload_blockers(self) -> None:
+        result = parse_combined_audit_html(_Upload(b"<html><table></table></html>"))
+        blocking = _combined_blocking_errors(result)
+        self.assertTrue(any("legacy" in str(error).lower() for error in blocking))
 
     def test_existing_primary_competitor_processors_receive_compatible_records(self) -> None:
         result = parse_combined_audit_html(_html(_valid_payload()))

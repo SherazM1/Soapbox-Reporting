@@ -657,6 +657,27 @@ def _combined_message_text(message: Any) -> str:
     return str(message or "").strip()
 
 
+def _dedupe_combined_messages(messages: list[Any]) -> list[Any]:
+    deduped: list[Any] = []
+    seen: set[str] = set()
+    for message in messages or []:
+        text = _combined_message_text(message)
+        if not text or text in seen:
+            continue
+        seen.add(text)
+        deduped.append(message)
+    return deduped
+
+
+def _combined_blocking_errors(result: dict[str, Any]) -> list[Any]:
+    blocking: list[Any] = []
+    for error in result.get("errors", []) or []:
+        if isinstance(error, dict) and error.get("source"):
+            continue
+        blocking.append(error)
+    return blocking
+
+
 def _process_combined_pdp_records_v2(
     records: list[dict[str, Any]],
     *,
@@ -887,14 +908,19 @@ def render_combined_strategic_audit_upload_v2() -> None:
             type="primary",
         ):
             result = parse_combined_audit_html(uploaded)
+            blocking_errors = _combined_blocking_errors(result)
             if result.get("is_legacy"):
-                for error in result.get("errors", []):
+                for error in blocking_errors:
                     st.error(_combined_message_text(error))
                 st.info(
                     "This workflow supports only the combined strategic audit HTML report."
                 )
             elif result.get("schema_version") != "2.0":
-                for error in result.get("errors", []):
+                for error in blocking_errors:
+                    st.error(_combined_message_text(error))
+            elif blocking_errors:
+                st.session_state["audit_combined_extract_result"] = result
+                for error in blocking_errors:
                     st.error(_combined_message_text(error))
             else:
                 reset_combined_audit_state(st.session_state)
@@ -962,11 +988,11 @@ def render_combined_strategic_audit_upload_v2() -> None:
                 columns = st.columns(4)
                 for column, (label, value) in zip(columns, metric_values[row_start : row_start + 4]):
                     column.metric(label, value)
-            for warning in result.get("warnings", []) or []:
+            for warning in _dedupe_combined_messages(result.get("warnings", []) or []):
                 st.warning(_combined_message_text(warning))
-            for error in result.get("errors", []) or []:
+            for error in _dedupe_combined_messages(result.get("errors", []) or []):
                 st.error(_combined_message_text(error))
-            for message in result.get("ingestion_messages", []) or []:
+            for message in _dedupe_combined_messages(result.get("ingestion_messages", []) or []):
                 st.warning(message)
             _render_combined_evidence_preview_v2(result)
 
