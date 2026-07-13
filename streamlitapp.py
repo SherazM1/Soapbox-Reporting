@@ -678,6 +678,14 @@ def _combined_blocking_errors(result: dict[str, Any]) -> list[Any]:
     return blocking
 
 
+def _combined_nonblocking_errors(result: dict[str, Any]) -> list[Any]:
+    return [
+        error
+        for error in result.get("errors", []) or []
+        if isinstance(error, dict) and error.get("source")
+    ]
+
+
 def _process_combined_pdp_records_v2(
     records: list[dict[str, Any]],
     *,
@@ -701,7 +709,7 @@ def _process_combined_pdp_records_v2(
     )
     for source_index, source_record in enumerate(records):
         source_row = source_record.get("sourceRow", source_index + 1)
-        is_schema2 = schema_version == "2.0" or isinstance(source_record.get("data"), dict)
+        is_schema2 = schema_version in {"2.0", "2.2"} or isinstance(source_record.get("data"), dict)
         if is_schema2:
             try:
                 cached_record, row_messages = map_schema2_pdp_to_cached_record(
@@ -915,7 +923,7 @@ def render_combined_strategic_audit_upload_v2() -> None:
                 st.info(
                     "This workflow supports only the combined strategic audit HTML report."
                 )
-            elif result.get("schema_version") != "2.0":
+            elif result.get("schema_version") not in {"2.0", "2.2"}:
                 for error in blocking_errors:
                     st.error(_combined_message_text(error))
             elif blocking_errors:
@@ -988,12 +996,19 @@ def render_combined_strategic_audit_upload_v2() -> None:
                 columns = st.columns(4)
                 for column, (label, value) in zip(columns, metric_values[row_start : row_start + 4]):
                     column.metric(label, value)
-            for warning in _dedupe_combined_messages(result.get("warnings", []) or []):
-                st.warning(_combined_message_text(warning))
-            for error in _dedupe_combined_messages(result.get("errors", []) or []):
+            for error in _dedupe_combined_messages(_combined_blocking_errors(result)):
                 st.error(_combined_message_text(error))
-            for message in _dedupe_combined_messages(result.get("ingestion_messages", []) or []):
-                st.warning(message)
+            extraction_warnings = _dedupe_combined_messages(
+                [
+                    *(result.get("warnings", []) or []),
+                    *_combined_nonblocking_errors(result),
+                    *(result.get("ingestion_messages", []) or []),
+                ]
+            )
+            if extraction_warnings:
+                with st.expander(f"Show extraction warnings ({len(extraction_warnings)})", expanded=False):
+                    for warning in extraction_warnings:
+                        st.warning(_combined_message_text(warning))
             _render_combined_evidence_preview_v2(result)
 
 
