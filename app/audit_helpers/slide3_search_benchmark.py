@@ -299,6 +299,81 @@ def _normalize_tokens(value: Any) -> list[str]:
     return [token for token in re.split(r"[^a-z0-9]+", text) if token and token not in STOP_WORDS]
 
 
+SURFACED_TERM_BLOCKLIST = {
+    "audience and ingredient needs",
+    "audience ingredient needs",
+    "ear acupressure seed",
+    "ear acupressure seeds",
+    "ear vaccaria seed",
+    "taxonomy path",
+    "vaccaria seed",
+    "vaccaria seeds",
+}
+SURFACED_TERM_BLOCKED_TOKENS = {
+    "acupressure",
+    "audience",
+    "taxonomy",
+    "vaccaria",
+}
+SURFACED_TERM_INTERNAL_TOKENS = {
+    "alignment",
+    "benchmark",
+    "coverage",
+    "discoverability",
+    "framework",
+    "internal",
+    "merchandising",
+    "taxonomy",
+    "visibility",
+}
+
+
+def _surface_term_supported(term: str, evidence: str) -> bool:
+    tokens = [token for token in _normalize_tokens(term) if len(token) > 3]
+    if not tokens:
+        return False
+    evidence_tokens = set(_normalize_tokens(evidence))
+    return any(token in evidence_tokens for token in tokens)
+
+
+def _safe_slide3_surface_term(term: Any, evidence: str = "") -> str:
+    cleaned = _normalize_term(term).lower()
+    normalized = " ".join(_normalize_tokens(cleaned))
+    if not cleaned or cleaned in {"category search", "product type", "category"}:
+        return ""
+    if cleaned in SURFACED_TERM_BLOCKLIST:
+        return ""
+    if any(token in normalized.split() for token in SURFACED_TERM_BLOCKED_TOKENS):
+        return ""
+    words = normalized.split()
+    if len(words) > 5:
+        return ""
+    if " and " in f" {cleaned} " and not any(
+        phrase in cleaned
+        for phrase in ("jams jellies", "nut butters", "fragrance free", "normal to oily")
+    ):
+        return ""
+    if len(words) >= 3 and any(token in words for token in SURFACED_TERM_INTERNAL_TOKENS):
+        return ""
+    if evidence and not _surface_term_supported(cleaned, evidence):
+        return ""
+    return cleaned
+
+
+def _safe_slide3_fallback_phrase(evidence: str, fallback: str = "") -> str:
+    normalized = " ".join(_normalize_tokens(evidence))
+    if any(term in normalized for term in ("antacid", "heartburn", "acid reducer", "acid", "upset stomach", "stomach")):
+        if "heartburn" in normalized:
+            return "heartburn relief"
+        if "acid" in normalized and "reducer" in normalized:
+            return "acid reducer"
+        if "stomach" in normalized:
+            return "stomach relief"
+        return "antacid"
+    safe_fallback = _safe_slide3_surface_term(fallback)
+    return safe_fallback or "over-the-counter medicine"
+
+
 def _coerce_list(value: Any) -> list[Any]:
     if isinstance(value, list):
         return value
@@ -768,7 +843,7 @@ def _visibility_rank(label: Any) -> int:
 def _clean_framework_term(value: Any) -> str:
     term = _normalize_term(value).lower()
     term = re.sub(r"\s+", " ", term).strip(" .;:-")
-    if not term or term in {"category search", "product type", "category"}:
+    if not _safe_slide3_surface_term(term):
         return ""
     return term
 
@@ -1123,8 +1198,31 @@ def _build_side_candidates(
     median_reviews = int(median(review_counts)) if review_counts else 0
     max_reviews = max(review_counts) if review_counts else 0
     phrase_context = _search_phrase_context(search_term)
-    product_type = _framework_product_type(search_framework, phrase_context["product_type"])
+    evidence_blob = " ".join(
+        [
+            search_term,
+            phrase_context.get("product_type", ""),
+            _safe_text(record),
+            *[
+                _safe_text(_get_first(product, "title", "name", "productTitle", default=""))
+                for product in products[:10]
+                if isinstance(product, dict)
+            ],
+        ]
+    )
+    product_type = _safe_slide3_surface_term(
+        _framework_product_type(search_framework, phrase_context["product_type"]),
+        evidence_blob,
+    ) or _safe_slide3_fallback_phrase(evidence_blob, phrase_context["product_type"])
     framework_summary = _framework_side_summary(search_framework, side)
+    if framework_summary:
+        framework_summary = dict(framework_summary)
+        for key in ("top_terms", "meaningful_terms", "strong_terms"):
+            framework_summary[key] = [
+                term
+                for term in (_safe_slide3_surface_term(term, evidence_blob) for term in framework_summary.get(key, []))
+                if term
+            ]
     framework_available = bool((search_framework or {}).get("available") and framework_summary)
     candidates: list[dict[str, Any]] = []
     rejected: list[dict[str, str]] = []

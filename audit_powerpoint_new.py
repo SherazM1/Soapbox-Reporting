@@ -578,6 +578,71 @@ def _slide4_content_blob(facts: dict[str, Any]) -> str:
     ).lower()
 
 
+SLIDE4_SURFACE_TERM_BLOCKLIST = {
+    "audience and ingredient needs",
+    "audience ingredient needs",
+    "ear acupressure seed",
+    "ear acupressure seeds",
+    "ear vaccaria seed",
+    "taxonomy path",
+    "vaccaria seed",
+    "vaccaria seeds",
+}
+SLIDE4_SURFACE_BLOCKED_TOKENS = {
+    "acupressure",
+    "audience",
+    "taxonomy",
+    "vaccaria",
+}
+
+
+def _slide4_sane_surface_phrase(term: Any, evidence: str) -> str:
+    cleaned = re.sub(r"\s+", " ", _safe_text(term).replace("&", " and ")).strip().lower()
+    if not cleaned or cleaned in {"category", "product", "product type"}:
+        return ""
+    normalized_tokens = [token for token in re.split(r"[^a-z0-9]+", cleaned) if token]
+    if cleaned in SLIDE4_SURFACE_TERM_BLOCKLIST:
+        return ""
+    if any(token in SLIDE4_SURFACE_BLOCKED_TOKENS for token in normalized_tokens):
+        return ""
+    if len(normalized_tokens) > 5:
+        return ""
+    if " and " in f" {cleaned} " and not any(
+        phrase in cleaned
+        for phrase in ("jams jellies", "nut butters", "fragrance free", "normal to oily")
+    ):
+        return ""
+    if len(normalized_tokens) >= 3 and any(
+        token in {"alignment", "coverage", "discoverability", "framework", "internal", "merchandising", "visibility"}
+        for token in normalized_tokens
+    ):
+        return ""
+    evidence_tokens = set(token for token in re.split(r"[^a-z0-9]+", evidence.lower()) if len(token) > 3)
+    phrase_tokens = [token for token in normalized_tokens if len(token) > 3]
+    if evidence_tokens and phrase_tokens and not any(token in evidence_tokens for token in phrase_tokens):
+        return ""
+    return cleaned
+
+
+def _slide4_safe_fallback_phrase(facts: dict[str, Any]) -> str:
+    blob = _slide4_content_blob(facts)
+    if any(term in blob for term in ("antacid", "heartburn", "acid reducer", "upset stomach", "stomach")):
+        if "heartburn" in blob:
+            return "heartburn relief"
+        if "acid" in blob and "reducer" in blob:
+            return "acid reducer"
+        if "stomach" in blob:
+            return "stomach relief"
+        return "antacid"
+    if any(term in blob for term in ("hazelnut", "cocoa", "nutella")):
+        return "hazelnut-and-cocoa spread"
+    if any(term in blob for term in ("peanut butter", "jif", "fresh roasted", "fresh-roasted")):
+        return "peanut butter"
+    if "almond butter" in blob:
+        return "almond butter"
+    return "product role"
+
+
 def _slide4_product_phrase(facts: dict[str, Any]) -> str:
     content_blob = _slide4_content_blob(facts)
     if _has_any(content_blob, "hazelnut", "cocoa", "nutella"):
@@ -588,21 +653,24 @@ def _slide4_product_phrase(facts: dict[str, Any]) -> str:
         return "almond butter"
     product_type = _safe_text(facts.get("product_type")).lower()
     if product_type:
-        return product_type.replace("&", "and")
+        safe_product_type = _slide4_sane_surface_phrase(product_type.replace("&", "and"), content_blob)
+        if safe_product_type:
+            return safe_product_type
     category = _safe_text(facts.get("category")).split("/")[-1].lower()
-    return category.replace("&", "and") or "product"
+    safe_category = _slide4_sane_surface_phrase(category.replace("&", "and"), content_blob)
+    return safe_category or _slide4_safe_fallback_phrase(facts)
 
 
 def _slide4_content_phrases(facts: dict[str, Any]) -> dict[str, str]:
     product_phrase = _slide4_product_phrase(facts)
     category = _safe_text(facts.get("category")).split("/")[-1].replace("&", "and").strip().lower()
-    category = category or product_phrase
+    category = _slide4_sane_surface_phrase(category, _slide4_content_blob(facts)) or product_phrase
     return {
         "product": product_phrase,
-        "positioning": f"{product_phrase} positioning",
-        "discovery": f"{product_phrase} discovery",
-        "education": f"{product_phrase} shopper education",
-        "content": f"{product_phrase} PDP content",
+        "positioning": "product role",
+        "discovery": "search discovery",
+        "education": "usage guidance",
+        "content": "PDP content",
         "category_context": f"{category} category" if category != product_phrase else f"{product_phrase} space",
     }
 
@@ -649,10 +717,10 @@ def _slide4_theme_terms(facts: dict[str, Any]) -> dict[str, str]:
         product = _slide4_product_phrase(facts)
         terms = {
             "theme": product,
-            "positioning": f"Benefit-forward {product} PDP positioning",
-            "benefit": f"Clear {product} benefit communication",
-            "detail": f"Clear {product} pack and spec detail",
-            "story": f"Balanced {product} usage storytelling",
+            "positioning": "Title clarifies product role",
+            "benefit": "Benefit communication is clearer",
+            "detail": "Feature detail supports comparison",
+            "story": "Image stack extends usage guidance",
         }
     terms["visual"] = (
         f"{image_count}-image carousel supports visual education"
@@ -680,12 +748,15 @@ def _slide4_theme_bullet(cue_key: str, classification: str, facts: dict[str, Any
 
 def _slide4_product_phrase_for_identity(facts: dict[str, Any], identity: dict[str, Any]) -> str:
     product = _safe_text(identity.get("product_type_display") or "").lower().replace("&", "and")
+    content_blob = _slide4_content_blob(facts)
     if product and product not in {"category", "product"}:
         if product.endswith("s") and not product.endswith("ss"):
             product = product[:-1]
         if product == "facial cleanser":
             return "facial cleanser"
-        return product
+        safe_product = _slide4_sane_surface_phrase(product, content_blob)
+        if safe_product:
+            return safe_product
     return _slide4_product_phrase(facts)
 
 

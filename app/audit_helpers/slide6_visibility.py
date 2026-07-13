@@ -50,6 +50,18 @@ QUERY_BLOCKLIST = {
     "wash sensitive",
     "hydrating face",
     "cleansing cleanser",
+    "ear vaccaria seed",
+    "ear acupressure seed",
+    "ear acupressure seeds",
+    "vaccaria seed",
+    "vaccaria seeds",
+    "audience and ingredient needs",
+    "audience ingredient needs",
+    "taxonomy",
+    "taxonomy path",
+    "category path",
+    "attribute path",
+    "internal category",
 }
 ATTRIBUTE_STOPWORDS = {
     "brand",
@@ -64,6 +76,8 @@ ATTRIBUTE_STOPWORDS = {
     "type",
 }
 PRODUCT_ANCHOR_WORDS = {
+    "acid",
+    "antacid",
     "balm",
     "butter",
     "cleaner",
@@ -76,8 +90,11 @@ PRODUCT_ANCHOR_WORDS = {
     "lotion",
     "moisturizer",
     "preserve",
+    "reducer",
+    "relief",
     "serum",
     "spread",
+    "stomach",
     "wash",
     "wipes",
 }
@@ -107,6 +124,28 @@ FORM_ANCHOR_WORDS = {
     "stick",
     "wash",
 }
+UNREALISTIC_QUERY_TERMS = {
+    "acupressure",
+    "audience",
+    "ingredient needs",
+    "taxonomy",
+    "vaccaria",
+}
+INTERNAL_QUERY_TERMS = {
+    "benchmark visibility",
+    "category discoverability",
+    "content coverage",
+    "internal",
+    "merchandising",
+    "need state",
+    "product detail language",
+    "shopper education",
+}
+RELATED_QUERY_GROUPS = (
+    {"acid", "antacid", "digestive", "heartburn", "reducer", "relief", "stomach", "upset"},
+    {"cleanser", "cleansing", "face", "facial", "foaming", "skin", "wash"},
+    {"butter", "hazelnut", "jam", "jelly", "peanut", "preserve", "spread"},
+)
 
 
 def _segment(
@@ -314,6 +353,10 @@ def _query_like(value: str, negative_keywords: tuple[str, ...] = ()) -> tuple[bo
         return False, "strategist_or_internal_label"
     if any(_normalize(term) and _normalize(term) in normalized for term in negative_keywords):
         return False, "negative_keyword"
+    if any(term in normalized for term in UNREALISTIC_QUERY_TERMS):
+        return False, "unrealistic_shopper_query"
+    if any(term in normalized for term in INTERNAL_QUERY_TERMS):
+        return False, "internal_or_taxonomy_label"
     words = normalized.split()
     if len(words) > 5:
         return False, "too_long_for_search_query"
@@ -324,6 +367,60 @@ def _query_like(value: str, negative_keywords: tuple[str, ...] = ()) -> tuple[bo
     if normalized in {"beauty shelf", "category core", "product type"}:
         return False, "too_broad"
     return True, "query_like"
+
+
+def _query_has_context_support(definition: dict[str, Any], factors: dict[str, Any] | None = None) -> bool:
+    query = _normalize(definition.get("display_name"))
+    if not query:
+        return False
+    words = set(query.split())
+    source = str(definition.get("candidate_source") or "")
+    bucket = str(definition.get("candidate_bucket") or "")
+    supporting_terms = {_normalize(term) for term in definition.get("supporting_terms", ()) if _normalize(term)}
+    guide_terms = {_normalize(term) for term in definition.get("guide_support", []) if _normalize(term)}
+    support_blob = " ".join([*supporting_terms, *guide_terms])
+    support_words = set(support_blob.split())
+    supported_by_terms = any(
+        token in support_blob
+        for token in words
+        if len(token) > 3 and token not in {"with", "and", "for", "the"}
+    )
+    supported_by_related_group = any((words & group) and (support_words & group) for group in RELATED_QUERY_GROUPS)
+    factors = factors or {}
+    evidence_support = int(factors.get("evidence_support", 0) or 0)
+    direct_search_rows = int(factors.get("direct_search_rows", 0) or 0)
+    shelf_score = float(factors.get("search_shelf_signal_score", 0) or 0)
+    if source in {"actual_search_evidence", "resolved_identity"} and (supported_by_terms or supported_by_related_group):
+        return True
+    if bucket in {"product_type_anchor", "modifier", "attribute_form"} and (supported_by_terms or supported_by_related_group):
+        return True
+    if evidence_support > 0 or direct_search_rows > 0 or shelf_score > 0:
+        return supported_by_terms or supported_by_related_group
+    return False
+
+
+def _realistic_shopper_query_allowed(
+    definition: dict[str, Any],
+    factors: dict[str, Any] | None = None,
+) -> tuple[bool, str]:
+    query = _display_query(definition.get("display_name"))
+    ok, reason = _query_like(query, tuple(definition.get("negative_terms", ()) or ()))
+    if not ok:
+        return False, reason
+    normalized = _normalize(query)
+    words = normalized.split()
+    if " and " in f" {normalized} " and not any(
+        phrase in normalized
+        for phrase in ("jams jellies", "nut butters", "fragrance free", "normal to oily")
+    ):
+        return False, "taxonomy_like_phrase"
+    if any(word in {"audience", "taxonomy", "path", "internal"} for word in words):
+        return False, "internal_or_taxonomy_label"
+    if len(words) >= 4 and any(word in {"needs", "coverage", "alignment", "visibility"} for word in words):
+        return False, "strategist_phrase_not_shopper_query"
+    if not _query_has_context_support(definition, factors):
+        return False, "not_supported_by_product_or_search_evidence"
+    return True, "realistic_shopper_query"
 
 
 def _record_blob(records: list[dict[str, Any]], fields: tuple[str, ...] = (*_STRUCTURED_FIELDS, *_TEXT_FIELDS)) -> str:
@@ -1385,6 +1482,9 @@ def _select_final_query_rows(
         if penalty >= 8:
             return False, "weak_query_quality"
         factors = candidate.get("ranking_factors") or {}
+        realistic, realism_reason = _realistic_shopper_query_allowed(candidate, factors)
+        if not realistic:
+            return False, realism_reason
         evidence_support = int(factors.get("evidence_support", 0) or 0)
         direct_search_rows = int(factors.get("direct_search_rows", 0) or 0)
         shelf_score = float(factors.get("search_shelf_signal_score", 0) or 0)
