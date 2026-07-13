@@ -227,6 +227,58 @@ def _as_list(value: Any) -> list[Any]:
     return [value]
 
 
+def _first_value(record: dict[str, Any], *keys: str, default: Any = "") -> Any:
+    for key in keys:
+        current: Any = record
+        found = True
+        for part in key.split("."):
+            if not isinstance(current, dict) or part not in current:
+                found = False
+                break
+            current = current[part]
+        if found and current not in (None, "", [], {}):
+            return current
+    return default
+
+
+def _record_value(record: dict[str, Any], key: str, default: Any = "") -> Any:
+    return _first_value(record, key, f"data.{key}", default=default)
+
+
+def _to_float(value: Any, default: float = 0.0) -> float:
+    try:
+        return float(str(value).strip().rstrip("%"))
+    except (TypeError, ValueError):
+        return default
+
+
+def _to_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(float(str(value).strip()))
+    except (TypeError, ValueError):
+        return default
+
+
+def _to_bool(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return value > 0
+    return _normalize(value) in {"1", "true", "yes", "y", "present", "detected"}
+
+
+def _record_int(record: dict[str, Any], key: str, default: int = 0) -> int:
+    return _to_int(_record_value(record, key, default), default)
+
+
+def _record_float(record: dict[str, Any], key: str, default: float = 0.0) -> float:
+    return _to_float(_record_value(record, key, default), default)
+
+
+def _record_bool(record: dict[str, Any], key: str) -> bool:
+    return _to_bool(_record_value(record, key, False))
+
+
 def _display_query(value: Any) -> str:
     text = re.sub(r"\s+", " ", _safe_text(value).replace("&", " and ")).strip(" -")
     return text.lower()
@@ -359,6 +411,158 @@ def _extract_search_evidence(records: list[dict[str, Any]]) -> list[str]:
     return [_display_query(value) for value in values if _safe_text(value)]
 
 
+def _record_search_terms(record: dict[str, Any]) -> list[str]:
+    values: list[Any] = [
+        _record_value(record, "searchTerm"),
+        _record_value(record, "search_term"),
+        _record_value(record, "query"),
+        _record_value(record, "keyword"),
+    ]
+    values.extend(_as_list(_record_value(record, "search_terms", [])))
+    values.extend(_as_list(_record_value(record, "queries", [])))
+    values.extend(_as_list(_record_value(record, "keywords", [])))
+    return _unique_queries(values, 12)
+
+
+def _record_int_list(record: dict[str, Any], key: str) -> list[int]:
+    values = _as_list(_record_value(record, key, []))
+    output: list[int] = []
+    for value in values:
+        if isinstance(value, dict):
+            value = _first_value(value, "rank", "position", "value", default="")
+        parsed = _to_int(value, -1)
+        if parsed > 0:
+            output.append(parsed)
+    return output
+
+
+def _record_text_list(record: dict[str, Any], key: str) -> list[str]:
+    return _unique_queries(_as_list(_record_value(record, key, [])), 20)
+
+
+def _query_matches_record_search(record: dict[str, Any], definition: dict[str, Any]) -> bool:
+    query_terms = {
+        _normalize(definition.get("display_name")),
+        *(_normalize(term) for term in definition.get("positive_terms", ()) if _normalize(term)),
+    }
+    search_terms = {_normalize(term) for term in _record_search_terms(record) if _normalize(term)}
+    if not query_terms or not search_terms:
+        return False
+    return any(
+        query and term and (query == term or query in term or term in query)
+        for query in query_terms
+        for term in search_terms
+    )
+
+
+def _search_shelf_summary(records: list[dict[str, Any]], definition: dict[str, Any]) -> dict[str, Any]:
+    direct_rows = 0
+    top3 = top5 = top10 = 0
+    brand_matches = 0
+    best_rank = 10**9
+    share_values: list[float] = []
+    dominant_names: list[str] = []
+    badge_count = 0
+    sponsored_count = 0
+    review_values: list[float] = []
+    rating_values: list[float] = []
+    form_terms: list[str] = []
+    solution_terms: list[str] = []
+    use_case_terms: list[str] = []
+    diversity_values: list[float] = []
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        direct = _query_matches_record_search(record, definition)
+        if direct:
+            direct_rows += 1
+        ranks = _record_int_list(record, "visible_brand_ranks")
+        first_rank = _record_int(record, "first_brand_rank", 0)
+        if first_rank > 0:
+            ranks.append(first_rank)
+        if _record_bool(record, "brand_in_top_3") or any(rank <= 3 for rank in ranks):
+            top3 += 1
+        if _record_bool(record, "brand_in_top_5") or any(rank <= 5 for rank in ranks):
+            top5 += 1
+        if _record_bool(record, "brand_in_top_10") or any(rank <= 10 for rank in ranks):
+            top10 += 1
+        if ranks:
+            best_rank = min(best_rank, min(ranks))
+        brand_matches += _record_int(record, "brand_match_count_visible")
+        share = _record_float(record, "brand_share_top_10", 0.0)
+        if share > 1:
+            share = share / 100
+        if share > 0:
+            share_values.append(share)
+        dominant_names.extend(_record_text_list(record, "dominant_brand_names"))
+        badge_count += _record_int(record, "top_10_badge_count")
+        badge_count += _record_int(record, "top_10_best_seller_count")
+        badge_count += _record_int(record, "top_10_overall_pick_count")
+        sponsored_count += _record_int(record, "top_10_sponsored_count")
+        review = _record_float(record, "top_5_avg_review_count", 0.0)
+        rating = _record_float(record, "top_5_avg_rating", 0.0)
+        if review > 0:
+            review_values.append(review)
+        if rating > 0:
+            rating_values.append(rating)
+        form_terms.extend(_record_text_list(record, "top_10_form_factors"))
+        solution_terms.extend(_record_text_list(record, "top_10_solution_types"))
+        use_case_terms.extend(_record_text_list(record, "visible_use_case_terms"))
+        diversity = _record_float(record, "result_form_diversity", 0.0)
+        if diversity > 0:
+            diversity_values.append(diversity)
+    max_share = max(share_values, default=0.0)
+    avg_review = sum(review_values) / len(review_values) if review_values else 0.0
+    avg_rating = sum(rating_values) / len(rating_values) if rating_values else 0.0
+    diversity = max(diversity_values, default=0.0)
+    shelf_score = (
+        direct_rows * 2.5
+        + top3 * 4.0
+        + max(0, top5 - top3) * 2.75
+        + max(0, top10 - top5) * 1.5
+        + min(brand_matches, 6) * 0.6
+        + (2.0 if max_share >= 0.30 else 1.0 if max_share >= 0.15 else 0.0)
+        + min(badge_count, 6) * 0.3
+        + min(sponsored_count, 6) * 0.2
+        + (1.0 if avg_review >= 500 else 0.5 if avg_review >= 100 else 0.0)
+        + (0.5 if avg_rating >= 4.5 else 0.0)
+        + min(len(set(form_terms + solution_terms + use_case_terms)), 6) * 0.15
+    )
+    return {
+        "direct_search_rows": direct_rows,
+        "top3_presence": top3,
+        "top5_presence": top5,
+        "top10_presence": top10,
+        "best_rank": best_rank if best_rank != 10**9 else None,
+        "visible_brand_match_count": brand_matches,
+        "brand_share_top_10": round(max_share, 3),
+        "dominant_brand_names": list(dict.fromkeys(dominant_names))[:6],
+        "dominant_brand_count": max((_record_int(record, "dominant_brand_count") for record in records if isinstance(record, dict)), default=0),
+        "badge_pressure_count": badge_count,
+        "sponsored_pressure_count": sponsored_count,
+        "top_5_avg_review_count": round(avg_review, 1),
+        "top_5_avg_rating": round(avg_rating, 2),
+        "top_10_form_factors": list(dict.fromkeys(form_terms))[:8],
+        "top_10_solution_types": list(dict.fromkeys(solution_terms))[:8],
+        "visible_use_case_terms": list(dict.fromkeys(use_case_terms))[:8],
+        "result_form_diversity": round(diversity, 2),
+        "shelf_signal_score": round(shelf_score, 2),
+    }
+
+
+def _shelf_visibility_tier(summary: dict[str, Any]) -> str:
+    best_rank = summary.get("best_rank")
+    brand_matches = int(summary.get("visible_brand_match_count", 0) or 0)
+    share = float(summary.get("brand_share_top_10", 0) or 0)
+    if summary.get("top3_presence") or (best_rank and best_rank <= 3):
+        return "Strong"
+    if summary.get("top5_presence") or (best_rank and best_rank <= 5) or brand_matches >= 3 or share >= 0.25:
+        return "Moderate"
+    if summary.get("top10_presence") or (best_rank and best_rank <= 10) or brand_matches >= 1 or summary.get("direct_search_rows"):
+        return "Partial"
+    return "Limited"
+
+
 def _best_title_phrases(records: list[dict[str, Any]], negative_keywords: tuple[str, ...]) -> list[str]:
     counts: Counter[str] = Counter()
     for record in records:
@@ -449,6 +653,19 @@ def _build_search_identity(
         12,
     )
     search_terms = _unique_queries(_extract_search_evidence(records), 16)
+    shelf_form_terms = _unique_queries(
+        [
+            term
+            for record in records
+            if isinstance(record, dict)
+            for term in [
+                *_record_text_list(record, "top_10_form_factors"),
+                *_record_text_list(record, "top_10_solution_types"),
+                *_record_text_list(record, "visible_use_case_terms"),
+            ]
+        ],
+        16,
+    )
     title_phrases = _unique_queries(_best_title_phrases(records, tuple(negative_keywords)), 12)
     modifier_markers = {
         "sensitive",
@@ -475,7 +692,7 @@ def _build_search_identity(
     form_terms = _unique_queries(
         [
             term
-            for term in [*title_keywords, *context_keywords, *attributes, *title_phrases, *search_terms]
+            for term in [*title_keywords, *context_keywords, *attributes, *title_phrases, *search_terms, *shelf_form_terms]
             if set(_normalize(term).split()) & form_markers
         ],
         12,
@@ -516,6 +733,7 @@ def _build_search_identity(
             "context_keywords": context_keywords,
             "attributes": attributes,
             "search_evidence": search_terms,
+            "shelf_form_terms": shelf_form_terms,
             "title_phrases": title_phrases,
         },
         "support_by_term_family": support_by_family,
@@ -576,6 +794,7 @@ def _build_query_candidates(
     context_keywords = source_terms["context_keywords"]
     attributes = source_terms["attributes"]
     search_terms = source_terms["search_evidence"]
+    shelf_form_terms = source_terms.get("shelf_form_terms", [])
     title_phrases = source_terms["title_phrases"]
     pool: list[dict[str, Any]] = []
 
@@ -656,6 +875,16 @@ def _build_query_candidates(
             "attribute" if layer == "modifier_attribute" else "core",
             "actual_search_evidence",
             11.0,
+            layer=layer,
+        )
+    for query in shelf_form_terms:
+        layer = _query_layer(query, "variant", "search_shelf_structure")
+        add(
+            query,
+            "variant" if layer == "form_variant" else "attribute",
+            "search_shelf_structure",
+            8.0,
+            ("search_shelf_structure",),
             layer=layer,
         )
     for query in title_phrases:
@@ -763,6 +992,7 @@ def _build_query_candidates(
             "title_keywords": title_keywords[:8],
             "context_keywords": context_keywords[:10],
             "attributes": attributes[:8],
+            "shelf_form_terms": shelf_form_terms[:8],
             "negative_keywords": list(negative_keywords)[:10],
         },
         "rejected_candidates": rejected[:20],
@@ -828,6 +1058,7 @@ def _rank_candidate(
     competitor_summary = _candidate_evidence_summary(competitors, definition)
     source_bonus = {
         "actual_search_evidence": 5.0,
+        "search_shelf_structure": 4.0,
         "resolved_identity": 4.0,
         "resolved_category_anchor": 3.5,
         "resolved_family_anchor": 3.0,
@@ -837,7 +1068,14 @@ def _rank_candidate(
         "segment_pack_fallback_seed": 0.5,
     }.get(str(definition.get("candidate_source")), 1.0)
     evidence_support = client_summary["supporting_records"] + competitor_summary["supporting_records"]
+    client_shelf = _search_shelf_summary(records, definition)
+    competitor_shelf = _search_shelf_summary(competitors, definition)
+    combined_shelf_score = float(client_shelf.get("shelf_signal_score", 0) or 0) + float(competitor_shelf.get("shelf_signal_score", 0) or 0)
+    direct_search_rows = int(client_shelf.get("direct_search_rows", 0) or 0) + int(competitor_shelf.get("direct_search_rows", 0) or 0)
+    top10_presence = int(client_shelf.get("top10_presence", 0) or 0) + int(competitor_shelf.get("top10_presence", 0) or 0)
     benchmark_usefulness = 1.0 if client_summary["supporting_records"] != competitor_summary["supporting_records"] else 0.0
+    if _shelf_visibility_tier(client_shelf) != _shelf_visibility_tier(competitor_shelf):
+        benchmark_usefulness += 1.0
     row_type_bonus = {"core": 4.0, "attribute": 3.0, "variant": 2.0, "adjacent": 0.5}.get(str(definition.get("row_type")), 1.0)
     layer = str(definition.get("query_layer") or "")
     layer_bonus = {
@@ -859,6 +1097,9 @@ def _rank_candidate(
         + row_type_bonus
         + layer_bonus
         + evidence_support * 3
+        + min(combined_shelf_score, 9.0)
+        + direct_search_rows * 2.0
+        + top10_presence * 1.0
         + benchmark_usefulness
         + realism
         + product_type_fit
@@ -873,6 +1114,17 @@ def _rank_candidate(
         "row_type_bonus": row_type_bonus,
         "layer_bonus": layer_bonus,
         "evidence_support": evidence_support,
+        "direct_search_rows": direct_search_rows,
+        "top10_presence": top10_presence,
+        "search_shelf_signal_score": round(combined_shelf_score, 2),
+        "search_shelf_tier": {
+            "client": _shelf_visibility_tier(client_shelf),
+            "competitor": _shelf_visibility_tier(competitor_shelf),
+        },
+        "search_shelf_signals": {
+            "client": client_shelf,
+            "competitor": competitor_shelf,
+        },
         "benchmark_usefulness": benchmark_usefulness,
         "shopper_query_realism": realism,
         "product_type_fit": product_type_fit,
@@ -1132,10 +1384,20 @@ def _select_final_query_rows(
         penalty = float(((candidate.get("ranking_factors") or {}).get("quality_penalty", 0)) or 0)
         if penalty >= 8:
             return False, "weak_query_quality"
+        factors = candidate.get("ranking_factors") or {}
+        evidence_support = int(factors.get("evidence_support", 0) or 0)
+        direct_search_rows = int(factors.get("direct_search_rows", 0) or 0)
+        shelf_score = float(factors.get("search_shelf_signal_score", 0) or 0)
+        source = str(candidate.get("candidate_source") or "")
+        bucket = str(candidate.get("candidate_bucket") or "")
+        if not evidence_support and not direct_search_rows and shelf_score <= 0:
+            if source in {"segment_pack_fallback_seed", "style_guide_context_or_attribute"}:
+                return False, "no_real_row_evidence"
+            if bucket in {"adjacent_discovery", "attribute_form"}:
+                return False, "no_real_row_evidence"
+        if bucket == "adjacent_discovery" and direct_search_rows <= 0 and evidence_support <= 1 and shelf_score < 3:
+            return False, "weak_adjacent_shelf_support"
         if len(selected) >= 4:
-            factors = candidate.get("ranking_factors") or {}
-            evidence_support = int(factors.get("evidence_support", 0) or 0)
-            source = str(candidate.get("candidate_source") or "")
             score = float(candidate.get("selection_score", 0) or 0)
             if score < 10:
                 return False, "weak_trailing_score"
@@ -1628,9 +1890,10 @@ def _visibility_label(
     concept_only_count: int = 0,
     field_support_count: int = 0,
     image_support_count: int = 0,
+    shelf_summary: dict[str, Any] | None = None,
 ) -> str:
     if analyzed_count <= 0:
-        return "Limited"
+        return _shelf_visibility_tier(shelf_summary or {}) if shelf_summary else "Limited"
     ratio = weighted_support / analyzed_count
     if ratio >= 0.70:
         label = "Strong"
@@ -1643,7 +1906,9 @@ def _visibility_label(
 
     if analyzed_count == 1:
         if meaningful_count <= 0:
-            return "Partial" if weighted_support > 0 else "Limited"
+            label = "Partial" if weighted_support > 0 else "Limited"
+            shelf_tier = _shelf_visibility_tier(shelf_summary or {}) if shelf_summary else "Limited"
+            return _max_label(label, shelf_tier) if shelf_summary and shelf_tier in {"Partial", "Moderate"} else label
         if label in {"Strong", "Moderate"} and structured_support_count <= 0 and field_support_count < 2:
             return "Partial"
         if label in {"Strong", "Moderate"} and image_support_count > 0 and structured_support_count <= 0 and field_support_count <= 2:
@@ -1659,7 +1924,19 @@ def _visibility_label(
         has_signal_context = any(value > 0 for value in (direct_fit_count, pdp_support_count, guide_support_count))
         if broad_category_only or (support_family_count > 0 and direct_fit_count <= 0) or concept_only_count > 0 or (has_signal_context and aligned_signal_count < 2):
             return "Moderate"
+    if shelf_summary:
+        shelf_tier = _shelf_visibility_tier(shelf_summary)
+        if label == "Strong" and shelf_tier != "Strong":
+            return "Moderate" if shelf_tier == "Moderate" else "Partial"
+        if label == "Moderate" and shelf_tier == "Limited" and direct_fit_count <= 0:
+            return "Partial"
+        if label in {"Limited", "Partial"} and shelf_tier in {"Moderate", "Strong"}:
+            return "Moderate"
     return label
+
+
+def _max_label(*labels: str) -> str:
+    return max(labels, key=_rating_rank)
 
 
 def _validate_visibility_label(value: Any, warnings: list[str], context: str) -> str:
@@ -1674,6 +1951,7 @@ def _validate_visibility_label(value: Any, warnings: list[str], context: str) ->
 
 def _score_group(records: list[dict[str, Any]], definition: dict[str, Any]) -> dict[str, Any]:
     matches = [_score_record(record, definition) for record in records]
+    shelf_summary = _search_shelf_summary(records, definition)
     analyzed = [match for match in matches if match.get("analyzed")]
     analyzed_count = len(analyzed)
     supporting = [match for match in matches if match["weight"] > 0]
@@ -1718,6 +1996,8 @@ def _score_group(records: list[dict[str, Any]], definition: dict[str, Any]) -> d
         "analyzed_count": analyzed_count,
         "meaningful_count": meaningful_count,
         "structured_support_count": structured_support_count,
+        "search_shelf_signals": shelf_summary,
+        "search_shelf_tier": _shelf_visibility_tier(shelf_summary),
     }
     support_families = {
         "direct_phrase_support": score_components["direct_phrase_support"] > 0,
@@ -1756,6 +2036,7 @@ def _score_group(records: list[dict[str, Any]], definition: dict[str, Any]) -> d
             score_components["concept_support_only"],
             score_components["field_support_count"],
             score_components["image_ocr_support"],
+            shelf_summary,
         ),
         warnings,
         str(definition.get("segment_id") or "segment"),
@@ -1778,6 +2059,18 @@ def _score_group(records: list[dict[str, Any]], definition: dict[str, Any]) -> d
 
 
 def _label_reason(label: str, components: dict[str, Any], broad_category_only: bool = False) -> str:
+    shelf = components.get("search_shelf_signals") or {}
+    shelf_tier = _safe_text(components.get("search_shelf_tier"))
+    if shelf_tier and shelf_tier != "Limited":
+        rank = shelf.get("best_rank")
+        matches = int(shelf.get("visible_brand_match_count", 0) or 0)
+        direct_rows = int(shelf.get("direct_search_rows", 0) or 0)
+        pressure = int(shelf.get("sponsored_pressure_count", 0) or 0) + int(shelf.get("badge_pressure_count", 0) or 0)
+        rank_phrase = f"best visible rank {rank}" if rank else "top-10 shelf presence"
+        return (
+            f"{label} because {rank_phrase}, {matches} visible brand match(es), "
+            f"{direct_rows} direct search row(s), and {pressure} shelf pressure signal(s) support this row."
+        )
     if broad_category_only:
         return "Capped below Strong because broad category membership was not supported by row-specific title, PDP, or guide signals."
     family_count = int(components.get("support_family_count", 0) or 0)

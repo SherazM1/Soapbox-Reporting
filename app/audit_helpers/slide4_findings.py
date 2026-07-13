@@ -4,6 +4,13 @@ from collections import Counter
 from typing import Any
 
 
+SHOPPER_BUCKETS = (
+    "opening_clarity",
+    "benefit_proof",
+    "usage_comparison",
+    "trust_reassurance",
+)
+
 STRENGTH_SIGNALS = (
     "ingredient_or_flavor_storytelling",
     "nutrition_or_detail_support",
@@ -29,6 +36,86 @@ OPPORTUNITY_SIGNALS = (
     "limited_conversion_guidance",
 )
 
+SIGNAL_BUCKETS: dict[str, str] = {
+    "strong_opening_product_clarity": "opening_clarity",
+    "weak_opening_sequence": "opening_clarity",
+    "ingredient_or_flavor_storytelling": "benefit_proof",
+    "nutrition_or_detail_support": "benefit_proof",
+    "benefit_forward_graphics": "benefit_proof",
+    "missing_benefit_graphics": "benefit_proof",
+    "missing_nutrition_or_ingredient_detail": "benefit_proof",
+    "usage_or_recipe_storytelling": "usage_comparison",
+    "lifestyle_or_contextual_storytelling": "usage_comparison",
+    "routine_or_regimen_education": "usage_comparison",
+    "clear_carousel_depth": "usage_comparison",
+    "thin_carousel_depth": "usage_comparison",
+    "missing_lifestyle_storytelling": "usage_comparison",
+    "missing_usage_or_recipe_storytelling": "usage_comparison",
+    "text_heavy_without_clear_hierarchy": "usage_comparison",
+    "duplicate_or_redundant_images": "usage_comparison",
+    "limited_conversion_guidance": "benefit_proof",
+    "trust_or_certification_support": "trust_reassurance",
+    "missing_trust_or_certification_support": "trust_reassurance",
+}
+
+CONFLICTING_CONTENT_OPPORTUNITIES: dict[str, tuple[str, ...]] = {
+    "weak_opening_sequence": ("strong_opening_product_clarity",),
+    "missing_benefit_graphics": (
+        "benefit_forward_graphics",
+        "ingredient_or_flavor_storytelling",
+        "nutrition_or_detail_support",
+    ),
+    "missing_nutrition_or_ingredient_detail": (
+        "benefit_forward_graphics",
+        "ingredient_or_flavor_storytelling",
+        "nutrition_or_detail_support",
+    ),
+    "missing_usage_or_recipe_storytelling": (
+        "usage_or_recipe_storytelling",
+        "routine_or_regimen_education",
+    ),
+    "missing_trust_or_certification_support": ("trust_or_certification_support",),
+}
+
+CATEGORY_WORDS: dict[str, dict[str, str]] = {
+    "jam_preserves": {
+        "product": "flavor and product cues",
+        "benefit": "visible flavor and ingredient cues",
+        "usage": "serving and use inspiration",
+        "trust": "shopper confidence",
+    },
+    "nut_butter_spreads": {
+        "product": "spread and pantry cues",
+        "benefit": "protein and ingredient cues",
+        "usage": "snack, breakfast, and comparison cues",
+        "trust": "shopper confidence",
+    },
+    "food_generic": {
+        "product": "flavor and product cues",
+        "benefit": "visible reasons to buy",
+        "usage": "serving and use inspiration",
+        "trust": "shopper confidence",
+    },
+    "baby_care": {
+        "product": "routine clarity",
+        "benefit": "gentle-care benefits",
+        "usage": "routine and application guidance",
+        "trust": "parent reassurance",
+    },
+    "health_personal_care": {
+        "product": "clearer product story",
+        "benefit": "ingredient benefits and proof points",
+        "usage": "regimen and application guidance",
+        "trust": "efficacy reassurance",
+    },
+    "generic": {
+        "product": "product understanding",
+        "benefit": "visible benefits",
+        "usage": "usage guidance",
+        "trust": "reassurance",
+    },
+}
+
 
 def _safe_text(value: Any) -> str:
     return str(value or "").strip()
@@ -36,6 +123,34 @@ def _safe_text(value: Any) -> str:
 
 def _lower_blob(*values: Any) -> str:
     return " ".join(_safe_text(value).lower() for value in values if _safe_text(value))
+
+
+def _as_list(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [_safe_text(item) for item in value if _safe_text(item)]
+    if isinstance(value, tuple) or isinstance(value, set):
+        return [_safe_text(item) for item in value if _safe_text(item)]
+    if isinstance(value, dict):
+        return [_safe_text(item) for item in value.values() if _safe_text(item)]
+    text = _safe_text(value)
+    return [text] if text else []
+
+
+def _first_present(record: dict[str, Any], *keys: str) -> Any:
+    for key in keys:
+        value = record.get(key)
+        if _as_list(value):
+            return value
+    return None
+
+
+def _content_blob(record: dict[str, Any], *keys: str) -> str:
+    parts: list[str] = []
+    for key in keys:
+        parts.extend(_as_list(record.get(key)))
+    return " ".join(parts).lower()
 
 
 def _majority_threshold(count: int) -> int:
@@ -79,6 +194,103 @@ def _image_tokens(image: dict[str, Any]) -> set[str]:
     return {str(token).lower() for token in tokens if str(token).strip()}
 
 
+def _content_count(record: dict[str, Any], *keys: str) -> int:
+    for key in keys:
+        value = record.get(key)
+        if isinstance(value, int):
+            return value
+        if isinstance(value, float):
+            return int(value)
+        if _as_list(value):
+            return len(_as_list(value))
+    return 0
+
+
+def _content_signal_evidence(record: dict[str, Any]) -> dict[str, list[str]]:
+    title_blob = _content_blob(record, "titleNotes", "title_notes", "product_title", "title")
+    benefit_blob = _content_blob(
+        record,
+        "benefitTerms",
+        "benefit_terms",
+        "ingredientTerms",
+        "ingredient_terms",
+        "claimStatements",
+        "claim_statements",
+        "descriptionNotes",
+        "description_notes",
+        "keyFeatureNotes",
+        "key_feature_notes",
+        "description_bullets",
+        "descriptionBullets",
+        "key_features",
+        "keyFeaturesText",
+    )
+    usage_blob = _content_blob(
+        record,
+        "usageInstructions",
+        "usage_instructions",
+        "formFactorTerms",
+        "form_factor_terms",
+        "audienceTerms",
+        "audience_terms",
+        "descriptionBullets",
+        "description_bullets",
+        "keyFeaturesText",
+        "key_features",
+    )
+    trust_blob = _content_blob(
+        record,
+        "claimStatements",
+        "claim_statements",
+        "warningStatements",
+        "warning_statements",
+        "reviews_summary",
+        "average_rating",
+        "review_count",
+        "titleNotes",
+        "descriptionNotes",
+    )
+    description_count = _content_count(record, "descriptionCount", "description_count", "descriptionBullets", "description_bullets")
+    key_feature_count = _content_count(record, "keyFeatureCount", "key_feature_count", "keyFeaturesText", "key_features")
+
+    evidence: dict[str, list[str]] = {}
+
+    def add(signal: str, *items: str) -> None:
+        evidence.setdefault(signal, [])
+        evidence[signal].extend(item for item in items if item)
+
+    if any(term in title_blob for term in ("clear", "specific", "size", "count", "flavor", "scent", "for ", "with ")):
+        add("strong_opening_product_clarity", "title_quality")
+    elif title_blob and any(term in title_blob for term in ("unclear", "generic", "missing", "thin", "weak")):
+        add("weak_opening_sequence", "title_notes")
+
+    if benefit_blob or description_count >= 2 or key_feature_count >= 3:
+        if any(term in benefit_blob for term in ("benefit", "protein", "hydrating", "gentle", "clinical", "organic", "ingredient", "claim", "flavor", "nutrition", "proof")):
+            add("benefit_forward_graphics", "benefit_terms", "claim_statements", "key_features")
+        if key_feature_count >= 3 or description_count >= 2:
+            add("nutrition_or_detail_support", "description_and_key_features")
+        if any(term in benefit_blob for term in ("ingredient", "flavor", "nutrition", "protein", "organic", "cocoa", "peanut", "almond")):
+            add("ingredient_or_flavor_storytelling", "ingredient_or_flavor_terms")
+    else:
+        add("missing_benefit_graphics", "limited_pdp_benefit_copy")
+
+    if usage_blob:
+        if any(term in usage_blob for term in ("use", "apply", "serving", "serve", "recipe", "routine", "regimen", "breakfast", "snack", "fit", "for ", "compare")):
+            add("usage_or_recipe_storytelling", "usage_guidance")
+        if any(term in usage_blob for term in ("routine", "regimen", "daily", "morning", "night", "step")):
+            add("routine_or_regimen_education", "routine_guidance")
+    elif description_count == 0 and key_feature_count <= 1:
+        add("missing_usage_or_recipe_storytelling", "limited_usage_copy")
+
+    if trust_blob:
+        if any(term in trust_blob for term in ("dermatologist", "clinical", "safe", "warning", "caution", "guarantee", "certified", "organic", "rating", "review", "trusted", "reassurance")):
+            add("trust_or_certification_support", "trust_or_reassurance_copy")
+    else:
+        add("missing_trust_or_certification_support", "limited_reassurance_copy")
+
+    return {signal: list(dict.fromkeys(values)) for signal, values in evidence.items()}
+
+
 def _record_signal_evidence(record: dict[str, Any]) -> tuple[set[str], dict[str, list[str]]]:
     analysis = record.get("image_analysis", {}) or {}
     images = [
@@ -88,7 +300,8 @@ def _record_signal_evidence(record: dict[str, Any]) -> tuple[set[str], dict[str,
     ]
     analyzed_image_count = len(images)
     if analyzed_image_count <= 0:
-        return set(), {}
+        content_evidence = _content_signal_evidence(record)
+        return set(content_evidence), content_evidence
 
     stack = analysis.get("stack_signals", {}) or {}
     all_detected: set[str] = set()
@@ -190,49 +403,57 @@ def _record_signal_evidence(record: dict[str, Any]) -> tuple[set[str], dict[str,
     if not (has_benefit or has_usage or has_detail):
         add("limited_conversion_guidance", "limited_conversion_guidance")
 
+    for signal, values in _content_signal_evidence(record).items():
+        if any(positive in signals for positive in CONFLICTING_CONTENT_OPPORTUNITIES.get(signal, ())):
+            continue
+        signals.add(signal)
+        evidence.setdefault(signal, [])
+        evidence[signal].extend(values)
+        evidence[signal] = list(dict.fromkeys(evidence[signal]))
+
     return signals, evidence
 
 
 TEXT_BY_FAMILY: dict[str, dict[str, str]] = {
     "jam_preserves": {
-        "ingredient_or_flavor_storytelling": "Strong flavor-forward visual identity",
-        "nutrition_or_detail_support": "Clear ingredient and nutrition support across carousel",
-        "usage_or_recipe_storytelling": "Recipe-led serving inspiration supports shopper use cases",
-        "lifestyle_or_contextual_storytelling": "Lifestyle imagery reinforces breakfast, snack, and pairing occasions",
-        "benefit_forward_graphics": "Benefit and product-detail communication supports conversion confidence",
-        "missing_lifestyle_storytelling": "Opportunity to strengthen breakfast, snack, and pairing use cases",
-        "missing_usage_or_recipe_storytelling": "Opportunity to expand recipe-led serving inspiration",
+        "ingredient_or_flavor_storytelling": "Flavor and ingredient cues make the product easier to understand",
+        "nutrition_or_detail_support": "Product details give shoppers clearer reasons to buy",
+        "usage_or_recipe_storytelling": "Serving guidance helps shoppers understand fit and use",
+        "lifestyle_or_contextual_storytelling": "Use-case imagery makes serving occasions easier to picture",
+        "benefit_forward_graphics": "Benefit communication is more visible across the PDP",
+        "missing_lifestyle_storytelling": "More serving context could make product choice easier",
+        "missing_usage_or_recipe_storytelling": "Clearer serving guidance could reduce shopper uncertainty",
     },
     "nut_butter_spreads": {
-        "ingredient_or_flavor_storytelling": "Strong protein and ingredient-led benefit communication",
-        "nutrition_or_detail_support": "Clear pack and nutrition detail support",
-        "usage_or_recipe_storytelling": "Snack, breakfast, and recipe-based usage storytelling supports spread use cases",
-        "benefit_forward_graphics": "Benefit-forward graphics help differentiate spread use cases",
-        "missing_usage_or_recipe_storytelling": "Opportunity to expand snack, breakfast, and recipe-based usage storytelling",
-        "missing_lifestyle_storytelling": "Opportunity to show more snack, breakfast, and recipe usage occasions",
+        "ingredient_or_flavor_storytelling": "Protein and ingredient cues make value easier to understand",
+        "nutrition_or_detail_support": "Product details support easier spread comparison",
+        "usage_or_recipe_storytelling": "Snack and breakfast guidance helps shoppers understand fit",
+        "benefit_forward_graphics": "Benefit communication makes spread value more visible",
+        "missing_usage_or_recipe_storytelling": "Clearer snack and breakfast guidance could make choice easier",
+        "missing_lifestyle_storytelling": "More use-case imagery could make spread occasions clearer",
     },
     "baby_care": {
-        "routine_or_regimen_education": "Routine-based merchandising approach",
-        "usage_or_recipe_storytelling": "Embedded usage and regimen education",
-        "lifestyle_or_contextual_storytelling": "Soft lifestyle positioning aligned to family care",
-        "benefit_forward_graphics": "Benefit communication integrated into use-case imagery",
-        "missing_lifestyle_storytelling": "Opportunity to expand parent-focused reassurance and bath-time storytelling",
-        "missing_usage_or_recipe_storytelling": "Opportunity to strengthen routine and usage education",
+        "routine_or_regimen_education": "Routine guidance helps parents understand daily use",
+        "usage_or_recipe_storytelling": "Application guidance makes the care routine clearer",
+        "lifestyle_or_contextual_storytelling": "Family-care imagery adds parent reassurance",
+        "benefit_forward_graphics": "Gentle-care benefits are easier to see across the PDP",
+        "missing_lifestyle_storytelling": "More parent reassurance could help build confidence",
+        "missing_usage_or_recipe_storytelling": "Clearer routine guidance could reduce uncertainty",
     },
     "health_personal_care": {
-        "trust_or_certification_support": "Clinical trust and efficacy positioning",
-        "ingredient_or_flavor_storytelling": "Ingredient-led educational storytelling",
-        "benefit_forward_graphics": "Clear hierarchy of claims and product benefits",
-        "nutrition_or_detail_support": "Structured shopper education throughout image stack",
-        "missing_trust_or_certification_support": "Opportunity to strengthen trust and efficacy reassurance",
+        "trust_or_certification_support": "Trust cues reinforce shopper confidence",
+        "ingredient_or_flavor_storytelling": "Ingredient benefits make value easier to understand",
+        "benefit_forward_graphics": "Proof points make product benefits more visible",
+        "nutrition_or_detail_support": "Product details support clearer application guidance",
+        "missing_trust_or_certification_support": "Stronger reassurance cues could help build confidence",
     },
     "generic": {
-        "strong_opening_product_clarity": "Strong visual shelf presence",
-        "benefit_forward_graphics": "Benefit-forward infographic integration",
-        "nutrition_or_detail_support": "Clear product-detail and conversion support",
-        "missing_usage_or_recipe_storytelling": "Opportunity to strengthen use-case and lifestyle storytelling",
-        "missing_lifestyle_storytelling": "Opportunity to strengthen use-case and lifestyle storytelling",
-        "limited_conversion_guidance": "Opportunity to expand educational merchandising depth",
+        "strong_opening_product_clarity": "Opening imagery makes the product easier to understand",
+        "benefit_forward_graphics": "Benefit communication is more visible across the PDP",
+        "nutrition_or_detail_support": "Product details give shoppers clearer reasons to buy",
+        "missing_usage_or_recipe_storytelling": "Clearer usage guidance could reduce shopper uncertainty",
+        "missing_lifestyle_storytelling": "More use-case context could make product choice easier",
+        "limited_conversion_guidance": "The PDP needs more visible reasons to buy",
     },
 }
 
@@ -248,26 +469,67 @@ def _finding_text(signal: str, family: str) -> str:
 
 def _generic_text(signal: str) -> str:
     return {
-        "strong_opening_product_clarity": "Strong visual shelf presence",
-        "ingredient_or_flavor_storytelling": "Ingredient and flavor-forward merchandising is consistently present",
-        "nutrition_or_detail_support": "Clear product-detail and conversion support",
-        "usage_or_recipe_storytelling": "Use-case and usage storytelling is consistently present",
-        "lifestyle_or_contextual_storytelling": "Lifestyle context supports shopper use-case understanding",
-        "benefit_forward_graphics": "Benefit-forward infographic integration",
-        "routine_or_regimen_education": "Routine-based education supports shopper understanding",
+        "strong_opening_product_clarity": "Opening imagery makes the product easier to understand",
+        "ingredient_or_flavor_storytelling": "Ingredient and product cues make value easier to understand",
+        "nutrition_or_detail_support": "Product details give shoppers clearer reasons to buy",
+        "usage_or_recipe_storytelling": "Usage guidance helps shoppers understand fit and application",
+        "lifestyle_or_contextual_storytelling": "Use-case imagery makes product fit easier to picture",
+        "benefit_forward_graphics": "Benefit communication is more visible across the PDP",
+        "routine_or_regimen_education": "Routine guidance helps shoppers understand how to use the product",
         "trust_or_certification_support": "Trust and certification cues support shopper confidence",
-        "clear_carousel_depth": "Carousel depth supports shopper education",
-        "weak_opening_sequence": "Opportunity to clarify the opening product sequence",
-        "thin_carousel_depth": "Opportunity to expand educational merchandising depth",
-        "missing_lifestyle_storytelling": "Opportunity to strengthen use-case and lifestyle storytelling",
-        "missing_usage_or_recipe_storytelling": "Opportunity to expand usage and serving guidance",
-        "missing_benefit_graphics": "Opportunity to strengthen benefit-forward graphic communication",
-        "missing_nutrition_or_ingredient_detail": "Opportunity to add clearer product-detail support",
-        "missing_trust_or_certification_support": "Opportunity to add stronger trust and reassurance cues",
-        "text_heavy_without_clear_hierarchy": "Carousel appears to overuse text-heavy graphics without clear lifestyle hierarchy",
-        "duplicate_or_redundant_images": "Opportunity to reduce redundant imagery and diversify shopper education",
-        "limited_conversion_guidance": "Opportunity to expand educational merchandising depth",
+        "clear_carousel_depth": "Carousel depth helps shoppers compare product details",
+        "weak_opening_sequence": "The PDP would benefit from a clearer opening product story",
+        "thin_carousel_depth": "More PDP detail could help shoppers compare options",
+        "missing_lifestyle_storytelling": "More use-case context could make product choice easier",
+        "missing_usage_or_recipe_storytelling": "Clearer usage guidance could reduce shopper uncertainty",
+        "missing_benefit_graphics": "More visible proof points could strengthen reasons to buy",
+        "missing_nutrition_or_ingredient_detail": "Clearer product detail could make value easier to understand",
+        "missing_trust_or_certification_support": "Stronger reassurance cues could help build confidence",
+        "text_heavy_without_clear_hierarchy": "Clearer visual hierarchy could make comparison easier",
+        "duplicate_or_redundant_images": "More varied imagery could answer more shopper questions",
+        "limited_conversion_guidance": "The PDP needs more visible reasons to buy",
     }.get(signal, signal.replace("_", " ").capitalize())
+
+
+def _bucket_label(bucket: str) -> str:
+    return {
+        "opening_clarity": "Opening clarity",
+        "benefit_proof": "Benefit / proof communication",
+        "usage_comparison": "Usage / comparison guidance",
+        "trust_reassurance": "Trust / reassurance",
+    }.get(bucket, bucket.replace("_", " ").title())
+
+
+def _category_words(family: str) -> dict[str, str]:
+    return CATEGORY_WORDS.get(family) or CATEGORY_WORDS["generic"]
+
+
+def _finding_priority(signal: str, evidence: list[str]) -> tuple[int, int]:
+    bucket = SIGNAL_BUCKETS.get(signal, "")
+    bucket_weight = {
+        "opening_clarity": 4,
+        "benefit_proof": 5,
+        "usage_comparison": 4,
+        "trust_reassurance": 3,
+    }.get(bucket, 1)
+    content_weight = sum(
+        1
+        for item in evidence
+        if item
+        in {
+            "title_quality",
+            "title_notes",
+            "benefit_terms",
+            "claim_statements",
+            "key_features",
+            "description_and_key_features",
+            "usage_guidance",
+            "routine_guidance",
+            "trust_or_reassurance_copy",
+        }
+    )
+    combined_weight = 3 if content_weight and any("graphic" in item or "image" in item or "format" in item for item in evidence) else 0
+    return bucket_weight + min(content_weight, 3) + combined_weight, content_weight
 
 
 def _build_finding(
@@ -278,12 +540,16 @@ def _build_finding(
     analyzed_pdps: int,
     evidence: list[str],
 ) -> dict[str, Any]:
+    bucket = SIGNAL_BUCKETS.get(signal, "usage_comparison")
     return {
         "text": _finding_text(signal, family),
         "signal": signal,
+        "bucket": _bucket_label(bucket),
+        "bucket_key": bucket,
         "supporting_pdps": supporting_pdps,
         "analyzed_pdps": analyzed_pdps,
         "evidence": evidence,
+        "priority": _finding_priority(signal, evidence)[0],
     }
 
 
@@ -300,12 +566,15 @@ def build_slide4_group_findings(records: list[dict[str, Any]], group_label: str)
     product_type = _first_common(analyzed_records or source_records, "product_type", "subcategory")
     title = _first_common(analyzed_records or source_records, "product_title", "title")
     family = _category_family(category, product_type, title)
+    words = _category_words(family)
 
     signal_counts: Counter[str] = Counter()
     evidence_by_signal: dict[str, list[str]] = {}
+    bucket_counts: Counter[str] = Counter()
     for record in analyzed_records:
         signals, evidence = _record_signal_evidence(record)
         signal_counts.update(signals)
+        bucket_counts.update(SIGNAL_BUCKETS.get(signal, "usage_comparison") for signal in signals)
         for signal, values in evidence.items():
             evidence_by_signal.setdefault(signal, [])
             evidence_by_signal[signal].extend(values)
@@ -338,9 +607,11 @@ def build_slide4_group_findings(records: list[dict[str, Any]], group_label: str)
                     )
                 )
 
-    selected_findings = [*strengths[:2], *opportunities[:2]]
-    if len(selected_findings) < 4:
-        selected_findings = [*strengths, *opportunities][:4]
+    strengths.sort(key=lambda finding: (finding["priority"], finding["supporting_pdps"]), reverse=True)
+    opportunities.sort(key=lambda finding: (finding["priority"], finding["supporting_pdps"]), reverse=True)
+
+    selected_findings = [*strengths, *opportunities]
+    selected_findings = _dedupe_selected_findings(selected_findings)
 
     return {
         "group_label": group_label,
@@ -353,7 +624,35 @@ def build_slide4_group_findings(records: list[dict[str, Any]], group_label: str)
         "slide4_bullets": [finding["text"] for finding in selected_findings],
         "debug": {
             "category_family": family,
+            "category_words": words,
             "signal_counts": dict(signal_counts),
+            "bucket_counts": dict(bucket_counts),
             "selected_signals": [finding["signal"] for finding in selected_findings],
+            "selected_buckets": [finding.get("bucket_key") for finding in selected_findings],
         },
     }
+
+
+def _dedupe_selected_findings(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    selected: list[dict[str, Any]] = []
+    seen_buckets: set[str] = set()
+    seen_text: set[str] = set()
+    for finding in findings:
+        text_key = _safe_text(finding.get("text")).lower()
+        bucket_key = _safe_text(finding.get("bucket_key"))
+        if text_key in seen_text or bucket_key in seen_buckets:
+            continue
+        selected.append(finding)
+        seen_text.add(text_key)
+        seen_buckets.add(bucket_key)
+        if len(selected) >= 4:
+            break
+    if len(selected) < 4:
+        for finding in findings:
+            text_key = _safe_text(finding.get("text")).lower()
+            if text_key not in seen_text:
+                selected.append(finding)
+                seen_text.add(text_key)
+            if len(selected) >= 4:
+                break
+    return selected

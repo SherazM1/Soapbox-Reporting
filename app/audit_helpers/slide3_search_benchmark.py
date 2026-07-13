@@ -34,11 +34,11 @@ CURRENT_BULLET_BANK = {
         "Limited": "Limited benefit-led keyword differentiation",
         "Missing": "Query-relevant title language can work harder",
     },
-    "assortment_breadth": {
-        "Strong": "Assortment supports broader shopper comparison",
+    "assortment_range": {
+        "Strong": "Assortment supports wider shopper comparison",
         "Moderate": "Focused assortment supports core discovery",
         "Limited": "Assortment representation is narrow",
-        "Missing": "Competitors show broader product-type coverage",
+        "Missing": "Competitors show wider product-type coverage",
     },
     "benefit_intent_alignment": {
         "Strong": "Clear benefit-led product positioning",
@@ -68,11 +68,11 @@ BENCHMARK_BULLET_BANK = {
     },
     "benefit_intent_alignment": {
         "Strong": "Benefit-forward product positioning",
-        "Moderate": "Broader intent-based discoverability",
-        "Limited": "Benefit and use-case language broadens relevance",
+        "Moderate": "Wider intent-based discoverability",
+        "Limited": "Benefit and use-case language expands relevance",
     },
-    "assortment_breadth": {
-        "Strong": "Assortment breadth expands {discovery_context}",
+    "assortment_range": {
+        "Strong": "Assortment range expands {discovery_context}",
         "Moderate": "Expanded need-state assortment",
         "Limited": "Multiple brands compete across core search terms",
     },
@@ -98,7 +98,7 @@ DIMENSION_ORDER = [
     "top_result_visibility",
     "sponsored_competition",
     "keyword_alignment",
-    "assortment_breadth",
+    "assortment_range",
     "benefit_intent_alignment",
     "review_authority",
     "badge_promotional_visibility",
@@ -107,7 +107,7 @@ DIMENSION_ORDER = [
 BENCHMARK_DIMENSION_ORDER = [
     "keyword_alignment",
     "benefit_intent_alignment",
-    "assortment_breadth",
+    "assortment_range",
     "review_authority",
     "badge_promotional_visibility",
     "sponsored_competition",
@@ -127,9 +127,9 @@ MALFORMED_PHRASE_BLOCKLIST = (
     "form, and dosage segmentation",
     "benchmark cue",
     "cue translation",
-    "benchmark shelf breadth is still concentrated",
-    "benchmark shelf breadth is limited",
-    "shelf breadth is concentrated",
+    "benchmark shelf range is still concentrated",
+    "benchmark shelf range is limited",
+    "shelf range is concentrated",
     "higher review threshold reaches",
     "presence is narrow for",
 )
@@ -195,6 +195,60 @@ def _representative_valid_record(
         merged_products.extend(_main_products(record))
     if merged_products:
         merged["orderedMainResultProducts"] = merged_products
+    explicit_fields = (
+        "brand_in_top_3",
+        "brand_in_top_5",
+        "brand_in_top_10",
+        "first_brand_rank",
+        "visible_brand_ranks",
+        "brand_match_count_visible",
+        "dominant_brand_names",
+        "dominant_brand_count",
+        "brand_share_top_10",
+        "top_10_badge_count",
+        "top_10_best_seller_count",
+        "top_10_overall_pick_count",
+        "top_10_sponsored_count",
+        "top_5_review_counts",
+        "top_5_avg_review_count",
+        "top_5_avg_rating",
+        "top_10_form_factors",
+        "top_10_solution_types",
+        "visible_use_case_terms",
+        "result_form_diversity",
+    )
+    for field in explicit_fields:
+        values = [
+            _get_first(record, field, f"data.{field}", default="")
+            for record in records
+            if isinstance(record, dict)
+        ]
+        values = [value for value in values if value not in (None, "", [], {})]
+        if not values:
+            continue
+        if field.startswith("brand_in_top_"):
+            merged[field] = any(_to_bool(value) for value in values)
+        elif field in {"first_brand_rank"}:
+            ranks = [_to_int(value, 10**9) for value in values]
+            valid_ranks = [rank for rank in ranks if 0 < rank < 10**9]
+            if valid_ranks:
+                merged[field] = min(valid_ranks)
+        elif field in {
+            "brand_match_count_visible",
+            "dominant_brand_count",
+            "top_10_badge_count",
+            "top_10_best_seller_count",
+            "top_10_overall_pick_count",
+            "top_10_sponsored_count",
+        }:
+            merged[field] = sum(_to_int(value) for value in values)
+        elif field in {"brand_share_top_10", "top_5_avg_review_count", "top_5_avg_rating", "result_form_diversity"}:
+            merged[field] = max(_to_float(value) for value in values)
+        else:
+            combined: list[Any] = []
+            for value in values:
+                combined.extend(_coerce_list(value))
+            merged[field] = list(dict.fromkeys(_safe_text(value) for value in combined if _safe_text(value)))
     term_counts: dict[str, int] = {}
     for term in search_terms:
         if term:
@@ -251,6 +305,35 @@ def _coerce_list(value: Any) -> list[Any]:
     if value in (None, "", {}, []):
         return []
     return [value]
+
+
+def _to_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(float(str(value).strip()))
+    except (TypeError, ValueError):
+        return default
+
+
+def _to_float(value: Any, default: float = 0.0) -> float:
+    try:
+        return float(str(value).strip().rstrip("%"))
+    except (TypeError, ValueError):
+        return default
+
+
+def _to_bool(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return value > 0
+    return re.sub(r"[^a-z0-9]+", " ", _safe_text(value).lower()).strip() in {
+        "1",
+        "true",
+        "yes",
+        "y",
+        "present",
+        "detected",
+    }
 
 
 def _get_first(record: dict[str, Any], *keys: str, default: Any = "") -> Any:
@@ -490,7 +573,7 @@ def _benefit_alignment(products: list[dict[str, Any]]) -> str:
     return "Limited"
 
 
-def _assortment_breadth(products: list[dict[str, Any]]) -> str:
+def _assortment_range(products: list[dict[str, Any]]) -> str:
     brands = { _safe_text(product.get("brand") or product.get("productBrand") or product.get("brandName")) for product in products if _safe_text(product.get("brand") or product.get("productBrand") or product.get("brandName")) }
     if len(brands) >= 3:
         return "Strong"
@@ -529,10 +612,88 @@ def _badge_visibility(products: list[dict[str, Any]]) -> str:
     return "Limited"
 
 
-def _dimension_scores(search_term: str, products: list[dict[str, Any]], client_brand: str) -> dict[str, str]:
+def _record_int_list(record: dict[str, Any], key: str) -> list[int]:
+    values = _coerce_list(_get_first(record, key, f"data.{key}", default=[]))
+    ranks: list[int] = []
+    for value in values:
+        parsed = _to_int(value, -1)
+        if parsed > 0:
+            ranks.append(parsed)
+    return ranks
+
+
+def _record_text_list(record: dict[str, Any], key: str) -> list[str]:
+    return list(
+        dict.fromkeys(
+            _normalize_term(value).lower()
+            for value in _coerce_list(_get_first(record, key, f"data.{key}", default=[]))
+            if _normalize_term(value)
+        )
+    )
+
+
+def _explicit_shelf_evidence(record: dict[str, Any] | None, products: list[dict[str, Any]]) -> dict[str, Any]:
+    record = record or {}
+    visible_ranks = _record_int_list(record, "visible_brand_ranks")
+    first_rank = _to_int(_get_first(record, "first_brand_rank", "data.first_brand_rank", default=0))
+    if first_rank > 0:
+        visible_ranks.append(first_rank)
+    share = _to_float(_get_first(record, "brand_share_top_10", "data.brand_share_top_10", default=0.0))
+    if share > 1:
+        share = share / 100
+    review_counts = [
+        _to_int(value)
+        for value in _coerce_list(_get_first(record, "top_5_review_counts", "data.top_5_review_counts", default=[]))
+        if _to_int(value) > 0
+    ]
+    if not review_counts:
+        review_counts = _review_counts(products)
+    badge_count = sum(
+        _to_int(_get_first(record, key, f"data.{key}", default=0))
+        for key in ("top_10_badge_count", "top_10_best_seller_count", "top_10_overall_pick_count")
+    )
+    if not badge_count:
+        badge_count = len(_badges(products))
+    sponsored_count = _to_int(_get_first(record, "top_10_sponsored_count", "data.top_10_sponsored_count", default=0))
+    if not sponsored_count:
+        sponsored_count = sum(1 for product in products if str(product.get("sponsored", "")).lower() in {"true", "1", "yes"})
+    form_terms = _record_text_list(record, "top_10_form_factors")
+    solution_terms = _record_text_list(record, "top_10_solution_types")
+    use_case_terms = _record_text_list(record, "visible_use_case_terms")
+    dominant_brands = _record_text_list(record, "dominant_brand_names")
+    if not dominant_brands:
+        dominant_brands = [brand.lower() for brand in _top_brands(products)]
+    return {
+        "brand_in_top_3": _to_bool(_get_first(record, "brand_in_top_3", "data.brand_in_top_3", default=False)) or any(rank <= 3 for rank in visible_ranks),
+        "brand_in_top_5": _to_bool(_get_first(record, "brand_in_top_5", "data.brand_in_top_5", default=False)) or any(rank <= 5 for rank in visible_ranks),
+        "brand_in_top_10": _to_bool(_get_first(record, "brand_in_top_10", "data.brand_in_top_10", default=False)) or any(rank <= 10 for rank in visible_ranks),
+        "first_brand_rank": min(visible_ranks) if visible_ranks else 0,
+        "visible_brand_ranks": sorted(set(visible_ranks)),
+        "brand_match_count_visible": _to_int(_get_first(record, "brand_match_count_visible", "data.brand_match_count_visible", default=0)),
+        "brand_share_top_10": share,
+        "dominant_brand_names": dominant_brands[:6],
+        "dominant_brand_count": _to_int(_get_first(record, "dominant_brand_count", "data.dominant_brand_count", default=len(dominant_brands))),
+        "badge_count": badge_count,
+        "sponsored_count": sponsored_count,
+        "review_counts": review_counts,
+        "top_5_avg_review_count": _to_float(_get_first(record, "top_5_avg_review_count", "data.top_5_avg_review_count", default=0.0)),
+        "top_5_avg_rating": _to_float(_get_first(record, "top_5_avg_rating", "data.top_5_avg_rating", default=0.0)),
+        "form_terms": form_terms[:6],
+        "solution_terms": solution_terms[:6],
+        "use_case_terms": use_case_terms[:6],
+        "result_form_diversity": _to_float(_get_first(record, "result_form_diversity", "data.result_form_diversity", default=0.0)),
+    }
+
+
+def _dimension_scores(search_term: str, products: list[dict[str, Any]], client_brand: str, record: dict[str, Any] | None = None) -> dict[str, str]:
+    shelf = _explicit_shelf_evidence(record, products)
     client_positions = [int(product.get("position", 999)) for product in products if _client_brand_matches(client_brand, product) and _safe_text(product.get("position"))]
     if not client_brand:
         client_presence = "Unknown"
+    elif shelf["brand_in_top_3"] or shelf["brand_match_count_visible"] >= 3 or shelf["brand_share_top_10"] >= 0.25:
+        client_presence = "Strong"
+    elif shelf["brand_in_top_10"] or shelf["brand_match_count_visible"] >= 1:
+        client_presence = "Moderate"
     else:
         client_matches = [product for product in products if _client_brand_matches(client_brand, product)]
         if len(client_matches) >= 2:
@@ -543,13 +704,27 @@ def _dimension_scores(search_term: str, products: list[dict[str, Any]], client_b
             client_presence = "Missing"
     scores = {
         "client_brand_presence": client_presence,
-        "top_result_visibility": _top_result_visibility(client_positions),
-        "sponsored_competition": _sponsored_competition(products, client_positions),
+        "top_result_visibility": (
+            "Strong" if shelf["brand_in_top_3"] else "Moderate" if shelf["brand_in_top_10"] else _top_result_visibility(client_positions)
+        ),
+        "sponsored_competition": (
+            "Strong" if shelf["sponsored_count"] >= 3 else "Moderate" if shelf["sponsored_count"] else _sponsored_competition(products, client_positions)
+        ),
         "keyword_alignment": _keyword_alignment(search_term, products),
-        "assortment_breadth": _assortment_breadth(products),
-        "benefit_intent_alignment": _benefit_alignment(products),
-        "review_authority": _review_authority(products, client_positions),
-        "badge_promotional_visibility": _badge_visibility(products),
+        "assortment_range": (
+            "Strong" if len(set(shelf["dominant_brand_names"])) >= 3 or shelf["result_form_diversity"] >= 4 else _assortment_range(products)
+        ),
+        "benefit_intent_alignment": (
+            "Strong" if len(set(shelf["solution_terms"] + shelf["use_case_terms"])) >= 3 else _benefit_alignment(products)
+        ),
+        "review_authority": (
+            "Strong"
+            if shelf["top_5_avg_review_count"] >= 500 or max(shelf["review_counts"] or [0]) >= 500
+            else "Moderate"
+            if shelf["top_5_avg_review_count"] >= 100 or max(shelf["review_counts"] or [0]) >= 100
+            else _review_authority(products, client_positions)
+        ),
+        "badge_promotional_visibility": "Strong" if shelf["badge_count"] else _badge_visibility(products),
     }
     if client_presence == "Unknown":
         scores["client_brand_presence"] = "Unknown"
@@ -575,7 +750,9 @@ def _search_language_allowed(text: str) -> tuple[bool, str]:
     titleish_tokens = [token for token in normalized.split() if token[:1].isupper()]
     if len(titleish_tokens) >= 6:
         return False, "raw_product_title_like"
-    if not any(term in normalized for term in ("query", "queries", "shelf", "review", "brand", "coverage", "presence", "badge", "sponsored", "authority", "alignment", "breadth", "adjacent", "trust", "discovery", "visibility", "results")):
+    if "breadth" in normalized:
+        return False, "blocked_range_language"
+    if not any(term in normalized for term in ("query", "queries", "shelf", "review", "brand", "coverage", "presence", "badge", "sponsored", "authority", "alignment", "range", "variety", "assortment", "comparison", "adjacent", "trust", "discovery", "visibility", "results", "pressure", "relevance", "intent", "selection")):
         return False, "not_search_native"
     return True, "allowed"
 
@@ -687,14 +864,14 @@ def _framework_query_alignment_insight(side: str, summary: dict[str, Any], produ
     return f"Client visibility is thin across {product_type} searches"
 
 
-def _framework_breadth_insight(side: str, summary: dict[str, Any], product_type: str) -> str:
+def _framework_range_insight(side: str, summary: dict[str, Any], product_type: str) -> str:
     if summary.get("strong_path_count", 0) >= 3:
         return f"Coverage extends across related {product_type} paths"
     if summary.get("meaningful_path_count", 0) >= 3:
         return f"Coverage is strongest in core {product_type} paths"
     if side == "benchmark":
         return "Benchmark visibility is focused on fewer search paths"
-    return f"Coverage is tighter across related {product_type} searches"
+    return f"Discovery range is narrower across related {product_type} searches"
 
 
 def _framework_differentiator_insight(side: str, summary: dict[str, Any], product_type: str) -> str:
@@ -720,15 +897,15 @@ def _client_presence_insight(client_display: str, client_positions: list[int], p
     return f"{client_display} sits deeper in the search shelf"
 
 
-def _shelf_breadth_insight(side: str, brand_count: int, product_type: str) -> str:
+def _shelf_range_insight(side: str, brand_count: int, product_type: str) -> str:
     if side == "current":
         if brand_count >= 3:
-            return "Brand variety gives shoppers a broader comparison set"
+            return "Brand variety gives shoppers a wider comparison set"
         if brand_count >= 2:
             return "Shelf variety supports basic shopper comparison"
-        return f"Coverage is tighter across related {product_type} searches"
+        return f"Discovery range is narrower across related {product_type} searches"
     if brand_count >= 3:
-        return "Competing brands create a broader comparison set"
+        return "Competing brands create a wider comparison set"
     if brand_count >= 2:
         return "Benchmark results show moderate brand variety"
     return "Benchmark visibility is focused on fewer search paths"
@@ -760,6 +937,102 @@ def _query_alignment_insight(side: str, keyword_score: str, product_type: str) -
     return f"Titles need clearer {product_type} search language"
 
 
+def _short_join(values: list[str], fallback: str, limit: int = 2) -> str:
+    cleaned = [_normalize_term(value).lower() for value in values if _normalize_term(value)]
+    cleaned = list(dict.fromkeys(cleaned))[:limit]
+    if not cleaned:
+        return fallback
+    if len(cleaned) == 1:
+        return cleaned[0]
+    return f"{cleaned[0]} and {cleaned[1]}"
+
+
+def _presence_from_shelf(side: str, shelf: dict[str, Any], client_display: str, product_type: str) -> str:
+    first_rank = int(shelf.get("first_brand_rank", 0) or 0)
+    match_count = int(shelf.get("brand_match_count_visible", 0) or 0)
+    if side == "current":
+        if shelf.get("brand_in_top_3") or first_rank <= 3 and first_rank > 0:
+            return f"{client_display} anchors top search presence"
+        if shelf.get("brand_in_top_10") or match_count:
+            return f"{client_display} remains visible but not shelf-leading"
+        return f"{client_display} is harder to find on shelf"
+    if shelf.get("brand_in_top_3") or first_rank <= 3 and first_rank > 0:
+        return "Benchmark brands hold stronger top-shelf presence"
+    if shelf.get("brand_in_top_10") or match_count:
+        return "Benchmark brands remain visible across leading results"
+    return f"Benchmark presence is lighter across {product_type} results"
+
+
+def _intent_from_shelf(side: str, shelf: dict[str, Any], product_type: str, keyword_score: str) -> str:
+    intent = _short_join(
+        [*shelf.get("solution_terms", []), *shelf.get("use_case_terms", [])],
+        product_type,
+    )
+    if side == "benchmark":
+        if keyword_score in {"Strong", "Moderate"} or intent != product_type:
+            return f"Competitive products map clearly to {intent} query intent"
+        return f"Search relevance varies across {product_type} queries"
+    if keyword_score in {"Strong", "Moderate"} and intent != product_type:
+        return f"Query language connects to {intent} needs"
+    if keyword_score in {"Strong", "Moderate"}:
+        return f"Query language connects to core {product_type} intent"
+    return "Title and benefit language can work harder"
+
+
+def _trust_from_shelf(side: str, shelf: dict[str, Any], review_counts: list[int]) -> str:
+    avg_reviews = float(shelf.get("top_5_avg_review_count", 0) or 0)
+    avg_rating = float(shelf.get("top_5_avg_rating", 0) or 0)
+    review_peak = max(review_counts or [0])
+    if side == "benchmark":
+        if avg_reviews >= 500 or review_peak >= 500:
+            return "Review depth strengthens shelf trust"
+        if avg_reviews >= 100 or review_peak >= 100 or avg_rating >= 4.5:
+            return "Shelf trust reinforces benchmark credibility"
+        return "Shelf trust varies across benchmark results"
+    if avg_reviews >= 250 or review_peak >= 250:
+        return "Review depth provides solid trust support"
+    if avg_reviews >= 50 or review_peak >= 50 or avg_rating >= 4.5:
+        return "Review depth provides modest trust support"
+    return "Limited review depth makes trust harder to build"
+
+
+def _pressure_from_shelf(side: str, shelf: dict[str, Any]) -> str:
+    sponsored = int(shelf.get("sponsored_count", 0) or 0)
+    badges = int(shelf.get("badge_count", 0) or 0)
+    dominant = _short_join(shelf.get("dominant_brand_names", []), "competitor")
+    if side == "benchmark":
+        if sponsored:
+            return "Sponsored visibility adds benchmark pressure"
+        if badges:
+            return "Competitive callouts sharpen shelf differentiation"
+        return f"{dominant} brands shape the benchmark comparison set"
+    if sponsored and badges:
+        return "Sponsored and retail callouts increase competitive pressure"
+    if sponsored:
+        return "Sponsored placements increase competitive pressure"
+    if badges:
+        return "Retail callouts make the shelf harder to break through"
+    return f"{dominant} keeps comparison pressure visible"
+
+
+def _range_from_shelf(side: str, shelf: dict[str, Any], brand_count: int, product_type: str) -> str:
+    forms = _short_join(shelf.get("form_terms", []), "")
+    solutions = _short_join(shelf.get("solution_terms", []), "")
+    if side == "benchmark":
+        if forms:
+            return f"Benchmark assortment spans {forms} formats"
+        if solutions:
+            return f"Competitive coverage extends across {solutions} needs"
+        if brand_count >= 3:
+            return "Benchmark brands create a wider comparison set"
+        return f"Benchmark shelf selection is focused in {product_type}"
+    if forms:
+        return f"Client comparison range is clearer in {forms}"
+    if brand_count >= 2:
+        return "Shelf variety supports basic shopper comparison"
+    return f"Client comparison range is narrow in {product_type}"
+
+
 def _candidate_overlap_key(text: str) -> set[str]:
     stop = STOP_WORDS | {
         "current",
@@ -767,7 +1040,7 @@ def _candidate_overlap_key(text: str) -> set[str]:
         "benchmark",
         "competitive",
         "stronger",
-        "broader",
+        "wider",
         "visible",
         "visibility",
         "leading",
@@ -835,10 +1108,12 @@ def _build_side_candidates(
     client_brand: str,
     search_term: str,
     search_framework: dict[str, Any] | None = None,
+    record: dict[str, Any] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     brands = _top_brands(products)
     badges = _badges(products)
     review_counts = _review_counts(products)
+    shelf = _explicit_shelf_evidence(record, products)
     client_positions = [
         _product_position(product, index)
         for index, product in enumerate(products, start=1)
@@ -865,7 +1140,7 @@ def _build_side_candidates(
         )
 
     keyword_score = scores.get("keyword_alignment", "Limited")
-    assortment_score = scores.get("assortment_breadth", "Limited")
+    assortment_score = scores.get("assortment_range", "Limited")
     review_score = scores.get("review_authority", "Missing")
     sponsored_score = scores.get("sponsored_competition", "Unknown")
 
@@ -881,13 +1156,13 @@ def _build_side_candidates(
             framework_source="slide6_shared_search_framework",
         )
         add(
-            text=_framework_breadth_insight(side, framework_summary, product_type),
+            text=_framework_range_insight(side, framework_summary, product_type),
             family="shelf_breadth",
             dimension="shared_search_breadth",
             score=framework_summary.get("top_label") or assortment_score,
             rank=92,
             evidence=framework_summary.get("meaningful_terms", [])[:4] or framework_summary.get("top_terms", [])[:4],
-            reason="Slide 3 summarized the representative breadth of Slide 6 search paths.",
+            reason="Slide 3 summarized the representative range of Slide 6 search paths.",
             framework_source="slide6_shared_search_framework",
         )
         add(
@@ -904,44 +1179,57 @@ def _build_side_candidates(
     if side == "current":
         if client_brand:
             add(
-                text=_client_presence_insight(client_display, client_positions, product_type),
+                text=_presence_from_shelf(side, shelf, client_display, product_type),
                 family="side_specific",
                 dimension="client_brand_presence",
                 score=scores.get("client_brand_presence", "Unknown"),
-                rank=96,
+                rank=102,
                 evidence=(
-                    [f"client_position={min(client_positions)}", f"query={search_term}"]
-                    if client_positions
+                    [
+                        f"first_rank={shelf.get('first_brand_rank') or min(client_positions)}",
+                        f"brand_matches={shelf.get('brand_match_count_visible', 0)}",
+                        f"query={search_term}",
+                    ]
+                    if client_positions or shelf.get("first_brand_rank") or shelf.get("brand_match_count_visible")
                     else ["client_not_found", f"query={search_term}"]
                 ),
                 reason="Current side translated client placement into a shelf-presence takeaway.",
             )
         add(
-            text=_query_alignment_insight(side, keyword_score, product_type),
+            text=_intent_from_shelf(side, shelf, product_type, keyword_score),
             family="query_alignment",
             dimension="keyword_alignment",
             score=keyword_score,
-            rank=88,
-            evidence=[keyword_score, f"query={search_term}"],
-            reason="Current side evaluated title/query fit against captured products.",
+            rank=90,
+            evidence=[keyword_score, f"query={search_term}", *shelf.get("solution_terms", [])[:2], *shelf.get("use_case_terms", [])[:2]],
+            reason="Current side evaluated query, solution, use-case, title, and PDP language support.",
         )
         add(
-            text=_shelf_breadth_insight(side, len(brands), product_type),
+            text=_range_from_shelf(side, shelf, len(brands), product_type),
             family="shelf_breadth",
-            dimension="assortment_breadth",
+            dimension="assortment_range",
             score=assortment_score,
             rank=82,
-            evidence=[f"brands={len(brands)}", *brands[:3]],
-            reason="Current side used captured brand count as shelf-breadth evidence.",
+            evidence=[f"brands={len(brands)}", *brands[:3], *shelf.get("form_terms", [])[:2]],
+            reason="Current side used brand count, form factors, and solution signals as comparison-range evidence.",
         )
         add(
-            text=_review_depth_insight(side, review_counts),
+            text=_trust_from_shelf(side, shelf, review_counts),
             family="trust_authority",
             dimension="review_authority",
             score=review_score,
-            rank=78,
-            evidence=[f"median_reviews={median_reviews}"] if median_reviews else ["review_counts_missing"],
-            reason="Current side used median review count as trust evidence.",
+            rank=86,
+            evidence=[f"median_reviews={median_reviews}", f"avg_top5_reviews={shelf.get('top_5_avg_review_count', 0)}", f"avg_rating={shelf.get('top_5_avg_rating', 0)}"],
+            reason="Current side used reviews and rating evidence as shopper-trust support.",
+        )
+        add(
+            text=_pressure_from_shelf(side, shelf),
+            family="side_specific",
+            dimension="competitive_pressure",
+            score=sponsored_score,
+            rank=84,
+            evidence=[f"sponsored={shelf.get('sponsored_count', 0)}", f"badges={shelf.get('badge_count', 0)}", *shelf.get("dominant_brand_names", [])[:3]],
+            reason="Current side translated sponsored, badge, and dominant-brand signals into competitive pressure.",
         )
         if badges:
             add(
@@ -974,31 +1262,40 @@ def _build_side_candidates(
         )
     else:
         add(
-            text=_query_alignment_insight(side, keyword_score, product_type),
+            text=_range_from_shelf(side, shelf, len(brands), product_type),
+            family="shelf_breadth",
+            dimension="assortment_range",
+            score=assortment_score,
+            rank=96,
+            evidence=[f"brands={len(brands)}", *brands[:3], *shelf.get("form_terms", [])[:2], *shelf.get("solution_terms", [])[:2]],
+            reason="Benchmark side translated brand, form, and solution spread into a comparison-set takeaway.",
+        )
+        add(
+            text=_intent_from_shelf(side, shelf, product_type, keyword_score),
             family="query_alignment",
             dimension="keyword_alignment",
             score=keyword_score,
             rank=90,
-            evidence=[keyword_score, f"query={search_term}"],
-            reason="Benchmark side evaluated competitor title/query fit separately.",
+            evidence=[keyword_score, f"query={search_term}", *shelf.get("solution_terms", [])[:2], *shelf.get("use_case_terms", [])[:2]],
+            reason="Benchmark side evaluated query, solution, use-case, title, and PDP language support.",
         )
         add(
-            text=_shelf_breadth_insight(side, len(brands), product_type),
-            family="shelf_breadth",
-            dimension="assortment_breadth",
-            score=assortment_score,
-            rank=88,
-            evidence=[f"brands={len(brands)}", *brands[:3]],
-            reason="Benchmark side prioritized competing brand breadth.",
-        )
-        add(
-            text=_review_depth_insight(side, review_counts),
+            text=_trust_from_shelf(side, shelf, review_counts),
             family="trust_authority",
             dimension="review_authority",
             score=review_score,
             rank=84,
-            evidence=[f"max_reviews={max_reviews}", f"median_reviews={median_reviews}"] if review_counts else ["review_counts_missing"],
-            reason="Benchmark side used review ceiling and median to describe authority.",
+            evidence=[f"max_reviews={max_reviews}", f"median_reviews={median_reviews}", f"avg_top5_reviews={shelf.get('top_5_avg_review_count', 0)}", f"avg_rating={shelf.get('top_5_avg_rating', 0)}"],
+            reason="Benchmark side used reviews and rating evidence to describe shelf trust.",
+        )
+        add(
+            text=_pressure_from_shelf(side, shelf),
+            family="side_specific",
+            dimension="visibility_drivers",
+            score=sponsored_score,
+            rank=82,
+            evidence=[f"sponsored={shelf.get('sponsored_count', 0)}", f"badges={shelf.get('badge_count', 0)}", *shelf.get("dominant_brand_names", [])[:3]],
+            reason="Benchmark side translated sponsored, badge, and dominant-brand signals into visibility drivers.",
         )
         if sponsored_score in {"Strong", "Moderate", "Unknown"}:
             add(
@@ -1043,6 +1340,7 @@ def _build_side_candidates(
         },
         "client_positions": client_positions,
         "scores": scores,
+        "explicit_shelf_evidence": shelf,
         "shared_search_framework_used": framework_available,
         "shared_search_framework_summary": framework_summary,
         "ranked_candidate_themes": [
@@ -1194,14 +1492,32 @@ def _apply_cross_side_overlap_suppression(current_payload: dict[str, Any], bench
                         [item["text"] for item in benchmark_selected],
                     )
             else:
-                rejected_overlap.append(
-                    {
-                        "side": "shared",
-                        "current": current_item["text"],
-                        "benchmark": benchmark_item["text"],
-                        "reason": "Shared theme kept because both sides had similar evidence strength.",
-                    }
-                )
+                replaced = False
+                if current_item.get("dimension") != "shared_search_query_alignment":
+                    replaced = replace_candidate(
+                        "current",
+                        current_selected,
+                        current_candidates,
+                        current_index,
+                        [item["text"] for item in benchmark_selected],
+                    )
+                if not replaced:
+                    replaced = replace_candidate(
+                        "benchmark",
+                        benchmark_selected,
+                        benchmark_candidates,
+                        benchmark_index,
+                        [item["text"] for item in current_selected],
+                    )
+                if not replaced:
+                    rejected_overlap.append(
+                        {
+                            "side": "shared",
+                            "current": current_item["text"],
+                            "benchmark": benchmark_item["text"],
+                            "reason": "Shared theme kept because both sides had similar evidence strength.",
+                        }
+                    )
 
     current_payload["selected_candidates"] = current_selected[:4]
     benchmark_payload["selected_candidates"] = benchmark_selected[:4]
@@ -1217,6 +1533,44 @@ def _apply_cross_side_overlap_suppression(current_payload: dict[str, Any], bench
         "current_final_bullets": current_payload.get("bullets", []),
         "benchmark_final_bullets": benchmark_payload.get("bullets", []),
     }
+
+
+def _dynamic_intro(current_payload: dict[str, Any], benchmark_payload: dict[str, Any]) -> str:
+    current_scores = current_payload.get("dimension_scores", {}) or {}
+    benchmark_scores = benchmark_payload.get("dimension_scores", {}) or {}
+    current_debug = (current_payload.get("debug", {}) or {}).get("side_candidate_debug", {}) or {}
+    benchmark_debug = (benchmark_payload.get("debug", {}) or {}).get("side_candidate_debug", {}) or {}
+    current_shelf = current_debug.get("explicit_shelf_evidence", {}) or {}
+    benchmark_shelf = benchmark_debug.get("explicit_shelf_evidence", {}) or {}
+    current_visibility = _score_rank(current_scores.get("client_brand_presence", "Missing"))
+    benchmark_trust = _score_rank(benchmark_scores.get("review_authority", "Missing"))
+    current_trust = _score_rank(current_scores.get("review_authority", "Missing"))
+    benchmark_range = _score_rank(benchmark_scores.get("assortment_range", "Missing"))
+    current_range = _score_rank(current_scores.get("assortment_range", "Missing"))
+    pressure = (
+        int(benchmark_shelf.get("sponsored_count", 0) or 0)
+        + int(benchmark_shelf.get("badge_count", 0) or 0)
+        + int(current_shelf.get("sponsored_count", 0) or 0)
+        + int(current_shelf.get("badge_count", 0) or 0)
+    )
+    category = (
+        benchmark_payload.get("category_phrase")
+        or current_payload.get("category_phrase")
+        or "this category"
+    )
+    if current_visibility <= _score_rank("Limited") and (
+        benchmark_trust > current_trust or benchmark_range > current_range or pressure
+    ):
+        return (
+            f"Walmart search is highly competitive in {category}, with benchmark brands holding stronger visibility and trust signals across leading results."
+        )
+    if current_visibility >= _score_rank("Strong"):
+        return (
+            f"Walmart search shows the client holding strong visibility in {category}, while benchmark brands continue to shape comparison through trust and assortment signals."
+        )
+    return (
+        f"Walmart search shows a competitive but mixed {category} shelf, where the client remains visible while benchmark brands reinforce discovery with stronger trust and promotional cues."
+    )
 
 
 def _select_bullets(
@@ -1318,8 +1672,8 @@ def _select_bullets(
         if search_brand_phrase:
             add(
                 f"Competing brands broaden {phrase_context['discovery_context']}",
-                "assortment_breadth",
-                scores.get("assortment_breadth", "Limited"),
+                "assortment_range",
+                scores.get("assortment_range", "Limited"),
                 brands[:3],
                 "Selected because multiple benchmark brands were captured.",
                 "benchmark_top_brands",
@@ -1363,7 +1717,7 @@ def _select_bullets(
         fallback_text = (
             f"Clarify benefit cues across {phrase_context['shopping_journey']}"
             if side == "current"
-            else f"Broader {phrase_context['product_type']} cues support discovery"
+            else f"Wider {phrase_context['product_type']} cues support discovery"
         )
         add(
             fallback_text,
@@ -1447,14 +1801,14 @@ def _build_side_payload(
         )
     )
     products = _main_products(record)
-    scores = _dimension_scores(search_term, products, client_name)
+    scores = _dimension_scores(search_term, products, client_name, record)
     cue_context = search_cue_context(
         search_term,
         products,
         client_brand=client_name,
         side=side,
     )
-    candidate_themes, side_debug = _build_side_candidates(side, scores, products, client_name, search_term, search_framework)
+    candidate_themes, side_debug = _build_side_candidates(side, scores, products, client_name, search_term, search_framework, record)
     selected_candidates, selection_debug = _select_side_candidates(candidate_themes, side=side)
     bullets = [candidate["text"] for candidate in selected_candidates[:4]]
     bullet_debug = [_candidate_to_debug(candidate) for candidate in selected_candidates[:4]]
@@ -1535,11 +1889,7 @@ def build_slide3_search_benchmark(
     current_payload["warnings"].extend(current_warnings)
     benchmark_payload["warnings"].extend(benchmark_warnings)
 
-    intro = (
-        "Walmart search results within the "
-        f"{current_payload['category_phrase'] or 'the category'} and "
-        f"{benchmark_payload['category_phrase'] or 'the category'} categories reveal a highly competitive environment where brands are increasingly using educational content, benefit-led messaging, and lifestyle positioning to drive shopper engagement and conversion."
-    )
+    intro = _dynamic_intro(current_payload, benchmark_payload)
 
     warnings = [*current_payload["warnings"], *benchmark_payload["warnings"]]
     if current_record is None and benchmark_record is None:

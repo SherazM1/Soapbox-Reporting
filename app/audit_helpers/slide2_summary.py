@@ -30,29 +30,29 @@ COMPETITIVE_BENCHMARK_LABELS = set(RATING_SCALES["competitive_benchmark"]["allow
 
 BULLET_BANK: dict[str, dict[str, str]] = {
     "consumer_demand": {
-        "established_trust": "Established shopper trust in {category_context_phrase}",
-        "strong_benefit_positioning": "Strong {product_positioning_phrase}",
-        "broad_relevance": "Repeat shoppers have clear reasons to choose",
-        "positive_review_foundation": "Reviews provide a trust base for conversion",
-        "clear_shopping_journey_fit": "Fits how Walmart shoppers compare {product_type_phrase}",
-        "growing_relevance": "Growing relevance for {shopper_phrase}",
+        "established_trust": "Reviews help build shopper trust at purchase",
+        "strong_benefit_positioning": "Benefit clarity gives shoppers a reason to choose",
+        "shopper_relevance": "Product fit connects to recognizable shopper needs",
+        "positive_review_foundation": "Proof points support confidence at purchase",
+        "clear_shopping_journey_fit": "Clear product fit makes comparison easier",
+        "growing_relevance": "Relevant benefits help shoppers choose with confidence",
         "review_confidence_opportunity": "Review depth can further reduce purchase friction",
         "limited_review_evidence": "Sparse reviews make trust-building more important",
         "benefit_clarity_opportunity": "Clarify {benefit_phrase} benefits earlier",
     },
     "walmart_opportunity": {
-        "shelf_ownership": "Stronger Walmart PDP content can deepen shelf ownership",
-        "conversion_optimization": "Sharper PDP guidance can reduce purchase friction",
-        "visual_storytelling_gap": "Expand {visual_phrase}",
-        "assortment_segmentation": "Sharper assortment cues can help shoppers compare variants faster",
-        "shopper_guidance": "Connect shopper needs to clearer product choice",
+        "clear_reasons_to_buy": "Stronger PDP content can show clearer reasons to buy",
+        "purchase_friction": "Clearer PDP guidance can reduce purchase friction",
+        "visual_storytelling_gap": "Stronger {visual_phrase} can improve shopper understanding",
+        "assortment_segmentation": "Clearer comparison cues help shoppers evaluate faster",
+        "shopper_guidance": "Clearer shopper guidance can support conversion",
     },
     "competitive_benchmark": {
-        "broader_discoverability": "Competitors broaden {discovery_phrase}",
-        "stronger_visual_storytelling": "Benchmark PDPs use stronger {visual_phrase}",
-        "educational_merchandising": "Education helps shoppers compare formats faster",
-        "benefit_education": "Category leaders use clearer {benefit_phrase} education",
-        "search_visibility": "Benefit and use-case language shape {shelf_navigation_phrase}",
+        "competitive_clarity": "Competitive pages set higher expectations for clarity",
+        "stronger_visual_storytelling": "Benchmark PDPs provide clearer shopper guidance",
+        "benefit_comparison": "Competitors make benefits easier to compare",
+        "benefit_education": "Category leaders use clearer proof points",
+        "search_visibility": "Search and trust cues raise competitive pressure",
         "limited_competitor_evidence": "Limited competitor evidence available for benchmarking",
     },
 }
@@ -65,15 +65,15 @@ FALLBACK_BULLET_IDS: dict[str, tuple[str, ...]] = {
         "benefit_clarity_opportunity",
     ),
     "walmart_opportunity": (
-        "shelf_ownership",
-        "conversion_optimization",
+        "clear_reasons_to_buy",
+        "purchase_friction",
         "shopper_guidance",
         "assortment_segmentation",
     ),
     "competitive_benchmark": (
         "limited_competitor_evidence",
         "search_visibility",
-        "educational_merchandising",
+        "benefit_comparison",
         "benefit_education",
     ),
 }
@@ -425,6 +425,74 @@ def _first_value(records: list[dict[str, Any]], *keys: str) -> str:
     return ""
 
 
+def _nested_value(record: dict[str, Any], *keys: str, default: Any = "") -> Any:
+    for key in keys:
+        current: Any = record
+        found = True
+        for part in key.split("."):
+            if not isinstance(current, dict) or part not in current:
+                found = False
+                break
+            current = current[part]
+        if found and current not in (None, "", [], {}):
+            return current
+    return default
+
+
+def _coerce_list(value: Any) -> list[Any]:
+    if isinstance(value, list):
+        return value
+    if value in (None, "", {}, []):
+        return []
+    return [value]
+
+
+def _field_list(record: dict[str, Any], *keys: str) -> list[str]:
+    values: list[str] = []
+    for key in keys:
+        raw = _nested_value(record, key, f"data.{key}", default=[])
+        for item in _coerce_list(raw):
+            text = _safe_text(item)
+            if text:
+                values.append(text)
+    return list(dict.fromkeys(values))
+
+
+def _field_text(record: dict[str, Any], *keys: str) -> str:
+    parts: list[str] = []
+    for key in keys:
+        value = _nested_value(record, key, f"data.{key}", default="")
+        if isinstance(value, list):
+            parts.extend(_safe_text(item) for item in value if _safe_text(item))
+        else:
+            text = _safe_text(value)
+            if text:
+                parts.append(text)
+    return " ".join(parts)
+
+
+def _field_int(record: dict[str, Any], *keys: str) -> int:
+    for key in keys:
+        value = _nested_value(record, key, f"data.{key}", default="")
+        try:
+            if value not in (None, ""):
+                return int(float(str(value).strip()))
+        except (TypeError, ValueError):
+            continue
+    return 0
+
+
+def _field_float(record: dict[str, Any], *keys: str) -> float:
+    for key in keys:
+        value = _nested_value(record, key, f"data.{key}", default="")
+        try:
+            if value not in (None, ""):
+                return float(str(value).strip())
+        except (TypeError, ValueError):
+            continue
+    return 0.0
+
+
 def _clean_phrase(value: str) -> str:
     cleaned = " ".join(_safe_text(value).replace("&", "and").split())
     return cleaned.strip(" /-").lower()
@@ -461,7 +529,7 @@ def _phrase_set(
         "category_context_phrase": category_context,
         "product_type_phrase": product_label,
         "product_positioning_phrase": f"{product_label} positioning",
-        "shopping_journey_phrase": f"{product_label} shopping journey",
+        "product_choice_phrase": f"{product_label} product choice",
         "discovery_phrase": f"{category_label} discovery and comparison",
         "shelf_navigation_phrase": f"{product_label} shelf navigation",
         "segment_phrase": segment_phrase,
@@ -538,7 +606,10 @@ def _ratings(records: list[dict[str, Any]]) -> list[float]:
     values: list[float] = []
     for record in records:
         reviews = record.get("reviews_summary", {}) or {}
-        rating = reviews.get("average_rating")
+        rating = (
+            reviews.get("average_rating")
+            or _nested_value(record, "averageRating", "average_rating", "reviews.averageRating", "reviews.average_rating")
+        )
         try:
             if rating is not None:
                 values.append(float(rating))
@@ -551,13 +622,95 @@ def _rating_counts(records: list[dict[str, Any]]) -> list[int]:
     values: list[int] = []
     for record in records:
         reviews = record.get("reviews_summary", {}) or {}
-        count = reviews.get("ratings_count")
+        count = (
+            reviews.get("ratings_count")
+            or _nested_value(record, "reviewCount", "ratingsCount", "ratingCount", "reviews.reviewCount", "reviews.ratingsCount")
+        )
         try:
             if count is not None:
                 values.append(int(count))
         except (TypeError, ValueError):
             continue
     return values
+
+
+def _pdp_evidence_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
+    benefit_terms: list[str] = []
+    proof_terms: list[str] = []
+    fit_terms: list[str] = []
+    guidance_terms: list[str] = []
+    description_count = 0
+    key_feature_count = 0
+    weak_description_count = 0
+    weak_key_feature_count = 0
+    claim_count = 0
+    warning_count = 0
+    explicit_content_records = 0
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        if any(
+            _nested_value(record, key, f"data.{key}", default="") not in (None, "", [], {})
+            for key in (
+                "descriptionCount",
+                "descriptionNotes",
+                "keyFeatureCount",
+                "keyFeatureNotes",
+                "descriptionBody",
+                "keyFeaturesText",
+                "descriptionBullets",
+            )
+        ):
+            explicit_content_records += 1
+        benefit_terms.extend(_field_list(record, "benefitTerms", "benefits", "content_signals.benefitTerms"))
+        proof_terms.extend(_field_list(record, "ingredientTerms", "claimStatements", "claims", "content_signals.ingredientTerms"))
+        fit_terms.extend(_field_list(record, "symptomTerms", "audienceTerms", "formFactorTerms", "visible_use_case_terms"))
+        guidance_terms.extend(_field_list(record, "usageInstructions", "descriptionBullets", "keyFeaturesText", "key_features"))
+        claim_count += len(_field_list(record, "claimStatements", "claims"))
+        warning_count += len(_field_list(record, "warningStatements", "warnings"))
+        description_count += _field_int(record, "descriptionCount")
+        key_feature_count += _field_int(record, "keyFeatureCount")
+        if not _field_int(record, "descriptionCount"):
+            description_text = _field_text(record, "descriptionBody", "description", "descriptionNotes")
+            if description_text:
+                description_count += 1
+        if not _field_int(record, "keyFeatureCount"):
+            key_feature_text = _field_text(record, "keyFeaturesText", "key_features", "features", "keyFeatureNotes")
+            if key_feature_text:
+                key_feature_count += 1
+        notes = " ".join(
+            [
+                _field_text(record, "descriptionNotes"),
+                _field_text(record, "keyFeatureNotes"),
+            ]
+        ).lower()
+        if any(term in notes for term in ("missing", "thin", "short", "weak", "limited")):
+            if "description" in notes:
+                weak_description_count += 1
+            if "feature" in notes:
+                weak_key_feature_count += 1
+    benefit_terms = list(dict.fromkeys(term.lower() for term in benefit_terms if term))
+    proof_terms = list(dict.fromkeys(term.lower() for term in proof_terms if term))
+    fit_terms = list(dict.fromkeys(term.lower() for term in fit_terms if term))
+    guidance_terms = list(dict.fromkeys(term.lower() for term in guidance_terms if term))
+    return {
+        "benefit_terms": benefit_terms,
+        "proof_terms": proof_terms,
+        "fit_terms": fit_terms,
+        "guidance_terms": guidance_terms,
+        "benefit_term_count": len(benefit_terms),
+        "proof_term_count": len(proof_terms) + claim_count,
+        "fit_term_count": len(fit_terms),
+        "guidance_term_count": len(guidance_terms),
+        "description_count": description_count,
+        "key_feature_count": key_feature_count,
+        "weak_description_count": weak_description_count,
+        "weak_key_feature_count": weak_key_feature_count,
+        "claim_count": claim_count,
+        "warning_count": warning_count,
+        "record_count": len(records),
+        "explicit_content_records": explicit_content_records,
+    }
 
 
 def _validate_rating(section_key: str, rating: str, warnings: list[str]) -> str:
@@ -573,7 +726,8 @@ def _validate_rating(section_key: str, rating: str, warnings: list[str]) -> str:
     return fallback
 
 
-def _consumer_demand_rating(records: list[dict[str, Any]]) -> tuple[str, list[str], list[str]]:
+def _consumer_demand_rating(records: list[dict[str, Any]], evidence: dict[str, Any] | None = None) -> tuple[str, list[str], list[str]]:
+    evidence = evidence or _pdp_evidence_summary(records)
     ratings = _ratings(records)
     rating_counts = _rating_counts(records)
     warnings: list[str] = []
@@ -586,13 +740,30 @@ def _consumer_demand_rating(records: list[dict[str, Any]]) -> tuple[str, list[st
         signals.append("no_rating_evidence")
     total_reviews = sum(rating_counts)
     signals.append(f"rating_count={total_reviews}")
+    signals.extend(
+        [
+            f"benefit_terms={evidence.get('benefit_term_count', 0)}",
+            f"proof_terms={evidence.get('proof_term_count', 0)}",
+            f"shopper_fit_terms={evidence.get('fit_term_count', 0)}",
+        ]
+    )
 
     if not records:
         warnings.append("No primary records available; Consumer Demand used default fallback logic.")
         return "Emerging", signals, warnings
     if not ratings:
+        if evidence.get("benefit_term_count", 0) + evidence.get("fit_term_count", 0) + evidence.get("proof_term_count", 0) >= 4:
+            warnings.append("No review/rating evidence available; Consumer Demand used PDP relevance evidence.")
+            return "Emerging", signals, warnings
         warnings.append("No review/rating evidence available; Consumer Demand used limited-evidence fallback.")
         return "Limited", signals, warnings
+    relevance_score = (
+        min(int(evidence.get("benefit_term_count", 0) or 0), 3)
+        + min(int(evidence.get("fit_term_count", 0) or 0), 2)
+        + min(int(evidence.get("proof_term_count", 0) or 0), 2)
+    )
+    if avg_rating >= 4.2 and total_reviews >= 50 and relevance_score >= 2:
+        return "Strong", signals, warnings
     if avg_rating >= 4.2 and total_reviews >= 50:
         return "Strong", signals, warnings
     if avg_rating >= 3.7 and total_reviews >= 10:
@@ -617,20 +788,31 @@ def _gap_count(record: dict[str, Any]) -> int:
 
 
 def _walmart_opportunity_rating(
-    records: list[dict[str, Any]], slide4_findings: dict[str, Any] | None
+    records: list[dict[str, Any]], slide4_findings: dict[str, Any] | None, evidence: dict[str, Any] | None = None
 ) -> tuple[str, list[str], list[str]]:
+    evidence = evidence or _pdp_evidence_summary(records)
     warnings: list[str] = []
     gap_counts = [_gap_count(record) for record in records]
     avg_gaps = mean(gap_counts) if gap_counts else 0.0
     client_findings = ((slide4_findings or {}).get("client", {}) or {})
     opportunity_count = len(client_findings.get("opportunities", []) or [])
-    signals = [f"avg_gap_count={avg_gaps:.2f}", f"slide4_opportunities={opportunity_count}"]
+    explicit_content_records = int(evidence.get("explicit_content_records", 0) or 0)
+    content_gap_score = int(evidence.get("weak_description_count", 0) or 0) + int(evidence.get("weak_key_feature_count", 0) or 0)
+    if explicit_content_records:
+        content_gap_score += max(0, explicit_content_records - int(evidence.get("description_count", 0) or 0))
+        content_gap_score += max(0, explicit_content_records - int(evidence.get("key_feature_count", 0) or 0))
+    signals = [
+        f"avg_gap_count={avg_gaps:.2f}",
+        f"slide4_opportunities={opportunity_count}",
+        f"content_gap_score={content_gap_score}",
+        f"guidance_terms={evidence.get('guidance_term_count', 0)}",
+    ]
     if not records:
         warnings.append("No primary records available; Walmart Opportunity used default fallback logic.")
         return "Meaningful", signals, warnings
-    if avg_gaps >= 3 or opportunity_count >= 3:
+    if avg_gaps >= 3 or opportunity_count >= 3 or content_gap_score >= 3:
         return "Significant", signals, warnings
-    if avg_gaps >= 1 or opportunity_count >= 1:
+    if avg_gaps >= 1 or opportunity_count >= 1 or content_gap_score >= 1:
         return "Meaningful", signals, warnings
     warnings.append("Limited gap evidence available; Walmart Opportunity used selective/low-gap fallback.")
     return "Selective", signals, warnings
@@ -640,8 +822,12 @@ def _competitive_rating(
     primary_records: list[dict[str, Any]],
     competitor_records: list[dict[str, Any]],
     slide4_findings: dict[str, Any] | None,
+    primary_evidence: dict[str, Any] | None = None,
+    competitor_evidence: dict[str, Any] | None = None,
 ) -> tuple[str, list[str], list[str]]:
     warnings: list[str] = []
+    primary_evidence = primary_evidence or _pdp_evidence_summary(primary_records)
+    competitor_evidence = competitor_evidence or _pdp_evidence_summary(competitor_records)
     if not competitor_records:
         warnings.append("No competitor records available; Competitive Benchmark used default fallback logic.")
         return "Evolving", ["no_competitor_records"], warnings
@@ -662,8 +848,22 @@ def _competitive_rating(
         f"client_slide4_opportunities={client_opportunities}",
         f"competitor_slide4_strengths={competitor_strengths}",
         f"analyzed_competitors={analyzed_competitors}",
+        f"competitor_guidance_terms={competitor_evidence.get('guidance_term_count', 0)}",
+        f"competitor_proof_terms={competitor_evidence.get('proof_term_count', 0)}",
     ]
+    competitor_advantage = (
+        int(competitor_evidence.get("guidance_term_count", 0) or 0)
+        + int(competitor_evidence.get("proof_term_count", 0) or 0)
+        + int(competitor_evidence.get("benefit_term_count", 0) or 0)
+    ) - (
+        int(primary_evidence.get("guidance_term_count", 0) or 0)
+        + int(primary_evidence.get("proof_term_count", 0) or 0)
+        + int(primary_evidence.get("benefit_term_count", 0) or 0)
+    )
+    signals.append(f"competitor_content_advantage={competitor_advantage}")
     if competitor_strengths >= 4 and client_opportunities >= 2:
+        return "Competitive", signals, warnings
+    if competitor_advantage >= 4 and competitor_records:
         return "Competitive", signals, warnings
     if analyzed_competitors or len(competitor_records) >= 2:
         return "Evolving", signals, warnings
@@ -715,6 +915,29 @@ def _bullet(
     }
 
 
+def _custom_bullet(
+    section: str,
+    template_id: str,
+    text: str,
+    *,
+    signals: list[str],
+    reason: str,
+    supporting_count: int = 0,
+    analyzed_count: int = 0,
+    source_tag: str = "section_bank_original",
+) -> dict[str, Any]:
+    return {
+        "text": text,
+        "template_id": template_id,
+        "section": section,
+        "source_tag": source_tag,
+        "signals": signals,
+        "supporting_count": supporting_count,
+        "analyzed_count": analyzed_count,
+        "reason": reason,
+    }
+
+
 def _append_unique_bullet(target: list[dict[str, Any]], bullet: dict[str, Any]) -> None:
     if normalize_bullet_text(bullet["text"]) not in {normalize_bullet_text(item["text"]) for item in target}:
         target.append(bullet)
@@ -750,9 +973,44 @@ def _consumer_bullets(
     phrases: dict[str, str],
     signals: list[str],
     warnings: list[str],
+    evidence: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
+    evidence = evidence or {}
     bullets: list[dict[str, Any]] = []
     rating_signal = f"consumer_rating={rating}"
+    if evidence.get("proof_term_count", 0) or evidence.get("claim_count", 0):
+        _append_unique_bullet(
+            bullets,
+            _custom_bullet(
+                "consumer_demand",
+                "proof_points_support_confidence",
+                "Proof points support confidence at purchase",
+                signals=[rating_signal, f"proof_terms={evidence.get('proof_term_count', 0)}"],
+                reason="Selected because claim, ingredient, or proof-point evidence is present on the PDP.",
+            ),
+        )
+    if evidence.get("benefit_term_count", 0):
+        _append_unique_bullet(
+            bullets,
+            _custom_bullet(
+                "consumer_demand",
+                "benefit_relevance_reason_to_choose",
+                "Benefit language gives shoppers a clearer reason to choose",
+                signals=[rating_signal, f"benefit_terms={evidence.get('benefit_term_count', 0)}"],
+                reason="Selected because benefit terms support clearer shopper relevance.",
+            ),
+        )
+    if evidence.get("fit_term_count", 0):
+        _append_unique_bullet(
+            bullets,
+            _custom_bullet(
+                "consumer_demand",
+                "shopper_fit_recognized_needs",
+                "Product positioning aligns with recognizable shopper needs",
+                signals=[rating_signal, f"shopper_fit_terms={evidence.get('fit_term_count', 0)}"],
+                reason="Selected because audience, form, symptom, or use-case terms support shopper fit.",
+            ),
+        )
     if rating == "Strong":
         _append_unique_bullet(
             bullets,
@@ -850,7 +1108,7 @@ def _consumer_bullets(
         bullets,
         _bullet(
             "consumer_demand",
-            "broad_relevance",
+            "shopper_relevance",
             phrases,
             signals=[rating_signal, "category_phrase_match"],
             reason="Selected as controlled category relevance support for the demand section.",
@@ -865,14 +1123,49 @@ def _opportunity_bullets(
     slide4_findings: dict[str, Any] | None,
     signals: list[str],
     warnings: list[str],
+    evidence: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
+    evidence = evidence or {}
     bullets: list[dict[str, Any]] = []
     rating_signal = f"walmart_opportunity_rating={rating}"
+    if evidence.get("weak_description_count", 0) or evidence.get("description_count", 0) == 0:
+        _append_unique_bullet(
+            bullets,
+            _custom_bullet(
+                "walmart_opportunity",
+                "clearer_pdp_guidance",
+                "Clearer PDP guidance can reduce purchase friction",
+                signals=[rating_signal, f"description_count={evidence.get('description_count', 0)}"],
+                reason="Selected because description evidence points to a shopper-guidance gap.",
+            ),
+        )
+    if evidence.get("weak_key_feature_count", 0) or evidence.get("key_feature_count", 0) == 0:
+        _append_unique_bullet(
+            bullets,
+            _custom_bullet(
+                "walmart_opportunity",
+                "stronger_proof_points",
+                "Stronger proof points can support conversion",
+                signals=[rating_signal, f"key_feature_count={evidence.get('key_feature_count', 0)}"],
+                reason="Selected because key feature or proof-point evidence can work harder.",
+            ),
+        )
+    if evidence.get("guidance_term_count", 0) < 2:
+        _append_unique_bullet(
+            bullets,
+            _custom_bullet(
+                "walmart_opportunity",
+                "comparison_clarity",
+                "Clearer comparison cues can help shoppers evaluate faster",
+                signals=[rating_signal, f"guidance_terms={evidence.get('guidance_term_count', 0)}"],
+                reason="Selected because use-case or guidance evidence is limited.",
+            ),
+        )
     _append_unique_bullet(
         bullets,
         _bullet(
             "walmart_opportunity",
-            "shelf_ownership",
+            "clear_reasons_to_buy",
             phrases,
             signals=[rating_signal, *signals],
             reason="Selected because PDP/content or visual findings indicate fixable Walmart shelf-ownership opportunity.",
@@ -882,7 +1175,7 @@ def _opportunity_bullets(
         bullets,
         _bullet(
             "walmart_opportunity",
-            "conversion_optimization",
+            "purchase_friction",
             phrases,
             signals=[rating_signal, *signals],
             reason="Selected because the section rating is driven by conversion-relevant content or image gaps.",
@@ -937,7 +1230,9 @@ def _competitive_bullets(
     slide4_findings: dict[str, Any] | None,
     signals: list[str],
     warnings: list[str],
+    competitor_evidence: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
+    competitor_evidence = competitor_evidence or {}
     bullets: list[dict[str, Any]] = []
     rating_signal = f"competitive_benchmark_rating={rating}"
     if rating == "Limited" or "no_competitor_records" in signals:
@@ -962,11 +1257,33 @@ def _competitive_bullets(
             ),
         )
     else:
+        if competitor_evidence.get("benefit_term_count", 0):
+            _append_unique_bullet(
+                bullets,
+                _custom_bullet(
+                    "competitive_benchmark",
+                    "benchmark_benefit_comparison",
+                    "Benchmark PDPs make benefits easier to compare",
+                    signals=[rating_signal, f"competitor_benefit_terms={competitor_evidence.get('benefit_term_count', 0)}"],
+                    reason="Selected because competitor PDP evidence includes benefit communication.",
+                ),
+            )
+        if competitor_evidence.get("proof_term_count", 0):
+            _append_unique_bullet(
+                bullets,
+                _custom_bullet(
+                    "competitive_benchmark",
+                    "benchmark_proof_points",
+                    "Category leaders use stronger proof points",
+                    signals=[rating_signal, f"competitor_proof_terms={competitor_evidence.get('proof_term_count', 0)}"],
+                    reason="Selected because competitor PDP evidence includes claims, ingredients, or proof points.",
+                ),
+            )
         _append_unique_bullet(
             bullets,
             _bullet(
                 "competitive_benchmark",
-                "broader_discoverability",
+                "competitive_clarity",
                 phrases,
                 signals=[rating_signal, *signals],
                 reason="Selected because competitor data creates benchmark pressure in category discoverability.",
@@ -1003,10 +1320,10 @@ def _competitive_bullets(
         bullets,
         _bullet(
             "competitive_benchmark",
-            "educational_merchandising",
+            "benefit_comparison",
             phrases,
             signals=[rating_signal, "category_phrase_match"],
-            reason="Selected as controlled category benchmark language for educational merchandising.",
+            reason="Selected as controlled category benchmark language for benefit comparison.",
         ),
     )
     return _ensure_minimum_bullets("competitive_benchmark", bullets, phrases, warnings)
@@ -1052,7 +1369,7 @@ def _rating_reason(section_key: str, rating: str, signals: list[str], warnings: 
         if rating == "Strong":
             return "Strong was selected because review volume and rating quality indicate credible shopper trust."
         if rating == "Emerging":
-            return "Emerging was selected because demand evidence is present but not yet broad enough for Strong."
+            return "Emerging was selected because demand evidence is present but not yet strong enough for Strong."
         return "Limited was selected because review or rating evidence is sparse, weak, or unavailable."
     if section_key == "walmart_opportunity":
         if rating == "Significant":
@@ -1262,12 +1579,14 @@ def build_slide2_summary_payload(
         audit_metadata.get("client_company_name") or audit_metadata.get("client_name") or "The brand"
     )
 
-    consumer_rating, consumer_signals, consumer_warnings = _consumer_demand_rating(primary_records)
+    primary_evidence = _pdp_evidence_summary(primary_records)
+    competitor_evidence = _pdp_evidence_summary(competitor_records)
+    consumer_rating, consumer_signals, consumer_warnings = _consumer_demand_rating(primary_records, primary_evidence)
     opportunity_rating, opportunity_signals, opportunity_warnings = _walmart_opportunity_rating(
-        primary_records, slide4_findings
+        primary_records, slide4_findings, primary_evidence
     )
     competitive_rating, competitive_signals, competitive_warnings = _competitive_rating(
-        primary_records, competitor_records, slide4_findings
+        primary_records, competitor_records, slide4_findings, primary_evidence, competitor_evidence
     )
 
     consumer_rating = _validate_rating("consumer_demand", consumer_rating, consumer_warnings)
@@ -1275,10 +1594,9 @@ def build_slide2_summary_payload(
     competitive_rating = _validate_rating("competitive_benchmark", competitive_rating, competitive_warnings)
 
     intro_copy = (
-        f"{client_name} has built a foundation of shopper relevance across "
-        f"{phrases['category_context_phrase']}, with the next opportunity centered on translating "
-        "that equity into stronger Walmart digital shelf ownership, category discoverability, "
-        "and conversion-focused PDP execution."
+        f"{client_name} has established shopper relevance in {phrases['category_context_phrase']}, "
+        "with the strongest Walmart opportunity centered on clearer PDP guidance, stronger proof points, "
+        "and easier product comparison."
     )
     sections = {
         "consumer_demand": _section_payload(
@@ -1286,7 +1604,7 @@ def build_slide2_summary_payload(
             label="Consumer Demand",
             rating=consumer_rating,
             signals=consumer_signals,
-            bullet_debug=_consumer_bullets(consumer_rating, phrases, consumer_signals, consumer_warnings),
+            bullet_debug=_consumer_bullets(consumer_rating, phrases, consumer_signals, consumer_warnings, primary_evidence),
             warnings=consumer_warnings,
         ),
         "walmart_opportunity": _section_payload(
@@ -1300,6 +1618,7 @@ def build_slide2_summary_payload(
                 slide4_findings,
                 opportunity_signals,
                 opportunity_warnings,
+                primary_evidence,
             ),
             warnings=opportunity_warnings,
         ),
@@ -1314,6 +1633,7 @@ def build_slide2_summary_payload(
                 slide4_findings,
                 competitive_signals,
                 competitive_warnings,
+                competitor_evidence,
             ),
             warnings=competitive_warnings,
         ),
@@ -1337,5 +1657,9 @@ def build_slide2_summary_payload(
             "warnings": debug_warnings,
             "bullet_fit": fit_debug,
             "strategic_cues": cue_context.get("debug", {}),
+            "pdp_evidence_summary": {
+                "primary": primary_evidence,
+                "competitor": competitor_evidence,
+            },
         },
     }

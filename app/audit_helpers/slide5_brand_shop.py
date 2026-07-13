@@ -267,6 +267,65 @@ def _module_type(module: dict[str, Any]) -> str:
     return _safe_text(_first(module, "type", "moduleType", "name"))
 
 
+def _to_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(float(str(value).strip()))
+    except (TypeError, ValueError):
+        return default
+
+
+def _to_float(value: Any, default: float = 0.0) -> float:
+    try:
+        return float(str(value).strip())
+    except (TypeError, ValueError):
+        return default
+
+
+def _to_bool(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return value > 0
+    normalized = _normalize(value)
+    return normalized in {"1", "true", "yes", "y", "present", "detected"}
+
+
+def _record_int(record: dict[str, Any], key: str, default: int = 0) -> int:
+    return _to_int(_first(record, key, f"data.{key}", default=default), default)
+
+
+def _record_bool(record: dict[str, Any], key: str) -> bool:
+    return _to_bool(_first(record, key, f"data.{key}", default=False))
+
+
+def _score_level(value: Any) -> str:
+    normalized = _normalize(value)
+    if normalized in {"strong", "high", "advanced", "robust"}:
+        return "Strong"
+    if normalized in {"present", "medium", "moderate", "developed"}:
+        return "Present"
+    if normalized in {"limited", "low", "light", "basic", "weak"}:
+        return "Limited"
+    if normalized in {"missing", "none", "absent", "0"}:
+        return "Missing"
+    numeric = _to_float(value, default=-1)
+    if 0 <= numeric <= 1:
+        if numeric >= 0.75:
+            return "Strong"
+        if numeric >= 0.45:
+            return "Present"
+        if numeric > 0:
+            return "Limited"
+        return "Missing"
+    if numeric >= 8:
+        return "Strong"
+    if numeric >= 5:
+        return "Present"
+    if numeric >= 1:
+        return "Limited"
+    return ""
+
+
 def _evidence(record: dict[str, Any]) -> dict[str, Any]:
     modules = _modules(record)
     module_types = [_module_type(module) for module in modules if _module_type(module)]
@@ -335,14 +394,15 @@ def _evidence(record: dict[str, Any]) -> dict[str, Any]:
             title = _safe_text(_first(module, "title", "heading", "name"))
             if title:
                 videos.append(title)
+    visible_product_count = _record_int(record, "visible_product_count", -1)
+    captured_product_count = _record_int(record, "captured_product_count", -1)
     product_count = _first(record, "productCount", "data.productCount", default=None)
     if product_count in (None, ""):
         products = _as_list(_first(record, "products", "productTiles", "data.products", "data.productTiles", default=[]))
         product_count = len(products)
-    try:
-        product_count = int(product_count or 0)
-    except (TypeError, ValueError):
-        product_count = 0
+    product_count = _to_int(product_count)
+    if visible_product_count >= 0:
+        product_count = visible_product_count
     video_present = bool(_first(record, "videoPresent", "hasVideo", "data.videoPresent", "data.hasVideo", default=False))
     return {
         "modules": modules,
@@ -356,6 +416,36 @@ def _evidence(record: dict[str, Any]) -> dict[str, Any]:
         "videos": list(dict.fromkeys(videos)),
         "video_present": video_present,
         "product_count": product_count,
+        "page_experience_type": _normalize(_first(record, "page_experience_type", "data.page_experience_type")),
+        "visible_product_count": max(0, visible_product_count),
+        "distinct_product_count": _record_int(record, "distinct_product_count"),
+        "duplicate_card_count": _record_int(record, "duplicate_card_count"),
+        "captured_product_count": max(0, captured_product_count),
+        "captured_distinct_product_count": _record_int(record, "captured_distinct_product_count"),
+        "captured_duplicate_card_count": _record_int(record, "captured_duplicate_card_count"),
+        "hero_present": _record_bool(record, "hero_present"),
+        "hero_copy_present": _record_bool(record, "hero_copy_present"),
+        "hero_cta_present": _record_bool(record, "hero_cta_present"),
+        "nav_link_count": _record_int(record, "nav_link_count"),
+        "section_heading_count": _record_int(record, "section_heading_count"),
+        "product_module_count": _record_int(record, "product_module_count"),
+        "assortment_module_count": _record_int(record, "assortment_module_count"),
+        "featured_product_count": _record_int(record, "featured_product_count"),
+        "multi_product_section_count": _record_int(record, "multi_product_section_count"),
+        "editorial_module_count": _record_int(record, "editorial_module_count"),
+        "copy_block_count": _record_int(record, "copy_block_count"),
+        "faq_module_count": _record_int(record, "faq_module_count"),
+        "education_module_count": _record_int(record, "education_module_count"),
+        "benefit_callout_count": _record_int(record, "benefit_callout_count"),
+        "how_to_use_present": _record_bool(record, "how_to_use_present"),
+        "routine_or_regimen_present": _record_bool(record, "routine_or_regimen_present"),
+        "video_module_count": _record_int(record, "video_module_count"),
+        "generic_module_count": _record_int(record, "generic_module_count"),
+        "custom_module_count": _record_int(record, "custom_module_count"),
+        "shop_depth_score": _first(record, "shop_depth_score", "data.shop_depth_score", default=""),
+        "education_depth_score": _first(record, "education_depth_score", "data.education_depth_score", default=""),
+        "navigation_depth_score": _first(record, "navigation_depth_score", "data.navigation_depth_score", default=""),
+        "assortment_depth_score": _first(record, "assortment_depth_score", "data.assortment_depth_score", default=""),
     }
 
 
@@ -378,6 +468,25 @@ def _score_dimensions(evidence: dict[str, Any]) -> dict[str, dict[str, Any]]:
     categories = evidence["categories"]
     links = evidence["links"]
     product_count = int(evidence["product_count"])
+    page_type = _safe_text(evidence.get("page_experience_type"))
+    visible_count = int(evidence.get("visible_product_count", 0) or 0)
+    distinct_count = int(evidence.get("distinct_product_count", 0) or 0)
+    nav_link_count = int(evidence.get("nav_link_count", 0) or 0)
+    section_heading_count = int(evidence.get("section_heading_count", 0) or 0)
+    product_module_count = int(evidence.get("product_module_count", 0) or 0)
+    assortment_module_count = int(evidence.get("assortment_module_count", 0) or 0)
+    multi_product_count = int(evidence.get("multi_product_section_count", 0) or 0)
+    editorial_count = int(evidence.get("editorial_module_count", 0) or 0)
+    copy_block_count = int(evidence.get("copy_block_count", 0) or 0)
+    education_module_count = int(evidence.get("education_module_count", 0) or 0)
+    faq_count = int(evidence.get("faq_module_count", 0) or 0)
+    benefit_count = int(evidence.get("benefit_callout_count", 0) or 0)
+    video_module_count = int(evidence.get("video_module_count", 0) or 0)
+    custom_count = int(evidence.get("custom_module_count", 0) or 0)
+    generic_count = int(evidence.get("generic_module_count", 0) or 0)
+    has_hero = bool(evidence.get("hero_present") or hero)
+    has_hero_guidance = bool(evidence.get("hero_copy_present") or evidence.get("hero_cta_present"))
+    has_usage_guidance = bool(evidence.get("how_to_use_present") or evidence.get("routine_or_regimen_present"))
     educational_terms = {
         "benefit",
         "routine",
@@ -414,63 +523,114 @@ def _score_dimensions(evidence: dict[str, Any]) -> dict[str, dict[str, Any]]:
             "reason": reason,
         }
 
-    branded_copy_count = len(headings) + len(descriptions)
-    if hero and (branded_copy_count or len(rich_modules) >= 2):
-        brand = result("Strong", [*hero, *headings[:2]], "A hero/banner and supporting branded content were detected.")
-    elif hero:
-        brand = result("Present", hero, "One meaningful hero or banner module was detected.")
-    elif evidence["modules"]:
-        brand = result("Limited", evidence["module_types"][:2], "The page is structured but lacks reliable hero/banner evidence.")
+    shop_score = _score_level(evidence.get("shop_depth_score"))
+    brand_signals = [
+        page_type,
+        "hero present" if has_hero else "",
+        "hero copy" if evidence.get("hero_copy_present") else "",
+        "hero cta" if evidence.get("hero_cta_present") else "",
+        f"{custom_count} custom modules" if custom_count else "",
+        f"{generic_count} generic modules" if generic_count else "",
+        f"shop depth {evidence.get('shop_depth_score')}" if evidence.get("shop_depth_score") not in ("", None) else "",
+    ]
+    if has_hero and has_hero_guidance and (custom_count >= 3 or shop_score == "Strong"):
+        brand = result("Strong", brand_signals, "Hero guidance and custom structure support a stronger branded entry point.")
+    elif has_hero and (has_hero_guidance or custom_count >= 1 or shop_score in {"Present", "Strong"}):
+        brand = result("Present", brand_signals, "Branded presence is visible, but guidance or custom structure is not deep enough for Strong.")
+    elif has_hero or page_type in {"brand browse", "brand_browse", "hybrid"} or custom_count or evidence["modules"]:
+        brand = result("Limited", brand_signals or evidence["module_types"][:2], "The page has branded-shop presence, but the entry experience is browse-led or lightly developed.")
     else:
-        brand = result("Missing", [], "No reliable branded hero or banner evidence was detected.")
+        brand = result("Missing", [], "No reliable branded entry evidence was detected.")
 
-    if len(editorial) >= 2 or (editorial and hero and headings):
-        lifestyle = result("Strong", [*editorial, *headings[:2]], "Multiple lifestyle or editorial storytelling signals were detected.")
-    elif editorial:
-        lifestyle = result("Present", editorial, "One meaningful lifestyle or editorial module was detected.")
-    elif rich_modules:
-        lifestyle = result("Limited", rich_modules[:2], "Static rich content exists with limited lifestyle story support.")
+    lifestyle_signals = [
+        f"{editorial_count} editorial modules" if editorial_count else "",
+        f"{copy_block_count} copy blocks" if copy_block_count else "",
+        "hero copy" if evidence.get("hero_copy_present") else "",
+        *editorial[:2],
+        *headings[:2],
+    ]
+    if editorial_count >= 2 and copy_block_count >= 2 and has_hero_guidance:
+        lifestyle = result("Strong", lifestyle_signals, "Editorial modules, copy, and hero guidance create a more developed merchandising story.")
+    elif editorial_count or copy_block_count >= 2 or (editorial and has_hero_guidance):
+        lifestyle = result("Present", lifestyle_signals, "Some editorial or copy support is present without deep lifestyle merchandising.")
+    elif editorial or rich_modules or has_hero:
+        lifestyle = result("Limited", lifestyle_signals or rich_modules[:2], "Static branded content provides light context without a developed lifestyle journey.")
     else:
         lifestyle = result("Missing", [], "No reliable lifestyle merchandising evidence was detected.")
 
     category_count = len(category_destinations)
-    if category_count >= 4:
-        category = result("Strong", categories[:4], f"{category_count} distinct category destinations were detected.")
-    elif category_count >= 2:
-        category = result("Present", categories[:3], f"{category_count} category destinations were detected.")
-    elif category_count == 1:
-        category = result("Limited", categories[:1], "Only one category destination was detected.")
+    navigation_score = _score_level(evidence.get("navigation_depth_score"))
+    category_signals = [
+        f"{nav_link_count} navigation links" if nav_link_count else "",
+        f"{section_heading_count} section headings" if section_heading_count else "",
+        *categories[:4],
+        f"navigation depth {evidence.get('navigation_depth_score')}" if evidence.get("navigation_depth_score") not in ("", None) else "",
+    ]
+    if nav_link_count >= 5 and category_count >= 3 and navigation_score in {"Present", "Strong"}:
+        category = result("Strong", category_signals, "Navigation is supported by multiple actual pathways and category destinations.")
+    elif nav_link_count >= 2 or (category_count >= 2 and navigation_score in {"Present", "Strong"}):
+        category = result("Present", category_signals, "Discovery pathways are present, though not extensive enough for Strong.")
+    elif nav_link_count == 1 or category_count == 1 or section_heading_count:
+        category = result("Limited", category_signals, "The page has light structure, but headings alone do not create strong navigation.")
     else:
         category = result("Missing", [], "No category-navigation evidence was detected.")
 
-    if len(product_modules) >= 2 or (product_modules and product_count >= 8):
-        product = result("Strong", [*product_modules, f"{product_count} products"], "Multiple product pathways or a substantial product module were detected.")
-    elif product_modules:
-        product = result("Present", product_modules, "One meaningful product module was detected.")
-    elif product_count > 0:
-        product = result("Limited", [f"{product_count} products"], "Products are present without a clear discovery module.")
+    assortment_score = _score_level(evidence.get("assortment_depth_score"))
+    assortment_count = visible_count or product_count
+    product_signal_count = product_module_count or len(product_modules)
+    product_signals = [
+        f"{assortment_count} visible products" if assortment_count else "",
+        f"{distinct_count} distinct products" if distinct_count else "",
+        f"{product_signal_count} product modules" if product_signal_count else "",
+        f"{assortment_module_count} assortment modules" if assortment_module_count else "",
+        f"{multi_product_count} multi-product sections" if multi_product_count else "",
+        f"assortment depth {evidence.get('assortment_depth_score')}" if evidence.get("assortment_depth_score") not in ("", None) else "",
+    ]
+    if assortment_count >= 12 and distinct_count >= 8 and (product_signal_count >= 2 or multi_product_count >= 2 or assortment_score == "Strong"):
+        product = result("Strong", product_signals, "Visible assortment and product modules support broader product discovery.")
+    elif assortment_count >= 6 or distinct_count >= 4 or product_signal_count >= 1 or assortment_score in {"Present", "Strong"}:
+        product = result("Present", product_signals, "The page offers meaningful assortment depth without broad variant coverage.")
+    elif assortment_count > 0 or product_modules or assortment_score == "Limited":
+        product = result("Limited", product_signals or [f"{product_count} products"], "Visible assortment is narrow or lightly supported.")
     else:
         product = result("Missing", [], "No reliable product-discovery evidence was detected.")
 
-    if len(educational_text) >= 3:
-        education = result("Strong", educational_text[:4], "Multiple headings or descriptions provide shopper education.")
-    elif educational_text:
-        education = result("Present", educational_text[:2], "One meaningful educational or editorial section was detected.")
-    elif descriptions:
-        education = result("Limited", descriptions[:2], "Promotional copy exists with limited educational depth.")
+    education_score = _score_level(evidence.get("education_depth_score"))
+    education_signal_count = (
+        education_module_count
+        + faq_count
+        + benefit_count
+        + int(has_usage_guidance)
+    )
+    education_signals = [
+        f"{education_module_count} education modules" if education_module_count else "",
+        f"{faq_count} FAQ modules" if faq_count else "",
+        f"{benefit_count} benefit callouts" if benefit_count else "",
+        "how-to-use guidance" if evidence.get("how_to_use_present") else "",
+        "routine guidance" if evidence.get("routine_or_regimen_present") else "",
+        *educational_text[:3],
+        f"education depth {evidence.get('education_depth_score')}" if evidence.get("education_depth_score") not in ("", None) else "",
+    ]
+    if education_signal_count >= 3 and education_score in {"Present", "Strong"}:
+        education = result("Strong", education_signals, "Multiple explicit guidance signals support stronger shopper education.")
+    elif education_signal_count >= 1 or education_score in {"Present", "Strong"}:
+        education = result("Present", education_signals, "Shopper guidance is present without multiple education layers.")
+    elif educational_text or descriptions or copy_block_count:
+        education = result("Limited", education_signals or descriptions[:2], "Copy is present, but education and usage guidance are limited.")
     else:
         education = result("Missing", [], "No educational content evidence was detected.")
 
-    if (video_modules or evidence["video_present"]) and rich_modules:
+    explicit_video = video_module_count > 0 or evidence["video_present"] or bool(evidence["videos"])
+    if explicit_video and (video_module_count >= 2 or rich_modules):
         video = result(
             "Strong",
-            [*video_modules, "video present" if evidence["video_present"] else "", *rich_modules[:2]],
+            [f"{video_module_count} video modules" if video_module_count else "", *video_modules, "video present" if evidence["video_present"] else "", *rich_modules[:2]],
             "Video and another rich editorial module were detected.",
         )
-    elif video_modules or evidence["videos"] or evidence["video_present"]:
+    elif explicit_video:
         video = result(
             "Present",
-            [*video_modules, *evidence["videos"][:2], "video present" if evidence["video_present"] else ""],
+            [f"{video_module_count} video modules" if video_module_count else "", *video_modules, *evidence["videos"][:2], "video present" if evidence["video_present"] else ""],
             "Video content was detected.",
         )
     elif rich_modules:
@@ -480,12 +640,18 @@ def _score_dimensions(evidence: dict[str, Any]) -> dict[str, dict[str, Any]]:
 
     link_count = len(link_destinations)
     category_like_count = len(set([*category_destinations, *link_destinations]))
-    if category_like_count >= 4 and link_count >= 2:
-        cross = result("Strong", [*categories[:3], *(link["label"] or link["url"] for link in links[:3])], "Multiple links span distinct category or need-state pathways.")
-    elif link_count >= 2:
-        cross = result("Present", [(link["label"] or link["url"]) for link in links[:3]], "More than one destination pathway was detected.")
-    elif link_count == 1:
-        cross = result("Limited", [(links[0]["label"] or links[0]["url"])], "Navigation is limited to one destination pathway.")
+    cross_signals = [
+        f"{nav_link_count} navigation links" if nav_link_count else "",
+        *categories[:3],
+        *(link["label"] or link["url"] for link in links[:3]),
+        f"navigation depth {evidence.get('navigation_depth_score')}" if evidence.get("navigation_depth_score") not in ("", None) else "",
+    ]
+    if nav_link_count >= 5 and category_like_count >= 4 and navigation_score in {"Present", "Strong"}:
+        cross = result("Strong", cross_signals, "Multiple links span distinct category or need-state pathways.")
+    elif nav_link_count >= 2 or link_count >= 2 or (category_like_count >= 3 and navigation_score in {"Present", "Strong"}):
+        cross = result("Present", cross_signals, "More than one destination pathway was detected.")
+    elif nav_link_count == 1 or link_count == 1 or category_count == 1:
+        cross = result("Limited", cross_signals, "Navigation is limited to one destination pathway.")
     else:
         cross = result("Missing", [], "No meaningful cross-category navigation evidence was detected.")
 
@@ -656,6 +822,97 @@ def _alternate_competitor_bullet(
     return _fit_bullet(alternatives.get(dimension, "Focused Brand Shop merchandising"))
 
 
+def _visible_assortment_count(evidence: dict[str, Any]) -> int:
+    return int(evidence.get("visible_product_count", 0) or evidence.get("product_count", 0) or 0)
+
+
+def _dimension_bucket_text(
+    *,
+    side: str,
+    bullet_type: str,
+    dimension: str,
+    score: str,
+    evidence: dict[str, Any],
+) -> tuple[str, str]:
+    weak = score in {"Missing", "Limited"} or bullet_type in {"opportunity", "client_opportunity"}
+    competitor = side == "competitor" and bullet_type not in {"opportunity", "client_opportunity"}
+    visible_count = _visible_assortment_count(evidence)
+    nav_count = int(evidence.get("nav_link_count", 0) or 0)
+    education_count = (
+        int(evidence.get("education_module_count", 0) or 0)
+        + int(evidence.get("faq_module_count", 0) or 0)
+        + int(evidence.get("benefit_callout_count", 0) or 0)
+        + int(bool(evidence.get("how_to_use_present")))
+        + int(bool(evidence.get("routine_or_regimen_present")))
+    )
+    hero_visual_only = bool(evidence.get("hero_present")) and not (
+        evidence.get("hero_copy_present") or evidence.get("hero_cta_present")
+    )
+    page_type = _safe_text(evidence.get("page_experience_type")).replace("_", "-")
+    templates = {
+        "brand_presentation": (
+            "brand_presence",
+            "Limited branded-shop structure keeps the experience browse-led"
+            if weak or hero_visual_only
+            else "More intentional branded presentation creates a clearer shop entry"
+            if competitor
+            else "Clearer branded entry development supports a stronger first impression",
+        ),
+        "lifestyle_merchandising": (
+            "brand_presence",
+            "Light branded entry development keeps the shop mostly product-led"
+            if weak
+            else "More developed brand context gives the shop stronger first-impression support"
+            if competitor
+            else "More developed brand context can make the shop feel less browse-led",
+        ),
+        "category_segmentation": (
+            "navigation",
+            "Light navigation structure creates a more self-directed shopping journey"
+            if weak or nav_count < 2
+            else "Clearer discovery pathways make the shop easier to explore"
+            if competitor
+            else "Clearer discovery pathways would make browsing feel more guided",
+        ),
+        "cross_category_navigation": (
+            "navigation",
+            "Limited discovery support leaves shoppers to connect pathways themselves"
+            if weak or nav_count < 2
+            else "More guided browsing helps shoppers move across shop sections"
+            if competitor
+            else "More guided browsing can connect shop sections more clearly",
+        ),
+        "product_discovery": (
+            "assortment",
+            "Narrow visible assortment limits browse depth and variant discovery"
+            if weak or visible_count <= 5
+            else "Broader visible assortment creates stronger product discovery"
+            if competitor
+            else "Broader visible assortment would improve product and variant discovery",
+        ),
+        "educational_storytelling": (
+            "education",
+            "Limited educational support leaves shoppers with less guided product context"
+            if weak or education_count <= 1
+            else "More developed benefit storytelling provides stronger shopper guidance"
+            if competitor
+            else "Clearer benefit storytelling would strengthen shopper education",
+        ),
+        "video_rich_media": (
+            "education",
+            "Light rich-media support keeps product guidance mostly static"
+            if weak
+            else "Video storytelling adds clearer product context for shoppers"
+            if competitor
+            else "Richer product storytelling can make shopper guidance easier to absorb",
+        ),
+    }
+    template_id, text = templates[dimension]
+    if page_type and dimension == "brand_presentation" and weak and "browse" in page_type:
+        text = "Browse-led brand presence signals light branded entry development"
+    return template_id, text
+
+
 def _reduce_cross_side_mirroring(
     client_side: dict[str, Any] | None,
     competitor_side: dict[str, Any] | None,
@@ -681,7 +938,15 @@ def _reduce_cross_side_mirroring(
         "descriptions": [],
         "videos": competitor_side.get("evidence", {}).get("video_titles", []),
         "product_count": competitor_side.get("evidence", {}).get("product_count", 0),
+        "visible_product_count": competitor_side.get("evidence", {}).get("visible_product_count", 0),
+        "nav_link_count": competitor_side.get("evidence", {}).get("nav_link_count", 0),
+        "education_module_count": competitor_side.get("evidence", {}).get("education_module_count", 0),
+        "faq_module_count": competitor_side.get("evidence", {}).get("faq_module_count", 0),
+        "benefit_callout_count": competitor_side.get("evidence", {}).get("benefit_callout_count", 0),
+        "how_to_use_present": competitor_side.get("evidence", {}).get("how_to_use_present", False),
+        "routine_or_regimen_present": competitor_side.get("evidence", {}).get("routine_or_regimen_present", False),
     }
+    reworded_any = False
     for index, item in enumerate(competitor_debug):
         text = _safe_text(item.get("text"))
         key = _mirrored_bullet_key(text)
@@ -697,6 +962,7 @@ def _reduce_cross_side_mirroring(
                 _safe_text(item.get("reason"))
                 + " Reworded to avoid mirroring the client Brand Shop bullets."
             ).strip()
+            reworded_any = True
         candidate_key = _mirrored_bullet_key(text)
         suffix = 2
         while candidate_key and candidate_key in used and suffix <= 6:
@@ -713,6 +979,38 @@ def _reduce_cross_side_mirroring(
             used.add(candidate_key)
         rewritten.append(text)
         competitor_debug[index] = item
+    if not reworded_any and competitor_debug and client_side.get("bullets"):
+        index = next(
+            (
+                idx
+                for idx, item in enumerate(competitor_debug)
+                if item.get("dimension")
+                in {
+                    "product_discovery",
+                    "educational_storytelling",
+                    "category_segmentation",
+                    "cross_category_navigation",
+                    "discovery_pathways",
+                    "shopper_education",
+                    "category_grouping",
+                }
+            ),
+            0,
+        )
+        item = competitor_debug[index]
+        text = _alternate_competitor_bullet(
+            item,
+            brand_name=competitor_side.get("brand_name", ""),
+            evidence=evidence,
+        )
+        item["text"] = text
+        item["signals"] = list(item.get("signals", []) or []) + ["cross_side_mirror_reworded"]
+        item["reason"] = (
+            _safe_text(item.get("reason"))
+            + " Reworded to keep competitor Brand Shop bullets directionally distinct from the client side."
+        ).strip()
+        rewritten[index] = text
+        competitor_debug[index] = item
     competitor_side["bullet_debug"] = competitor_debug[:SLIDE5_TARGET_BULLET_COUNT]
     competitor_side["bullets"] = rewritten[:SLIDE5_TARGET_BULLET_COUNT]
 
@@ -727,68 +1025,14 @@ def _bullet_for_dimension(
     evidence: dict[str, Any],
 ) -> dict[str, Any]:
     score = dimension_data["score"]
-    categories = _short_phrase(evidence["categories"])
-    category_context = _category_context(evidence["categories"])
-    navigation_context = _navigation_context(evidence["categories"])
-    topic = _short_phrase([*evidence["headings"], *evidence["descriptions"]], 1)
-    video_title = _short_phrase(evidence["videos"], 1)
-    module_count = int(evidence.get("module_count", 0) or len(evidence.get("module_types", []) or []))
-    product_count = int(evidence.get("product_count", 0) or 0)
-    module_phrase = _short_phrase(evidence.get("module_types", []) or [], 2)
-    strength_templates = {
-        "brand_presentation": (
-            "brand_strength_01",
-            f"{brand_name} uses {module_phrase} to establish shop context" if brand_name and module_phrase else "Branded sections establish shop context",
-        ),
-        "lifestyle_merchandising": (
-            "lifestyle_strength_02",
-            f"{topic} connects the shop to shopper occasions" if topic else "Lifestyle merchandising builds occasion context",
-        ),
-        "category_segmentation": (
-            "category_strength_02",
-            f"{navigation_context.title()} broadens discovery" if categories else "Clear pathways simplify shop exploration",
-        ),
-        "product_discovery": (
-            "product_strength_01",
-            f"{product_count} products create clearer discovery paths" if product_count else "Product pathways clarify shopper entry points",
-        ),
-        "educational_storytelling": (
-            "education_strength_02",
-            f"{topic} content deepens shopper education" if topic else "Education modules clarify product benefits",
-        ),
-        "video_rich_media": (
-            "video_strength_02",
-            f"{video_title} adds richer brand education" if video_title else "Rich media supports engaging product discovery",
-        ),
-        "cross_category_navigation": (
-            "cross_strength_02",
-            f"{category_context.title()} encourages broader exploration" if categories else "Multiple pathways encourage broader exploration",
-        ),
-    }
-    opportunity_templates = {
-        "brand_presentation": ("brand_opportunity_01", "Opening modules can carry more brand-storytelling work"),
-        "lifestyle_merchandising": ("lifestyle_opportunity_01", "Lifestyle content can connect products to occasions"),
-        "category_segmentation": ("category_opportunity_02", "Navigation can make varieties easier to compare"),
-        "product_discovery": ("product_opportunity_01", "Discovery paths can surface more variants and use cases"),
-        "educational_storytelling": ("education_opportunity_01", "Education can deepen benefit and usage storytelling"),
-        "video_rich_media": ("video_opportunity_01", "Rich-media gaps leave room for deeper education"),
-        "cross_category_navigation": ("cross_opportunity_01", "Cross-category paths can connect routines and basket ideas"),
-    }
-    restrained_benchmark_templates = {
-        "brand_presentation": ("brand_benchmark_basic", f"{module_count} modules establish basic shop identity"),
-        "lifestyle_merchandising": ("lifestyle_benchmark_basic", "Static editorial content provides light brand context"),
-        "category_segmentation": ("category_benchmark_basic", "Category grouping creates a basic exploration path"),
-        "product_discovery": ("product_benchmark_basic", "Product presentation gives shoppers a starting point"),
-        "educational_storytelling": ("education_benchmark_basic", "Available copy gives shoppers basic product context"),
-        "video_rich_media": ("video_benchmark_basic", "Static rich content supports product browsing"),
-        "cross_category_navigation": ("cross_benchmark_basic", "Available links create a basic navigation path"),
-    }
-    if bullet_type == "opportunity":
-        template_id, text = opportunity_templates[dimension]
-    elif score in {"Limited", "Missing"}:
-        template_id, text = restrained_benchmark_templates[dimension]
-    else:
-        template_id, text = strength_templates[dimension]
+    bucket, text = _dimension_bucket_text(
+        side=side,
+        bullet_type=bullet_type,
+        dimension=dimension,
+        score=score,
+        evidence=evidence,
+    )
+    template_id = f"strategic_cue_{bucket}_{bullet_type}_{dimension}"
     return {
         "text": _fit_bullet(text),
         "side": side,
@@ -1174,6 +1418,33 @@ def _brand_shop_cue_bullets(
     }
 
 
+def _cue_bullets_have_strong_support(
+    cue_bullets: list[dict[str, Any]],
+    dimensions: dict[str, dict[str, Any]],
+) -> bool:
+    if len(cue_bullets) < SLIDE5_TARGET_BULLET_COUNT:
+        return False
+    visible = [item for item in cue_bullets if _safe_text(item.get("text"))]
+    if len(visible) < SLIDE5_TARGET_BULLET_COUNT:
+        return False
+    rejected = [item for item in cue_bullets if item.get("_rejected")]
+    if rejected:
+        return False
+    supported_cues = sum(1 for item in visible if int(item.get("supporting_count", 0) or 0) > 0)
+    evidence_supported_dimensions = sum(
+        1
+        for data in dimensions.values()
+        if SCORE_ORDER.get(data.get("score", "Missing"), 0) >= SCORE_ORDER["Present"]
+    )
+    strategic_types = {"strength", "opportunity", "context", "pressure"}
+    valid_type_count = sum(1 for item in visible if item.get("type") in strategic_types)
+    return (
+        supported_cues >= 3
+        and evidence_supported_dimensions >= 3
+        and valid_type_count >= SLIDE5_TARGET_BULLET_COUNT - 1
+    )
+
+
 def _build_side(record: dict[str, Any], side: str, role_path: str) -> dict[str, Any]:
     evidence = _evidence(record)
     dimensions = _score_dimensions(evidence)
@@ -1184,11 +1455,16 @@ def _build_side(record: dict[str, Any], side: str, role_path: str) -> dict[str, 
         if side == "client"
         else _competitor_bullets(dimensions, brand_name, evidence)
     )
-    bullet_debug = cue_bullets if len(cue_bullets) == SLIDE5_TARGET_BULLET_COUNT else fallback_bullets
+    use_cue_bullets = _cue_bullets_have_strong_support(cue_bullets, dimensions)
+    bullet_debug = cue_bullets if use_cue_bullets else fallback_bullets
     warnings: list[str] = []
     if sum(SCORE_ORDER[data["score"]] >= 2 for data in dimensions.values()) < 2:
         warnings.append(
             "Brand Shop evidence is weak; restrained capability and opportunity language was used."
+        )
+    if cue_bullets and not use_cue_bullets:
+        warnings.append(
+            "Strategic cue bullets were available but fallback Brand Shop bullets were used because cue support was incomplete or low-confidence."
         )
     return {
         "source_row": _source_row(record),
@@ -1221,6 +1497,36 @@ def _build_side(record: dict[str, Any], side: str, role_path: str) -> dict[str, 
             "headings": evidence["headings"],
             "video_titles": evidence["videos"],
             "product_count": evidence["product_count"],
+            "page_experience_type": evidence["page_experience_type"],
+            "visible_product_count": evidence["visible_product_count"],
+            "distinct_product_count": evidence["distinct_product_count"],
+            "duplicate_card_count": evidence["duplicate_card_count"],
+            "captured_product_count": evidence["captured_product_count"],
+            "captured_distinct_product_count": evidence["captured_distinct_product_count"],
+            "captured_duplicate_card_count": evidence["captured_duplicate_card_count"],
+            "hero_present": evidence["hero_present"],
+            "hero_copy_present": evidence["hero_copy_present"],
+            "hero_cta_present": evidence["hero_cta_present"],
+            "nav_link_count": evidence["nav_link_count"],
+            "section_heading_count": evidence["section_heading_count"],
+            "product_module_count": evidence["product_module_count"],
+            "assortment_module_count": evidence["assortment_module_count"],
+            "featured_product_count": evidence["featured_product_count"],
+            "multi_product_section_count": evidence["multi_product_section_count"],
+            "editorial_module_count": evidence["editorial_module_count"],
+            "copy_block_count": evidence["copy_block_count"],
+            "faq_module_count": evidence["faq_module_count"],
+            "education_module_count": evidence["education_module_count"],
+            "benefit_callout_count": evidence["benefit_callout_count"],
+            "how_to_use_present": evidence["how_to_use_present"],
+            "routine_or_regimen_present": evidence["routine_or_regimen_present"],
+            "video_module_count": evidence["video_module_count"],
+            "generic_module_count": evidence["generic_module_count"],
+            "custom_module_count": evidence["custom_module_count"],
+            "shop_depth_score": evidence["shop_depth_score"],
+            "education_depth_score": evidence["education_depth_score"],
+            "navigation_depth_score": evidence["navigation_depth_score"],
+            "assortment_depth_score": evidence["assortment_depth_score"],
         },
     }
 
