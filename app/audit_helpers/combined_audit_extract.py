@@ -15,7 +15,8 @@ from audit_models import (
 )
 
 
-SUPPORTED_SCHEMA_VERSION = "2.0"
+SUPPORTED_SCHEMA_VERSIONS = {"2.0", "2.2"}
+LATEST_SUPPORTED_SCHEMA_VERSION = "2.2"
 
 
 class _AuditDataScriptParser(HTMLParser):
@@ -277,10 +278,10 @@ def parse_combined_audit_html(uploaded_file: Any) -> dict[str, Any]:
         payload.get("schemaVersion") or payload.get("schema_version")
     )
     result["schema_version"] = schema_version
-    if schema_version != SUPPORTED_SCHEMA_VERSION:
+    if not schema_version or schema_version not in SUPPORTED_SCHEMA_VERSIONS:
         result["errors"].append(
             f"Unsupported combined audit schema version '{schema_version or '<missing>'}'. "
-            f"Expected {SUPPORTED_SCHEMA_VERSION}."
+            f"Expected one of: 2.0, 2.2."
         )
         return result
 
@@ -518,7 +519,7 @@ def map_schema2_pdp_to_cached_record(
     client_name: str = "",
     retailer: str = "",
 ) -> tuple[dict[str, Any] | None, list[str]]:
-    """Map one schema 2.0 PDP envelope directly into the existing cached model."""
+    """Map one schema 2.x PDP envelope directly into the existing cached model."""
     row = _first(source_record, "sourceRow", "rowNumber", default="?")
     item_id = _safe_text(
         _first(source_record, "productId", "productID", "itemId", "data.productId")
@@ -685,7 +686,13 @@ def attach_combined_evidence_to_record(
     ingest_metadata = cached_record.setdefault("ingest_metadata", {})
     ingest_metadata.update(
         {
-            "combined_schema_version": SUPPORTED_SCHEMA_VERSION,
+            "combined_schema_version": (
+                _safe_text(
+                    source_record.get("schemaVersion")
+                    or source_record.get("schema_version")
+                )
+                or LATEST_SUPPORTED_SCHEMA_VERSION
+            ),
             "combined_source_index": source_record.get("_combined_source_index"),
             "source_row": _first(source_record, "sourceRow", "rowNumber"),
             "role": _first(
