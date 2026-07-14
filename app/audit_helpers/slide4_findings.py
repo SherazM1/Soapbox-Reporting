@@ -514,6 +514,39 @@ def _clean_finding_text(text: str, signal: str) -> str:
     return replacements.get(clean, clean)
 
 
+def _surface_slide4_text(text: Any, signal: str = "") -> str:
+    clean = re.sub(r"\s+", " ", _safe_text(text)).strip(" .;")
+    if not clean or SURFACED_METADATA_RE.search(clean):
+        return _generic_text(signal)
+    normalized = clean.lower()
+    exact_replacements = {
+        "facial cleanser title clarifies product role": "Title clarity makes the product role easier to understand",
+        "formula and skin-benefit details support facial cleanser comparison": "Formula and skin-benefit detail make comparison easier",
+        "facial cleanser usage cues clarify routine fit": "Usage cues help connect the PDP to routine fit",
+        "review depth supports facial cleanser confidence": "Review depth helps reinforce shopper confidence",
+        "benefit-forward facial cleansers pdp positioning": "Benefit communication is clearer across the PDP",
+        "clear facial cleansers benefit communication": "Benefit communication is clearer across the PDP",
+        "clear facial cleansers pack and spec detail": "Pack and spec detail are easier to understand",
+        "image stack extends facial cleanser usage education": "Image variety adds usage and routine context",
+    }
+    if normalized in exact_replacements:
+        return exact_replacements[normalized]
+
+    clean = re.sub(r"\b(?:facial cleansers?|facial cleanser|skin care product|product type)\b", "", clean, flags=re.I)
+    clean = re.sub(r"\s+", " ", clean).strip(" .;")
+    shell_replacements = {
+        "title clarifies product role": "Title clarity makes the product role easier to understand",
+        "usage cues clarify routine fit": "Usage cues help connect the PDP to routine fit",
+        "review depth supports confidence": "Review depth helps reinforce shopper confidence",
+        "benefit-forward PDP positioning": "Benefit communication is clearer across the PDP",
+        "clear benefit communication": "Benefit communication is clearer across the PDP",
+        "clear pack and spec detail": "Pack and spec detail are easier to understand",
+        "image stack extends usage education": "Image variety adds usage and routine context",
+    }
+    lower_shells = {key.lower(): value for key, value in shell_replacements.items()}
+    return lower_shells.get(clean.lower(), shell_replacements.get(clean, clean))
+
+
 def _generic_text(signal: str) -> str:
     return {
         "strong_opening_product_clarity": "Title clarity makes the product role easier to understand",
@@ -659,6 +692,13 @@ def build_slide4_group_findings(records: list[dict[str, Any]], group_label: str)
 
     selected_findings = [*strengths, *opportunities]
     selected_findings = _dedupe_selected_findings(selected_findings)
+    selected_findings = [
+        {
+            **finding,
+            "text": _surface_slide4_text(finding.get("text"), _safe_text(finding.get("signal"))),
+        }
+        for finding in selected_findings
+    ]
 
     return {
         "group_label": group_label,
