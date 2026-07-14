@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from collections import Counter
 from typing import Any
 
@@ -10,6 +11,7 @@ SHOPPER_BUCKETS = (
     "usage_comparison",
     "trust_reassurance",
 )
+SURFACED_METADATA_RE = re.compile(r"\b[\w.-]+\.(?:jpg|jpeg|png|webp)\b|\b\d{3,5}\s*x\s*\d{3,5}\b", re.I)
 
 STRENGTH_SIGNALS = (
     "ingredient_or_flavor_storytelling",
@@ -461,10 +463,33 @@ TEXT_BY_FAMILY: dict[str, dict[str, str]] = {
 def _finding_text(signal: str, family: str) -> str:
     family_map = TEXT_BY_FAMILY.get(family, {})
     if signal in family_map:
-        return family_map[signal]
+        return _clean_finding_text(family_map[signal], signal)
     if family == "food_generic":
-        return TEXT_BY_FAMILY["jam_preserves"].get(signal) or TEXT_BY_FAMILY["generic"].get(signal) or _generic_text(signal)
-    return TEXT_BY_FAMILY["generic"].get(signal) or _generic_text(signal)
+        return _clean_finding_text(
+            TEXT_BY_FAMILY["jam_preserves"].get(signal)
+            or TEXT_BY_FAMILY["generic"].get(signal)
+            or _generic_text(signal),
+            signal,
+        )
+    return _clean_finding_text(TEXT_BY_FAMILY["generic"].get(signal) or _generic_text(signal), signal)
+
+
+def _clean_finding_text(text: str, signal: str) -> str:
+    clean = re.sub(r"\s+", " ", _safe_text(text)).strip(" .;")
+    if not clean or SURFACED_METADATA_RE.search(clean):
+        return _generic_text(signal)
+    clean = re.sub(r"\b(?:facial cleansers?|skin care product|product type)\s+", "", clean, flags=re.I)
+    clean = re.sub(r"\s+", " ", clean).strip(" .;")
+    replacements = {
+        "Product details give shoppers clearer reasons to buy": "Pack and spec detail is easier to understand",
+        "Product details support clearer application guidance": "Formula and use details make comparison easier",
+        "Benefit communication is more visible across the PDP": "Benefit communication is clearer across the PDP",
+        "Proof points make product benefits more visible": "Proof points make benefits easier to evaluate",
+        "Use-case imagery makes product fit easier to picture": "Image variety adds usage and routine context",
+        "Usage guidance helps shoppers understand fit and application": "Usage cues help connect the product to routine fit",
+        "Trust and certification cues support shopper confidence": "Trust cues help reduce hesitation at purchase",
+    }
+    return replacements.get(clean, clean)
 
 
 def _generic_text(signal: str) -> str:

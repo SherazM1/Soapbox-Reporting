@@ -132,7 +132,13 @@ MALFORMED_PHRASE_BLOCKLIST = (
     "shelf range is concentrated",
     "higher review threshold reaches",
     "presence is narrow for",
+    "comparison range is clearer in",
 )
+SURFACED_ARTIFACT_RE = re.compile(r"\b[\w.-]+\.(?:jpg|jpeg|png|webp)\b|\b\d{3,5}\s*x\s*\d{3,5}\b", re.I)
+TITLE_LEAK_TERMS = {
+    "good molecules",
+    "hydrating facial cleansing gel",
+}
 
 STOP_WORDS = {
     "a",
@@ -741,14 +747,44 @@ def _fit_search_bullet(text: str) -> str:
     return clean
 
 
+def _fallback_search_bullet(side: str, dimension: str, product_type: str) -> str:
+    product = product_type if product_type and product_type != "category" else "category"
+    if dimension in {"shared_search_query_alignment", "keyword_alignment"}:
+        return (
+            f"Visibility is strongest in core {product} queries"
+            if side == "current"
+            else f"Benchmark products align more consistently to core {product} queries"
+        )
+    if dimension in {"shared_search_breadth", "assortment_range"}:
+        return (
+            "Client coverage is narrower across adjacent searches"
+            if side == "current"
+            else "Benchmark products appear across more adjacent searches"
+        )
+    if dimension in {"review_authority", "current_review_context", "benchmark_review_context"}:
+        return "Review depth strengthens shelf trust"
+    if dimension in {"client_brand_presence", "top_result_visibility"}:
+        return "Client presence is harder to find in leading results"
+    if dimension in {"competitive_pressure", "visibility_drivers", "sponsored_competition"}:
+        return "Shelf competition is stronger in core category terms"
+    return "Search shelf cues point to clearer shopper comparison"
+
+
 def _search_language_allowed(text: str) -> tuple[bool, str]:
     normalized = _safe_text(text).lower()
     if not normalized:
         return False, "blank"
+    if SURFACED_ARTIFACT_RE.search(normalized):
+        return False, "metadata_or_file_artifact"
+    if any(term in normalized for term in TITLE_LEAK_TERMS):
+        return False, "raw_product_title_like"
     if any(blocked in normalized for blocked in MALFORMED_PHRASE_BLOCKLIST):
         return False, "malformed_or_strategy_phrase"
-    titleish_tokens = [token for token in normalized.split() if token[:1].isupper()]
-    if len(titleish_tokens) >= 6:
+    title_tokens = [token for token in re.split(r"[^a-z0-9]+", normalized) if len(token) > 3]
+    if len(title_tokens) >= 7 and not any(
+        term in normalized
+        for term in ("query", "queries", "shelf", "review", "trust", "visibility", "comparison", "discovery")
+    ):
         return False, "raw_product_title_like"
     if "breadth" in normalized:
         return False, "blocked_range_language"
@@ -1020,17 +1056,17 @@ def _range_from_shelf(side: str, shelf: dict[str, Any], brand_count: int, produc
     solutions = _short_join(shelf.get("solution_terms", []), "")
     if side == "benchmark":
         if forms:
-            return f"Benchmark assortment spans {forms} formats"
+            return "Benchmark products span more shelf formats"
         if solutions:
-            return f"Competitive coverage extends across {solutions} needs"
+            return "Competitive coverage extends across more shopper needs"
         if brand_count >= 3:
             return "Benchmark brands create a wider comparison set"
         return f"Benchmark shelf selection is focused in {product_type}"
     if forms:
-        return f"Client comparison range is clearer in {forms}"
+        return "Client coverage is clearer in core shelf formats"
     if brand_count >= 2:
         return "Shelf variety supports basic shopper comparison"
-    return f"Client comparison range is narrow in {product_type}"
+    return f"Client coverage is narrower across {product_type} searches"
 
 
 def _candidate_overlap_key(text: str) -> set[str]:
@@ -1083,7 +1119,12 @@ def _add_search_candidate(
     allowed, guard_reason = _search_language_allowed(fitted)
     if not allowed:
         rejected.append({"text": fitted, "reason": guard_reason, "family": family})
-        return
+        fitted = _fit_search_bullet(_fallback_search_bullet(side, dimension, product_type))
+        allowed, fallback_reason = _search_language_allowed(fitted)
+        if not allowed:
+            rejected.append({"text": fitted, "reason": fallback_reason, "family": family})
+            return
+        reason = f"{reason} Surfaced wording was replaced after language cleanup."
     candidates.append(
         {
             "text": fitted,

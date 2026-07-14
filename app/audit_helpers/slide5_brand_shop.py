@@ -20,6 +20,7 @@ DIMENSION_PRIORITY = (
 SLIDE5_TARGET_BULLET_COUNT = 7
 SCORE_ORDER = {"Missing": 0, "Limited": 1, "Present": 2, "Strong": 3}
 VALID_STATUSES = {"success", "successful", "partial", "partially successful", "partially_successful"}
+SURFACED_METADATA_RE = re.compile(r"\b[\w.-]+\.(?:jpg|jpeg|png|webp)\b|\b\d{3,5}\s*x\s*\d{3,5}\b", re.I)
 IMPORTANCE_BULLETS = {
     "brand_presentation": (
         "importance_brand_01",
@@ -88,6 +89,12 @@ def _safe_text(value: Any) -> str:
 
 def _normalize(value: Any) -> str:
     return re.sub(r"[^a-z0-9]+", " ", _safe_text(value).lower()).strip()
+
+
+def _metadata_leak_reason(value: Any) -> str:
+    if SURFACED_METADATA_RE.search(_safe_text(value)):
+        return "metadata_or_file_artifact"
+    return ""
 
 
 def _as_list(value: Any) -> list[Any]:
@@ -670,6 +677,8 @@ def _short_phrase(values: list[str], max_items: int = 3) -> str:
     cleaned: list[str] = []
     for value in values:
         text = re.sub(r"\s+", " ", _safe_text(value)).strip(" -|")
+        if _metadata_leak_reason(text):
+            continue
         if text and len(text) <= 28 and _normalize(text) not in {_normalize(item) for item in cleaned}:
             cleaned.append(text)
         if len(cleaned) >= max_items:
@@ -1339,7 +1348,9 @@ def _brand_shop_cue_bullets(
             )
         )
         wrong_category_reason = _wrong_category_language_reason(text, evidence)
-        if wrong_category_reason:
+        metadata_reason = _metadata_leak_reason(text)
+        if wrong_category_reason or metadata_reason:
+            rejection_reason = wrong_category_reason or metadata_reason
             debug_items.append(
                 {
                     "text": "",
@@ -1348,9 +1359,13 @@ def _brand_shop_cue_bullets(
                     "dimension": candidate.get("cue_key", "cue"),
                     "score": candidate.get("classification", "context"),
                     "template_id": f"strategic_cue_{candidate.get('cue_key')}",
-                    "signals": [wrong_category_reason],
+                    "signals": [rejection_reason],
                     "supporting_count": 0,
-                    "reason": "Rejected because the wording did not match the Brand Shop category context.",
+                    "reason": (
+                        "Rejected because the wording surfaced file metadata."
+                        if metadata_reason
+                        else "Rejected because the wording did not match the Brand Shop category context."
+                    ),
                     "cue_debug": candidate,
                     "_rejected": True,
                 }
