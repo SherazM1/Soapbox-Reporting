@@ -419,40 +419,40 @@ def _record_signal_evidence(record: dict[str, Any]) -> tuple[set[str], dict[str,
 TEXT_BY_FAMILY: dict[str, dict[str, str]] = {
     "jam_preserves": {
         "ingredient_or_flavor_storytelling": "Flavor and ingredient cues make the product easier to understand",
-        "nutrition_or_detail_support": "Product details give shoppers clearer reasons to buy",
-        "usage_or_recipe_storytelling": "Serving guidance helps shoppers understand fit and use",
-        "lifestyle_or_contextual_storytelling": "Use-case imagery makes serving occasions easier to picture",
-        "benefit_forward_graphics": "Benefit communication is more visible across the PDP",
+        "nutrition_or_detail_support": "Pack and spec detail are easier to understand",
+        "usage_or_recipe_storytelling": "Serving cues make usage occasions easier to picture",
+        "lifestyle_or_contextual_storytelling": "Image variety adds serving and occasion context",
+        "benefit_forward_graphics": "Benefit communication is clearer across the PDP",
         "missing_lifestyle_storytelling": "More serving context could make product choice easier",
         "missing_usage_or_recipe_storytelling": "Clearer serving guidance could reduce shopper uncertainty",
     },
     "nut_butter_spreads": {
         "ingredient_or_flavor_storytelling": "Protein and ingredient cues make value easier to understand",
-        "nutrition_or_detail_support": "Product details support easier spread comparison",
-        "usage_or_recipe_storytelling": "Snack and breakfast guidance helps shoppers understand fit",
-        "benefit_forward_graphics": "Benefit communication makes spread value more visible",
+        "nutrition_or_detail_support": "Formula and pack detail make comparison easier",
+        "usage_or_recipe_storytelling": "Snack and breakfast cues help shoppers understand fit",
+        "benefit_forward_graphics": "Benefit communication makes value easier to see",
         "missing_usage_or_recipe_storytelling": "Clearer snack and breakfast guidance could make choice easier",
         "missing_lifestyle_storytelling": "More use-case imagery could make spread occasions clearer",
     },
     "baby_care": {
         "routine_or_regimen_education": "Routine guidance helps parents understand daily use",
-        "usage_or_recipe_storytelling": "Application guidance makes the care routine clearer",
+        "usage_or_recipe_storytelling": "Usage cues help connect the PDP to routine fit",
         "lifestyle_or_contextual_storytelling": "Family-care imagery adds parent reassurance",
-        "benefit_forward_graphics": "Gentle-care benefits are easier to see across the PDP",
+        "benefit_forward_graphics": "Gentle-care benefits are easier to evaluate",
         "missing_lifestyle_storytelling": "More parent reassurance could help build confidence",
         "missing_usage_or_recipe_storytelling": "Clearer routine guidance could reduce uncertainty",
     },
     "health_personal_care": {
-        "trust_or_certification_support": "Trust cues reinforce shopper confidence",
+        "trust_or_certification_support": "Trust cues help reduce hesitation at purchase",
         "ingredient_or_flavor_storytelling": "Ingredient benefits make value easier to understand",
-        "benefit_forward_graphics": "Proof points make product benefits more visible",
-        "nutrition_or_detail_support": "Product details support clearer application guidance",
+        "benefit_forward_graphics": "Proof points make benefits easier to evaluate",
+        "nutrition_or_detail_support": "Formula and use details make comparison easier",
         "missing_trust_or_certification_support": "Stronger reassurance cues could help build confidence",
     },
     "generic": {
-        "strong_opening_product_clarity": "Opening imagery makes the product easier to understand",
-        "benefit_forward_graphics": "Benefit communication is more visible across the PDP",
-        "nutrition_or_detail_support": "Product details give shoppers clearer reasons to buy",
+        "strong_opening_product_clarity": "Title clarity makes the product role easier to understand",
+        "benefit_forward_graphics": "Benefit communication is clearer across the PDP",
+        "nutrition_or_detail_support": "Pack and spec detail are easier to understand",
         "missing_usage_or_recipe_storytelling": "Clearer usage guidance could reduce shopper uncertainty",
         "missing_lifestyle_storytelling": "More use-case context could make product choice easier",
         "limited_conversion_guidance": "The PDP needs more visible reasons to buy",
@@ -478,31 +478,53 @@ def _clean_finding_text(text: str, signal: str) -> str:
     clean = re.sub(r"\s+", " ", _safe_text(text)).strip(" .;")
     if not clean or SURFACED_METADATA_RE.search(clean):
         return _generic_text(signal)
-    clean = re.sub(r"\b(?:facial cleansers?|skin care product|product type)\s+", "", clean, flags=re.I)
+    normalized = clean.lower()
+    normalized_replacements = {
+        "facial cleanser title clarifies product role": "Title clarity makes the product role easier to understand",
+        "formula and skin-benefit details support facial cleanser comparison": "Formula and skin-benefit detail make comparison easier",
+        "facial cleanser usage cues clarify routine fit": "Usage cues help connect the PDP to routine fit",
+        "review depth supports facial cleanser confidence": "Review depth helps reinforce shopper confidence",
+        "benefit-forward facial cleansers pdp positioning": "Benefit communication is clearer across the PDP",
+        "clear facial cleansers benefit communication": "Benefit communication is clearer across the PDP",
+        "clear facial cleansers pack and spec detail": "Pack and spec detail are easier to understand",
+        "image stack extends facial cleanser usage education": "Image variety adds usage and routine context",
+    }
+    if normalized in normalized_replacements:
+        return normalized_replacements[normalized]
+    clean = re.sub(r"\b(?:facial cleansers?|facial cleanser|skin care product|product type)\b", "", clean, flags=re.I)
     clean = re.sub(r"\s+", " ", clean).strip(" .;")
     replacements = {
-        "Product details give shoppers clearer reasons to buy": "Pack and spec detail is easier to understand",
+        "title clarifies product role": "Title clarity makes the product role easier to understand",
+        "usage cues clarify routine fit": "Usage cues help connect the PDP to routine fit",
+        "review depth supports confidence": "Review depth helps reinforce shopper confidence",
+        "Benefit-forward PDP positioning": "Benefit communication is clearer across the PDP",
+        "Clear benefit communication": "Benefit communication is clearer across the PDP",
+        "Clear pack and spec detail": "Pack and spec detail are easier to understand",
+        "Image stack extends usage education": "Image variety adds usage and routine context",
+        "Product details give shoppers clearer reasons to buy": "Pack and spec detail are easier to understand",
         "Product details support clearer application guidance": "Formula and use details make comparison easier",
         "Benefit communication is more visible across the PDP": "Benefit communication is clearer across the PDP",
         "Proof points make product benefits more visible": "Proof points make benefits easier to evaluate",
         "Use-case imagery makes product fit easier to picture": "Image variety adds usage and routine context",
         "Usage guidance helps shoppers understand fit and application": "Usage cues help connect the product to routine fit",
         "Trust and certification cues support shopper confidence": "Trust cues help reduce hesitation at purchase",
+        "Opening imagery makes the product easier to understand": "Title clarity makes the product role easier to understand",
+        "Carousel depth helps shoppers compare product details": "Image depth makes product comparison easier",
     }
     return replacements.get(clean, clean)
 
 
 def _generic_text(signal: str) -> str:
     return {
-        "strong_opening_product_clarity": "Opening imagery makes the product easier to understand",
+        "strong_opening_product_clarity": "Title clarity makes the product role easier to understand",
         "ingredient_or_flavor_storytelling": "Ingredient and product cues make value easier to understand",
-        "nutrition_or_detail_support": "Product details give shoppers clearer reasons to buy",
-        "usage_or_recipe_storytelling": "Usage guidance helps shoppers understand fit and application",
-        "lifestyle_or_contextual_storytelling": "Use-case imagery makes product fit easier to picture",
-        "benefit_forward_graphics": "Benefit communication is more visible across the PDP",
-        "routine_or_regimen_education": "Routine guidance helps shoppers understand how to use the product",
-        "trust_or_certification_support": "Trust and certification cues support shopper confidence",
-        "clear_carousel_depth": "Carousel depth helps shoppers compare product details",
+        "nutrition_or_detail_support": "Pack and spec detail are easier to understand",
+        "usage_or_recipe_storytelling": "Usage cues help connect the PDP to routine fit",
+        "lifestyle_or_contextual_storytelling": "Image variety adds usage and routine context",
+        "benefit_forward_graphics": "Benefit communication is clearer across the PDP",
+        "routine_or_regimen_education": "Routine cues make application easier to understand",
+        "trust_or_certification_support": "Trust cues help reduce hesitation at purchase",
+        "clear_carousel_depth": "Image depth makes product comparison easier",
         "weak_opening_sequence": "The PDP would benefit from a clearer opening product story",
         "thin_carousel_depth": "More PDP detail could help shoppers compare options",
         "missing_lifestyle_storytelling": "More use-case context could make product choice easier",
