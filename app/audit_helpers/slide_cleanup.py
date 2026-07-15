@@ -1,7 +1,173 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import re
 from typing import Any, Callable
+
+
+_MAX_TERM_LENGTH = 28
+_MAX_TERM_WORDS = 4
+
+_FALLBACK_TERMS: dict[str, tuple[str, ...]] = {
+    "beauty": (
+        "face cleanser",
+        "face wash",
+        "hydrating cleanser",
+        "gentle cleanser",
+        "sensitive skin cleanser",
+        "oily skin cleanser",
+    ),
+    "health": (
+        "antacid",
+        "stomach relief",
+        "heartburn relief",
+        "acid reducer",
+        "upset stomach relief",
+        "indigestion relief",
+    ),
+    "food": (
+        "peanut butter",
+        "almond butter",
+        "jelly",
+        "fruit spread",
+        "protein shake",
+        "electrolyte drink",
+    ),
+    "pet": (
+        "dog treats",
+        "cat treats",
+        "dog shampoo",
+        "flea treatment",
+        "dog supplement",
+        "cat litter",
+    ),
+    "electronics": (
+        "wireless earbuds",
+        "bluetooth speaker",
+        "phone charger",
+        "usb c cable",
+        "laptop stand",
+        "phone case",
+    ),
+}
+
+_FAMILY_LABELS: dict[str, str] = {
+    "beauty": "skin care essentials",
+    "health": "over-the-counter medicine",
+    "food": "food and beverage essentials",
+    "pet": "pet care essentials",
+    "electronics": "electronics essentials",
+}
+
+_FAMILY_MARKERS: dict[str, tuple[str, ...]] = {
+    "beauty": (
+        "beauty",
+        "skin care",
+        "skincare",
+        "cleanser",
+        "face wash",
+        "moisturizer",
+        "lotion",
+        "serum",
+        "oily skin",
+        "sensitive skin",
+    ),
+    "health": (
+        "health",
+        "otc",
+        "medicine",
+        "antacid",
+        "heartburn",
+        "acid reducer",
+        "stomach",
+        "indigestion",
+        "pain relief",
+    ),
+    "food": (
+        "food",
+        "beverage",
+        "peanut butter",
+        "almond butter",
+        "jelly",
+        "fruit spread",
+        "protein shake",
+        "electrolyte",
+        "jam",
+    ),
+    "pet": (
+        "pet",
+        "dog",
+        "cat",
+        "flea",
+        "litter",
+        "treats",
+        "shampoo",
+        "supplement",
+    ),
+    "electronics": (
+        "electronics",
+        "earbuds",
+        "bluetooth",
+        "speaker",
+        "charger",
+        "usb",
+        "laptop",
+        "phone case",
+        "cable",
+    ),
+}
+
+_OFF_CATEGORY_MARKERS: dict[str, tuple[str, ...]] = {
+    "beauty": ("antacid", "heartburn", "peanut butter", "dog ", "cat ", "earbuds", "charger"),
+    "health": ("vaccaria", "acupressure", "face wash", "cleanser", "peanut butter", "dog ", "cat ", "earbuds"),
+    "food": ("antacid", "heartburn", "cleanser", "dog ", "cat ", "earbuds", "charger"),
+    "pet": ("antacid", "heartburn", "cleanser", "peanut butter", "earbuds", "charger"),
+    "electronics": ("antacid", "heartburn", "cleanser", "peanut butter", "dog ", "cat ", "flea"),
+}
+
+_BUCKET_PHRASES = {
+    "options",
+    "solutions",
+    "needs",
+    "audience",
+    "ingredient",
+    "recommended",
+    "use case",
+    "use-case",
+    "benefit led",
+    "benefit-led",
+    "assortment",
+    "coverage",
+    "audience and ingredient needs",
+    "benefit led solutions",
+    "ingredient needs",
+}
+
+_BAD_EXACT_TERMS = {
+    "ear vaccaria seed",
+    "ear acupressure seeds",
+    "dermatologist recommended",
+    "health and medicine",
+    "multicultural otc",
+    "international antacids",
+    "international antacids solutions",
+}
+
+_BAD_TEXT_MARKERS = (
+    "ear vaccaria seed",
+    "ear acupressure",
+    "health and medicine/",
+    "multicultural otc/",
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".webp",
+    "300x250",
+    "audience and ingredient needs",
+    "benefit-led solutions",
+    "benefit led solutions",
+    "ingredient needs",
+)
 
 
 SLIDE_CLEANUP_SEQUENCE: tuple[tuple[str, str, Callable[[Any], Any]], ...] = (
@@ -12,8 +178,227 @@ SLIDE_CLEANUP_SEQUENCE: tuple[tuple[str, str, Callable[[Any], Any]], ...] = (
 )
 
 
+def _text(value: Any) -> str:
+    if isinstance(value, str):
+        return value
+    if isinstance(value, (list, tuple, set)):
+        return " ".join(_text(item) for item in value)
+    if isinstance(value, dict):
+        return " ".join(f"{_text(key)} {_text(item)}" for key, item in value.items())
+    return "" if value is None else str(value)
+
+
+def _normalize_space(value: Any) -> str:
+    return re.sub(r"\s+", " ", _text(value).strip())
+
+
+def _norm(value: Any) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", _text(value).lower()).strip()
+
+
+def _contains_any(text: str, markers: tuple[str, ...] | set[str]) -> bool:
+    padded = f" {text} "
+    return any(marker in padded or marker in text for marker in markers)
+
+
+def _detect_slide6_family(payload: dict[str, Any], segments: list[Any]) -> str:
+    haystack_parts: list[str] = [
+        _text(payload.get("category_phrase")),
+        _text(payload.get("pack_id")),
+        _text(payload.get("intro")),
+        _text(payload.get("takeaway")),
+        _text(payload.get("debug")),
+    ]
+    for segment in segments:
+        if isinstance(segment, dict):
+            haystack_parts.append(_text(segment.get("segment")))
+            haystack_parts.append(_text(segment.get("debug")))
+        else:
+            haystack_parts.append(_text(segment))
+    haystack = _norm(" ".join(haystack_parts))
+    scores = {
+        family: sum(1 for marker in markers if marker in haystack)
+        for family, markers in _FAMILY_MARKERS.items()
+    }
+    best_family, best_score = max(scores.items(), key=lambda item: item[1])
+    return best_family if best_score > 0 else "food"
+
+
+def _is_bad_term(term: str, family: str) -> bool:
+    normalized = _norm(term)
+    if not normalized:
+        return True
+    if normalized in _BAD_EXACT_TERMS:
+        return True
+    raw = term.lower()
+    if "/" in raw:
+        return True
+    if re.search(r"\.(?:jpe?g|png|webp)\b", raw):
+        return True
+    if re.search(r"\b\d{2,5}\s*x\s*\d{2,5}\b", raw):
+        return True
+    if len(term) > _MAX_TERM_LENGTH or len(normalized.split()) > _MAX_TERM_WORDS:
+        return True
+    if any(phrase == normalized for phrase in _BUCKET_PHRASES):
+        return True
+    if any(f" {phrase} " in f" {normalized} " for phrase in _BUCKET_PHRASES):
+        return True
+    if _contains_any(normalized, (" taxonomy ", " path ", " metadata ", " filename ", " asset ")):
+        return True
+    if _contains_any(raw, _OFF_CATEGORY_MARKERS.get(family, ())):
+        return True
+    if re.search(r"[,;|+&]", raw):
+        return True
+    return False
+
+
+def _first_safe_slash_segment(term: str, family: str) -> str:
+    candidate = _normalize_space(term.split("/", 1)[0])
+    if candidate and not _is_bad_term(candidate, family):
+        return candidate
+    return ""
+
+
+def _next_fallback(family: str, used: set[str]) -> str:
+    for fallback in _FALLBACK_TERMS.get(family, _FALLBACK_TERMS["food"]):
+        normalized = _norm(fallback)
+        if normalized not in used:
+            used.add(normalized)
+            return fallback
+    for fallback in _FALLBACK_TERMS["food"]:
+        normalized = _norm(fallback)
+        if normalized not in used:
+            used.add(normalized)
+            return fallback
+    return "shopper search"
+
+
+def _clean_term(value: Any, family: str, used: set[str], rejected: list[str], fallback_terms_used: list[str]) -> str:
+    original = _normalize_space(value)
+    candidate = original
+    if "/" in candidate:
+        candidate = _first_safe_slash_segment(candidate, family)
+    candidate = _normalize_space(candidate).lower()
+    normalized = _norm(candidate)
+    if not candidate or _is_bad_term(candidate, family) or normalized in used:
+        if original:
+            rejected.append(original)
+        fallback = _next_fallback(family, used)
+        fallback_terms_used.append(fallback)
+        return fallback
+    used.add(normalized)
+    return candidate
+
+
+def _clean_segments(segments: list[Any], family: str) -> tuple[list[Any], dict[str, Any]]:
+    cleaned_segments: list[Any] = []
+    used: set[str] = set()
+    rejected: list[str] = []
+    fallback_terms_used: list[str] = []
+
+    for segment in segments[:6]:
+        if isinstance(segment, dict):
+            cleaned_segment = deepcopy(segment)
+            cleaned_segment["segment"] = _clean_term(
+                cleaned_segment.get("segment"),
+                family,
+                used,
+                rejected,
+                fallback_terms_used,
+            )
+            cleaned_segments.append(cleaned_segment)
+        else:
+            cleaned_segments.append(_clean_term(segment, family, used, rejected, fallback_terms_used))
+
+    template_segment = next((item for item in cleaned_segments if isinstance(item, dict)), None)
+    while len(cleaned_segments) < 6:
+        fallback = _next_fallback(family, used)
+        fallback_terms_used.append(fallback)
+        if template_segment is not None:
+            added = deepcopy(template_segment)
+            added["segment"] = fallback
+            added["warnings"] = []
+            cleaned_segments.append(added)
+        else:
+            cleaned_segments.append({"segment": fallback})
+
+    return cleaned_segments, {
+        "detected_category_family": family,
+        "rejected_row_terms": rejected,
+        "fallback_terms_used": fallback_terms_used,
+    }
+
+
+def _text_is_contaminated(value: Any) -> bool:
+    raw = _text(value).lower()
+    normalized = _norm(raw)
+    return any(marker in raw for marker in _BAD_TEXT_MARKERS) or any(
+        phrase == normalized or f" {phrase} " in f" {normalized} " for phrase in _BUCKET_PHRASES
+    )
+
+
+def _clean_slide6_text(value: Any, family: str, field_name: str, client_label: str) -> tuple[Any, bool]:
+    if not isinstance(value, str) or not _text_is_contaminated(value):
+        return value, False
+    family_label = _FAMILY_LABELS.get(family, "category search terms")
+    if field_name == "intro":
+        return (
+            f"Competitor and {client_label} PDP content is compared for alignment with "
+            f"realistic {family_label} shopper search paths.",
+            True,
+        )
+    return (
+        f"Focused {family_label} language helps protect search visibility without relying on "
+        "taxonomy or internal planning terms.",
+        True,
+    )
+
+
 def cleanup_slide6(payload: Any) -> Any:
-    return payload
+    if not isinstance(payload, dict):
+        return payload
+    try:
+        cleaned_payload = deepcopy(payload)
+        original_segments = list(cleaned_payload.get("segments", []) or [])
+        family = _detect_slide6_family(cleaned_payload, original_segments)
+        cleaned_segments, cleanup_debug = _clean_segments(original_segments, family)
+        cleaned_payload["segments"] = cleaned_segments
+
+        client_label = _normalize_space(cleaned_payload.get("client_label")) or "Client"
+        adjusted_text_fields: list[str] = []
+        for field_name in ("intro", "takeaway", "intro_text", "takeaway_text"):
+            if field_name in cleaned_payload:
+                cleaned_text, adjusted = _clean_slide6_text(
+                    cleaned_payload.get(field_name),
+                    family,
+                    "intro" if "intro" in field_name else "takeaway",
+                    client_label,
+                )
+                cleaned_payload[field_name] = cleaned_text
+                if adjusted:
+                    adjusted_text_fields.append(field_name)
+
+        for list_key in ("surfaced_terms", "terms", "search_terms", "row_terms"):
+            values = cleaned_payload.get(list_key)
+            if isinstance(values, list):
+                used: set[str] = set()
+                cleaned_payload[list_key] = [
+                    _clean_term(item, family, used, cleanup_debug["rejected_row_terms"], cleanup_debug["fallback_terms_used"])
+                    for item in values[:6]
+                ]
+
+        cleanup_debug["adjusted_text_fields"] = adjusted_text_fields
+        debug = cleaned_payload.get("debug")
+        if isinstance(debug, dict):
+            debug["slide_cleanup"] = cleanup_debug
+        warnings = cleaned_payload.get("warnings")
+        if isinstance(warnings, list) and cleanup_debug["rejected_row_terms"]:
+            warnings.append(
+                "Slide 6 cleanup replaced invalid or table-unfriendly shopper terms after generation."
+            )
+        return cleaned_payload
+    except Exception:
+        return payload
 
 
 def cleanup_slide4(payload: Any) -> Any:
