@@ -532,6 +532,20 @@ def _surface_slide4_text(text: Any, signal: str = "") -> str:
     if normalized in exact_replacements:
         return exact_replacements[normalized]
 
+    pattern_replacements = (
+        (r"^.+?\s+title clarifies product role$", "Title clarity makes the product role easier to understand"),
+        (r"^formula and skin-benefit details support .+? comparison$", "Formula and skin-benefit detail make comparison easier"),
+        (r"^.+?\s+usage cues clarify routine fit$", "Usage cues help connect the PDP to routine fit"),
+        (r"^review depth supports .+? confidence$", "Review depth helps reinforce shopper confidence"),
+        (r"^benefit-forward .+? pdp positioning$", "Benefit communication is clearer across the PDP"),
+        (r"^clear .+? benefit communication$", "Benefit communication is clearer across the PDP"),
+        (r"^clear .+? pack and spec detail$", "Pack and spec detail are easier to understand"),
+        (r"^image stack extends .+? usage education$", "Image variety adds usage and routine context"),
+    )
+    for pattern, replacement in pattern_replacements:
+        if re.match(pattern, normalized):
+            return replacement
+
     clean = re.sub(r"\b(?:facial cleansers?|facial cleanser|skin care product|product type)\b", "", clean, flags=re.I)
     clean = re.sub(r"\s+", " ", clean).strip(" .;")
     shell_replacements = {
@@ -622,7 +636,7 @@ def _build_finding(
 ) -> dict[str, Any]:
     bucket = SIGNAL_BUCKETS.get(signal, "usage_comparison")
     return {
-        "text": _finding_text(signal, family),
+        "text": _surface_slide4_text(_finding_text(signal, family), signal),
         "signal": signal,
         "bucket": _bucket_label(bucket),
         "bucket_key": bucket,
