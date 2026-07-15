@@ -17,6 +17,7 @@ from app.audit_helpers.combined_audit_extract import (
     reset_combined_audit_state,
 )
 from app.audit_helpers.image_analysis import analyze_pdp_records
+from app.audit_helpers.slide_cleanup import cleanup_generated_audit_plan
 from audit_analyze import analyze_primary_record
 from audit_export import build_audit_export_plan
 from audit_generate import generate_mvp_outputs_for_primary_entry, is_output_shell_empty
@@ -592,6 +593,19 @@ def _reset_generated_audit_state_v2() -> None:
     st.session_state["audit_generated"] = False
     st.session_state["audit_results_seeded_for"] = []
     st.session_state["audit_export_plan"] = {}
+    st.session_state["audit_generated_export_plan"] = {}
+    st.session_state["audit_cleaned_export_plan"] = {}
+    st.session_state["audit_active_export_plan_source"] = "generated"
+    st.session_state["audit_slide_cleanup_status"] = {
+        "has_run": False,
+        "succeeded": False,
+        "active": False,
+        "slides_cleaned": [],
+        "slides_skipped": [],
+        "warnings": [],
+    }
+    st.session_state["audit_ppt_bytes"] = None
+    st.session_state["audit_ppt_filename"] = ""
 
 
 def _reset_competitor_graphics_mode_state_v2() -> None:
@@ -2992,6 +3006,51 @@ def _refresh_audit_export_plan_v2() -> None:
     )
 
 
+def _store_generated_audit_plan_v2() -> None:
+    generated_plan = st.session_state.get("audit_export_plan", {}) or {}
+    st.session_state["audit_generated_export_plan"] = generated_plan
+    st.session_state["audit_cleaned_export_plan"] = {}
+    st.session_state["audit_active_export_plan_source"] = "generated"
+    st.session_state["audit_slide_cleanup_status"] = {
+        "has_run": False,
+        "succeeded": False,
+        "active": False,
+        "slides_cleaned": [],
+        "slides_skipped": [],
+        "warnings": [],
+    }
+    st.session_state["audit_ppt_bytes"] = None
+    st.session_state["audit_ppt_filename"] = ""
+
+
+def _active_audit_export_plan_v2() -> tuple[dict[str, Any], str]:
+    cleaned_plan = st.session_state.get("audit_cleaned_export_plan", {}) or {}
+    cleanup_status = st.session_state.get("audit_slide_cleanup_status", {}) or {}
+    if cleaned_plan and cleanup_status.get("succeeded"):
+        return cleaned_plan, "cleaned"
+    generated_plan = st.session_state.get("audit_generated_export_plan", {}) or {}
+    if generated_plan:
+        return generated_plan, "generated"
+    return st.session_state.get("audit_export_plan", {}) or {}, "generated"
+
+
+def _reset_to_generated_audit_plan_v2() -> None:
+    generated_plan = st.session_state.get("audit_generated_export_plan", {}) or {}
+    st.session_state["audit_export_plan"] = generated_plan
+    st.session_state["audit_cleaned_export_plan"] = {}
+    st.session_state["audit_active_export_plan_source"] = "generated"
+    st.session_state["audit_slide_cleanup_status"] = {
+        "has_run": False,
+        "succeeded": False,
+        "active": False,
+        "slides_cleaned": [],
+        "slides_skipped": [],
+        "warnings": [],
+    }
+    st.session_state["audit_ppt_bytes"] = None
+    st.session_state["audit_ppt_filename"] = ""
+
+
 def render_generate_audit_v2() -> None:
     entries = st.session_state.get("audit_primary_entries", [])
     with st.container(border=True):
@@ -3016,7 +3075,78 @@ def render_generate_audit_v2() -> None:
                 competitor_graphics_assignments=[],
             )
             _refresh_audit_export_plan_v2()
+            _store_generated_audit_plan_v2()
             st.session_state["audit_generated"] = True
+
+
+def render_slide_cleanup_v2() -> None:
+    if not st.session_state.get("audit_generated"):
+        return
+
+    generated_plan = st.session_state.get("audit_generated_export_plan", {}) or {}
+    cleanup_status = st.session_state.get("audit_slide_cleanup_status", {}) or {}
+    cleaned_plan = st.session_state.get("audit_cleaned_export_plan", {}) or {}
+
+    with st.container(border=True):
+        st.markdown("### Slide Cleanup")
+        st.caption("Run cleanup on the generated audit plan before creating the final PowerPoint.")
+
+        if not generated_plan:
+            st.warning("No generated audit plan is available for cleanup.")
+            return
+
+        if cleaned_plan and cleanup_status.get("succeeded"):
+            st.success("Cleaned audit is active. Download will use the cleaned audit.")
+        elif cleanup_status.get("has_run") and not cleanup_status.get("succeeded"):
+            st.warning("Cleanup failed. Download will use the generated audit.")
+        else:
+            st.info("Generated audit is active. Cleanup has not been run.")
+
+        col_run, col_reset = st.columns([1, 1])
+        with col_run:
+            if st.button("Run Slide Cleanup", key="audit_v2_run_slide_cleanup", type="primary"):
+                try:
+                    cleaned_export_plan, metadata = cleanup_generated_audit_plan(generated_plan)
+                    st.session_state["audit_slide_cleanup_status"] = metadata
+                    if metadata.get("succeeded"):
+                        st.session_state["audit_cleaned_export_plan"] = cleaned_export_plan
+                        st.session_state["audit_export_plan"] = cleaned_export_plan
+                        st.session_state["audit_active_export_plan_source"] = "cleaned"
+                        st.session_state["audit_ppt_bytes"] = None
+                        st.session_state["audit_ppt_filename"] = ""
+                        st.success("Slide cleanup completed. Cleaned audit is active.")
+                    else:
+                        st.session_state["audit_cleaned_export_plan"] = {}
+                        st.session_state["audit_export_plan"] = generated_plan
+                        st.session_state["audit_active_export_plan_source"] = "generated"
+                        st.warning("Slide cleanup failed. Generated audit remains active.")
+                except Exception as exc:
+                    st.session_state["audit_slide_cleanup_status"] = {
+                        "has_run": True,
+                        "succeeded": False,
+                        "active": False,
+                        "slides_cleaned": [],
+                        "slides_skipped": [],
+                        "warnings": [f"Cleanup failed: {exc}"],
+                    }
+                    st.session_state["audit_cleaned_export_plan"] = {}
+                    st.session_state["audit_export_plan"] = generated_plan
+                    st.session_state["audit_active_export_plan_source"] = "generated"
+                    st.warning(f"Slide cleanup failed. Generated audit remains active: {exc}")
+        with col_reset:
+            st.button(
+                "Reset to Generated Audit",
+                key="audit_v2_reset_slide_cleanup",
+                on_click=_reset_to_generated_audit_plan_v2,
+                disabled=not cleaned_plan and not cleanup_status.get("has_run"),
+            )
+
+        if cleanup_status.get("has_run"):
+            cleaned = ", ".join(cleanup_status.get("slides_cleaned", []) or []) or "None"
+            skipped = ", ".join(cleanup_status.get("slides_skipped", []) or []) or "None"
+            st.caption(f"Cleaned: {cleaned} | Skipped: {skipped}")
+            for warning in cleanup_status.get("warnings", []) or []:
+                st.warning(warning)
 
 
 def render_mocked_audit_results_v2() -> None:
@@ -3097,8 +3227,8 @@ def render_audit_powerpoint_export_v2() -> None:
         st.info("Generate audit outputs before creating the audit PowerPoint.")
         return
 
-    _refresh_audit_export_plan_v2()
-    plan = st.session_state.get("audit_export_plan", {}) or {}
+    plan, plan_source = _active_audit_export_plan_v2()
+    st.session_state["audit_export_plan"] = plan
     with st.expander("Export Mapping Preview", expanded=False):
         if not plan:
             st.caption("No export mapping plan available yet.")
@@ -3111,6 +3241,11 @@ def render_audit_powerpoint_export_v2() -> None:
             )
             st.caption(
                 "The strategic deck uses combined HTML evidence for Slides 2, 3, 4, 5, and 6."
+            )
+            st.caption(
+                "Export source: cleaned audit."
+                if plan_source == "cleaned"
+                else "Export source: generated audit."
             )
             compact = {
                 "audit_metadata": plan.get("audit_metadata", {}),
@@ -3154,7 +3289,7 @@ def render_audit_powerpoint_export_v2() -> None:
         st.error(f"Audit template not found: {exc}")
         return
 
-    if st.button("Generate Audit PowerPoint", key="audit_v2_generate_ppt", type="primary"):
+    if st.button("Generate Final Audit PowerPoint", key="audit_v2_generate_ppt", type="primary"):
         try:
             competitor_records = st.session_state.get("audit_competitor_entries", []) or []
             ppt_bytes = generate_new_audit_powerpoint_from_template(
@@ -3168,14 +3303,19 @@ def render_audit_powerpoint_export_v2() -> None:
                 f"audit_{st.session_state.get('audit_client_name', 'client').strip() or 'client'}"
                 f"_{st.session_state.get('audit_date', date.today())}.pptx"
             ).replace(" ", "_")
-            st.success("Audit PowerPoint generated.")
+            st.session_state["audit_ppt_plan_source"] = plan_source
+            st.success(
+                "Final audit PowerPoint generated from the cleaned audit."
+                if plan_source == "cleaned"
+                else "Final audit PowerPoint generated from the generated audit."
+            )
         except Exception as exc:
             st.error(f"Failed to generate audit PowerPoint: {exc}")
 
     ppt_bytes = st.session_state.get("audit_ppt_bytes")
     if ppt_bytes:
         st.download_button(
-            "Download Audit PowerPoint",
+            "Download Final Audit",
             data=ppt_bytes,
             file_name=st.session_state.get("audit_ppt_filename", "audit_export.pptx"),
             mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
@@ -3209,6 +3349,9 @@ def render_content_auditing() -> None:
     st.divider()
 
     render_generate_audit_v2()
+    st.divider()
+
+    render_slide_cleanup_v2()
     st.divider()
 
     st.header("PowerPoint Export")

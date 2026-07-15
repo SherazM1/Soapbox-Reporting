@@ -832,6 +832,17 @@ def reset_combined_audit_state(state: dict[str, Any]) -> None:
     state["audit_results_seeded_for"] = []
     state["audit_result_record"] = {}
     state["audit_export_plan"] = {}
+    state["audit_generated_export_plan"] = {}
+    state["audit_cleaned_export_plan"] = {}
+    state["audit_active_export_plan_source"] = "generated"
+    state["audit_slide_cleanup_status"] = {
+        "has_run": False,
+        "succeeded": False,
+        "active": False,
+        "slides_cleaned": [],
+        "slides_skipped": [],
+        "warnings": [],
+    }
     state.pop("audit_combined_extract_result", None)
     state["audit_ppt_bytes"] = None
     state["audit_ppt_filename"] = ""

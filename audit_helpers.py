@@ -193,6 +193,17 @@ def initialize_auditing_session_state(state: dict[str, Any]) -> None:
         "audit_results_seeded_for": [],
         "audit_result_record": create_empty_audit_result_record(),
         "audit_export_plan": {},
+        "audit_generated_export_plan": {},
+        "audit_cleaned_export_plan": {},
+        "audit_active_export_plan_source": "generated",
+        "audit_slide_cleanup_status": {
+            "has_run": False,
+            "succeeded": False,
+            "active": False,
+            "slides_cleaned": [],
+            "slides_skipped": [],
+            "warnings": [],
+        },
         "audit_batch_preview": pd.DataFrame(),
     }
     for key, value in defaults.items():
