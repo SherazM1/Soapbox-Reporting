@@ -67,6 +67,15 @@ _SLIDE4_PRODUCT_PHRASES: dict[str, tuple[str, ...]] = {
     "electronics": ("electronics product", "device accessory", "tech accessory"),
 }
 
+_SLIDE4_GENERIC_SAFE_PHRASES = {
+    "the product",
+    "the PDP",
+    "shopper confidence",
+    "usage guidance",
+    "comparison",
+    "product role",
+}
+
 _FAMILY_MARKERS: dict[str, tuple[str, ...]] = {
     "beauty": (
         "beauty",
@@ -127,7 +136,20 @@ _FAMILY_MARKERS: dict[str, tuple[str, ...]] = {
 
 _OFF_CATEGORY_MARKERS: dict[str, tuple[str, ...]] = {
     "beauty": ("antacid", "heartburn", "peanut butter", "dog ", "cat ", "earbuds", "charger"),
-    "health": ("vaccaria", "acupressure", "face wash", "cleanser", "peanut butter", "dog ", "cat ", "earbuds"),
+    "health": (
+        "vaccaria",
+        "acupressure",
+        "face wash",
+        "cleanser",
+        "peanut butter",
+        "mixed spices",
+        "seasoning",
+        "pantry",
+        "beverage",
+        "dog ",
+        "cat ",
+        "earbuds",
+    ),
     "food": ("antacid", "heartburn", "cleanser", "dog ", "cat ", "earbuds", "charger"),
     "pet": ("antacid", "heartburn", "cleanser", "peanut butter", "earbuds", "charger"),
     "electronics": ("antacid", "heartburn", "cleanser", "peanut butter", "dog ", "cat ", "flea"),
@@ -159,6 +181,8 @@ _BAD_EXACT_TERMS = {
     "multicultural otc",
     "international antacids",
     "international antacids solutions",
+    "mixed spices and seasoning",
+    "medicine dosing container",
 }
 
 _BAD_TEXT_MARKERS = (
@@ -188,6 +212,8 @@ _SLIDE4_CONTAMINATED_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"\baudience\s+and\s+ingredient\s+needs\b", re.I),
     re.compile(r"\bbenefit[-\s]+led\s+solutions\b", re.I),
     re.compile(r"\bingredient\s+needs\b", re.I),
+    re.compile(r"\bmixed\s+spices?\s+(?:and\s+)?seasonings?\b", re.I),
+    re.compile(r"\bmedicine\s+dosing\s+container\b", re.I),
 )
 
 _SLIDE4_SOURCE_TEXT_KEYS = {
@@ -454,6 +480,37 @@ def _slide4_safe_product_phrase(family: str, bullet: str) -> str:
     return phrases[0]
 
 
+def _slide4_family_safe_phrase(family: str, phrase: str) -> str:
+    if phrase in _SLIDE4_GENERIC_SAFE_PHRASES:
+        return phrase
+    allowed = _SLIDE4_PRODUCT_PHRASES.get(family, _SLIDE4_PRODUCT_PHRASES["food"])
+    return phrase if phrase in allowed else allowed[0]
+
+
+def _slide4_direct_rewrite(bullet: str, family: str) -> str:
+    lower = bullet.lower()
+    product_phrase = _slide4_family_safe_phrase(family, _SLIDE4_PRODUCT_PHRASES.get(family, _SLIDE4_PRODUCT_PHRASES["food"])[0])
+    if "title" in lower and ("can name" in lower or "more directly" in lower):
+        if family == "health":
+            return "Title can name the over-the-counter medicine more directly"
+        return "Title can name the product more directly"
+    if "title" in lower and ("clarifies" in lower or "clarity" in lower or "role" in lower):
+        return "Title clarity makes the product role easier to understand"
+    if "feature" in lower and "comparison" in lower:
+        if family == "health":
+            return "Feature detail supports over-the-counter medicine comparison"
+        return "Feature detail makes comparison easier"
+    if ("image" in lower or "carousel" in lower) and ("usage" in lower or "education" in lower):
+        return "Image stack adds usage education"
+    if "review" in lower and "confidence" in lower:
+        return "Review depth helps reinforce shopper confidence"
+    if "benefit" in lower and ("communication" in lower or "positioning" in lower):
+        return "Benefit communication is clearer across the PDP"
+    if ("pack" in lower or "spec" in lower) and ("detail" in lower or "understand" in lower):
+        return "Pack and spec detail are easier to understand"
+    return product_phrase
+
+
 def _slide4_has_contamination(text: str, family: str) -> bool:
     normalized = _norm(text)
     raw = text.lower()
@@ -479,15 +536,9 @@ def _rewrite_contaminated_slide4_bullet(text: Any, family: str) -> tuple[Any, bo
     if not _slide4_has_contamination(bullet, family):
         return text, False
 
-    lower = bullet.lower()
-    if "title" in lower and ("clarifies" in lower or "clarity" in lower or "role" in lower):
-        return "Title clarity makes the product role easier to understand", True
-    if "feature" in lower and "comparison" in lower:
-        return f"Feature detail supports {_SLIDE4_PRODUCT_PHRASES.get(family, _SLIDE4_PRODUCT_PHRASES['food'])[0]} comparison", True
-    if ("image" in lower or "carousel" in lower) and ("usage" in lower or "education" in lower):
-        return "Image stack adds usage education", True
-    if "review" in lower and "confidence" in lower:
-        return "Review depth helps reinforce shopper confidence", True
+    direct = _slide4_direct_rewrite(bullet, family)
+    if direct != _SLIDE4_PRODUCT_PHRASES.get(family, _SLIDE4_PRODUCT_PHRASES["food"])[0]:
+        return direct, True
 
     replacement = _slide4_safe_product_phrase(family, bullet)
     cleaned = bullet
@@ -500,7 +551,9 @@ def _rewrite_contaminated_slide4_bullet(text: Any, family: str) -> tuple[Any, bo
             cleaned = re.sub(rf"\b{re.escape(phrase)}\b", replacement, cleaned, flags=re.I)
     cleaned = _normalize_space(cleaned)
     if not cleaned or _slide4_has_contamination(cleaned, family):
-        return text, False
+        cleaned = _slide4_direct_rewrite(bullet, family)
+        if not cleaned or _slide4_has_contamination(cleaned, family):
+            return text, False
     return cleaned, cleaned != bullet
 
 
