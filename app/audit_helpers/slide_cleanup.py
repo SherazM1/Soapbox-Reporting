@@ -216,50 +216,6 @@ _SLIDE4_CONTAMINATED_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"\bmedicine\s+dosing\s+container\b", re.I),
 )
 
-_SLIDE4_SOURCE_TEXT_KEYS = {
-    "category",
-    "Category",
-    "categoryPathName",
-    "product_type",
-    "Product Type",
-    "productType",
-    "subcategory",
-    "product_title",
-    "Product Title",
-    "title",
-    "productTitle",
-    "description",
-    "Description",
-    "description_bullets",
-    "Description Bullets",
-    "descriptionBullets",
-    "key_features",
-    "Key Features",
-    "keyFeatures",
-    "keyFeaturesText",
-}
-
-_SLIDE4_SOURCE_SCOPE_KEYS = {
-    "category",
-    "Category",
-    "categoryPathName",
-    "product_type",
-    "Product Type",
-    "productType",
-    "subcategory",
-    "product_title",
-    "Product Title",
-    "title",
-    "productTitle",
-}
-
-_SLIDE4_SOURCE_CATEGORY_KEYS = {
-    "category",
-    "Category",
-    "categoryPathName",
-}
-
-
 SLIDE_CLEANUP_SEQUENCE: tuple[tuple[str, str, Callable[[Any], Any]], ...] = (
     ("slide6_visibility", "Slide 6", lambda payload: cleanup_slide6(payload)),
     ("slide4_findings", "Slide 4", lambda payload: cleanup_slide4(payload)),
@@ -557,28 +513,6 @@ def _rewrite_contaminated_slide4_bullet(text: Any, family: str) -> tuple[Any, bo
     return cleaned, cleaned != bullet
 
 
-def _replace_slide4_contaminated_text(text: Any, family: str, *, scope_field: bool = False) -> tuple[Any, bool]:
-    if not isinstance(text, str):
-        return text, False
-    original = _normalize_space(text)
-    if not _slide4_has_contamination(original, family):
-        return text, False
-    replacement = _SLIDE4_PRODUCT_PHRASES.get(family, _SLIDE4_PRODUCT_PHRASES["food"])[0]
-    if scope_field:
-        if family == "health":
-            return _SLIDE4_PRODUCT_PHRASES["health"][1], True
-        return replacement, True
-    cleaned = original
-    for pattern in _SLIDE4_CONTAMINATED_PATTERNS:
-        cleaned = pattern.sub(replacement, cleaned)
-    if "/" in cleaned:
-        cleaned = re.sub(r"\b[a-z0-9][a-z0-9\s&-]{1,40}/[a-z0-9][a-z0-9\s/&-]{1,100}", replacement, cleaned, flags=re.I)
-    cleaned = _normalize_space(cleaned)
-    if not cleaned or _slide4_has_contamination(cleaned, family):
-        return text, False
-    return cleaned, cleaned != original
-
-
 def _clean_slide4_bullet_list(values: Any, family: str, changed_terms: list[str]) -> Any:
     if not isinstance(values, list):
         return values
@@ -607,63 +541,6 @@ def _clean_slide4_findings_payload(findings: Any, family: str, changed_terms: li
             if changed:
                 changed_terms.append(_normalize_space(item.get("text")))
                 item["text"] = cleaned
-
-
-def _clean_slide4_source_value(value: Any, family: str, changed_terms: list[str], *, scope_field: bool = False) -> Any:
-    if isinstance(value, str):
-        cleaned, changed = _replace_slide4_contaminated_text(value, family, scope_field=scope_field)
-        if changed:
-            changed_terms.append(_normalize_space(value))
-        return cleaned
-    if isinstance(value, list):
-        return [
-            _clean_slide4_source_value(item, family, changed_terms, scope_field=scope_field)
-            for item in value
-        ]
-    if isinstance(value, tuple):
-        return tuple(
-            _clean_slide4_source_value(item, family, changed_terms, scope_field=scope_field)
-            for item in value
-        )
-    return value
-
-
-def _clean_slide4_source_record(record: Any, family: str, changed_terms: list[str]) -> None:
-    if not isinstance(record, dict):
-        return
-    changed_before = len(changed_terms)
-    for key in list(record.keys()):
-        if key not in _SLIDE4_SOURCE_TEXT_KEYS:
-            continue
-        record[key] = _clean_slide4_source_value(
-            record.get(key),
-            family,
-            changed_terms,
-            scope_field=key in _SLIDE4_SOURCE_SCOPE_KEYS,
-        )
-    if family == "health" and len(changed_terms) > changed_before:
-        for key in _SLIDE4_SOURCE_CATEGORY_KEYS:
-            if key in record:
-                record[key] = "OTC"
-
-
-def _clean_slide4_export_plan_sources(export_plan: dict[str, Any]) -> list[str]:
-    if not isinstance(export_plan, dict):
-        return []
-    family = _detect_cleanup_family(export_plan)
-    changed_terms: list[str] = []
-    product_pairs = export_plan.get("product_slide_pairs")
-    if isinstance(product_pairs, list):
-        for pair in product_pairs:
-            if not isinstance(pair, dict):
-                continue
-            _clean_slide4_source_record(pair.get("pdp_slide"), family, changed_terms)
-    for records_key in ("competitor_records", "competitor_entries", "audit_competitor_entries"):
-        records = export_plan.get(records_key)
-        if isinstance(records, list):
-            for record in records:
-                _clean_slide4_source_record(record, family, changed_terms)
-    return changed_terms
 
 
 def cleanup_slide6(payload: Any) -> Any:
@@ -778,12 +655,6 @@ def cleanup_generated_audit_plan(export_plan: dict[str, Any]) -> tuple[dict[str,
         metadata["warnings"].append(f"Unable to clone generated audit plan: {exc}")
         return export_plan or {}, metadata
 
-    slide4_source_rewrites: list[str] = []
-    try:
-        slide4_source_rewrites = _clean_slide4_export_plan_sources(cleaned_plan)
-    except Exception as exc:
-        metadata["warnings"].append(f"Slide 4 source cleanup skipped: {exc}")
-
     for payload_key, slide_label, cleanup_hook in SLIDE_CLEANUP_SEQUENCE:
         original_payload = cleaned_plan.get(payload_key)
         try:
@@ -793,9 +664,6 @@ def cleanup_generated_audit_plan(export_plan: dict[str, Any]) -> tuple[dict[str,
             cleaned_plan[payload_key] = original_payload
             metadata["slides_skipped"].append(slide_label)
             metadata["warnings"].append(f"{slide_label} cleanup skipped: {exc}")
-
-    if slide4_source_rewrites and "Slide 4" not in metadata["slides_cleaned"]:
-        metadata["slides_cleaned"].append("Slide 4")
 
     metadata["succeeded"] = True
     metadata["active"] = True
