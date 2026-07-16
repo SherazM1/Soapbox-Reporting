@@ -59,6 +59,14 @@ _FAMILY_LABELS: dict[str, str] = {
     "electronics": "electronics essentials",
 }
 
+_SLIDE4_PRODUCT_PHRASES: dict[str, tuple[str, ...]] = {
+    "beauty": ("skin care product", "cleanser", "face cleanser", "face wash"),
+    "health": ("over-the-counter medicine", "antacid", "stomach relief product"),
+    "food": ("food or beverage product", "pantry staple", "beverage item"),
+    "pet": ("pet care product", "pet item", "pet treatment"),
+    "electronics": ("electronics product", "device accessory", "tech accessory"),
+}
+
 _FAMILY_MARKERS: dict[str, tuple[str, ...]] = {
     "beauty": (
         "beauty",
@@ -169,6 +177,19 @@ _BAD_TEXT_MARKERS = (
     "ingredient needs",
 )
 
+_SLIDE4_CONTAMINATED_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(r"\bear\s+vaccaria\s+seeds?\b", re.I),
+    re.compile(r"\bear\s+acupressure\s+seeds?\b", re.I),
+    re.compile(r"\bhealth\s+and\s+medicine\s*/\s*[^,.;|]+", re.I),
+    re.compile(r"\bmulticultural\s+otc\s*/\s*[^,.;|]+", re.I),
+    re.compile(r"\binternational\s+antacids(?:\s+solutions)?\b", re.I),
+    re.compile(r"\b[\w.-]+\.(?:jpg|jpeg|png|webp)\b", re.I),
+    re.compile(r"\b\d{2,5}\s*x\s*\d{2,5}\b", re.I),
+    re.compile(r"\baudience\s+and\s+ingredient\s+needs\b", re.I),
+    re.compile(r"\bbenefit[-\s]+led\s+solutions\b", re.I),
+    re.compile(r"\bingredient\s+needs\b", re.I),
+)
+
 
 SLIDE_CLEANUP_SEQUENCE: tuple[tuple[str, str, Callable[[Any], Any]], ...] = (
     ("slide6_visibility", "Slide 6", lambda payload: cleanup_slide6(payload)),
@@ -222,6 +243,26 @@ def _detect_slide6_family(payload: dict[str, Any], segments: list[Any]) -> str:
     }
     best_family, best_score = max(scores.items(), key=lambda item: item[1])
     return best_family if best_score > 0 else "food"
+
+
+def _detect_cleanup_family(payload: dict[str, Any]) -> str:
+    columns = payload.get("columns", []) if isinstance(payload, dict) else []
+    pseudo_segments: list[Any] = []
+    if isinstance(columns, list):
+        for column in columns:
+            if isinstance(column, dict):
+                pseudo_segments.append(
+                    {
+                        "segment": " ".join(str(item) for item in (column.get("bullets", []) or [])),
+                        "debug": {
+                            "category": column.get("category", ""),
+                            "product_type": column.get("product_type", ""),
+                            "product_title": column.get("product_title", ""),
+                            "findings": column.get("findings", {}),
+                        },
+                    }
+                )
+    return _detect_slide6_family(payload, pseudo_segments)
 
 
 def _is_bad_term(term: str, family: str) -> bool:
@@ -354,6 +395,100 @@ def _clean_slide6_text(value: Any, family: str, field_name: str, client_label: s
     )
 
 
+def _slide4_safe_product_phrase(family: str, bullet: str) -> str:
+    phrases = _SLIDE4_PRODUCT_PHRASES.get(family, _SLIDE4_PRODUCT_PHRASES["food"])
+    lower = bullet.lower()
+    if "comparison" in lower:
+        return "comparison"
+    if "usage" in lower or "education" in lower or "guidance" in lower:
+        return "usage guidance"
+    if "confidence" in lower or "review" in lower or "trust" in lower:
+        return "shopper confidence"
+    if "title" in lower or "role" in lower:
+        return "product role"
+    return phrases[0]
+
+
+def _slide4_has_contamination(text: str, family: str) -> bool:
+    normalized = _norm(text)
+    raw = text.lower()
+    if not normalized:
+        return False
+    if any(pattern.search(text) for pattern in _SLIDE4_CONTAMINATED_PATTERNS):
+        return True
+    if "/" in raw:
+        return True
+    if any(phrase == normalized for phrase in _BUCKET_PHRASES):
+        return True
+    if any((" " in phrase or "-" in phrase) and f" {phrase} " in f" {normalized} " for phrase in _BUCKET_PHRASES):
+        return True
+    if _contains_any(raw, _OFF_CATEGORY_MARKERS.get(family, ())):
+        return True
+    return False
+
+
+def _rewrite_contaminated_slide4_bullet(text: Any, family: str) -> tuple[Any, bool]:
+    if not isinstance(text, str):
+        return text, False
+    bullet = _normalize_space(text)
+    if not _slide4_has_contamination(bullet, family):
+        return text, False
+
+    lower = bullet.lower()
+    if "title" in lower and ("clarifies" in lower or "clarity" in lower or "role" in lower):
+        return "Title clarity makes the product role easier to understand", True
+    if "feature" in lower and "comparison" in lower:
+        return f"Feature detail supports {_SLIDE4_PRODUCT_PHRASES.get(family, _SLIDE4_PRODUCT_PHRASES['food'])[0]} comparison", True
+    if ("image" in lower or "carousel" in lower) and ("usage" in lower or "education" in lower):
+        return "Image stack adds usage education", True
+    if "review" in lower and "confidence" in lower:
+        return "Review depth helps reinforce shopper confidence", True
+
+    replacement = _slide4_safe_product_phrase(family, bullet)
+    cleaned = bullet
+    for pattern in _SLIDE4_CONTAMINATED_PATTERNS:
+        cleaned = pattern.sub(replacement, cleaned)
+    if "/" in cleaned:
+        cleaned = re.sub(r"\b[a-z0-9][a-z0-9\s&-]{1,40}/[a-z0-9][a-z0-9\s/&-]{1,80}", replacement, cleaned, flags=re.I)
+    for phrase in sorted(_BUCKET_PHRASES, key=len, reverse=True):
+        if " " in phrase or "-" in phrase:
+            cleaned = re.sub(rf"\b{re.escape(phrase)}\b", replacement, cleaned, flags=re.I)
+    cleaned = _normalize_space(cleaned)
+    if not cleaned or _slide4_has_contamination(cleaned, family):
+        return text, False
+    return cleaned, cleaned != bullet
+
+
+def _clean_slide4_bullet_list(values: Any, family: str, changed_terms: list[str]) -> Any:
+    if not isinstance(values, list):
+        return values
+    cleaned_values: list[Any] = []
+    for value in values:
+        cleaned, changed = _rewrite_contaminated_slide4_bullet(value, family)
+        if changed:
+            changed_terms.append(_normalize_space(value))
+        cleaned_values.append(cleaned)
+    return cleaned_values
+
+
+def _clean_slide4_findings_payload(findings: Any, family: str, changed_terms: list[str]) -> None:
+    if not isinstance(findings, dict):
+        return
+    if isinstance(findings.get("slide4_bullets"), list):
+        findings["slide4_bullets"] = _clean_slide4_bullet_list(findings.get("slide4_bullets"), family, changed_terms)
+    for list_key in ("strengths", "opportunities"):
+        items = findings.get(list_key)
+        if not isinstance(items, list):
+            continue
+        for item in items:
+            if not isinstance(item, dict) or "text" not in item:
+                continue
+            cleaned, changed = _rewrite_contaminated_slide4_bullet(item.get("text"), family)
+            if changed:
+                changed_terms.append(_normalize_space(item.get("text")))
+                item["text"] = cleaned
+
+
 def cleanup_slide6(payload: Any) -> Any:
     if not isinstance(payload, dict):
         return payload
@@ -402,7 +537,44 @@ def cleanup_slide6(payload: Any) -> Any:
 
 
 def cleanup_slide4(payload: Any) -> Any:
-    return payload
+    if not isinstance(payload, dict):
+        return payload
+    try:
+        cleaned_payload = deepcopy(payload)
+        family = _detect_cleanup_family(cleaned_payload)
+        changed_terms: list[str] = []
+
+        columns = cleaned_payload.get("columns")
+        if isinstance(columns, list):
+            for column in columns:
+                if not isinstance(column, dict):
+                    continue
+                if isinstance(column.get("bullets"), list):
+                    column["bullets"] = _clean_slide4_bullet_list(column.get("bullets"), family, changed_terms)
+                _clean_slide4_findings_payload(column.get("findings"), family, changed_terms)
+
+        slide4_findings = cleaned_payload.get("slide4_findings")
+        if isinstance(slide4_findings, dict):
+            for findings in slide4_findings.values():
+                _clean_slide4_findings_payload(findings, family, changed_terms)
+
+        debug = cleaned_payload.get("debug")
+        if isinstance(debug, dict):
+            final_bullets = debug.get("final_bullets")
+            if isinstance(final_bullets, dict):
+                for key, bullets in list(final_bullets.items()):
+                    final_bullets[key] = _clean_slide4_bullet_list(bullets, family, changed_terms)
+            debug["slide4_cleanup"] = {
+                "detected_category_family": family,
+                "rewritten_bullet_count": len(changed_terms),
+                "rewritten_bullets": changed_terms,
+            }
+        warnings = cleaned_payload.get("warnings")
+        if isinstance(warnings, list) and changed_terms:
+            warnings.append("Slide 4 cleanup replaced off-scope product terms after generation.")
+        return cleaned_payload
+    except Exception:
+        return payload
 
 
 def cleanup_slide3(payload: Any) -> Any:
