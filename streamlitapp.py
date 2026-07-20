@@ -76,17 +76,21 @@ def fmt_mdy(d: date) -> str:
 VIEW_HOME = "home"
 VIEW_CONTENT_REPORTING = "content_reporting"
 VIEW_CONTENT_AUDITING = "content_auditing"
+VIEW_PHOTOGRAPHY_PRICING = "photography_pricing"
 
 HUB_QUERY_TO_VIEW = {
     "reporting": VIEW_CONTENT_REPORTING,
     "auditing": VIEW_CONTENT_AUDITING,
+    "pricing": VIEW_PHOTOGRAPHY_PRICING,
     VIEW_CONTENT_REPORTING: VIEW_CONTENT_REPORTING,
     VIEW_CONTENT_AUDITING: VIEW_CONTENT_AUDITING,
+    VIEW_PHOTOGRAPHY_PRICING: VIEW_PHOTOGRAPHY_PRICING,
 }
 
 VIEW_TO_HUB_QUERY = {
     VIEW_CONTENT_REPORTING: VIEW_CONTENT_REPORTING,
     VIEW_CONTENT_AUDITING: VIEW_CONTENT_AUDITING,
+    VIEW_PHOTOGRAPHY_PRICING: VIEW_PHOTOGRAPHY_PRICING,
 }
 
 STYLE_GUIDE_AUTO_LABEL = "Auto / Detected"
@@ -108,6 +112,10 @@ def go_reporting() -> None:
 
 def go_auditing() -> None:
     set_hub_view(VIEW_CONTENT_AUDITING)
+
+
+def go_photography_pricing() -> None:
+    set_hub_view(VIEW_PHOTOGRAPHY_PRICING)
 
 
 def render_branding() -> None:
@@ -217,7 +225,7 @@ def render_home() -> None:
         unsafe_allow_html=True,
     )
 
-    st.title("Soapbox eCommerce and Content Hub")
+    st.title("Soapbox Content and Photography Hub")
     st.markdown('<div class="hub-subtitle">Choose a workflow to continue.</div>', unsafe_allow_html=True)
     st.markdown(
         """
@@ -232,6 +240,12 @@ def render_home() -> None:
             <span class="hub-card-arrow">↗</span>
             <h3>Content Auditing</h3>
             <p>Open the audit workspace for intake, findings, and recommendations.</p>
+            <div class="hub-card-footer"><span class="hub-open-btn">Open</span></div>
+          </a>
+          <a class="hub-link-card" href="?hub=photography_pricing">
+            <span class="hub-card-arrow">&#8599;</span>
+            <h3>Photography Pricing</h3>
+            <p>Estimate Apparel photography pricing from locked internal rates.</p>
             <div class="hub-card-footer"><span class="hub-open-btn">Open</span></div>
           </a>
         </div>
@@ -3930,6 +3944,10 @@ def main() -> None:
         render_content_reporting()
     elif current == VIEW_CONTENT_AUDITING:
         render_content_auditing()
+    elif current == VIEW_PHOTOGRAPHY_PRICING:
+        from app.photography_pricing.apparel_estimator import render_photography_pricing
+
+        render_photography_pricing()
     else:
         st.session_state["hub_view"] = VIEW_HOME
         render_home()
