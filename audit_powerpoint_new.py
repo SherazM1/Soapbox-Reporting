@@ -578,6 +578,195 @@ def _slide4_content_blob(facts: dict[str, Any]) -> str:
     ).lower()
 
 
+SLIDE4_SCOPE_FALLBACKS: dict[str, dict[str, tuple[str, ...]]] = {
+    "beauty": {
+        "product": ("face cleanser", "face wash", "hydrating cleanser", "gentle cleanser"),
+        "family": ("skin care product", "beauty product", "facial care product"),
+    },
+    "health": {
+        "product": ("antacid", "stomach relief product", "heartburn relief product", "acid reducer"),
+        "family": ("over-the-counter medicine", "OTC product", "health product"),
+    },
+    "food": {
+        "product": ("peanut butter", "fruit spread", "protein shake", "beverage item"),
+        "family": ("food product", "beverage product", "pantry staple"),
+    },
+    "pet": {
+        "product": ("dog treats", "cat treats", "flea treatment", "pet treatment"),
+        "family": ("pet care product", "pet product", "pet item"),
+    },
+    "electronics": {
+        "product": ("phone charger", "wireless earbuds", "bluetooth speaker", "tech accessory"),
+        "family": ("electronics product", "tech product", "device accessory"),
+    },
+    "generic": {
+        "product": ("the product",),
+        "family": ("the product",),
+    },
+}
+
+
+SLIDE4_SCOPE_TERMS: dict[str, tuple[str, ...]] = {
+    "beauty": (
+        "beauty",
+        "skin",
+        "facial",
+        "face",
+        "cleanser",
+        "wash",
+        "hydrating",
+        "gentle",
+        "cosmetic",
+        "fragrance",
+    ),
+    "health": (
+        "health",
+        "otc",
+        "over the counter",
+        "over-the-counter",
+        "medicine",
+        "antacid",
+        "heartburn",
+        "acid reducer",
+        "stomach",
+        "relief",
+        "pharmacy",
+        "tablet",
+        "capsule",
+    ),
+    "food": (
+        "food",
+        "beverage",
+        "pantry",
+        "snack",
+        "breakfast",
+        "recipe",
+        "spread",
+        "butter",
+        "jam",
+        "jelly",
+        "preserve",
+        "protein shake",
+        "seasoning",
+        "spice",
+    ),
+    "pet": ("pet", "dog", "cat", "flea", "treat", "animal"),
+    "electronics": (
+        "electronics",
+        "device",
+        "charger",
+        "battery",
+        "headphone",
+        "earbud",
+        "speaker",
+        "bluetooth",
+        "tech",
+    ),
+}
+
+
+SLIDE4_PRODUCT_FALLBACK_SIGNALS: dict[str, tuple[tuple[tuple[str, ...], str], ...]] = {
+    "beauty": (
+        (("face wash",), "face wash"),
+        (("hydrating", "cleanser"), "hydrating cleanser"),
+        (("gentle", "cleanser"), "gentle cleanser"),
+        (("cleanser",), "face cleanser"),
+    ),
+    "health": (
+        (("antacid",), "antacid"),
+        (("heartburn",), "heartburn relief product"),
+        (("acid reducer",), "acid reducer"),
+        (("stomach", "relief"), "stomach relief product"),
+    ),
+    "food": (
+        (("peanut butter",), "peanut butter"),
+        (("fruit spread",), "fruit spread"),
+        (("protein shake",), "protein shake"),
+        (("beverage",), "beverage item"),
+    ),
+    "pet": (
+        (("dog", "treat"), "dog treats"),
+        (("cat", "treat"), "cat treats"),
+        (("flea",), "flea treatment"),
+    ),
+    "electronics": (
+        (("phone", "charger"), "phone charger"),
+        (("wireless", "earbud"), "wireless earbuds"),
+        (("bluetooth", "speaker"), "bluetooth speaker"),
+        (("charger",), "tech accessory"),
+    ),
+}
+
+
+SLIDE4_SCOPE_NOISE_RE = re.compile(
+    r"\b(?:department|departments|category|categories|taxonomy|breadcrumb|aisle|shelf|"
+    r"miscellaneous|other|variety|assorted|mixed)\b",
+    re.I,
+)
+SLIDE4_SCOPE_METADATA_RE = re.compile(r"\b[\w.-]+\.(?:jpg|jpeg|png|webp)\b|\b\d{3,5}\s*x\s*\d{3,5}\b", re.I)
+
+
+def _slide4_scope_family(facts: dict[str, Any]) -> str:
+    category_blob = " ".join(
+        _safe_text(value).lower()
+        for value in (facts.get("category"), facts.get("product_type"), facts.get("title"))
+        if _safe_text(value)
+    )
+    if any(term in category_blob for term in SLIDE4_SCOPE_TERMS["beauty"]):
+        return "beauty"
+    if any(term in category_blob for term in SLIDE4_SCOPE_TERMS["health"]):
+        return "health"
+    if any(term in category_blob for term in SLIDE4_SCOPE_TERMS["food"]):
+        return "food"
+    if any(term in category_blob for term in SLIDE4_SCOPE_TERMS["pet"]):
+        return "pet"
+    if any(term in category_blob for term in SLIDE4_SCOPE_TERMS["electronics"]):
+        return "electronics"
+    return "generic"
+
+
+def _slide4_phrase_allowed_for_family(phrase: str, family: str) -> bool:
+    normalized = _safe_text(phrase).lower().replace("&", "and")
+    if not normalized:
+        return False
+    if SLIDE4_SCOPE_METADATA_RE.search(normalized) or SLIDE4_SCOPE_NOISE_RE.search(normalized):
+        return False
+    if len(normalized.split()) > 5:
+        return False
+    if family == "generic":
+        return not any(term in normalized for term in ("vaccaria", "mixed spices", "seasoning"))
+    allowed_terms = SLIDE4_SCOPE_TERMS.get(family, ())
+    if any(term in normalized for term in allowed_terms):
+        return True
+    for other_family, terms in SLIDE4_SCOPE_TERMS.items():
+        if other_family != family and any(term in normalized for term in terms):
+            return False
+    return False
+
+
+def _slide4_product_fallback(facts: dict[str, Any], family: str, *, prefer_generic: bool = False) -> str:
+    if prefer_generic or family == "generic":
+        return "the product"
+    blob = _slide4_content_blob(facts)
+    for required_terms, fallback in SLIDE4_PRODUCT_FALLBACK_SIGNALS.get(family, ()):
+        if all(term in blob for term in required_terms):
+            return fallback
+    family_fallbacks = SLIDE4_SCOPE_FALLBACKS.get(family, SLIDE4_SCOPE_FALLBACKS["generic"])
+    return family_fallbacks["family"][0]
+
+
+def _slide4_scope_safe_phrase(phrase: str, facts: dict[str, Any], *, prefer_generic: bool = False) -> str:
+    family = _slide4_scope_family(facts)
+    normalized = re.sub(r"\s+", " ", _safe_text(phrase).lower().replace("&", "and")).strip(" .;")
+    if normalized.endswith("s") and not normalized.endswith(("ss", "ics")):
+        singular = normalized[:-1]
+    else:
+        singular = normalized
+    if not prefer_generic and _slide4_phrase_allowed_for_family(singular, family):
+        return singular
+    return _slide4_product_fallback(facts, family, prefer_generic=prefer_generic)
+
+
 def _slide4_product_phrase(facts: dict[str, Any]) -> str:
     content_blob = _slide4_content_blob(facts)
     if _has_any(content_blob, "hazelnut", "cocoa", "nutella"):
@@ -588,9 +777,9 @@ def _slide4_product_phrase(facts: dict[str, Any]) -> str:
         return "almond butter"
     product_type = _safe_text(facts.get("product_type")).lower()
     if product_type:
-        return product_type.replace("&", "and")
+        return _slide4_scope_safe_phrase(product_type, facts)
     category = _safe_text(facts.get("category")).split("/")[-1].lower()
-    return category.replace("&", "and") or "product"
+    return _slide4_scope_safe_phrase(category.replace("&", "and"), facts) or "product"
 
 
 def _slide4_content_phrases(facts: dict[str, Any]) -> dict[str, str]:
@@ -685,7 +874,7 @@ def _slide4_product_phrase_for_identity(facts: dict[str, Any], identity: dict[st
             product = product[:-1]
         if product == "facial cleanser":
             return "facial cleanser"
-        return product
+        return _slide4_scope_safe_phrase(product, facts)
     return _slide4_product_phrase(facts)
 
 
@@ -701,8 +890,12 @@ def _slide4_category_context(facts: dict[str, Any], identity: dict[str, Any]) ->
     ).lower()
     if any(term in blob for term in ("beauty", "skin", "facial", "cleanser", "cosmetic")):
         return "beauty"
+    if any(term in blob for term in ("health", "otc", "over the counter", "over-the-counter", "medicine", "antacid", "heartburn", "acid reducer", "stomach relief", "pharmacy")):
+        return "health"
     if any(term in blob for term in ("food", "pantry", "snack", "beverage", "spread", "butter", "jam", "jell")):
         return "food"
+    if any(term in blob for term in ("pet", "dog", "cat", "flea", "animal")):
+        return "pet"
     if any(term in blob for term in ("electronics", "device", "charger", "battery", "headphone", "speaker")):
         return "electronics"
     return "general"
@@ -712,7 +905,9 @@ def _slide4_language_allowed(text: str, category_context: str) -> tuple[bool, st
     normalized = _safe_text(text).lower()
     invalid_by_context = {
         "beauty": ("nutrition", "protein", "breakfast", "snack", "recipe", "serving", "pantry"),
+        "health": ("breakfast", "snack", "recipe", "serving", "pantry", "spice", "spices", "seasoning", "vaccaria", "pet treat", "charger", "speaker"),
         "food": ("regimen", "skin-care", "skin care", "dermatologist", "clinical routine", "device setup"),
+        "pet": ("breakfast", "pantry", "skin care", "antacid", "heartburn", "charger", "speaker"),
         "electronics": ("ingredient", "ingredients", "formula", "nutrition", "regimen", "skin"),
     }
     for term in invalid_by_context.get(category_context, ()):
@@ -731,6 +926,38 @@ def _slide4_family_for_cue(cue_key: str) -> str:
     if cue_key in {"visual_identity", "review_or_trust_signals"}:
         return "trust_visual"
     return "education_storytelling"
+
+
+def _slide4_family_phrase_for_context(category_context: str, product_context: str) -> str:
+    if product_context and product_context not in {"the product", "product"}:
+        return product_context
+    family = category_context if category_context in SLIDE4_SCOPE_FALLBACKS else "generic"
+    return SLIDE4_SCOPE_FALLBACKS[family]["family"][0]
+
+
+def _slide4_safe_bullet_replacement(
+    *,
+    dimension: str,
+    family: str,
+    bullet_type: str,
+    category_context: str,
+    product_context: str,
+) -> str:
+    scoped_phrase = _slide4_family_phrase_for_context(category_context, product_context)
+    dimension_blob = f"{dimension} {family} {bullet_type}".lower()
+    if any(term in dimension_blob for term in ("title", "positioning", "product_positioning")):
+        if category_context in {"beauty", "health", "food", "pet", "electronics"} and scoped_phrase != "the product":
+            return f"Title can name the {scoped_phrase} more directly"
+        return "Title clarity makes the product role easier to understand"
+    if any(term in dimension_blob for term in ("detail", "pack", "spec", "feature", "formula", "comparison")):
+        if category_context in {"beauty", "health", "food", "pet", "electronics"} and scoped_phrase != "the product":
+            return f"Feature detail supports {scoped_phrase} comparison"
+        return "Feature detail makes comparison easier"
+    if any(term in dimension_blob for term in ("usage", "storytelling", "education", "visual", "image")):
+        return "Image stack adds usage education" if "image" in dimension_blob or "visual" in dimension_blob else "Usage guidance makes fit easier to understand"
+    if any(term in dimension_blob for term in ("review", "trust", "confidence")):
+        return "Review depth helps reinforce shopper confidence"
+    return "Benefit communication is clearer across the PDP"
 
 
 def _slide4_add_candidate(
@@ -755,7 +982,17 @@ def _slide4_add_candidate(
     allowed, guard_reason = _slide4_language_allowed(clean, category_context)
     if not allowed:
         rejected.append({"text": clean, "reason": guard_reason})
-        return
+        clean = _slide4_safe_bullet_replacement(
+            dimension=dimension,
+            family=family,
+            bullet_type=bullet_type,
+            category_context=category_context,
+            product_context=product_context,
+        )
+        allowed, guard_reason = _slide4_language_allowed(clean, category_context)
+        if not allowed:
+            rejected.append({"text": clean, "reason": guard_reason})
+            return
     candidates.append(
         {
             "text": clean,
