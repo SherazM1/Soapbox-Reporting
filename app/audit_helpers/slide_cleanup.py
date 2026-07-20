@@ -67,6 +67,34 @@ _SLIDE4_PRODUCT_PHRASES: dict[str, tuple[str, ...]] = {
     "electronics": ("electronics product", "device accessory", "tech accessory"),
 }
 
+_SLIDE4_FALLBACK_LADDER: dict[str, dict[int, tuple[str, ...]]] = {
+    "beauty": {
+        1: ("face cleanser", "face wash", "hydrating cleanser", "gentle cleanser"),
+        2: ("skin care product", "beauty product", "facial care product"),
+        3: ("the product", "the PDP", "product role", "shopper confidence", "usage guidance", "comparison", "benefit communication"),
+    },
+    "health": {
+        1: ("antacid", "stomach relief product", "heartburn relief product", "acid reducer"),
+        2: ("over-the-counter medicine", "OTC product", "health product"),
+        3: ("the product", "the PDP", "product role", "shopper confidence", "usage guidance", "comparison", "benefit communication"),
+    },
+    "food": {
+        1: ("peanut butter", "fruit spread", "protein shake", "beverage item"),
+        2: ("food product", "beverage product", "pantry staple"),
+        3: ("the product", "the PDP", "product role", "shopper confidence", "usage guidance", "comparison", "benefit communication"),
+    },
+    "pet": {
+        1: ("dog treats", "cat treats", "flea treatment", "pet treatment"),
+        2: ("pet care product", "pet product", "pet item"),
+        3: ("the product", "the PDP", "product role", "shopper confidence", "usage guidance", "comparison", "benefit communication"),
+    },
+    "electronics": {
+        1: ("phone charger", "wireless earbuds", "bluetooth speaker", "tech accessory"),
+        2: ("electronics product", "tech product", "device accessory"),
+        3: ("the product", "the PDP", "product role", "shopper confidence", "usage guidance", "comparison", "benefit communication"),
+    },
+}
+
 _SLIDE4_GENERIC_SAFE_PHRASES = {
     "the product",
     "the PDP",
@@ -423,7 +451,6 @@ def _clean_slide6_text(value: Any, family: str, field_name: str, client_label: s
 
 
 def _slide4_safe_product_phrase(family: str, bullet: str) -> str:
-    phrases = _SLIDE4_PRODUCT_PHRASES.get(family, _SLIDE4_PRODUCT_PHRASES["food"])
     lower = bullet.lower()
     if "comparison" in lower:
         return "comparison"
@@ -433,38 +460,90 @@ def _slide4_safe_product_phrase(family: str, bullet: str) -> str:
         return "shopper confidence"
     if "title" in lower or "role" in lower:
         return "product role"
-    return phrases[0]
+    return _SLIDE4_FALLBACK_LADDER.get(family, _SLIDE4_FALLBACK_LADDER["food"])[3][0]
 
 
-def _slide4_family_safe_phrase(family: str, phrase: str) -> str:
+def _slide4_allowed_phrase(family: str, phrase: str, confidence_level: int) -> str:
     if phrase in _SLIDE4_GENERIC_SAFE_PHRASES:
         return phrase
-    allowed = _SLIDE4_PRODUCT_PHRASES.get(family, _SLIDE4_PRODUCT_PHRASES["food"])
+    ladder = _SLIDE4_FALLBACK_LADDER.get(family, _SLIDE4_FALLBACK_LADDER["food"])
+    allowed = tuple(item for level in range(confidence_level, 4) for item in ladder.get(level, ()))
     return phrase if phrase in allowed else allowed[0]
 
 
-def _slide4_direct_rewrite(bullet: str, family: str) -> str:
+def _slide4_payload_text(payload: dict[str, Any]) -> str:
+    parts: list[str] = []
+    columns = payload.get("columns")
+    if isinstance(columns, list):
+        for column in columns:
+            if not isinstance(column, dict):
+                continue
+            parts.extend(_text(item) for item in (column.get("bullets", []) or []))
+            parts.append(_text(column.get("findings", {})))
+    if isinstance(payload.get("slide4_findings"), dict):
+        parts.append(_text(payload.get("slide4_findings")))
+    debug = payload.get("debug")
+    if isinstance(debug, dict):
+        parts.append(_text(debug.get("final_bullets", {})))
+    return _norm(" ".join(parts))
+
+
+def _slide4_confidence_level(payload: dict[str, Any], family: str) -> int:
+    payload_text = _slide4_payload_text(payload)
+    if not payload_text:
+        return 3
+    ladder = _SLIDE4_FALLBACK_LADDER.get(family, _SLIDE4_FALLBACK_LADDER["food"])
+    product_type_hits = {
+        phrase
+        for phrase in ladder[1]
+        if _norm(phrase) and re.search(rf"\b{re.escape(_norm(phrase))}\b", payload_text)
+    }
+    family_hits = {
+        phrase
+        for phrase in ladder[2]
+        if _norm(phrase) and re.search(rf"\b{re.escape(_norm(phrase))}\b", payload_text)
+    }
+    if len(product_type_hits) >= 2:
+        return 1
+    if product_type_hits or family_hits:
+        return 2
+    return 3
+
+
+def _slide4_phrase(family: str, confidence_level: int, level: int, index: int = 0) -> str:
+    ladder = _SLIDE4_FALLBACK_LADDER.get(family, _SLIDE4_FALLBACK_LADDER["food"])
+    usable_level = max(confidence_level, level)
+    values = ladder.get(usable_level) or ladder[3]
+    return values[min(index, len(values) - 1)]
+
+
+def _slide4_direct_rewrite(bullet: str, family: str, confidence_level: int) -> str:
     lower = bullet.lower()
-    product_phrase = _slide4_family_safe_phrase(family, _SLIDE4_PRODUCT_PHRASES.get(family, _SLIDE4_PRODUCT_PHRASES["food"])[0])
     if "title" in lower and ("can name" in lower or "more directly" in lower):
-        if family == "health":
-            return "Title can name the over-the-counter medicine more directly"
+        if confidence_level <= 2:
+            return f"Title can name the {_slide4_phrase(family, confidence_level, 2)} more directly"
         return "Title can name the product more directly"
     if "title" in lower and ("clarifies" in lower or "clarity" in lower or "role" in lower):
         return "Title clarity makes the product role easier to understand"
     if "feature" in lower and "comparison" in lower:
-        if family == "health":
-            return "Feature detail supports over-the-counter medicine comparison"
+        if confidence_level == 1:
+            return f"Feature detail supports {_slide4_phrase(family, confidence_level, 1)} comparison"
+        if confidence_level == 2:
+            return f"Feature detail supports {_slide4_phrase(family, confidence_level, 2)} comparison"
         return "Feature detail makes comparison easier"
     if ("image" in lower or "carousel" in lower) and ("usage" in lower or "education" in lower):
+        if confidence_level <= 2:
+            return f"Image stack extends {_slide4_phrase(family, confidence_level, 2)} usage education"
         return "Image stack adds usage education"
     if "review" in lower and "confidence" in lower:
+        if confidence_level <= 2:
+            return f"Review depth supports {_slide4_phrase(family, confidence_level, 2)} confidence"
         return "Review depth helps reinforce shopper confidence"
     if "benefit" in lower and ("communication" in lower or "positioning" in lower):
         return "Benefit communication is clearer across the PDP"
     if ("pack" in lower or "spec" in lower) and ("detail" in lower or "understand" in lower):
         return "Pack and spec detail are easier to understand"
-    return product_phrase
+    return _slide4_phrase(family, confidence_level, 3)
 
 
 def _slide4_has_contamination(text: str, family: str) -> bool:
@@ -485,15 +564,15 @@ def _slide4_has_contamination(text: str, family: str) -> bool:
     return False
 
 
-def _rewrite_contaminated_slide4_bullet(text: Any, family: str) -> tuple[Any, bool]:
+def _rewrite_contaminated_slide4_bullet(text: Any, family: str, confidence_level: int) -> tuple[Any, bool]:
     if not isinstance(text, str):
         return text, False
     bullet = _normalize_space(text)
     if not _slide4_has_contamination(bullet, family):
         return text, False
 
-    direct = _slide4_direct_rewrite(bullet, family)
-    if direct != _SLIDE4_PRODUCT_PHRASES.get(family, _SLIDE4_PRODUCT_PHRASES["food"])[0]:
+    direct = _slide4_direct_rewrite(bullet, family, confidence_level)
+    if direct != _slide4_phrase(family, confidence_level, 3):
         return direct, True
 
     replacement = _slide4_safe_product_phrase(family, bullet)
@@ -507,29 +586,31 @@ def _rewrite_contaminated_slide4_bullet(text: Any, family: str) -> tuple[Any, bo
             cleaned = re.sub(rf"\b{re.escape(phrase)}\b", replacement, cleaned, flags=re.I)
     cleaned = _normalize_space(cleaned)
     if not cleaned or _slide4_has_contamination(cleaned, family):
-        cleaned = _slide4_direct_rewrite(bullet, family)
+        cleaned = _slide4_direct_rewrite(bullet, family, confidence_level)
         if not cleaned or _slide4_has_contamination(cleaned, family):
             return text, False
     return cleaned, cleaned != bullet
 
 
-def _clean_slide4_bullet_list(values: Any, family: str, changed_terms: list[str]) -> Any:
+def _clean_slide4_bullet_list(values: Any, family: str, confidence_level: int, changed_terms: list[str]) -> Any:
     if not isinstance(values, list):
         return values
     cleaned_values: list[Any] = []
     for value in values:
-        cleaned, changed = _rewrite_contaminated_slide4_bullet(value, family)
+        cleaned, changed = _rewrite_contaminated_slide4_bullet(value, family, confidence_level)
         if changed:
             changed_terms.append(_normalize_space(value))
         cleaned_values.append(cleaned)
     return cleaned_values
 
 
-def _clean_slide4_findings_payload(findings: Any, family: str, changed_terms: list[str]) -> None:
+def _clean_slide4_findings_payload(findings: Any, family: str, confidence_level: int, changed_terms: list[str]) -> None:
     if not isinstance(findings, dict):
         return
     if isinstance(findings.get("slide4_bullets"), list):
-        findings["slide4_bullets"] = _clean_slide4_bullet_list(findings.get("slide4_bullets"), family, changed_terms)
+        findings["slide4_bullets"] = _clean_slide4_bullet_list(
+            findings.get("slide4_bullets"), family, confidence_level, changed_terms
+        )
     for list_key in ("strengths", "opportunities"):
         items = findings.get(list_key)
         if not isinstance(items, list):
@@ -537,7 +618,7 @@ def _clean_slide4_findings_payload(findings: Any, family: str, changed_terms: li
         for item in items:
             if not isinstance(item, dict) or "text" not in item:
                 continue
-            cleaned, changed = _rewrite_contaminated_slide4_bullet(item.get("text"), family)
+            cleaned, changed = _rewrite_contaminated_slide4_bullet(item.get("text"), family, confidence_level)
             if changed:
                 changed_terms.append(_normalize_space(item.get("text")))
                 item["text"] = cleaned
@@ -596,6 +677,7 @@ def cleanup_slide4(payload: Any) -> Any:
     try:
         cleaned_payload = deepcopy(payload)
         family = _detect_cleanup_family(cleaned_payload)
+        confidence_level = _slide4_confidence_level(cleaned_payload, family)
         changed_terms: list[str] = []
 
         columns = cleaned_payload.get("columns")
@@ -604,22 +686,25 @@ def cleanup_slide4(payload: Any) -> Any:
                 if not isinstance(column, dict):
                     continue
                 if isinstance(column.get("bullets"), list):
-                    column["bullets"] = _clean_slide4_bullet_list(column.get("bullets"), family, changed_terms)
-                _clean_slide4_findings_payload(column.get("findings"), family, changed_terms)
+                    column["bullets"] = _clean_slide4_bullet_list(
+                        column.get("bullets"), family, confidence_level, changed_terms
+                    )
+                _clean_slide4_findings_payload(column.get("findings"), family, confidence_level, changed_terms)
 
         slide4_findings = cleaned_payload.get("slide4_findings")
         if isinstance(slide4_findings, dict):
             for findings in slide4_findings.values():
-                _clean_slide4_findings_payload(findings, family, changed_terms)
+                _clean_slide4_findings_payload(findings, family, confidence_level, changed_terms)
 
         debug = cleaned_payload.get("debug")
         if isinstance(debug, dict):
             final_bullets = debug.get("final_bullets")
             if isinstance(final_bullets, dict):
                 for key, bullets in list(final_bullets.items()):
-                    final_bullets[key] = _clean_slide4_bullet_list(bullets, family, changed_terms)
+                    final_bullets[key] = _clean_slide4_bullet_list(bullets, family, confidence_level, changed_terms)
             debug["slide4_cleanup"] = {
                 "detected_category_family": family,
+                "confidence_level": confidence_level,
                 "rewritten_bullet_count": len(changed_terms),
                 "rewritten_bullets": changed_terms,
             }
