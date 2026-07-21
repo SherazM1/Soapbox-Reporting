@@ -222,3 +222,18 @@ def render_photography_pricing() -> None:
         hide_index=True,
         use_container_width=True,
     )
+
+    if st.button("Generate PDF", key="photo_pricing_generate_pdf"):
+        from app.photography_pricing.pdf_generator import generate_page2_pricing_pdf
+
+        st.session_state["photo_pricing_generated_pdf"] = generate_page2_pricing_pdf(quote)
+
+    generated_pdf = st.session_state.get("photo_pricing_generated_pdf")
+    if generated_pdf:
+        st.download_button(
+            "Download Generated PDF",
+            data=generated_pdf,
+            file_name="photography_pricing_quote.pdf",
+            mime="application/pdf",
+            key="photo_pricing_download_pdf",
+        )
