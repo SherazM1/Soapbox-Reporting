@@ -23,88 +23,138 @@ def _money(value: float) -> str:
 
 
 def _quantity_input(label: str, key: str, help_text: str | None = None) -> int:
-    return int(st.number_input(label, min_value=0, step=1, value=0, key=key, help=help_text))
+    return int(
+        st.number_input(
+            label,
+            min_value=0,
+            step=1,
+            value=0,
+            key=key,
+            help=help_text,
+            label_visibility="collapsed",
+        )
+    )
 
 
 def _hours_input(label: str, key: str) -> float:
-    return float(st.number_input(label, min_value=0.0, step=0.25, value=0.0, key=key, format="%.2f"))
+    return float(
+        st.number_input(
+            label,
+            min_value=0.0,
+            step=0.25,
+            value=0.0,
+            key=key,
+            format="%.2f",
+            label_visibility="collapsed",
+        )
+    )
+
+
+def _rate_note(value: float, unit_label: str) -> None:
+    st.caption(f"Locked rate: {_money(value)} {unit_label}")
+
+
+def _field_label(text: str) -> None:
+    st.markdown(f"**{text}**")
 
 
 def _line_table_rows(quote_payload: dict[str, Any]) -> list[dict[str, Any]]:
+    display_labels = {
+        "On-model image": "On-Model Image",
+        "On-model detail": "On-Model Detail",
+        "Laydown silo": "Laydown Silo",
+        "Color corrections from existing images": "Color Corrections From Existing Images",
+        "Post production hourly time": "Post Production Hourly Time",
+        "Model hours": "Model Hours",
+        "Model fitting": "Model Fitting",
+        "AI generation markup": "AI Generation Markup",
+        "Account management": "Account Management",
+    }
     rows = []
     for line in quote_payload["line_items"]:
         rows.append(
             {
-                "Item": line["label"],
+                "Item": display_labels.get(line["label"], line["label"]),
                 "Quantity": line["quantity"],
-                "Locked base rate": _money(line["unit_price"]),
-                "Row total": _money(line["total"]),
+                "Locked Base Rate": _money(line["unit_price"]),
+                "Row Total": _money(line["total"]),
             }
         )
     return rows
 
 
 def _render_apparel_inputs() -> ApparelInputs:
-    st.subheader("Apparel Estimator")
-
     image_col, production_col = st.columns(2)
 
     with image_col:
-        st.markdown("#### Image services")
+        st.markdown("#### Image Services")
+        _field_label("On-Model Image")
         on_model_image_quantity = _quantity_input(
-            "On-model image quantity",
+            "On-Model Image",
             "photo_pricing_on_model_image_quantity",
         )
-        st.caption(f"Locked rate: {_money(ON_MODEL_IMAGE_RATE)} per image")
+        _rate_note(ON_MODEL_IMAGE_RATE, "per image")
 
+        _field_label("On-Model Detail")
         on_model_detail_quantity = _quantity_input(
-            "On-model detail quantity",
+            "On-Model Detail",
             "photo_pricing_on_model_detail_quantity",
         )
-        st.caption(f"Locked rate: {_money(ON_MODEL_DETAIL_RATE)} per image")
+        _rate_note(ON_MODEL_DETAIL_RATE, "per image")
 
+        _field_label("Laydown Silo Type")
         laydown_silo_type = st.selectbox(
-            "Laydown silo type",
+            "Laydown Silo Type",
             ["else/default", "shoes"],
+            format_func=lambda value: "Shoes" if value == "shoes" else "Else / Default",
             key="photo_pricing_laydown_silo_type",
+            label_visibility="collapsed",
         )
+        _field_label("Laydown Silo")
         laydown_silo_quantity = _quantity_input(
-            "Laydown silo quantity",
+            "Laydown Silo",
             "photo_pricing_laydown_silo_quantity",
         )
-        st.caption(f"Locked rate: {_money(laydown_silo_rate(laydown_silo_type))} per image")
+        _rate_note(laydown_silo_rate(laydown_silo_type), "per image")
 
+        _field_label("Color Corrections From Existing Images")
         color_corrections_quantity = _quantity_input(
-            "Color corrections from existing images quantity",
+            "Color Corrections From Existing Images",
             "photo_pricing_color_corrections_quantity",
         )
-        st.caption(f"Locked rate: {_money(COLOR_CORRECTIONS_RATE)} per image")
+        _rate_note(COLOR_CORRECTIONS_RATE, "per image")
 
+        _field_label("AI Generation Markup")
         ai_generation_quantity = _quantity_input(
-            "AI generation markup quantity",
+            "AI Generation Markup",
             "photo_pricing_ai_generation_quantity",
         )
-        st.caption(f"Locked rate: {_money(AI_GENERATION_MARKUP_RATE)} per image")
+        _rate_note(AI_GENERATION_MARKUP_RATE, "per image")
 
     with production_col:
-        st.markdown("#### Production services")
+        st.markdown("#### Production Services")
+        _field_label("Post Production Hourly Time")
         post_production_hours = _hours_input(
-            "Post production hourly time",
+            "Post Production Hourly Time",
             "photo_pricing_post_production_hours",
         )
-        st.caption(f"Locked rate: {_money(POST_PRODUCTION_HOURLY_RATE)} per hour")
+        _rate_note(POST_PRODUCTION_HOURLY_RATE, "per hour")
 
+        _field_label("Model Hours Type")
         model_type = st.radio(
-            "Model hours type",
+            "Model Hours Type",
             ["adult", "kid"],
+            format_func=lambda value: "Adult" if value == "adult" else "Kid",
             horizontal=True,
             key="photo_pricing_model_type",
+            label_visibility="collapsed",
         )
-        model_hours = _hours_input("Model hours", "photo_pricing_model_hours")
-        st.caption(f"Locked rate: {_money(model_hourly_rate(model_type))} per hour")
+        _field_label("Model Hours")
+        model_hours = _hours_input("Model Hours", "photo_pricing_model_hours")
+        _rate_note(model_hourly_rate(model_type), "per hour")
 
         model_fitting_enabled = st.checkbox(
-            "Model fitting",
+            "Model Fitting",
             key="photo_pricing_model_fitting_enabled",
         )
         st.caption(f"Locked flat fee: {_money(MODEL_FITTING_FLAT_FEE)}")
@@ -123,6 +173,17 @@ def _render_apparel_inputs() -> ApparelInputs:
     )
 
 
+def _render_summary(quote_payload: Any) -> None:
+    st.subheader("Summary")
+    st.metric("Image Count For Account Management", quote_payload.derived_total_image_count)
+    st.write(f"Account Management Tier: **{account_management_tier_label(quote_payload.derived_total_image_count)}**")
+    st.write(f"Account Management Fee: **{_money(quote_payload.derived_account_management_fee)}**")
+    st.divider()
+    subtotal_col, total_col = st.columns(2)
+    subtotal_col.metric("Running Subtotal", _money(quote_payload.subtotal))
+    total_col.metric("Final Total", _money(quote_payload.total))
+
+
 def render_photography_pricing() -> None:
     st.title("Photography Pricing")
 
@@ -130,39 +191,32 @@ def render_photography_pricing() -> None:
         st.session_state["hub_view"] = "home"
         st.rerun()
 
-    st.markdown("#### Job type")
-    job_col, disabled_col = st.columns([1, 1])
-    with job_col:
-        st.selectbox(
-            "Active job type",
-            ["Apparel"],
+    top_left, top_right = st.columns([1, 1.35], gap="large")
+    with top_left:
+        st.markdown("#### Job Type")
+        job_type = st.selectbox(
+            "Job Type",
+            ["Apparel", "Misc"],
             key="photo_pricing_job_type",
+            label_visibility="collapsed",
         )
-    with disabled_col:
-        st.button("Misc", disabled=True, use_container_width=True, key="photo_pricing_misc_disabled")
-        st.caption("Unavailable in this first phase.")
+
+    if job_type == "Misc":
+        with top_right:
+            st.subheader("Summary")
+            st.info("Misc pricing is not available yet.")
+        st.stop()
 
     inputs = _render_apparel_inputs()
     quote = build_apparel_quote(inputs)
     quote_payload = quote.to_payload()
 
-    line_col, summary_col = st.columns([2, 1], gap="large")
-    with line_col:
-        st.subheader("Pricing Rows")
-        st.dataframe(
-            pd.DataFrame(_line_table_rows(quote_payload)),
-            hide_index=True,
-            use_container_width=True,
-        )
+    with top_right:
+        _render_summary(quote)
 
-    with summary_col:
-        st.subheader("Summary")
-        st.metric("Image count for account management", quote.derived_total_image_count)
-        st.write(f"Account management tier: **{account_management_tier_label(quote.derived_total_image_count)}**")
-        st.write(f"Account management fee: **{_money(quote.derived_account_management_fee)}**")
-        st.divider()
-        st.metric("Running subtotal", _money(quote.subtotal))
-        st.metric("Final total", _money(quote.total))
-
-    with st.expander("Normalized quote payload"):
-        st.json(quote_payload)
+    st.subheader("Pricing Rows")
+    st.dataframe(
+        pd.DataFrame(_line_table_rows(quote_payload)),
+        hide_index=True,
+        use_container_width=True,
+    )
