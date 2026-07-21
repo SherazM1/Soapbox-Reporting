@@ -83,7 +83,7 @@ def _line_table_rows(quote_payload: dict[str, Any]) -> list[dict[str, Any]]:
     return rows
 
 
-def _render_apparel_inputs() -> ApparelInputs:
+def _render_apparel_inputs() -> tuple[ApparelInputs, Any]:
     image_col, production_col = st.columns(2)
 
     with image_col:
@@ -159,17 +159,20 @@ def _render_apparel_inputs() -> ApparelInputs:
         )
         st.caption(f"Locked flat fee: {_money(MODEL_FITTING_FLAT_FEE)}")
 
-    return ApparelInputs(
-        on_model_image_quantity=on_model_image_quantity,
-        on_model_detail_quantity=on_model_detail_quantity,
-        laydown_silo_type=laydown_silo_type,
-        laydown_silo_quantity=laydown_silo_quantity,
-        color_corrections_quantity=color_corrections_quantity,
-        post_production_hours=post_production_hours,
-        model_type=model_type,
-        model_hours=model_hours,
-        model_fitting_enabled=model_fitting_enabled,
-        ai_generation_quantity=ai_generation_quantity,
+    return (
+        ApparelInputs(
+            on_model_image_quantity=on_model_image_quantity,
+            on_model_detail_quantity=on_model_detail_quantity,
+            laydown_silo_type=laydown_silo_type,
+            laydown_silo_quantity=laydown_silo_quantity,
+            color_corrections_quantity=color_corrections_quantity,
+            post_production_hours=post_production_hours,
+            model_type=model_type,
+            model_hours=model_hours,
+            model_fitting_enabled=model_fitting_enabled,
+            ai_generation_quantity=ai_generation_quantity,
+        ),
+        production_col,
     )
 
 
@@ -203,15 +206,14 @@ def render_photography_pricing() -> None:
 
     if job_type == "Misc":
         with top_right:
-            st.subheader("Summary")
             st.info("Misc pricing is not available yet.")
         st.stop()
 
-    inputs = _render_apparel_inputs()
+    inputs, summary_col = _render_apparel_inputs()
     quote = build_apparel_quote(inputs)
     quote_payload = quote.to_payload()
 
-    with top_right:
+    with summary_col:
         _render_summary(quote)
 
     st.subheader("Pricing Rows")
