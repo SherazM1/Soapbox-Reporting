@@ -10,17 +10,12 @@ from app.photography_pricing.pdf_mapper import Page2PricingPayload, build_page2_
 
 TEMPLATE_PATH = Path("templates/photographytemplate.pdf")
 
-TABLE_ROWS_TOP_Y = (327, 440, 597, 711, 868, 1025, 1129, 1241, 1353)
-TABLE_ROWS_BOTTOM_Y = (440, 597, 711, 868, 1025, 1129, 1241, 1353, 1476)
 TEXT_TOP_Y = (382, 508, 663, 776, 935, 1090, 1180, 1295, 1406)
 
-LABEL_X = 128
 QUANTITY_RIGHT_X = 1160
 UNIT_PRICE_RIGHT_X = 1452
 TOTAL_RIGHT_X = 1682
 
-DYNAMIC_LEFT_X = 112
-DYNAMIC_RIGHT_X = 1690
 SUBTOTAL_AMOUNT_Y = 1553
 TOTAL_AMOUNT_Y = 1666
 
@@ -32,23 +27,27 @@ def _pdf_y(page_height: float, top_y: float) -> float:
     return page_height - top_y
 
 
-def _clear_row(c: canvas.Canvas, page_height: float, top_y: float, bottom_y: float) -> None:
+def _clear_numeric_cell(c: canvas.Canvas, page_height: float, left_x: float, top_y: float, width: float) -> None:
     c.setFillColor(BACKGROUND)
     c.rect(
-        DYNAMIC_LEFT_X,
-        _pdf_y(page_height, bottom_y - 4),
-        DYNAMIC_RIGHT_X - DYNAMIC_LEFT_X,
-        bottom_y - top_y - 8,
+        left_x,
+        _pdf_y(page_height, top_y + 26),
+        width,
+        38,
         fill=1,
         stroke=0,
     )
 
 
-def _draw_row(c: canvas.Canvas, page_height: float, top_y: float, row) -> None:
+def _clear_row_numbers(c: canvas.Canvas, page_height: float, top_y: float) -> None:
+    _clear_numeric_cell(c, page_height, 1065, top_y, 110)
+    _clear_numeric_cell(c, page_height, 1268, top_y, 205)
+    _clear_numeric_cell(c, page_height, 1484, top_y, 210)
+
+
+def _draw_row_numbers(c: canvas.Canvas, page_height: float, top_y: float, row) -> None:
     y = _pdf_y(page_height, top_y)
     c.setFillColor(TEXT)
-    c.setFont("Helvetica-Bold", 26)
-    c.drawString(LABEL_X, y, row.label)
     c.setFont("Helvetica", 26)
     c.drawRightString(QUANTITY_RIGHT_X, y, row.quantity)
     c.drawRightString(UNIT_PRICE_RIGHT_X, y, row.unit_price)
@@ -57,8 +56,8 @@ def _draw_row(c: canvas.Canvas, page_height: float, top_y: float, row) -> None:
 
 def _clear_totals(c: canvas.Canvas, page_height: float) -> None:
     c.setFillColor(BACKGROUND)
-    c.rect(1450, _pdf_y(page_height, SUBTOTAL_AMOUNT_Y + 24), 240, 44, fill=1, stroke=0)
-    c.rect(1450, _pdf_y(page_height, TOTAL_AMOUNT_Y + 24), 240, 48, fill=1, stroke=0)
+    c.rect(1450, _pdf_y(page_height, SUBTOTAL_AMOUNT_Y + 24), 244, 38, fill=1, stroke=0)
+    c.rect(1450, _pdf_y(page_height, TOTAL_AMOUNT_Y + 28), 244, 42, fill=1, stroke=0)
 
 
 def _draw_totals(c: canvas.Canvas, page_height: float, payload: Page2PricingPayload) -> None:
@@ -73,11 +72,11 @@ def _page2_overlay(page_width: float, page_height: float, payload: Page2PricingP
     overlay = BytesIO()
     c = canvas.Canvas(overlay, pagesize=(page_width, page_height))
 
-    for top_y, bottom_y in zip(TABLE_ROWS_TOP_Y, TABLE_ROWS_BOTTOM_Y):
-        _clear_row(c, page_height, top_y, bottom_y)
+    for top_y in TEXT_TOP_Y:
+        _clear_row_numbers(c, page_height, top_y)
 
     for row, top_y in zip(payload.rows, TEXT_TOP_Y):
-        _draw_row(c, page_height, top_y, row)
+        _draw_row_numbers(c, page_height, top_y, row)
 
     _clear_totals(c, page_height)
     _draw_totals(c, page_height, payload)
