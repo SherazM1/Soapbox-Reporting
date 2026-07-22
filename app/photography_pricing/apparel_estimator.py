@@ -362,7 +362,10 @@ def render_photography_pricing() -> None:
     if st.button("Generate PDF", key="photo_pricing_generate_pdf"):
         from app.photography_pricing.pdf_generator import generate_page2_pricing_pdf
 
-        st.session_state["photo_pricing_generated_pdf"] = generate_page2_pricing_pdf(quote)
+        st.session_state["photo_pricing_generated_pdf"] = generate_page2_pricing_pdf(
+            quote,
+            page1_comments_payload=st.session_state.get("photo_pricing_page1_comments_payload"),
+        )
 
     generated_pdf = st.session_state.get("photo_pricing_generated_pdf")
     if generated_pdf:

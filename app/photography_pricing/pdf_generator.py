@@ -1,5 +1,6 @@
 from io import BytesIO
 from pathlib import Path
+from typing import Any
 
 from pypdf import PdfReader, PdfWriter
 from reportlab.lib.colors import HexColor
@@ -35,12 +36,19 @@ TOTAL_RIGHT_X = 1682
 
 SUBTOTAL_AMOUNT_Y = 1553
 TOTAL_AMOUNT_Y = 1666
+PAGE1_COMMENTS_LEFT_X = 300
+PAGE1_COMMENTS_TOP_Y = 1920
+PAGE1_COMMENTS_MAX_WIDTH = 1185
+PAGE1_COMMENTS_LINE_STEP = 31
+PAGE1_COMMENTS_MAX_LINES = 17
 
 TEXT = HexColor("#002C47")
+PAGE1_TEXT = HexColor("#F2F5F7")
 TEMPLATE_COORDINATE_SCALE = 3
 ROW_FONT_SIZE = 9.5 * TEMPLATE_COORDINATE_SCALE
 SUBTOTAL_FONT_SIZE = 10 * TEMPLATE_COORDINATE_SCALE
 TOTAL_FONT_SIZE = 11 * TEMPLATE_COORDINATE_SCALE
+PAGE1_COMMENTS_FONT_SIZE = 8.5 * TEMPLATE_COORDINATE_SCALE
 
 
 def _register_gotham_fonts() -> None:
@@ -72,6 +80,56 @@ def _draw_totals(c: canvas.Canvas, page_height: float, payload: Page2PricingPayl
     c.drawRightString(TOTAL_RIGHT_X, _pdf_y(page_height, TOTAL_AMOUNT_Y), payload.total)
 
 
+def _wrap_text_line(text: str, max_width: float, font_name: str, font_size: float) -> list[str]:
+    words = text.split()
+    if not words:
+        return [""]
+
+    lines: list[str] = []
+    current = words[0]
+    for word in words[1:]:
+        candidate = f"{current} {word}"
+        if pdfmetrics.stringWidth(candidate, font_name, font_size) <= max_width:
+            current = candidate
+        else:
+            lines.append(current)
+            current = word
+    lines.append(current)
+    return lines
+
+
+def _comments_text(payload: dict[str, Any] | None) -> str:
+    if not payload:
+        return ""
+    return str(payload.get("rendered_comments_block") or "").strip()
+
+
+def _page1_overlay(page_width: float, page_height: float, comments_payload: dict[str, Any] | None) -> BytesIO:
+    _register_gotham_fonts()
+    overlay = BytesIO()
+    c = canvas.Canvas(overlay, pagesize=(page_width, page_height))
+    c.setFillColor(PAGE1_TEXT)
+    c.setFont(GOTHAM_MEDIUM, PAGE1_COMMENTS_FONT_SIZE)
+
+    lines: list[str] = []
+    for raw_line in _comments_text(comments_payload).splitlines():
+        if raw_line.strip():
+            lines.extend(_wrap_text_line(raw_line.strip(), PAGE1_COMMENTS_MAX_WIDTH, GOTHAM_MEDIUM, PAGE1_COMMENTS_FONT_SIZE))
+        else:
+            lines.append("")
+
+    for index, line in enumerate(lines[:PAGE1_COMMENTS_MAX_LINES]):
+        c.drawString(
+            PAGE1_COMMENTS_LEFT_X,
+            _pdf_y(page_height, PAGE1_COMMENTS_TOP_Y + index * PAGE1_COMMENTS_LINE_STEP),
+            line,
+        )
+
+    c.save()
+    overlay.seek(0)
+    return overlay
+
+
 def _page2_overlay(page_width: float, page_height: float, payload: Page2PricingPayload) -> BytesIO:
     _register_gotham_fonts()
     overlay = BytesIO()
@@ -89,13 +147,18 @@ def _page2_overlay(page_width: float, page_height: float, payload: Page2PricingP
     return overlay
 
 
-def generate_page2_pricing_pdf(quote, template_path: Path = TEMPLATE_PATH) -> bytes:
+def generate_page2_pricing_pdf(quote, template_path: Path = TEMPLATE_PATH, page1_comments_payload: dict[str, Any] | None = None) -> bytes:
     payload = build_page2_pricing_payload(quote)
     reader = PdfReader(str(template_path))
     writer = PdfWriter()
 
     for index, page in enumerate(reader.pages):
-        if index == 1:
+        if index == 0 and page1_comments_payload:
+            width = float(page.mediabox.width)
+            height = float(page.mediabox.height)
+            overlay_pdf = PdfReader(_page1_overlay(width, height, page1_comments_payload))
+            page.merge_page(overlay_pdf.pages[0])
+        elif index == 1:
             width = float(page.mediabox.width)
             height = float(page.mediabox.height)
             overlay_pdf = PdfReader(_page2_overlay(width, height, payload))
