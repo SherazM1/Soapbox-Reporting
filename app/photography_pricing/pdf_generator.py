@@ -11,6 +11,17 @@ from app.photography_pricing.pdf_mapper import Page2PricingPayload, build_page2_
 TEMPLATE_PATH = Path("templates/photographytemplate.pdf")
 
 TEXT_TOP_Y = (382, 508, 663, 776, 935, 1090, 1180, 1295, 1406)
+TEMPLATE_ROW_TOP_Y_BY_CODE = {
+    "on_model_image": TEXT_TOP_Y[0],
+    "laydown_silo": TEXT_TOP_Y[1],
+    "color_corrections": TEXT_TOP_Y[2],
+    "post_production": TEXT_TOP_Y[3],
+    "model_hours": TEXT_TOP_Y[4],
+    "account_management": TEXT_TOP_Y[5],
+    "on_model_detail": TEXT_TOP_Y[6],
+    "model_fitting": TEXT_TOP_Y[7],
+    "ai_generation": TEXT_TOP_Y[8],
+}
 
 QUANTITY_RIGHT_X = 1160
 UNIT_PRICE_RIGHT_X = 1452
@@ -47,8 +58,10 @@ def _page2_overlay(page_width: float, page_height: float, payload: Page2PricingP
     overlay = BytesIO()
     c = canvas.Canvas(overlay, pagesize=(page_width, page_height))
 
-    for row, top_y in zip(payload.rows, TEXT_TOP_Y):
-        _draw_row_numbers(c, page_height, top_y, row)
+    for row in payload.rows:
+        top_y = TEMPLATE_ROW_TOP_Y_BY_CODE.get(row.code)
+        if top_y is not None:
+            _draw_row_numbers(c, page_height, top_y, row)
 
     _draw_totals(c, page_height, payload)
 

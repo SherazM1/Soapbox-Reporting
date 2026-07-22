@@ -29,6 +29,7 @@ PDF_ROW_LABELS = {
 
 @dataclass(frozen=True)
 class PdfPricingRow:
+    code: str
     label: str
     quantity: str
     unit_price: str
@@ -71,6 +72,7 @@ def build_page2_pricing_payload(quote: Any) -> Page2PricingPayload:
             continue
         rows.append(
             PdfPricingRow(
+                code=code,
                 label=PDF_ROW_LABELS.get(code, getattr(line, "label", "")),
                 quantity=_quantity(float(getattr(line, "quantity", 0) or 0)),
                 unit_price=_money(float(getattr(line, "unit_price", 0) or 0)),
