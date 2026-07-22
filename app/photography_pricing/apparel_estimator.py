@@ -3,6 +3,8 @@ from typing import Any
 import pandas as pd
 import streamlit as st
 
+from app.photography_pricing.comments_builder import build_page1_comments_payload
+from app.photography_pricing.mock_contacts import contact_options
 from app.photography_pricing.models import ApparelInputs
 from app.photography_pricing.pricing_rules import (
     AI_GENERATION_MARKUP_RATE,
@@ -56,6 +58,138 @@ def _rate_note(value: float, unit_label: str) -> None:
 
 def _field_label(text: str) -> None:
     st.markdown(f"**{text}**")
+
+
+def _init_comments_state() -> None:
+    if "photo_pricing_project_rows" not in st.session_state:
+        st.session_state["photo_pricing_project_rows"] = [{}]
+
+
+def _project_number_input(label: str, key: str) -> float:
+    return float(
+        st.number_input(
+            label,
+            min_value=0.0,
+            step=1.0,
+            value=0.0,
+            key=key,
+            label_visibility="collapsed",
+        )
+    )
+
+
+def _render_comments_composer() -> dict[str, Any]:
+    _init_comments_state()
+    contacts = contact_options()
+
+    st.subheader("Page 1 Comments")
+    contact_col, subject_col, subtitle_col = st.columns([1, 1.2, 1.2])
+    with contact_col:
+        _field_label("Internal Contact")
+        selected_contact_id = st.selectbox(
+            "Internal Contact",
+            [contact["id"] for contact in contacts],
+            format_func=lambda contact_id: next(
+                contact["name"] for contact in contacts if contact["id"] == contact_id
+            ),
+            key="photo_pricing_comments_contact_id",
+            label_visibility="collapsed",
+        )
+    with subject_col:
+        _field_label("Estimate Subject")
+        estimate_subject = st.text_input(
+            "Estimate Subject",
+            key="photo_pricing_comments_estimate_subject",
+            placeholder="Sam's Club Kids Apparel Project",
+            label_visibility="collapsed",
+        )
+    with subtitle_col:
+        _field_label("Subtitle Line")
+        subtitle_line = st.text_input(
+            "Subtitle Line",
+            key="photo_pricing_comments_subtitle_line",
+            placeholder="Spring27 - Bangladesh",
+            label_visibility="collapsed",
+        )
+
+    st.markdown("#### Project Entries")
+    project_rows = st.session_state["photo_pricing_project_rows"]
+    if st.button("Add Project", key="photo_pricing_comments_add_project"):
+        project_rows.append({})
+        st.rerun()
+
+    rendered_projects: list[dict[str, Any]] = []
+    for index, _row in enumerate(project_rows):
+        row_cols = st.columns([1.5, 0.7, 0.8, 0.8, 0.7, 0.8, 0.45])
+        with row_cols[0]:
+            _field_label("Project Name")
+            project_name = st.text_input(
+                "Project Name",
+                key=f"photo_pricing_comments_project_name_{index}",
+                label_visibility="collapsed",
+            )
+        with row_cols[1]:
+            _field_label("On Model")
+            on_model = _project_number_input("On Model", f"photo_pricing_comments_on_model_{index}")
+        with row_cols[2]:
+            _field_label("Laydown/Detail")
+            laydown_detail = _project_number_input(
+                "Laydown/Detail",
+                f"photo_pricing_comments_laydown_detail_{index}",
+            )
+        with row_cols[3]:
+            _field_label("Color Correct")
+            color_correct = _project_number_input(
+                "Color Correct",
+                f"photo_pricing_comments_color_correct_{index}",
+            )
+        with row_cols[4]:
+            _field_label("Post")
+            post = _project_number_input("Post", f"photo_pricing_comments_post_{index}")
+        with row_cols[5]:
+            _field_label("Model Hours")
+            model_hours = _project_number_input("Model Hours", f"photo_pricing_comments_model_hours_{index}")
+        with row_cols[6]:
+            st.write("")
+            st.write("")
+            if len(project_rows) > 1 and st.button("Remove", key=f"photo_pricing_comments_remove_{index}"):
+                project_rows.pop(index)
+                st.rerun()
+
+        rendered_projects.append(
+            {
+                "project_name": project_name,
+                "on_model": on_model,
+                "laydown_detail": laydown_detail,
+                "color_correct": color_correct,
+                "post": post,
+                "model_hours": model_hours,
+            }
+        )
+
+    _field_label("Custom Notes")
+    custom_notes = st.text_area(
+        "Custom Notes",
+        key="photo_pricing_comments_custom_notes",
+        height=90,
+        label_visibility="collapsed",
+    )
+
+    selected_contact = next(contact for contact in contacts if contact["id"] == selected_contact_id)
+    payload = build_page1_comments_payload(
+        selected_internal_contact=selected_contact,
+        estimate_subject=estimate_subject,
+        subtitle_line=subtitle_line,
+        project_entries=rendered_projects,
+        custom_notes=custom_notes,
+    )
+    payload_dict = payload.to_payload()
+    st.session_state["photo_pricing_page1_comments_payload"] = payload_dict
+
+    with st.expander("Page 1 Comments Preview"):
+        st.text(payload.rendered_comments_block)
+
+    return payload_dict
 
 
 def _line_table_rows(quote_payload: dict[str, Any]) -> list[dict[str, Any]]:
@@ -222,6 +356,8 @@ def render_photography_pricing() -> None:
         hide_index=True,
         use_container_width=True,
     )
+
+    _render_comments_composer()
 
     if st.button("Generate PDF", key="photo_pricing_generate_pdf"):
         from app.photography_pricing.pdf_generator import generate_page2_pricing_pdf
