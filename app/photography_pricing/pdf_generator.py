@@ -3,12 +3,18 @@ from pathlib import Path
 
 from pypdf import PdfReader, PdfWriter
 from reportlab.lib.colors import HexColor
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
 from app.photography_pricing.pdf_mapper import Page2PricingPayload, build_page2_pricing_payload
 
 
 TEMPLATE_PATH = Path("templates/photographytemplate.pdf")
+GOTHAM_MEDIUM_PATH = Path("fonts/Gotham-Medium.ttf")
+GOTHAM_BOLD_PATH = Path("fonts/Gotham-Bold.ttf")
+GOTHAM_MEDIUM = "Gotham-Medium"
+GOTHAM_BOLD = "Gotham-Bold"
 
 TEXT_TOP_Y = (382, 508, 663, 776, 935, 1090, 1180, 1295, 1406)
 TEMPLATE_ROW_TOP_Y_BY_CODE = {
@@ -30,7 +36,19 @@ TOTAL_RIGHT_X = 1682
 SUBTOTAL_AMOUNT_Y = 1553
 TOTAL_AMOUNT_Y = 1666
 
-TEXT = HexColor("#262B3A")
+TEXT = HexColor("#002C47")
+TEMPLATE_COORDINATE_SCALE = 3
+ROW_FONT_SIZE = 9.5 * TEMPLATE_COORDINATE_SCALE
+SUBTOTAL_FONT_SIZE = 10 * TEMPLATE_COORDINATE_SCALE
+TOTAL_FONT_SIZE = 11 * TEMPLATE_COORDINATE_SCALE
+
+
+def _register_gotham_fonts() -> None:
+    registered_fonts = set(pdfmetrics.getRegisteredFontNames())
+    if GOTHAM_MEDIUM not in registered_fonts:
+        pdfmetrics.registerFont(TTFont(GOTHAM_MEDIUM, str(GOTHAM_MEDIUM_PATH)))
+    if GOTHAM_BOLD not in registered_fonts:
+        pdfmetrics.registerFont(TTFont(GOTHAM_BOLD, str(GOTHAM_BOLD_PATH)))
 
 
 def _pdf_y(page_height: float, top_y: float) -> float:
@@ -40,7 +58,7 @@ def _pdf_y(page_height: float, top_y: float) -> float:
 def _draw_row_numbers(c: canvas.Canvas, page_height: float, top_y: float, row) -> None:
     y = _pdf_y(page_height, top_y)
     c.setFillColor(TEXT)
-    c.setFont("Helvetica", 26)
+    c.setFont(GOTHAM_MEDIUM, ROW_FONT_SIZE)
     c.drawRightString(QUANTITY_RIGHT_X, y, row.quantity)
     c.drawRightString(UNIT_PRICE_RIGHT_X, y, row.unit_price)
     c.drawRightString(TOTAL_RIGHT_X, y, row.total)
@@ -48,13 +66,14 @@ def _draw_row_numbers(c: canvas.Canvas, page_height: float, top_y: float, row) -
 
 def _draw_totals(c: canvas.Canvas, page_height: float, payload: Page2PricingPayload) -> None:
     c.setFillColor(TEXT)
-    c.setFont("Helvetica", 26)
+    c.setFont(GOTHAM_MEDIUM, SUBTOTAL_FONT_SIZE)
     c.drawRightString(TOTAL_RIGHT_X, _pdf_y(page_height, SUBTOTAL_AMOUNT_Y), payload.subtotal)
-    c.setFont("Helvetica-Bold", 30)
+    c.setFont(GOTHAM_BOLD, TOTAL_FONT_SIZE)
     c.drawRightString(TOTAL_RIGHT_X, _pdf_y(page_height, TOTAL_AMOUNT_Y), payload.total)
 
 
 def _page2_overlay(page_width: float, page_height: float, payload: Page2PricingPayload) -> BytesIO:
+    _register_gotham_fonts()
     overlay = BytesIO()
     c = canvas.Canvas(overlay, pagesize=(page_width, page_height))
 
