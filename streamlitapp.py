@@ -77,20 +77,24 @@ VIEW_HOME = "home"
 VIEW_CONTENT_REPORTING = "content_reporting"
 VIEW_CONTENT_AUDITING = "content_auditing"
 VIEW_PHOTOGRAPHY_PRICING = "photography_pricing"
+VIEW_CREATIVE_PRICING = "creative_pricing"
 
 HUB_QUERY_TO_VIEW = {
     "reporting": VIEW_CONTENT_REPORTING,
     "auditing": VIEW_CONTENT_AUDITING,
     "pricing": VIEW_PHOTOGRAPHY_PRICING,
+    "creative_pricing": VIEW_CREATIVE_PRICING,
     VIEW_CONTENT_REPORTING: VIEW_CONTENT_REPORTING,
     VIEW_CONTENT_AUDITING: VIEW_CONTENT_AUDITING,
     VIEW_PHOTOGRAPHY_PRICING: VIEW_PHOTOGRAPHY_PRICING,
+    VIEW_CREATIVE_PRICING: VIEW_CREATIVE_PRICING,
 }
 
 VIEW_TO_HUB_QUERY = {
     VIEW_CONTENT_REPORTING: VIEW_CONTENT_REPORTING,
     VIEW_CONTENT_AUDITING: VIEW_CONTENT_AUDITING,
     VIEW_PHOTOGRAPHY_PRICING: VIEW_PHOTOGRAPHY_PRICING,
+    VIEW_CREATIVE_PRICING: VIEW_CREATIVE_PRICING,
 }
 
 STYLE_GUIDE_AUTO_LABEL = "Auto / Detected"
@@ -116,6 +120,10 @@ def go_auditing() -> None:
 
 def go_photography_pricing() -> None:
     set_hub_view(VIEW_PHOTOGRAPHY_PRICING)
+
+
+def go_creative_pricing() -> None:
+    set_hub_view(VIEW_CREATIVE_PRICING)
 
 
 def render_branding() -> None:
@@ -246,6 +254,12 @@ def render_home() -> None:
             <span class="hub-card-arrow">&#8599;</span>
             <h3>Photography Pricing</h3>
             <p>Estimate Apparel photography pricing from locked internal rates.</p>
+            <div class="hub-card-footer"><span class="hub-open-btn">Open</span></div>
+          </a>
+          <a class="hub-link-card" href="?hub=creative_pricing">
+            <span class="hub-card-arrow">&#8599;</span>
+            <h3>Creative Pricing</h3>
+            <p>Set up creative deliverables, copy, assets, revisions, and pricing inputs.</p>
             <div class="hub-card-footer"><span class="hub-open-btn">Open</span></div>
           </a>
         </div>
@@ -3948,6 +3962,10 @@ def main() -> None:
         from app.photography_pricing.apparel_estimator import render_photography_pricing
 
         render_photography_pricing()
+    elif current == VIEW_CREATIVE_PRICING:
+        from app.creative_pricing.creative_pricing import render_creative_pricing
+
+        render_creative_pricing()
     else:
         st.session_state["hub_view"] = VIEW_HOME
         render_home()
