@@ -20,3 +20,5 @@ ENV/
 *.db
 *.log
 reports/
+
+.streamlit/secrets.toml
