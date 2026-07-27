@@ -1,6 +1,8 @@
 from io import BytesIO
 from pathlib import Path
 from typing import Any
+from dataclasses import dataclass
+from datetime import date, datetime
 
 from pypdf import PdfReader, PdfWriter
 from reportlab.lib.colors import HexColor
@@ -41,14 +43,48 @@ PAGE1_COMMENTS_TOP_Y = 1030
 PAGE1_COMMENTS_MAX_WIDTH = 1450
 PAGE1_COMMENTS_LINE_STEP = 38
 PAGE1_COMMENTS_MAX_LINES = 29
+PAGE1_HEADER_TITLE_X = 150
+PAGE1_HEADER_TITLE_TOP_Y = 220
+PAGE1_HEADER_TITLE_MAX_WIDTH = 870
+PAGE1_HEADER_CLIENT_X = 165
+PAGE1_HEADER_COMPANY_TOP_Y = 455
+PAGE1_HEADER_CLIENT_NAME_TOP_Y = 525
+PAGE1_HEADER_CLIENT_EMAIL_TOP_Y = 585
+PAGE1_HEADER_CLIENT_MAX_WIDTH = 790
+PAGE1_HEADER_RIGHT_X = 1205
+PAGE1_HEADER_RIGHT_MAX_WIDTH = 445
+PAGE1_HEADER_REFERENCE_TOP_Y = 190
+PAGE1_HEADER_CREATED_TOP_Y = 294
+PAGE1_HEADER_EXPIRES_TOP_Y = 398
+PAGE1_HEADER_CREATED_BY_TOP_Y = 505
+PAGE1_HEADER_CREATED_BY_TITLE_TOP_Y = 565
+PAGE1_HEADER_CREATED_BY_EMAIL_TOP_Y = 622
 
 TEXT = HexColor("#002C47")
 PAGE1_TEXT = HexColor("#002C47")
+PAGE1_HEADER_TEXT = HexColor("#FFFFFF")
 TEMPLATE_COORDINATE_SCALE = 3
 ROW_FONT_SIZE = 9.5 * TEMPLATE_COORDINATE_SCALE
 SUBTOTAL_FONT_SIZE = 10 * TEMPLATE_COORDINATE_SCALE
 TOTAL_FONT_SIZE = 11 * TEMPLATE_COORDINATE_SCALE
 PAGE1_COMMENTS_FONT_SIZE = 8.5 * TEMPLATE_COORDINATE_SCALE
+PAGE1_HEADER_TITLE_FONT_SIZE = 24 * TEMPLATE_COORDINATE_SCALE
+PAGE1_HEADER_TITLE_MIN_FONT_SIZE = 15 * TEMPLATE_COORDINATE_SCALE
+PAGE1_HEADER_COMPANY_FONT_SIZE = 13 * TEMPLATE_COORDINATE_SCALE
+PAGE1_HEADER_NAME_FONT_SIZE = 11 * TEMPLATE_COORDINATE_SCALE
+PAGE1_HEADER_SMALL_FONT_SIZE = 9.5 * TEMPLATE_COORDINATE_SCALE
+PAGE1_HEADER_MIN_FONT_SIZE = 7.5 * TEMPLATE_COORDINATE_SCALE
+
+
+@dataclass(frozen=True)
+class Page1HeaderItem:
+    text: str
+    x: float
+    top_y: float
+    max_width: float
+    font_name: str
+    font_size: float
+    min_font_size: float
 
 
 def _register_gotham_fonts() -> None:
@@ -80,6 +116,150 @@ def _draw_totals(c: canvas.Canvas, page_height: float, payload: Page2PricingPayl
     c.drawRightString(TOTAL_RIGHT_X, _pdf_y(page_height, TOTAL_AMOUNT_Y), payload.total)
 
 
+def _parse_header_date(value: Any) -> date | None:
+    if isinstance(value, date):
+        return value
+    text = str(value or "").strip()
+    if not text:
+        return None
+    try:
+        return datetime.fromisoformat(text).date()
+    except ValueError:
+        return None
+
+
+def _format_header_date(value: Any) -> str:
+    parsed = _parse_header_date(value)
+    if parsed is None:
+        return str(value or "").strip()
+    return parsed.strftime("%B %d, %Y")
+
+
+def build_page1_header_items(payload: dict[str, Any] | None) -> tuple[Page1HeaderItem, ...]:
+    if not payload:
+        return ()
+    metadata = payload.get("quote_metadata", {}) or {}
+    client = payload.get("selected_client", {}) or {}
+    internal = payload.get("selected_internal", {}) or {}
+
+    return (
+        Page1HeaderItem(
+            str(metadata.get("quote_title") or "").strip(),
+            PAGE1_HEADER_TITLE_X,
+            PAGE1_HEADER_TITLE_TOP_Y,
+            PAGE1_HEADER_TITLE_MAX_WIDTH,
+            GOTHAM_BOLD,
+            PAGE1_HEADER_TITLE_FONT_SIZE,
+            PAGE1_HEADER_TITLE_MIN_FONT_SIZE,
+        ),
+        Page1HeaderItem(
+            str(client.get("company_name") or "").strip(),
+            PAGE1_HEADER_CLIENT_X,
+            PAGE1_HEADER_COMPANY_TOP_Y,
+            PAGE1_HEADER_CLIENT_MAX_WIDTH,
+            GOTHAM_BOLD,
+            PAGE1_HEADER_COMPANY_FONT_SIZE,
+            PAGE1_HEADER_MIN_FONT_SIZE,
+        ),
+        Page1HeaderItem(
+            str(client.get("full_name") or "").strip(),
+            PAGE1_HEADER_CLIENT_X,
+            PAGE1_HEADER_CLIENT_NAME_TOP_Y,
+            PAGE1_HEADER_CLIENT_MAX_WIDTH,
+            GOTHAM_BOLD,
+            PAGE1_HEADER_NAME_FONT_SIZE,
+            PAGE1_HEADER_MIN_FONT_SIZE,
+        ),
+        Page1HeaderItem(
+            str(client.get("email") or "").strip(),
+            PAGE1_HEADER_CLIENT_X,
+            PAGE1_HEADER_CLIENT_EMAIL_TOP_Y,
+            PAGE1_HEADER_CLIENT_MAX_WIDTH,
+            GOTHAM_MEDIUM,
+            PAGE1_HEADER_SMALL_FONT_SIZE,
+            PAGE1_HEADER_MIN_FONT_SIZE,
+        ),
+        Page1HeaderItem(
+            str(metadata.get("reference_number") or "").strip(),
+            PAGE1_HEADER_RIGHT_X,
+            PAGE1_HEADER_REFERENCE_TOP_Y,
+            PAGE1_HEADER_RIGHT_MAX_WIDTH,
+            GOTHAM_MEDIUM,
+            PAGE1_HEADER_SMALL_FONT_SIZE,
+            PAGE1_HEADER_MIN_FONT_SIZE,
+        ),
+        Page1HeaderItem(
+            _format_header_date(metadata.get("quote_created_date")),
+            PAGE1_HEADER_RIGHT_X,
+            PAGE1_HEADER_CREATED_TOP_Y,
+            PAGE1_HEADER_RIGHT_MAX_WIDTH,
+            GOTHAM_MEDIUM,
+            PAGE1_HEADER_SMALL_FONT_SIZE,
+            PAGE1_HEADER_MIN_FONT_SIZE,
+        ),
+        Page1HeaderItem(
+            _format_header_date(metadata.get("quote_expiration_date")),
+            PAGE1_HEADER_RIGHT_X,
+            PAGE1_HEADER_EXPIRES_TOP_Y,
+            PAGE1_HEADER_RIGHT_MAX_WIDTH,
+            GOTHAM_MEDIUM,
+            PAGE1_HEADER_SMALL_FONT_SIZE,
+            PAGE1_HEADER_MIN_FONT_SIZE,
+        ),
+        Page1HeaderItem(
+            str(internal.get("name") or "").strip(),
+            PAGE1_HEADER_RIGHT_X,
+            PAGE1_HEADER_CREATED_BY_TOP_Y,
+            PAGE1_HEADER_RIGHT_MAX_WIDTH,
+            GOTHAM_MEDIUM,
+            PAGE1_HEADER_SMALL_FONT_SIZE,
+            PAGE1_HEADER_MIN_FONT_SIZE,
+        ),
+        Page1HeaderItem(
+            str(internal.get("title") or "").strip(),
+            PAGE1_HEADER_RIGHT_X,
+            PAGE1_HEADER_CREATED_BY_TITLE_TOP_Y,
+            PAGE1_HEADER_RIGHT_MAX_WIDTH,
+            GOTHAM_MEDIUM,
+            PAGE1_HEADER_SMALL_FONT_SIZE,
+            PAGE1_HEADER_MIN_FONT_SIZE,
+        ),
+        Page1HeaderItem(
+            str(internal.get("email") or "").strip(),
+            PAGE1_HEADER_RIGHT_X,
+            PAGE1_HEADER_CREATED_BY_EMAIL_TOP_Y,
+            PAGE1_HEADER_RIGHT_MAX_WIDTH,
+            GOTHAM_MEDIUM,
+            PAGE1_HEADER_SMALL_FONT_SIZE,
+            PAGE1_HEADER_MIN_FONT_SIZE,
+        ),
+    )
+
+
+def _fit_text(text: str, max_width: float, font_name: str, font_size: float, min_font_size: float) -> tuple[str, float]:
+    clean = " ".join(str(text or "").split())
+    size = font_size
+    while size > min_font_size and pdfmetrics.stringWidth(clean, font_name, size) > max_width:
+        size -= 1
+    if pdfmetrics.stringWidth(clean, font_name, size) <= max_width:
+        return clean, size
+
+    ellipsis = "..."
+    while clean and pdfmetrics.stringWidth(f"{clean}{ellipsis}", font_name, size) > max_width:
+        clean = clean[:-1].rstrip()
+    return f"{clean}{ellipsis}" if clean else "", size
+
+
+def _draw_page1_header(c: canvas.Canvas, page_height: float, payload: dict[str, Any] | None) -> None:
+    c.setFillColor(PAGE1_HEADER_TEXT)
+    for item in build_page1_header_items(payload):
+        if not item.text:
+            continue
+        text, font_size = _fit_text(item.text, item.max_width, item.font_name, item.font_size, item.min_font_size)
+        c.setFont(item.font_name, font_size)
+        c.drawString(item.x, _pdf_y(page_height, item.top_y), text)
+
+
 def _wrap_text_line(text: str, max_width: float, font_name: str, font_size: float) -> list[str]:
     words = text.split()
     if not words:
@@ -104,10 +284,16 @@ def _comments_text(payload: dict[str, Any] | None) -> str:
     return str(payload.get("rendered_comments_block") or "").strip()
 
 
-def _page1_overlay(page_width: float, page_height: float, comments_payload: dict[str, Any] | None) -> BytesIO:
+def _page1_overlay(
+    page_width: float,
+    page_height: float,
+    comments_payload: dict[str, Any] | None,
+    header_payload: dict[str, Any] | None = None,
+) -> BytesIO:
     _register_gotham_fonts()
     overlay = BytesIO()
     c = canvas.Canvas(overlay, pagesize=(page_width, page_height))
+    _draw_page1_header(c, page_height, header_payload)
     c.setFillColor(PAGE1_TEXT)
     c.setFont(GOTHAM_MEDIUM, PAGE1_COMMENTS_FONT_SIZE)
 
@@ -147,16 +333,21 @@ def _page2_overlay(page_width: float, page_height: float, payload: Page2PricingP
     return overlay
 
 
-def generate_page2_pricing_pdf(quote, template_path: Path = TEMPLATE_PATH, page1_comments_payload: dict[str, Any] | None = None) -> bytes:
+def generate_page2_pricing_pdf(
+    quote,
+    template_path: Path = TEMPLATE_PATH,
+    page1_comments_payload: dict[str, Any] | None = None,
+    page1_header_payload: dict[str, Any] | None = None,
+) -> bytes:
     payload = build_page2_pricing_payload(quote)
     reader = PdfReader(str(template_path))
     writer = PdfWriter()
 
     for index, page in enumerate(reader.pages):
-        if index == 0 and page1_comments_payload:
+        if index == 0 and (page1_comments_payload or page1_header_payload):
             width = float(page.mediabox.width)
             height = float(page.mediabox.height)
-            overlay_pdf = PdfReader(_page1_overlay(width, height, page1_comments_payload))
+            overlay_pdf = PdfReader(_page1_overlay(width, height, page1_comments_payload, page1_header_payload))
             page.merge_page(overlay_pdf.pages[0])
         elif index == 1:
             width = float(page.mediabox.width)

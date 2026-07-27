@@ -3,8 +3,13 @@ from typing import Any
 import pandas as pd
 import streamlit as st
 
+from app.contact_management.contact_ui import (
+    contact_payload,
+    render_client_contact_select,
+    render_contact_management,
+    render_internal_contact_select,
+)
 from app.photography_pricing.comments_builder import build_page1_comments_payload
-from app.photography_pricing.mock_contacts import contact_options
 from app.photography_pricing.models import ApparelInputs
 from app.photography_pricing.pricing_rules import (
     AI_GENERATION_MARKUP_RATE,
@@ -16,6 +21,11 @@ from app.photography_pricing.pricing_rules import (
     account_management_tier_label,
     laydown_silo_rate,
     model_hourly_rate,
+)
+from app.photography_pricing.quote_metadata import (
+    build_quote_metadata,
+    ensure_quote_metadata_state,
+    mark_quote_expiration_overridden,
 )
 from app.photography_pricing.quote_builder import build_apparel_quote
 
@@ -78,23 +88,14 @@ def _project_number_input(label: str, key: str) -> float:
     )
 
 
-def _render_comments_composer() -> dict[str, Any]:
+def _render_comments_composer(selected_internal_contact: dict[str, str]) -> dict[str, Any]:
     _init_comments_state()
-    contacts = contact_options()
 
     st.subheader("Page 1 Comments")
     contact_col, subject_col, subtitle_col = st.columns([1, 1.2, 1.2])
     with contact_col:
         _field_label("Internal Contact")
-        selected_contact_id = st.selectbox(
-            "Internal Contact",
-            [contact["id"] for contact in contacts],
-            format_func=lambda contact_id: next(
-                contact["name"] for contact in contacts if contact["id"] == contact_id
-            ),
-            key="photo_pricing_comments_contact_id",
-            label_visibility="collapsed",
-        )
+        st.write(selected_internal_contact.get("name", "No internal contact selected"))
     with subject_col:
         _field_label("Estimate Subject")
         estimate_subject = st.text_input(
@@ -175,9 +176,8 @@ def _render_comments_composer() -> dict[str, Any]:
         label_visibility="collapsed",
     )
 
-    selected_contact = next(contact for contact in contacts if contact["id"] == selected_contact_id)
     payload = build_page1_comments_payload(
-        selected_internal_contact=selected_contact,
+        selected_internal_contact=selected_internal_contact,
         estimate_subject=estimate_subject,
         subtitle_line=subtitle_line,
         project_entries=rendered_projects,
@@ -190,6 +190,67 @@ def _render_comments_composer() -> dict[str, Any]:
         st.text(payload.rendered_comments_block)
 
     return payload_dict
+
+
+def _mark_expiration_overridden() -> None:
+    mark_quote_expiration_overridden(st.session_state)
+
+
+def _render_quote_setup() -> tuple[Any, Any, Any]:
+    st.subheader("Quote Setup")
+    render_contact_management()
+
+    contact_col, internal_col = st.columns(2)
+    with contact_col:
+        _field_label("Client Contact")
+        selected_client = render_client_contact_select()
+    with internal_col:
+        _field_label("Internal Contact")
+        selected_internal = render_internal_contact_select()
+
+    ensure_quote_metadata_state(st.session_state)
+    title_col, ref_col = st.columns([1.4, 1])
+    with title_col:
+        _field_label("Quote Title")
+        quote_title = st.text_input(
+            "Quote Title",
+            key="photo_pricing_quote_title",
+            label_visibility="collapsed",
+        )
+    with ref_col:
+        _field_label("Reference Number")
+        reference_number = st.text_input(
+            "Reference Number",
+            key="photo_pricing_reference_number",
+            label_visibility="collapsed",
+        )
+
+    date_col, expiration_col = st.columns(2)
+    with date_col:
+        _field_label("Quote Created Date")
+        quote_created_date = st.date_input(
+            "Quote Created Date",
+            key="photo_pricing_quote_created_date",
+            label_visibility="collapsed",
+        )
+
+    ensure_quote_metadata_state(st.session_state)
+    with expiration_col:
+        _field_label("Quote Expiration Date")
+        quote_expiration_date = st.date_input(
+            "Quote Expiration Date",
+            key="photo_pricing_quote_expiration_date",
+            on_change=_mark_expiration_overridden,
+            label_visibility="collapsed",
+        )
+
+    metadata = build_quote_metadata(
+        quote_title=quote_title,
+        reference_number=reference_number,
+        quote_created_date=quote_created_date,
+        quote_expiration_date=quote_expiration_date,
+    )
+    return selected_client, selected_internal, metadata
 
 
 def _line_table_rows(quote_payload: dict[str, Any]) -> list[dict[str, Any]]:
@@ -343,6 +404,8 @@ def render_photography_pricing() -> None:
             st.info("Misc pricing is not available yet.")
         st.stop()
 
+    selected_client, selected_internal, quote_metadata = _render_quote_setup()
+
     inputs, summary_col = _render_apparel_inputs()
     quote = build_apparel_quote(inputs)
     quote_payload = quote.to_payload()
@@ -357,15 +420,33 @@ def render_photography_pricing() -> None:
         use_container_width=True,
     )
 
-    _render_comments_composer()
+    selected_internal_payload = contact_payload(selected_internal)
+    _render_comments_composer(selected_internal_payload)
 
     if st.button("Generate PDF", key="photo_pricing_generate_pdf"):
         from app.photography_pricing.pdf_generator import generate_page2_pricing_pdf
 
-        st.session_state["photo_pricing_generated_pdf"] = generate_page2_pricing_pdf(
-            quote,
-            page1_comments_payload=st.session_state.get("photo_pricing_page1_comments_payload"),
-        )
+        errors = []
+        if selected_client is None:
+            errors.append("Select a client contact before generating the PDF.")
+        if selected_internal is None:
+            errors.append("Select an internal contact before generating the PDF.")
+        if not quote_metadata.quote_title:
+            errors.append("Enter a quote title before generating the PDF.")
+
+        if errors:
+            for error in errors:
+                st.error(error)
+        else:
+            st.session_state["photo_pricing_generated_pdf"] = generate_page2_pricing_pdf(
+                quote,
+                page1_comments_payload=st.session_state.get("photo_pricing_page1_comments_payload"),
+                page1_header_payload={
+                    "quote_metadata": quote_metadata.to_payload(),
+                    "selected_client": contact_payload(selected_client),
+                    "selected_internal": selected_internal_payload,
+                },
+            )
 
     generated_pdf = st.session_state.get("photo_pricing_generated_pdf")
     if generated_pdf:
