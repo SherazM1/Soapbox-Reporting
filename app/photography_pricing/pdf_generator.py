@@ -45,16 +45,16 @@ PAGE1_COMMENTS_MAX_WIDTH = 1450
 PAGE1_COMMENTS_LINE_STEP = 38
 PAGE1_COMMENTS_MAX_LINES = 29
 PAGE1_LOGO_REGION = (0, 0, 520, 360)
-PAGE1_HEADER_TITLE_X = 560
+PAGE1_HEADER_TITLE_X = 545
 PAGE1_HEADER_TITLE_TOP_Y = 185
-PAGE1_HEADER_TITLE_MAX_WIDTH = 545
+PAGE1_HEADER_TITLE_MAX_WIDTH = 620
 PAGE1_HEADER_CLIENT_X = 165
 PAGE1_HEADER_COMPANY_TOP_Y = 485
 PAGE1_HEADER_CLIENT_NAME_TOP_Y = 555
 PAGE1_HEADER_CLIENT_EMAIL_TOP_Y = 615
 PAGE1_HEADER_CLIENT_MAX_WIDTH = 790
-PAGE1_HEADER_RIGHT_X = 1395
-PAGE1_HEADER_RIGHT_MAX_WIDTH = 320
+PAGE1_HEADER_RIGHT_X = 1115
+PAGE1_HEADER_RIGHT_MAX_WIDTH = 585
 PAGE1_HEADER_REFERENCE_TOP_Y = 202
 PAGE1_HEADER_CREATED_TOP_Y = 306
 PAGE1_HEADER_EXPIRES_TOP_Y = 410
@@ -144,6 +144,11 @@ def _readable_company_name(value: Any) -> str:
     return "" if re.fullmatch(r"\d+", text) else text
 
 
+def _label_value(label: str, value: Any) -> str:
+    text = str(value or "").strip()
+    return f"{label}: {text}" if text else ""
+
+
 def build_page1_header_items(payload: dict[str, Any] | None) -> tuple[Page1HeaderItem, ...]:
     if not payload:
         return ()
@@ -189,7 +194,7 @@ def build_page1_header_items(payload: dict[str, Any] | None) -> tuple[Page1Heade
             PAGE1_HEADER_MIN_FONT_SIZE,
         ),
         Page1HeaderItem(
-            str(metadata.get("reference_number") or "").strip(),
+            _label_value("Reference", metadata.get("reference_number")),
             PAGE1_HEADER_RIGHT_X,
             PAGE1_HEADER_REFERENCE_TOP_Y,
             PAGE1_HEADER_RIGHT_MAX_WIDTH,
@@ -198,7 +203,7 @@ def build_page1_header_items(payload: dict[str, Any] | None) -> tuple[Page1Heade
             PAGE1_HEADER_MIN_FONT_SIZE,
         ),
         Page1HeaderItem(
-            _format_header_date(metadata.get("quote_created_date")),
+            _label_value("Quote created", _format_header_date(metadata.get("quote_created_date"))),
             PAGE1_HEADER_RIGHT_X,
             PAGE1_HEADER_CREATED_TOP_Y,
             PAGE1_HEADER_RIGHT_MAX_WIDTH,
@@ -207,7 +212,7 @@ def build_page1_header_items(payload: dict[str, Any] | None) -> tuple[Page1Heade
             PAGE1_HEADER_MIN_FONT_SIZE,
         ),
         Page1HeaderItem(
-            _format_header_date(metadata.get("quote_expiration_date")),
+            _label_value("Quote expires", _format_header_date(metadata.get("quote_expiration_date"))),
             PAGE1_HEADER_RIGHT_X,
             PAGE1_HEADER_EXPIRES_TOP_Y,
             PAGE1_HEADER_RIGHT_MAX_WIDTH,
@@ -216,7 +221,7 @@ def build_page1_header_items(payload: dict[str, Any] | None) -> tuple[Page1Heade
             PAGE1_HEADER_MIN_FONT_SIZE,
         ),
         Page1HeaderItem(
-            str(internal.get("name") or "").strip(),
+            _label_value("Quote created by", internal.get("name")),
             PAGE1_HEADER_RIGHT_X,
             PAGE1_HEADER_CREATED_BY_TOP_Y,
             PAGE1_HEADER_RIGHT_MAX_WIDTH,

@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from app.contact_management.contact_ui import contact_payload, resolve_client_contact, resolve_internal_contact
 from app.contact_management.models import ClientContact, InternalContact
+from app.photography_pricing.apparel_estimator import _header_payload_errors
 from app.photography_pricing.comments_builder import build_page1_comments_payload
 from app.photography_pricing.models import ApparelInputs
 from app.photography_pricing.pdf_generator import build_page1_header_items
@@ -102,10 +103,10 @@ class PhotographyContactIntegrationTests(unittest.TestCase):
         self.assertIn("Acme", text_values)
         self.assertIn("Ada Lovelace", text_values)
         self.assertIn("ada@example.com", text_values)
-        self.assertIn("20260712-090807-A1B2", text_values)
-        self.assertIn("July 12, 2026", text_values)
-        self.assertIn("October 12, 2026", text_values)
-        self.assertIn("Grace Hopper", text_values)
+        self.assertIn("Reference: 20260712-090807-A1B2", text_values)
+        self.assertIn("Quote created: July 12, 2026", text_values)
+        self.assertIn("Quote expires: October 12, 2026", text_values)
+        self.assertIn("Quote created by: Grace Hopper", text_values)
         self.assertIn("Creative Lead", text_values)
         self.assertIn("grace@example.com", text_values)
 
@@ -160,10 +161,10 @@ class PhotographyContactIntegrationTests(unittest.TestCase):
             }
         )
         right_texts = {
-            "20260712-090807-A1B2",
-            "July 12, 2026",
-            "October 12, 2026",
-            "Grace Hopper",
+            "Reference: 20260712-090807-A1B2",
+            "Quote created: July 12, 2026",
+            "Quote expires: October 12, 2026",
+            "Quote created by: Grace Hopper",
             "Creative Lead",
             "grace@example.com",
         }
@@ -171,6 +172,51 @@ class PhotographyContactIntegrationTests(unittest.TestCase):
 
         self.assertEqual(6, len(right_items))
         self.assertEqual(6, len({(item.x, item.top_y) for item in right_items}))
+
+    def test_right_side_labels_are_rendered_as_complete_label_value_lines(self) -> None:
+        items = build_page1_header_items(
+            {
+                "quote_metadata": {
+                    "reference_number": "20260712-090807-A1B2",
+                    "quote_created_date": "2026-07-12",
+                    "quote_expiration_date": "2026-10-12",
+                },
+                "selected_internal": {"name": "Grace Hopper"},
+            }
+        )
+        text_values = [item.text for item in items]
+
+        self.assertIn("Reference: 20260712-090807-A1B2", text_values)
+        self.assertIn("Quote created: July 12, 2026", text_values)
+        self.assertIn("Quote expires: October 12, 2026", text_values)
+        self.assertIn("Quote created by: Grace Hopper", text_values)
+
+    def test_page1_header_payload_validation_rejects_missing_fields(self) -> None:
+        errors = _header_payload_errors(
+            {
+                "quote_metadata": {
+                    "quote_title": "",
+                    "reference_number": "",
+                    "quote_created_date": "2026-07-12",
+                    "quote_expiration_date": "2026-10-12",
+                },
+                "selected_client": {
+                    "company_name": "",
+                    "full_name": "Ada Lovelace",
+                    "email": "ada@example.com",
+                },
+                "selected_internal": {
+                    "name": "Grace Hopper",
+                    "title": "",
+                    "email": "grace@example.com",
+                },
+            }
+        )
+
+        self.assertIn("Missing quote title for the page 1 header.", errors)
+        self.assertIn("Missing reference number for the page 1 header.", errors)
+        self.assertIn("Missing client company for the page 1 header.", errors)
+        self.assertIn("Missing internal contact title for the page 1 header.", errors)
 
     def test_numeric_only_company_value_is_suppressed(self) -> None:
         items = build_page1_header_items({"selected_client": {"company_name": "123456789"}})

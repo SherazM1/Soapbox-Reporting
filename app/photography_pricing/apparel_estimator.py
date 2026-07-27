@@ -253,6 +253,25 @@ def _render_quote_setup() -> tuple[Any, Any, Any]:
     return selected_client, selected_internal, metadata
 
 
+def _header_payload_errors(page1_header_payload: dict[str, Any]) -> list[str]:
+    metadata = page1_header_payload.get("quote_metadata", {}) or {}
+    client = page1_header_payload.get("selected_client", {}) or {}
+    internal = page1_header_payload.get("selected_internal", {}) or {}
+    required_fields = (
+        ("quote title", metadata.get("quote_title")),
+        ("reference number", metadata.get("reference_number")),
+        ("quote created date", metadata.get("quote_created_date")),
+        ("quote expiration date", metadata.get("quote_expiration_date")),
+        ("client company", client.get("company_name")),
+        ("client contact name", client.get("full_name")),
+        ("client contact email", client.get("email")),
+        ("internal contact name", internal.get("name")),
+        ("internal contact title", internal.get("title")),
+        ("internal contact email", internal.get("email")),
+    )
+    return [f"Missing {label} for the page 1 header." for label, value in required_fields if not str(value or "").strip()]
+
+
 def _line_table_rows(quote_payload: dict[str, Any]) -> list[dict[str, Any]]:
     display_labels = {
         "On-model image": "On-Model Image",
@@ -426,13 +445,18 @@ def render_photography_pricing() -> None:
     if st.button("Generate PDF", key="photo_pricing_generate_pdf"):
         from app.photography_pricing.pdf_generator import generate_page2_pricing_pdf
 
+        selected_client_payload = contact_payload(selected_client)
+        page1_header_payload = {
+            "quote_metadata": quote_metadata.to_payload(),
+            "selected_client": selected_client_payload,
+            "selected_internal": selected_internal_payload,
+        }
         errors = []
         if selected_client is None:
             errors.append("Select a client contact before generating the PDF.")
         if selected_internal is None:
             errors.append("Select an internal contact before generating the PDF.")
-        if not quote_metadata.quote_title:
-            errors.append("Enter a quote title before generating the PDF.")
+        errors.extend(_header_payload_errors(page1_header_payload))
 
         if errors:
             for error in errors:
@@ -441,11 +465,7 @@ def render_photography_pricing() -> None:
             st.session_state["photo_pricing_generated_pdf"] = generate_page2_pricing_pdf(
                 quote,
                 page1_comments_payload=st.session_state.get("photo_pricing_page1_comments_payload"),
-                page1_header_payload={
-                    "quote_metadata": quote_metadata.to_payload(),
-                    "selected_client": contact_payload(selected_client),
-                    "selected_internal": selected_internal_payload,
-                },
+                page1_header_payload=page1_header_payload,
             )
 
     generated_pdf = st.session_state.get("photo_pricing_generated_pdf")
