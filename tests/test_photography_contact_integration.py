@@ -8,6 +8,17 @@ from app.contact_management.models import ClientContact, InternalContact
 from app.photography_pricing.comments_builder import build_page1_comments_payload
 from app.photography_pricing.models import ApparelInputs
 from app.photography_pricing.pdf_generator import build_page1_header_items
+from app.photography_pricing.pdf_generator import (
+    GOTHAM_MEDIUM,
+    PAGE1_HEADER_MIN_FONT_SIZE,
+    PAGE1_HEADER_RIGHT_MAX_WIDTH,
+    PAGE1_HEADER_SMALL_FONT_SIZE,
+    PAGE1_HEADER_TITLE_TOP_Y,
+    PAGE1_HEADER_TITLE_X,
+    PAGE1_LOGO_REGION,
+    _register_gotham_fonts,
+    _wrap_fitted_text,
+)
 from app.photography_pricing.pdf_mapper import build_page2_pricing_payload
 from app.photography_pricing.quote_builder import build_apparel_quote
 from app.photography_pricing.quote_metadata import add_calendar_months, generate_reference_number
@@ -98,6 +109,88 @@ class PhotographyContactIntegrationTests(unittest.TestCase):
         self.assertIn("Creative Lead", text_values)
         self.assertIn("grace@example.com", text_values)
 
+    def test_quote_title_uses_intended_non_logo_coordinate(self) -> None:
+        items = build_page1_header_items({"quote_metadata": {"quote_title": "Holiday Apparel Quote"}})
+        title = items[0]
+
+        self.assertEqual(PAGE1_HEADER_TITLE_X, title.x)
+        self.assertEqual(PAGE1_HEADER_TITLE_TOP_Y, title.top_y)
+        self.assertGreaterEqual(title.x, PAGE1_LOGO_REGION[2])
+
+    def test_no_header_coordinate_intersects_logo_region(self) -> None:
+        items = build_page1_header_items(
+            {
+                "quote_metadata": {
+                    "quote_title": "Holiday Apparel Quote",
+                    "reference_number": "20260712-090807-A1B2",
+                    "quote_created_date": "2026-07-12",
+                    "quote_expiration_date": "2026-10-12",
+                },
+                "selected_client": {
+                    "company_name": "Acme",
+                    "full_name": "Ada Lovelace",
+                    "email": "ada@example.com",
+                },
+                "selected_internal": {
+                    "name": "Grace Hopper",
+                    "title": "Creative Lead",
+                    "email": "grace@example.com",
+                },
+            }
+        )
+        logo_left, logo_top, logo_right, logo_bottom = PAGE1_LOGO_REGION
+
+        for item in items:
+            intersects_logo = item.x < logo_right and item.top_y < logo_bottom
+            self.assertFalse(intersects_logo, item)
+
+    def test_right_side_values_have_distinct_coordinates(self) -> None:
+        items = build_page1_header_items(
+            {
+                "quote_metadata": {
+                    "reference_number": "20260712-090807-A1B2",
+                    "quote_created_date": "2026-07-12",
+                    "quote_expiration_date": "2026-10-12",
+                },
+                "selected_internal": {
+                    "name": "Grace Hopper",
+                    "title": "Creative Lead",
+                    "email": "grace@example.com",
+                },
+            }
+        )
+        right_texts = {
+            "20260712-090807-A1B2",
+            "July 12, 2026",
+            "October 12, 2026",
+            "Grace Hopper",
+            "Creative Lead",
+            "grace@example.com",
+        }
+        right_items = [item for item in items if item.text in right_texts]
+
+        self.assertEqual(6, len(right_items))
+        self.assertEqual(6, len({(item.x, item.top_y) for item in right_items}))
+
+    def test_numeric_only_company_value_is_suppressed(self) -> None:
+        items = build_page1_header_items({"selected_client": {"company_name": "123456789"}})
+
+        self.assertNotIn("123456789", [item.text for item in items])
+
+    def test_long_internal_title_fits_without_ellipsis_when_space_permits(self) -> None:
+        _register_gotham_fonts()
+        lines, _font_size = _wrap_fitted_text(
+            "Vice President, Accounts & Studio Operations",
+            PAGE1_HEADER_RIGHT_MAX_WIDTH,
+            GOTHAM_MEDIUM,
+            PAGE1_HEADER_SMALL_FONT_SIZE,
+            PAGE1_HEADER_MIN_FONT_SIZE,
+            2,
+        )
+
+        self.assertLessEqual(len(lines), 2)
+        self.assertNotIn("...", " ".join(lines))
+
     def test_existing_comments_payload_rendering_remains_unchanged(self) -> None:
         payload = build_page1_comments_payload(
             selected_internal_contact={
@@ -146,4 +239,3 @@ class PhotographyContactIntegrationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

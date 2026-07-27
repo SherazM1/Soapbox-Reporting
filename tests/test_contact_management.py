@@ -110,6 +110,20 @@ class ContactManagementTests(unittest.TestCase):
         self.assertEqual("Doe", row.last_name)
         self.assertEqual("jane@example.com", row.email)
 
+    def test_hubspot_header_prefers_readable_company_name_over_associated_company_id(self):
+        mapping = header_mapping(
+            [
+                "Associated Company",
+                "Company Name",
+                "First Name",
+                "Last Name",
+                "Email Address",
+            ]
+        )
+        row = normalize_hubspot_row(["123456789", "Readable Brand", "Jane", "Doe", "jane@example.com"], mapping)
+
+        self.assertEqual("Readable Brand", row.company_name)
+
     def test_hubspot_excel_import_counts_empty_and_invalid_rows_without_printing_contacts(self):
         with TemporaryDirectory() as tmpdir:
             path = Path(tmpdir) / "hubspot.xlsx"

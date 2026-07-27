@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any
 from dataclasses import dataclass
 from datetime import date, datetime
+import re
 
 from pypdf import PdfReader, PdfWriter
 from reportlab.lib.colors import HexColor
@@ -43,22 +44,23 @@ PAGE1_COMMENTS_TOP_Y = 1030
 PAGE1_COMMENTS_MAX_WIDTH = 1450
 PAGE1_COMMENTS_LINE_STEP = 38
 PAGE1_COMMENTS_MAX_LINES = 29
-PAGE1_HEADER_TITLE_X = 150
-PAGE1_HEADER_TITLE_TOP_Y = 220
-PAGE1_HEADER_TITLE_MAX_WIDTH = 870
+PAGE1_LOGO_REGION = (0, 0, 520, 360)
+PAGE1_HEADER_TITLE_X = 560
+PAGE1_HEADER_TITLE_TOP_Y = 185
+PAGE1_HEADER_TITLE_MAX_WIDTH = 545
 PAGE1_HEADER_CLIENT_X = 165
-PAGE1_HEADER_COMPANY_TOP_Y = 455
-PAGE1_HEADER_CLIENT_NAME_TOP_Y = 525
-PAGE1_HEADER_CLIENT_EMAIL_TOP_Y = 585
+PAGE1_HEADER_COMPANY_TOP_Y = 485
+PAGE1_HEADER_CLIENT_NAME_TOP_Y = 555
+PAGE1_HEADER_CLIENT_EMAIL_TOP_Y = 615
 PAGE1_HEADER_CLIENT_MAX_WIDTH = 790
-PAGE1_HEADER_RIGHT_X = 1205
-PAGE1_HEADER_RIGHT_MAX_WIDTH = 445
-PAGE1_HEADER_REFERENCE_TOP_Y = 190
-PAGE1_HEADER_CREATED_TOP_Y = 294
-PAGE1_HEADER_EXPIRES_TOP_Y = 398
-PAGE1_HEADER_CREATED_BY_TOP_Y = 505
-PAGE1_HEADER_CREATED_BY_TITLE_TOP_Y = 565
-PAGE1_HEADER_CREATED_BY_EMAIL_TOP_Y = 622
+PAGE1_HEADER_RIGHT_X = 1395
+PAGE1_HEADER_RIGHT_MAX_WIDTH = 320
+PAGE1_HEADER_REFERENCE_TOP_Y = 202
+PAGE1_HEADER_CREATED_TOP_Y = 306
+PAGE1_HEADER_EXPIRES_TOP_Y = 410
+PAGE1_HEADER_CREATED_BY_TOP_Y = 525
+PAGE1_HEADER_CREATED_BY_TITLE_TOP_Y = 582
+PAGE1_HEADER_CREATED_BY_EMAIL_TOP_Y = 640
 
 TEXT = HexColor("#002C47")
 PAGE1_TEXT = HexColor("#002C47")
@@ -85,6 +87,8 @@ class Page1HeaderItem:
     font_name: str
     font_size: float
     min_font_size: float
+    max_lines: int = 1
+    line_step: float = 0
 
 
 def _register_gotham_fonts() -> None:
@@ -135,6 +139,11 @@ def _format_header_date(value: Any) -> str:
     return parsed.strftime("%B %d, %Y")
 
 
+def _readable_company_name(value: Any) -> str:
+    text = " ".join(str(value or "").split())
+    return "" if re.fullmatch(r"\d+", text) else text
+
+
 def build_page1_header_items(payload: dict[str, Any] | None) -> tuple[Page1HeaderItem, ...]:
     if not payload:
         return ()
@@ -153,7 +162,7 @@ def build_page1_header_items(payload: dict[str, Any] | None) -> tuple[Page1Heade
             PAGE1_HEADER_TITLE_MIN_FONT_SIZE,
         ),
         Page1HeaderItem(
-            str(client.get("company_name") or "").strip(),
+            _readable_company_name(client.get("company_name")),
             PAGE1_HEADER_CLIENT_X,
             PAGE1_HEADER_COMPANY_TOP_Y,
             PAGE1_HEADER_CLIENT_MAX_WIDTH,
@@ -223,6 +232,8 @@ def build_page1_header_items(payload: dict[str, Any] | None) -> tuple[Page1Heade
             GOTHAM_MEDIUM,
             PAGE1_HEADER_SMALL_FONT_SIZE,
             PAGE1_HEADER_MIN_FONT_SIZE,
+            2,
+            34,
         ),
         Page1HeaderItem(
             str(internal.get("email") or "").strip(),
@@ -236,18 +247,56 @@ def build_page1_header_items(payload: dict[str, Any] | None) -> tuple[Page1Heade
     )
 
 
-def _fit_text(text: str, max_width: float, font_name: str, font_size: float, min_font_size: float) -> tuple[str, float]:
+def _wrap_fitted_text(
+    text: str,
+    max_width: float,
+    font_name: str,
+    font_size: float,
+    min_font_size: float,
+    max_lines: int = 1,
+) -> tuple[list[str], float]:
     clean = " ".join(str(text or "").split())
     size = font_size
-    while size > min_font_size and pdfmetrics.stringWidth(clean, font_name, size) > max_width:
+
+    def wrapped(current_size: float) -> list[str]:
+        return _wrap_text_line(clean, max_width, font_name, current_size)
+
+    while size > min_font_size:
+        lines = wrapped(size)
+        if len(lines) <= max_lines and all(
+            pdfmetrics.stringWidth(line, font_name, size) <= max_width
+            for line in lines
+        ):
+            return lines, size
         size -= 1
-    if pdfmetrics.stringWidth(clean, font_name, size) <= max_width:
-        return clean, size
+
+    lines = wrapped(size)
+    if len(lines) <= max_lines and all(pdfmetrics.stringWidth(line, font_name, size) <= max_width for line in lines):
+        return lines, size
+
+    if max_lines > 1 and len(lines) > max_lines:
+        kept = lines[:max_lines]
+        kept[-1] = " ".join([kept[-1], *lines[max_lines:]]).strip()
+        lines = kept
+
+    if len(lines) > max_lines:
+        lines = lines[:max_lines]
+
+    if lines and pdfmetrics.stringWidth(lines[-1], font_name, size) <= max_width:
+        return lines, size
 
     ellipsis = "..."
+    clean = lines[-1] if lines else clean
     while clean and pdfmetrics.stringWidth(f"{clean}{ellipsis}", font_name, size) > max_width:
         clean = clean[:-1].rstrip()
-    return f"{clean}{ellipsis}" if clean else "", size
+    if lines:
+        lines[-1] = f"{clean}{ellipsis}" if clean else ""
+    return lines, size
+
+
+def _fit_text(text: str, max_width: float, font_name: str, font_size: float, min_font_size: float) -> tuple[str, float]:
+    lines, size = _wrap_fitted_text(text, max_width, font_name, font_size, min_font_size, 1)
+    return (lines[0] if lines else ""), size
 
 
 def _draw_page1_header(c: canvas.Canvas, page_height: float, payload: dict[str, Any] | None) -> None:
@@ -255,9 +304,18 @@ def _draw_page1_header(c: canvas.Canvas, page_height: float, payload: dict[str, 
     for item in build_page1_header_items(payload):
         if not item.text:
             continue
-        text, font_size = _fit_text(item.text, item.max_width, item.font_name, item.font_size, item.min_font_size)
+        lines, font_size = _wrap_fitted_text(
+            item.text,
+            item.max_width,
+            item.font_name,
+            item.font_size,
+            item.min_font_size,
+            item.max_lines,
+        )
         c.setFont(item.font_name, font_size)
-        c.drawString(item.x, _pdf_y(page_height, item.top_y), text)
+        line_step = item.line_step or font_size * 1.15
+        for index, line in enumerate(lines[: item.max_lines]):
+            c.drawString(item.x, _pdf_y(page_height, item.top_y + index * line_step), line)
 
 
 def _wrap_text_line(text: str, max_width: float, font_name: str, font_size: float) -> list[str]:

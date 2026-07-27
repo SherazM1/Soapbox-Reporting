@@ -25,6 +25,11 @@ from app.contact_management.repositories import (
 )
 
 
+def _readable_company_name(value: object) -> str:
+    text = " ".join(str(value or "").split())
+    return "" if text.isdigit() else text
+
+
 def _handle_contact_error(exc: Exception) -> None:
     if isinstance(exc, ContactValidationError):
         st.error(str(exc))
@@ -83,7 +88,7 @@ def contact_payload(contact: ClientContact | InternalContact | None) -> dict[str
     if isinstance(contact, ClientContact):
         return {
             "id": contact.id,
-            "company_name": contact.company_name,
+            "company_name": _readable_company_name(contact.company_name),
             "full_name": contact.full_name,
             "email": contact.email,
         }

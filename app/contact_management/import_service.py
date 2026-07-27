@@ -47,6 +47,17 @@ HEADER_ALIASES = {
     },
 }
 
+HEADER_ALIAS_PRIORITY = {
+    "company_name": {
+        "company name": 0,
+        "company": 1,
+        "primary associated company name": 2,
+        "associated company name": 3,
+        "primary associated company": 4,
+        "associated company": 5,
+    },
+}
+
 REQUIRED_HUBSPOT_FIELDS = {
     "company_name",
     "first_name",
@@ -83,13 +94,18 @@ def normalize_header(value: Any) -> str:
 
 def header_mapping(headers: Iterable[Any]) -> dict[str, int]:
     mapping: dict[str, int] = {}
+    priorities: dict[str, int] = {}
 
     for index, header in enumerate(headers):
         normalized = normalize_header(header)
 
         for field_name, aliases in HEADER_ALIASES.items():
-            if field_name not in mapping and normalized in aliases:
+            priority = HEADER_ALIAS_PRIORITY.get(field_name, {}).get(normalized, 100)
+            if normalized in aliases and (
+                field_name not in mapping or priority < priorities.get(field_name, 100)
+            ):
                 mapping[field_name] = index
+                priorities[field_name] = priority
 
     return mapping
 
