@@ -272,6 +272,14 @@ def _header_payload_errors(page1_header_payload: dict[str, Any]) -> list[str]:
     return [f"Missing {label} for the page 1 header." for label, value in required_fields if not str(value or "").strip()]
 
 
+def _build_page1_header_payload(quote_metadata: Any, selected_client: Any, selected_internal_payload: dict[str, str]) -> dict[str, Any]:
+    return {
+        "quote_metadata": quote_metadata.to_payload(),
+        "selected_client": contact_payload(selected_client),
+        "selected_internal": selected_internal_payload,
+    }
+
+
 def _line_table_rows(quote_payload: dict[str, Any]) -> list[dict[str, Any]]:
     display_labels = {
         "On-model image": "On-Model Image",
@@ -445,12 +453,11 @@ def render_photography_pricing() -> None:
     if st.button("Generate PDF", key="photo_pricing_generate_pdf"):
         from app.photography_pricing.pdf_generator import generate_page2_pricing_pdf
 
-        selected_client_payload = contact_payload(selected_client)
-        page1_header_payload = {
-            "quote_metadata": quote_metadata.to_payload(),
-            "selected_client": selected_client_payload,
-            "selected_internal": selected_internal_payload,
-        }
+        page1_header_payload = _build_page1_header_payload(
+            quote_metadata,
+            selected_client,
+            selected_internal_payload,
+        )
         errors = []
         if selected_client is None:
             errors.append("Select a client contact before generating the PDF.")

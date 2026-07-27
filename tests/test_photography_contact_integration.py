@@ -1,14 +1,17 @@
 import re
 import unittest
 from datetime import date, datetime
+from io import BytesIO
 from unittest.mock import patch
+
+from pypdf import PdfReader
 
 from app.contact_management.contact_ui import contact_payload, resolve_client_contact, resolve_internal_contact
 from app.contact_management.models import ClientContact, InternalContact
-from app.photography_pricing.apparel_estimator import _header_payload_errors
+from app.photography_pricing.apparel_estimator import _build_page1_header_payload, _header_payload_errors
 from app.photography_pricing.comments_builder import build_page1_comments_payload
 from app.photography_pricing.models import ApparelInputs
-from app.photography_pricing.pdf_generator import build_page1_header_items
+from app.photography_pricing.pdf_generator import build_page1_header_items, generate_page2_pricing_pdf
 from app.photography_pricing.pdf_generator import (
     GOTHAM_MEDIUM,
     PAGE1_HEADER_MIN_FONT_SIZE,
@@ -22,6 +25,7 @@ from app.photography_pricing.pdf_generator import (
 )
 from app.photography_pricing.pdf_mapper import build_page2_pricing_payload
 from app.photography_pricing.quote_builder import build_apparel_quote
+from app.photography_pricing.quote_metadata import QuoteMetadata
 from app.photography_pricing.quote_metadata import add_calendar_months, generate_reference_number
 
 
@@ -110,6 +114,38 @@ class PhotographyContactIntegrationTests(unittest.TestCase):
         self.assertIn("Creative Lead", text_values)
         self.assertIn("grace@example.com", text_values)
 
+    def test_ui_metadata_payload_reaches_pdf_header_mapper(self) -> None:
+        client = ClientContact(
+            id="client-1",
+            hubspot_record_id=None,
+            company_name="Acme",
+            first_name="Ada",
+            last_name="Lovelace",
+            email="ada@example.com",
+        )
+        internal_payload = {
+            "id": "internal-1",
+            "name": "Grace Hopper",
+            "title": "Creative Lead",
+            "email": "grace@example.com",
+        }
+        metadata = QuoteMetadata(
+            quote_title="UI Entered Quote Title",
+            reference_number="UI-REF-1234",
+            quote_created_date=date(2026, 7, 12),
+            quote_expiration_date=date(2026, 10, 12),
+        )
+
+        payload = _build_page1_header_payload(metadata, client, internal_payload)
+        items = build_page1_header_items(payload)
+        text_values = [item.text for item in items]
+
+        self.assertIn("UI Entered Quote Title", text_values)
+        self.assertIn("Reference: UI-REF-1234", text_values)
+        self.assertIn("Quote created: July 12, 2026", text_values)
+        self.assertIn("Quote expires: October 12, 2026", text_values)
+        self.assertIn("Quote created by: Grace Hopper", text_values)
+
     def test_quote_title_uses_intended_non_logo_coordinate(self) -> None:
         items = build_page1_header_items({"quote_metadata": {"quote_title": "Holiday Apparel Quote"}})
         title = items[0]
@@ -172,6 +208,9 @@ class PhotographyContactIntegrationTests(unittest.TestCase):
 
         self.assertEqual(6, len(right_items))
         self.assertEqual(6, len({(item.x, item.top_y) for item in right_items}))
+        created = next(item for item in right_items if item.text.startswith("Quote created:"))
+        expires = next(item for item in right_items if item.text.startswith("Quote expires:"))
+        self.assertLess(created.top_y, expires.top_y)
 
     def test_right_side_labels_are_rendered_as_complete_label_value_lines(self) -> None:
         items = build_page1_header_items(
@@ -281,6 +320,50 @@ class PhotographyContactIntegrationTests(unittest.TestCase):
         self.assertEqual("$240.00", rows["on_model_image"].unit_price)
         self.assertEqual("$2,400.00", rows["on_model_image"].total)
         self.assertEqual("$175.00", rows["account_management"].total)
+
+    def test_generated_pdf_contains_required_header_strings_and_preserves_pages(self) -> None:
+        quote = build_apparel_quote(ApparelInputs(on_model_image_quantity=1))
+        comments = build_page1_comments_payload(
+            selected_internal_contact={
+                "id": "internal-1",
+                "name": "Grace Hopper",
+                "title": "Creative Lead",
+                "email": "grace@example.com",
+            },
+            estimate_subject="Apparel Refresh",
+            subtitle_line="Spring27",
+            project_entries=[{"project_name": "Project A", "on_model": 1}],
+            custom_notes="",
+        ).to_payload()
+        header = {
+            "quote_metadata": {
+                "quote_title": "UI Entered Quote Title",
+                "reference_number": "UI-REF-1234",
+                "quote_created_date": "2026-07-12",
+                "quote_expiration_date": "2026-10-12",
+            },
+            "selected_client": {
+                "company_name": "Acme",
+                "full_name": "Ada Lovelace",
+                "email": "ada@example.com",
+            },
+            "selected_internal": {
+                "name": "Grace Hopper",
+                "title": "Creative Lead",
+                "email": "grace@example.com",
+            },
+        }
+
+        pdf_bytes = generate_page2_pricing_pdf(quote, page1_comments_payload=comments, page1_header_payload=header)
+        reader = PdfReader(BytesIO(pdf_bytes))
+        text = reader.pages[0].extract_text() or ""
+
+        self.assertEqual(4, len(reader.pages))
+        self.assertIn("UI Entered Quote Title", text)
+        self.assertIn("Reference: UI-REF-1234", text)
+        self.assertIn("Quote created: July 12, 2026", text)
+        self.assertIn("Quote expires: October 12, 2026", text)
+        self.assertIn("Quote created by: Grace Hopper", text)
 
 
 if __name__ == "__main__":
