@@ -68,7 +68,7 @@ PAGE1_LOGO_REGION = (0, 0, 520, 360)
 
 # Page 1 header — left side
 PAGE1_HEADER_TITLE_X = 165
-PAGE1_HEADER_TITLE_TOP_Y = 455
+PAGE1_HEADER_TITLE_TOP_Y = 485
 PAGE1_HEADER_TITLE_MAX_WIDTH = 1050
 
 PAGE1_HEADER_CLIENT_X = 165
@@ -87,6 +87,9 @@ PAGE1_HEADER_EXPIRES_TOP_Y = 575
 PAGE1_HEADER_CREATED_BY_TOP_Y = 635
 PAGE1_HEADER_CREATED_BY_TITLE_TOP_Y = 695
 PAGE1_HEADER_CREATED_BY_EMAIL_TOP_Y = 755
+
+PAGE1_HEADER_TITLE_LINE_STEP = 34
+PAGE1_HEADER_EMAIL_ROW_GAP = 60
 
 TEXT = HexColor("#002C47")
 PAGE1_TEXT = HexColor("#002C47")
@@ -234,6 +237,28 @@ def build_page1_header_items(
     client = payload.get("selected_client", {}) or {}
     internal = payload.get("selected_internal", {}) or {}
 
+    internal_title = str(internal.get("title") or "").strip()
+
+    internal_title_lines, _ = _wrap_fitted_text(
+        text=internal_title,
+        max_width=PAGE1_HEADER_RIGHT_MAX_WIDTH,
+        font_name=GOTHAM_MEDIUM,
+        font_size=PAGE1_HEADER_SMALL_FONT_SIZE,
+        min_font_size=PAGE1_HEADER_MIN_FONT_SIZE,
+        max_lines=2,
+    )
+
+    internal_title_line_count = max(1, len(internal_title_lines))
+
+    aligned_email_top_y = (
+        PAGE1_HEADER_CREATED_BY_TITLE_TOP_Y
+        + (
+            internal_title_line_count - 1
+        )
+        * PAGE1_HEADER_TITLE_LINE_STEP
+        + PAGE1_HEADER_EMAIL_ROW_GAP
+    )
+
     return (
         Page1HeaderItem(
             text=str(metadata.get("quote_title") or "").strip(),
@@ -265,7 +290,7 @@ def build_page1_header_items(
         Page1HeaderItem(
             text=str(client.get("email") or "").strip(),
             x=PAGE1_HEADER_CLIENT_X,
-            top_y=PAGE1_HEADER_CLIENT_EMAIL_TOP_Y,
+            top_y=aligned_email_top_y,
             max_width=PAGE1_HEADER_CLIENT_MAX_WIDTH,
             font_name=GOTHAM_MEDIUM,
             font_size=PAGE1_HEADER_SMALL_FONT_SIZE,
@@ -324,7 +349,7 @@ def build_page1_header_items(
             min_font_size=PAGE1_HEADER_MIN_FONT_SIZE,
         ),
         Page1HeaderItem(
-            text=str(internal.get("title") or "").strip(),
+            text=internal_title,
             x=PAGE1_HEADER_RIGHT_X,
             top_y=PAGE1_HEADER_CREATED_BY_TITLE_TOP_Y,
             max_width=PAGE1_HEADER_RIGHT_MAX_WIDTH,
@@ -332,12 +357,12 @@ def build_page1_header_items(
             font_size=PAGE1_HEADER_SMALL_FONT_SIZE,
             min_font_size=PAGE1_HEADER_MIN_FONT_SIZE,
             max_lines=2,
-            line_step=34,
+            line_step=PAGE1_HEADER_TITLE_LINE_STEP,
         ),
         Page1HeaderItem(
             text=str(internal.get("email") or "").strip(),
             x=PAGE1_HEADER_RIGHT_X,
-            top_y=PAGE1_HEADER_CREATED_BY_EMAIL_TOP_Y,
+            top_y=aligned_email_top_y,
             max_width=PAGE1_HEADER_RIGHT_MAX_WIDTH,
             font_name=GOTHAM_MEDIUM,
             font_size=PAGE1_HEADER_SMALL_FONT_SIZE,
