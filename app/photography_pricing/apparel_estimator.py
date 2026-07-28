@@ -10,6 +10,7 @@ from app.contact_management.contact_ui import (
     render_internal_contact_select,
 )
 from app.photography_pricing.comments_builder import build_page1_comments_payload
+from app.photography_pricing.draft_ui import render_drafts_section
 from app.photography_pricing.models import ApparelInputs
 from app.photography_pricing.pricing_rules import (
     AI_GENERATION_MARKUP_RATE,
@@ -483,6 +484,10 @@ def render_photography_pricing() -> None:
         st.stop()
 
     selected_client, selected_internal, quote_metadata = _render_quote_setup()
+    render_drafts_section(
+        selected_client=selected_client,
+        selected_internal=selected_internal,
+    )
 
     inputs, summary_col = _render_apparel_inputs()
     quote = build_apparel_quote(inputs)

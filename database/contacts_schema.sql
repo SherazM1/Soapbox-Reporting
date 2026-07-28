@@ -71,6 +71,34 @@ CREATE INDEX IF NOT EXISTS internal_contacts_active_name_idx
     ON internal_contacts (name)
     WHERE active = TRUE;
 
+CREATE TABLE IF NOT EXISTS quote_drafts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    draft_name TEXT NOT NULL CHECK (BTRIM(draft_name) <> ''),
+    status TEXT NOT NULL DEFAULT 'draft' CHECK (BTRIM(status) <> ''),
+    client_contact_id UUID NULL REFERENCES client_contacts(id) ON DELETE SET NULL,
+    internal_contact_id UUID NULL REFERENCES internal_contacts(id) ON DELETE SET NULL,
+    latest_version_number INTEGER NOT NULL DEFAULT 0 CHECK (latest_version_number >= 0),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS quote_draft_versions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    draft_id UUID NOT NULL REFERENCES quote_drafts(id) ON DELETE CASCADE,
+    version_number INTEGER NOT NULL CHECK (version_number > 0),
+    payload JSONB NOT NULL,
+    saved_by_contact_id UUID NULL REFERENCES internal_contacts(id) ON DELETE SET NULL,
+    version_note TEXT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (draft_id, version_number)
+);
+
+CREATE INDEX IF NOT EXISTS quote_drafts_updated_at_idx
+    ON quote_drafts (updated_at DESC);
+
+CREATE INDEX IF NOT EXISTS quote_draft_versions_draft_version_idx
+    ON quote_draft_versions (draft_id, version_number DESC);
+
 DROP TRIGGER IF EXISTS client_contacts_trim_text_trigger ON client_contacts;
 CREATE TRIGGER client_contacts_trim_text_trigger
 BEFORE INSERT OR UPDATE ON client_contacts
@@ -95,7 +123,16 @@ BEFORE UPDATE ON internal_contacts
 FOR EACH ROW
 EXECUTE FUNCTION contact_management_set_updated_at();
 
+DROP TRIGGER IF EXISTS quote_drafts_updated_at_trigger ON quote_drafts;
+CREATE TRIGGER quote_drafts_updated_at_trigger
+BEFORE UPDATE ON quote_drafts
+FOR EACH ROW
+EXECUTE FUNCTION contact_management_set_updated_at();
+
 INSERT INTO schema_migrations (version)
 VALUES ('contacts_v1')
 ON CONFLICT (version) DO NOTHING;
 
+INSERT INTO schema_migrations (version)
+VALUES ('photography_quote_drafts_v1')
+ON CONFLICT (version) DO NOTHING;
