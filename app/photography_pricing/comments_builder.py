@@ -117,8 +117,26 @@ def build_page1_comments_payload(
         entry for entry in (normalize_project_entry(raw) for raw in project_entries) if _has_project_content(entry)
     )
     count = len(normalized_entries)
-    count_label = project_count_label(count)
-    intro_text = f"Photography Estimate for {subject}:" if subject else "Photography Estimate:"
+    has_structured_content = bool(subject or subtitle or normalized_entries)
+    count_label = project_count_label(count) if has_structured_content else ""
+    intro_text = f"Photography Estimate for {subject}:" if subject else ("Photography Estimate:" if has_structured_content else "")
+
+    if not has_structured_content:
+        lines = [f"Comments from {_clean_text(contact.get('name'))}"]
+        if notes:
+            lines.extend(["", notes])
+
+        return Page1CommentsPayload(
+            selected_internal_contact=contact,
+            estimate_subject=subject,
+            subtitle_line=subtitle,
+            intro_text=intro_text,
+            project_entries=normalized_entries,
+            custom_notes=notes,
+            rendered_comments_block="\n".join(lines).strip(),
+            project_count=count,
+            project_count_label=count_label,
+        )
 
     lines = [
         f"Comments from {_clean_text(contact.get('name'))}",

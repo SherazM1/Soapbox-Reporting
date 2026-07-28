@@ -14,13 +14,14 @@ from app.photography_pricing.models import ApparelInputs
 from app.photography_pricing.pricing_rules import (
     AI_GENERATION_MARKUP_RATE,
     COLOR_CORRECTIONS_RATE,
+    MODEL_ADULT_HOURLY_RATE,
     MODEL_FITTING_FLAT_FEE,
+    MODEL_KID_HOURLY_RATE,
     ON_MODEL_DETAIL_RATE,
     ON_MODEL_IMAGE_RATE,
     POST_PRODUCTION_HOURLY_RATE,
     account_management_tier_label,
     laydown_silo_rate,
-    model_hourly_rate,
 )
 from app.photography_pricing.quote_metadata import (
     build_quote_metadata,
@@ -288,6 +289,8 @@ def _line_table_rows(quote_payload: dict[str, Any]) -> list[dict[str, Any]]:
         "Color corrections from existing images": "Color Corrections From Existing Images",
         "Post production hourly time": "Post Production Hourly Time",
         "Model hours": "Model Hours",
+        "Adult model hours": "Adult Model Hours",
+        "Kid model hours": "Kid Model Hours",
         "Model fitting": "Model Fitting",
         "AI generation markup": "AI Generation Markup",
         "Account management": "Account Management",
@@ -365,21 +368,61 @@ def _render_apparel_inputs() -> tuple[ApparelInputs, Any]:
         _field_label("Model Hours Type")
         model_type = st.radio(
             "Model Hours Type",
-            ["adult", "kid"],
-            format_func=lambda value: "Adult" if value == "adult" else "Kid",
+            ["adult", "kid", "both"],
+            format_func=lambda value: {"adult": "Adult", "kid": "Kid", "both": "Both"}[value],
             horizontal=True,
             key="photo_pricing_model_type",
             label_visibility="collapsed",
         )
-        _field_label("Model Hours")
-        model_hours = _hours_input("Model Hours", "photo_pricing_model_hours")
-        _rate_note(model_hourly_rate(model_type), "per hour")
+        model_hours = 0.0
+        adult_model_hours = 0.0
+        kid_model_hours = 0.0
+        if model_type == "both":
+            _field_label("Adult Model Hours")
+            adult_model_hours = _hours_input("Adult Model Hours", "photo_pricing_adult_model_hours")
+            _rate_note(MODEL_ADULT_HOURLY_RATE, "per hour")
+            _field_label("Kid Model Hours")
+            kid_model_hours = _hours_input("Kid Model Hours", "photo_pricing_kid_model_hours")
+            _rate_note(MODEL_KID_HOURLY_RATE, "per hour")
+        elif model_type == "kid":
+            _field_label("Kid Model Hours")
+            kid_model_hours = _hours_input("Kid Model Hours", "photo_pricing_kid_model_hours_single")
+            model_hours = kid_model_hours
+            _rate_note(MODEL_KID_HOURLY_RATE, "per hour")
+        else:
+            _field_label("Adult Model Hours")
+            adult_model_hours = _hours_input("Adult Model Hours", "photo_pricing_adult_model_hours_single")
+            model_hours = adult_model_hours
+            _rate_note(MODEL_ADULT_HOURLY_RATE, "per hour")
 
-        model_fitting_enabled = st.checkbox(
+        _field_label("Model Fitting")
+        model_fitting_quantity = _quantity_input(
             "Model Fitting",
-            key="photo_pricing_model_fitting_enabled",
+            "photo_pricing_model_fitting_quantity",
         )
         st.caption(f"Locked flat fee: {_money(MODEL_FITTING_FLAT_FEE)}")
+
+        _field_label("Account Management")
+        account_management_mode = st.radio(
+            "Account Management",
+            ["automatic", "manual"],
+            format_func=lambda value: "Automatic" if value == "automatic" else "Manual",
+            horizontal=True,
+            key="photo_pricing_account_management_mode",
+            label_visibility="collapsed",
+        )
+        manual_account_management_amount = 0.0
+        if account_management_mode == "manual":
+            manual_account_management_amount = float(
+                st.number_input(
+                    "Account Management Amount",
+                    min_value=0.0,
+                    step=25.0,
+                    value=0.0,
+                    format="%.2f",
+                    key="photo_pricing_manual_account_management_amount",
+                )
+            )
 
     return (
         ApparelInputs(
@@ -391,8 +434,12 @@ def _render_apparel_inputs() -> tuple[ApparelInputs, Any]:
             post_production_hours=post_production_hours,
             model_type=model_type,
             model_hours=model_hours,
-            model_fitting_enabled=model_fitting_enabled,
+            adult_model_hours=adult_model_hours,
+            kid_model_hours=kid_model_hours,
+            model_fitting_quantity=model_fitting_quantity,
             ai_generation_quantity=ai_generation_quantity,
+            account_management_mode=account_management_mode,
+            manual_account_management_amount=manual_account_management_amount,
         ),
         production_col,
     )
@@ -402,7 +449,11 @@ def _render_summary(quote_payload: Any) -> None:
     st.subheader("Summary")
     st.metric("Image Count For Account Management", quote_payload.derived_total_image_count)
     st.write(f"Account Management Tier: **{account_management_tier_label(quote_payload.derived_total_image_count)}**")
-    st.write(f"Account Management Fee: **{_money(quote_payload.derived_account_management_fee)}**")
+    st.write(f"Automatic Account Management Fee: **{_money(quote_payload.derived_account_management_fee)}**")
+    if quote_payload.account_management_mode == "manual":
+        st.write(f"Manual Account Management Amount Used: **{_money(quote_payload.account_management_amount_used)}**")
+    else:
+        st.write(f"Account Management Fee Used: **{_money(quote_payload.account_management_amount_used)}**")
     st.divider()
     subtotal_col, total_col = st.columns(2)
     subtotal_col.metric("Running Subtotal", _money(quote_payload.subtotal))

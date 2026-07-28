@@ -21,42 +21,52 @@ from app.photography_pricing.pdf_mapper import (
 )
 
 
-TEMPLATE_PATH = Path("templates/photographytemplate.pdf")
+MAIN_TEMPLATE_PATH = Path("templates/photographytemplate.pdf")
+PRICING_TEMPLATE_PATH = Path("templates/Page 2.pdf")
+TEMPLATE_PATH = MAIN_TEMPLATE_PATH
 GOTHAM_MEDIUM_PATH = Path("fonts/Gotham-Medium.ttf")
 GOTHAM_BOLD_PATH = Path("fonts/Gotham-Bold.ttf")
 GOTHAM_MEDIUM = "Gotham-Medium"
 GOTHAM_BOLD = "Gotham-Bold"
 
-TEXT_TOP_Y = (
-    382,
-    508,
-    663,
-    776,
-    935,
-    1090,
-    1180,
-    1295,
-    1406,
+PRICING_ROW_SLOT_TOP_Y = (
+    394.23,
+    506.87,
+    664.47,
+    781.03,
+    934.75,
+    1089.86,
+    1199.94,
+    1306.06,
+    1417.88,
+    1533.52,
 )
 
-TEMPLATE_ROW_TOP_Y_BY_CODE = {
-    "on_model_image": TEXT_TOP_Y[0],
-    "laydown_silo": TEXT_TOP_Y[1],
-    "color_corrections": TEXT_TOP_Y[2],
-    "post_production": TEXT_TOP_Y[3],
-    "model_hours": TEXT_TOP_Y[4],
-    "account_management": TEXT_TOP_Y[5],
-    "on_model_detail": TEXT_TOP_Y[6],
-    "model_fitting": TEXT_TOP_Y[7],
-    "ai_generation": TEXT_TOP_Y[8],
-}
+PRICING_ROW_SEPARATOR_TOP_Y = (
+    441.13,
+    598.45,
+    711.34,
+    868.66,
+    1025.99,
+    1137.11,
+    1241.09,
+    1352.64,
+    1456.66,
+    1584.48,
+)
+
+PRICING_TABLE_MASK_LEFT_X = 100
+PRICING_TABLE_MASK_RIGHT_X = 1700
+PRICING_TABLE_MASK_TOP_Y = 345
+PRICING_TABLE_MASK_BOTTOM_Y = 1605
+PRICING_LABEL_X = 113.26
 
 QUANTITY_RIGHT_X = 1160
 UNIT_PRICE_RIGHT_X = 1452
 TOTAL_RIGHT_X = 1682
 
-SUBTOTAL_AMOUNT_Y = 1553
-TOTAL_AMOUNT_Y = 1666
+SUBTOTAL_AMOUNT_Y = 1672.24
+TOTAL_AMOUNT_Y = 1783.08
 
 PAGE1_COMMENTS_LEFT_X = 165
 PAGE1_COMMENTS_TOP_Y = 1030
@@ -95,6 +105,7 @@ PAGE1_HEADER_EMAIL_ROW_GAP = 55
 TEXT = HexColor("#002C47")
 PAGE1_TEXT = HexColor("#002C47")
 PAGE1_HEADER_TEXT = HexColor("#FFFFFF")
+PAGE2_TABLE_BACKGROUND = HexColor("#FFFFFF")
 
 TEMPLATE_COORDINATE_SCALE = 3
 
@@ -149,7 +160,7 @@ def _pdf_y(page_height: float, top_y: float) -> float:
     return page_height - top_y
 
 
-def _draw_row_numbers(
+def _draw_pricing_row(
     c: canvas.Canvas,
     page_height: float,
     top_y: float,
@@ -159,6 +170,7 @@ def _draw_row_numbers(
 
     c.setFillColor(TEXT)
     c.setFont(GOTHAM_MEDIUM, ROW_FONT_SIZE)
+    c.drawString(PRICING_LABEL_X, y, row.label)
     c.drawRightString(QUANTITY_RIGHT_X, y, row.quantity)
     c.drawRightString(UNIT_PRICE_RIGHT_X, y, row.unit_price)
     c.drawRightString(TOTAL_RIGHT_X, y, row.total)
@@ -661,17 +673,40 @@ def _page2_overlay(
         pagesize=(page_width, page_height),
     )
 
-    for row in payload.rows:
-        top_y = TEMPLATE_ROW_TOP_Y_BY_CODE.get(
-            row.code
+    c.setFillColor(PAGE2_TABLE_BACKGROUND)
+    c.rect(
+        PRICING_TABLE_MASK_LEFT_X,
+        _pdf_y(page_height, PRICING_TABLE_MASK_BOTTOM_Y),
+        PRICING_TABLE_MASK_RIGHT_X - PRICING_TABLE_MASK_LEFT_X,
+        PRICING_TABLE_MASK_BOTTOM_Y - PRICING_TABLE_MASK_TOP_Y,
+        stroke=0,
+        fill=1,
+    )
+
+    c.setStrokeColor(TEXT)
+    c.setLineWidth(2)
+
+    for index, row in enumerate(payload.rows):
+        if index >= len(PRICING_ROW_SLOT_TOP_Y):
+            break
+
+        _draw_pricing_row(
+            c,
+            page_height,
+            PRICING_ROW_SLOT_TOP_Y[index],
+            row,
         )
 
-        if top_y is not None:
-            _draw_row_numbers(
-                c,
+        if index < len(PRICING_ROW_SEPARATOR_TOP_Y):
+            separator_y = _pdf_y(
                 page_height,
-                top_y,
-                row,
+                PRICING_ROW_SEPARATOR_TOP_Y[index],
+            )
+            c.line(
+                PRICING_TABLE_MASK_LEFT_X + 15,
+                separator_y,
+                PRICING_TABLE_MASK_RIGHT_X - 30,
+                separator_y,
             )
 
     _draw_totals(
@@ -686,56 +721,98 @@ def _page2_overlay(
     return overlay
 
 
+def _page_contains_old_pricing_template(page: Any) -> bool:
+    text = page.extract_text() or ""
+    pricing_markers = (
+        "On-model detail",
+        "Model Fitting",
+        "AI Gene",
+    )
+    return all(marker in text for marker in pricing_markers)
+
+
+def _merge_page1_overlay(
+    page: Any,
+    page1_comments_payload: dict[str, Any] | None,
+    page1_header_payload: dict[str, Any] | None,
+) -> None:
+    if not (page1_comments_payload or page1_header_payload):
+        return
+
+    width = float(page.mediabox.width)
+    height = float(page.mediabox.height)
+
+    overlay_pdf = PdfReader(
+        _page1_overlay(
+            page_width=width,
+            page_height=height,
+            comments_payload=page1_comments_payload,
+            header_payload=page1_header_payload,
+        )
+    )
+
+    page.merge_page(
+        overlay_pdf.pages[0]
+    )
+
+
+def _merge_page2_overlay(
+    page: Any,
+    payload: Page2PricingPayload,
+) -> None:
+    width = float(page.mediabox.width)
+    height = float(page.mediabox.height)
+
+    overlay_pdf = PdfReader(
+        _page2_overlay(
+            page_width=width,
+            page_height=height,
+            payload=payload,
+        )
+    )
+
+    page.merge_page(
+        overlay_pdf.pages[0]
+    )
+
+
 def generate_page2_pricing_pdf(
     quote: Any,
-    template_path: Path = TEMPLATE_PATH,
+    template_path: Path = MAIN_TEMPLATE_PATH,
     page1_comments_payload: dict[str, Any] | None = None,
     page1_header_payload: dict[str, Any] | None = None,
+    pricing_template_path: Path = PRICING_TEMPLATE_PATH,
 ) -> bytes:
     payload = build_page2_pricing_payload(quote)
 
-    reader = PdfReader(str(template_path))
+    main_reader = PdfReader(str(template_path))
+    pricing_reader = PdfReader(str(pricing_template_path))
     writer = PdfWriter()
 
-    for index, page in enumerate(reader.pages):
+    first_page = main_reader.pages[0]
+    _merge_page1_overlay(
+        first_page,
+        page1_comments_payload,
+        page1_header_payload,
+    )
+    writer.add_page(first_page)
+
+    pricing_page = pricing_reader.pages[0]
+    _merge_page2_overlay(
+        pricing_page,
+        payload,
+    )
+    writer.add_page(pricing_page)
+
+    for index, page in enumerate(
+        main_reader.pages[1:],
+        start=1,
+    ):
         if (
-            index == 0
-            and (
-                page1_comments_payload
-                or page1_header_payload
-            )
+            index == 1
+            and _page_contains_old_pricing_template(page)
         ):
-            width = float(page.mediabox.width)
-            height = float(page.mediabox.height)
-
-            overlay_pdf = PdfReader(
-                _page1_overlay(
-                    page_width=width,
-                    page_height=height,
-                    comments_payload=page1_comments_payload,
-                    header_payload=page1_header_payload,
-                )
-            )
-
-            page.merge_page(
-                overlay_pdf.pages[0]
-            )
-
-        elif index == 1:
-            width = float(page.mediabox.width)
-            height = float(page.mediabox.height)
-
-            overlay_pdf = PdfReader(
-                _page2_overlay(
-                    page_width=width,
-                    page_height=height,
-                    payload=payload,
-                )
-            )
-
-            page.merge_page(
-                overlay_pdf.pages[0]
-            )
+            continue
 
         writer.add_page(page)
 

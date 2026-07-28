@@ -4,7 +4,8 @@ from typing import Any, Literal
 
 JobType = Literal["Apparel", "Misc"]
 LaydownSiloType = Literal["shoes", "else/default"]
-ModelType = Literal["kid", "adult"]
+ModelType = Literal["kid", "adult", "both"]
+AccountManagementMode = Literal["automatic", "manual"]
 
 
 @dataclass(frozen=True)
@@ -17,8 +18,13 @@ class ApparelInputs:
     post_production_hours: float = 0.0
     model_type: ModelType = "adult"
     model_hours: float = 0.0
+    adult_model_hours: float = 0.0
+    kid_model_hours: float = 0.0
+    model_fitting_quantity: int = 0
     model_fitting_enabled: bool = False
     ai_generation_quantity: int = 0
+    account_management_mode: AccountManagementMode = "automatic"
+    manual_account_management_amount: float = 0.0
 
     def to_payload(self) -> dict[str, Any]:
         return asdict(self)
@@ -42,6 +48,9 @@ class QuotePayload:
     apparel_inputs: ApparelInputs
     derived_total_image_count: int
     derived_account_management_fee: float
+    account_management_mode: AccountManagementMode
+    manual_account_management_amount: float
+    account_management_amount_used: float
     line_items: tuple[QuoteLine, ...]
     subtotal: float
     total: float
@@ -52,6 +61,9 @@ class QuotePayload:
             "apparel_inputs": self.apparel_inputs.to_payload(),
             "derived_total_image_count": self.derived_total_image_count,
             "derived_account_management_fee": self.derived_account_management_fee,
+            "account_management_mode": self.account_management_mode,
+            "manual_account_management_amount": self.manual_account_management_amount,
+            "account_management_amount_used": self.account_management_amount_used,
             "line_items": [line.to_payload() for line in self.line_items],
             "subtotal": self.subtotal,
             "total": self.total,
