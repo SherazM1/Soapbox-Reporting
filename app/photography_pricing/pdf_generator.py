@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
 from datetime import date, datetime
 from io import BytesIO
@@ -223,12 +222,7 @@ def _format_header_date(value: Any) -> str:
 
 
 def _readable_company_name(value: Any) -> str:
-    text = " ".join(str(value or "").split())
-
-    if re.fullmatch(r"\d+", text):
-        return ""
-
-    return text
+    return " ".join(str(value or "").split())
 
 
 def _label_value(label: str, value: Any) -> str:

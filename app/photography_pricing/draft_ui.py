@@ -47,18 +47,30 @@ def _contact_id_sets() -> tuple[set[str], set[str]]:
 
 
 def _apply_version(version: QuoteDraftVersion) -> None:
+    st.session_state["photo_pricing_pending_draft_restore"] = {
+        "draft_id": version.draft_id,
+        "version_number": version.version_number,
+        "payload": version.payload,
+    }
+    st.rerun()
+
+
+def apply_pending_draft_restore() -> None:
+    pending = st.session_state.pop("photo_pricing_pending_draft_restore", None)
+    if not pending:
+        return
+
     client_ids, internal_ids = _contact_id_sets()
     warnings = restore_draft_payload_to_state(
-        version.payload,
+        pending.get("payload", {}),
         st.session_state,
         available_client_ids=client_ids,
         available_internal_ids=internal_ids,
     )
-    st.session_state["photo_pricing_loaded_draft_id"] = version.draft_id
-    st.session_state["photo_pricing_loaded_draft_version"] = version.version_number
+    st.session_state["photo_pricing_loaded_draft_id"] = pending.get("draft_id")
+    st.session_state["photo_pricing_loaded_draft_version"] = pending.get("version_number")
     st.session_state["photo_pricing_draft_warnings"] = warnings
     st.session_state.pop("photo_pricing_generated_pdf", None)
-    st.rerun()
 
 
 def _current_payload(

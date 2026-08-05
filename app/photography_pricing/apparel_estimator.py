@@ -11,6 +11,7 @@ from app.contact_management.contact_ui import (
 )
 from app.photography_pricing.comments_builder import build_page1_comments_payload
 from app.photography_pricing.draft_ui import render_drafts_section
+from app.photography_pricing.draft_ui import apply_pending_draft_restore
 from app.photography_pricing.models import ApparelInputs
 from app.photography_pricing.pricing_rules import (
     AI_GENERATION_MARKUP_RATE,
@@ -462,6 +463,8 @@ def _render_summary(quote_payload: Any) -> None:
 
 
 def render_photography_pricing() -> None:
+    apply_pending_draft_restore()
+
     st.title("Photography Pricing")
 
     if st.button("Back to Hub", key="photo_pricing_back_to_hub"):

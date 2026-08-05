@@ -26,8 +26,7 @@ from app.contact_management.repositories import (
 
 
 def _readable_company_name(value: object) -> str:
-    text = " ".join(str(value or "").split())
-    return "" if text.isdigit() else text
+    return " ".join(str(value or "").split())
 
 
 def _handle_contact_error(exc: Exception) -> None:

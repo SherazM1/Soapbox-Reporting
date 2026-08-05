@@ -1,4 +1,3 @@
-import re
 import unittest
 from datetime import date, datetime
 from io import BytesIO
@@ -258,10 +257,10 @@ class PhotographyContactIntegrationTests(unittest.TestCase):
         self.assertIn("Missing client company for the page 1 header.", errors)
         self.assertIn("Missing internal contact title for the page 1 header.", errors)
 
-    def test_numeric_only_company_value_is_suppressed(self) -> None:
+    def test_numeric_only_company_value_is_accepted(self) -> None:
         items = build_page1_header_items({"selected_client": {"company_name": "123456789"}})
 
-        self.assertNotIn("123456789", [item.text for item in items])
+        self.assertIn("123456789", [item.text for item in items])
 
     def test_long_internal_title_fits_without_ellipsis_when_space_permits(self) -> None:
         _register_gotham_fonts()
