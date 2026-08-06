@@ -1,7 +1,9 @@
 import unittest
 from datetime import date, datetime
 from pathlib import Path
+from unittest.mock import patch
 
+from app.photography_pricing import draft_ui
 from app.photography_pricing.draft_models import QuoteDraftVersion
 from app.photography_pricing.draft_repository import (
     DuplicateDraftVersionError,
@@ -184,6 +186,81 @@ class PhotographyDraftTests(unittest.TestCase):
             "Untitled Quote — No Client — 2026-07-28",
             build_draft_name({"quote_metadata": {"quote_created_date": "2026-07-28"}}),
         )
+
+    def test_draft_ui_uses_requested_draft_name_when_saving_new_draft(self):
+        self.assertEqual(
+            "test 4",
+            draft_ui._draft_name_for_save(sample_payload(), None, " test 4 "),
+        )
+
+    def test_draft_ui_falls_back_to_generated_draft_name(self):
+        self.assertIn(
+            "Spring Apparel Estimate",
+            draft_ui._draft_name_for_save(sample_payload(), None, ""),
+        )
+
+    def test_draft_ui_migrates_legacy_state_without_overwriting_explicit_state(self):
+        state = {
+            "photo_pricing_loaded_draft_id": "legacy-active",
+            "photo_pricing_loaded_draft_version": 2,
+            "photo_pricing_open_draft_id": "legacy-selected",
+        }
+
+        draft_ui._migrate_legacy_draft_state(state)
+
+        self.assertEqual("legacy-active", state[draft_ui.ACTIVE_DRAFT_ID_KEY])
+        self.assertEqual(2, state[draft_ui.ACTIVE_VERSION_KEY])
+        self.assertEqual("legacy-selected", state[draft_ui.SELECTED_DRAFT_ID_KEY])
+
+        state[draft_ui.ACTIVE_DRAFT_ID_KEY] = "explicit-active"
+        state[draft_ui.SELECTED_DRAFT_ID_KEY] = "explicit-selected"
+        draft_ui._migrate_legacy_draft_state(state)
+
+        self.assertEqual("explicit-active", state[draft_ui.ACTIVE_DRAFT_ID_KEY])
+        self.assertEqual("explicit-selected", state[draft_ui.SELECTED_DRAFT_ID_KEY])
+
+    def test_draft_ui_active_draft_can_be_cleared_without_clearing_selected_draft(self):
+        state = {
+            draft_ui.ACTIVE_DRAFT_ID_KEY: "active-draft",
+            draft_ui.ACTIVE_VERSION_KEY: 3,
+            draft_ui.ACTIVE_DRAFT_NAME_KEY: "Active Draft",
+            draft_ui.SELECTED_DRAFT_ID_KEY: "selected-draft",
+            "photo_pricing_draft_name": "Active Draft",
+        }
+
+        with patch("app.photography_pricing.draft_ui.st.session_state", state):
+            draft_ui._set_active_draft(None, None)
+
+        self.assertNotIn(draft_ui.ACTIVE_DRAFT_ID_KEY, state)
+        self.assertNotIn(draft_ui.ACTIVE_VERSION_KEY, state)
+        self.assertNotIn(draft_ui.ACTIVE_DRAFT_NAME_KEY, state)
+        self.assertEqual("selected-draft", state[draft_ui.SELECTED_DRAFT_ID_KEY])
+        self.assertEqual("Active Draft", state["photo_pricing_draft_name"])
+
+    def test_draft_ui_loading_active_draft_syncs_selected_draft(self):
+        state = {}
+
+        with patch("app.photography_pricing.draft_ui.st.session_state", state):
+            draft_ui._set_active_draft("draft-2", 1, "test 4")
+
+        self.assertEqual("draft-2", state[draft_ui.ACTIVE_DRAFT_ID_KEY])
+        self.assertEqual("draft-2", state[draft_ui.SELECTED_DRAFT_ID_KEY])
+        self.assertEqual(1, state[draft_ui.ACTIVE_VERSION_KEY])
+        self.assertEqual("test 4", state[draft_ui.ACTIVE_DRAFT_NAME_KEY])
+        self.assertNotIn("photo_pricing_draft_name", state)
+
+    def test_draft_ui_pending_load_can_sync_draft_name_before_widgets_render(self):
+        state = {}
+
+        with patch("app.photography_pricing.draft_ui.st.session_state", state):
+            draft_ui._set_active_draft(
+                "draft-2",
+                1,
+                "test 4",
+                sync_draft_name_input=True,
+            )
+
+        self.assertEqual("test 4", state["photo_pricing_draft_name"])
 
     def test_missing_optional_fields_receive_defaults(self):
         normalized = normalize_draft_payload({})
