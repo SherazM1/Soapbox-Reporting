@@ -222,6 +222,37 @@ def get_draft(draft_id: str, *, conn: object | None = None) -> QuoteDraft | None
         return _draft_from_row(row) if row else None
 
 
+
+def delete_draft(
+    draft_id: str,
+    *,
+    conn: object | None = None,
+) -> None:
+    """Delete a quote draft and its version history."""
+
+    with _connection_context(conn) as active_conn:
+        try:
+            deleted_row = _fetchone(
+                active_conn,
+                """
+                DELETE FROM quote_drafts
+                WHERE id = %s
+                RETURNING id
+                """,
+                (draft_id,),
+            )
+
+            if deleted_row is None:
+                raise DraftRepositoryError("Quote draft was not found.")
+
+            if conn is None:
+                active_conn.commit()
+        except Exception as exc:
+            if conn is None:
+                active_conn.rollback()
+            raise _translate_db_error(exc) from exc
+
+
 def list_drafts(*, limit: int = 50, conn: object | None = None) -> list[QuoteDraft]:
     with _connection_context(conn) as active_conn:
         rows = _fetchall(

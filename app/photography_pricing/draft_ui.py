@@ -20,6 +20,7 @@ ACTIVE_DRAFT_NAME_KEY = "photo_pricing_active_draft_name"
 SELECTED_DRAFT_ID_KEY = "photo_pricing_selected_draft_id"
 DRAFT_NOTICE_KEY = "photo_pricing_draft_notice"
 PENDING_DRAFT_LOAD_KEY = "photo_pricing_pending_draft_load"
+DELETE_CONFIRM_DRAFT_ID_KEY = "photo_pricing_delete_confirm_draft_id"
 
 LEGACY_LOADED_DRAFT_ID_KEY = "photo_pricing_loaded_draft_id"
 LEGACY_LOADED_VERSION_KEY = "photo_pricing_loaded_draft_version"
@@ -270,6 +271,91 @@ def render_drafts_section(
                     except Exception:
                         st.error("Draft could not be opened.")
 
+            with open_cols[1]:
+                if st.button(
+                    "Delete Draft",
+                    key="photo_pricing_delete_draft",
+                ):
+                    st.session_state[DELETE_CONFIRM_DRAFT_ID_KEY] = selected_draft_id
+                    st.rerun()
+
+            pending_delete_draft_id = st.session_state.get(
+                DELETE_CONFIRM_DRAFT_ID_KEY
+            )
+
+            if (
+                pending_delete_draft_id
+                and pending_delete_draft_id != selected_draft_id
+            ):
+                st.session_state.pop(DELETE_CONFIRM_DRAFT_ID_KEY, None)
+                pending_delete_draft_id = None
+
+            if pending_delete_draft_id == selected_draft_id:
+                st.warning(
+                    f'Delete "{selected_draft.draft_name}" and all of its '
+                    "saved versions? This cannot be undone."
+                )
+
+                confirm_cols = st.columns(2)
+
+                with confirm_cols[0]:
+                    if st.button(
+                        "Confirm Delete",
+                        key="photo_pricing_confirm_delete_draft",
+                        type="primary",
+                    ):
+                        try:
+                            draft_repository.delete_draft(
+                                str(selected_draft_id)
+                            )
+
+                            if selected_draft_id == active_draft_id:
+                                _set_active_draft(None, None)
+
+                            st.session_state.pop(
+                                SELECTED_DRAFT_ID_KEY,
+                                None,
+                            )
+                            st.session_state.pop(
+                                DELETE_CONFIRM_DRAFT_ID_KEY,
+                                None,
+                            )
+                            st.session_state.pop(
+                                "photo_pricing_restore_version_number",
+                                None,
+                            )
+
+                            pending_load = st.session_state.get(
+                                PENDING_DRAFT_LOAD_KEY
+                            )
+                            if (
+                                pending_load
+                                and pending_load.get("draft_id")
+                                == selected_draft_id
+                            ):
+                                st.session_state.pop(
+                                    PENDING_DRAFT_LOAD_KEY,
+                                    None,
+                                )
+
+                            st.session_state[DRAFT_NOTICE_KEY] = (
+                                f'Draft "{selected_draft.draft_name}" deleted.'
+                            )
+                            st.rerun()
+                        except Exception:
+                            st.error("Draft could not be deleted.")
+
+                with confirm_cols[1]:
+                    if st.button(
+                        "Cancel",
+                        key="photo_pricing_cancel_delete_draft",
+                    ):
+                        st.session_state.pop(
+                            DELETE_CONFIRM_DRAFT_ID_KEY,
+                            None,
+                        )
+                        st.rerun()
+
             versions = _safe_list_versions(str(selected_draft_id))
             if versions:
                 st.markdown("##### Version History")
@@ -283,15 +369,23 @@ def render_drafts_section(
                     version_numbers,
                     key="photo_pricing_restore_version_number",
                 )
-                with open_cols[1]:
-                    if st.button("Restore Version", key="photo_pricing_restore_version"):
-                        try:
-                            restored = draft_repository.restore_version_as_latest(
-                                str(selected_draft_id),
-                                int(restore_version_number),
-                                saved_by_contact_id=st.session_state.get("photo_pricing_internal_contact_id"),
-                                version_note=version_note or "Restored from older version",
-                            )
-                            _queue_draft_load(restored, selected_draft.draft_name)
-                        except Exception:
-                            st.error("Version could not be restored.")
+                if st.button(
+                    "Restore Version",
+                    key="photo_pricing_restore_version",
+                ):
+                    try:
+                        restored = draft_repository.restore_version_as_latest(
+                            str(selected_draft_id),
+                            int(restore_version_number),
+                            saved_by_contact_id=st.session_state.get(
+                                "photo_pricing_internal_contact_id"
+                            ),
+                            version_note=version_note
+                            or "Restored from older version",
+                        )
+                        _queue_draft_load(
+                            restored,
+                            selected_draft.draft_name,
+                        )
+                    except Exception:
+                        st.error("Version could not be restored.")
