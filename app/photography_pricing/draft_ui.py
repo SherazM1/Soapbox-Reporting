@@ -18,6 +18,7 @@ ACTIVE_DRAFT_ID_KEY = "photo_pricing_active_draft_id"
 ACTIVE_VERSION_KEY = "photo_pricing_active_version_number"
 ACTIVE_DRAFT_NAME_KEY = "photo_pricing_active_draft_name"
 SELECTED_DRAFT_ID_KEY = "photo_pricing_selected_draft_id"
+DRAFT_NOTICE_KEY = "photo_pricing_draft_notice"
 PENDING_DRAFT_LOAD_KEY = "photo_pricing_pending_draft_load"
 
 LEGACY_LOADED_DRAFT_ID_KEY = "photo_pricing_loaded_draft_id"
@@ -65,10 +66,12 @@ def _set_active_draft(
     draft_name: str | None = None,
     *,
     sync_draft_name_input: bool = False,
+    sync_selected_draft: bool = False,
 ) -> None:
     if draft_id:
         st.session_state[ACTIVE_DRAFT_ID_KEY] = draft_id
-        st.session_state[SELECTED_DRAFT_ID_KEY] = draft_id
+        if sync_selected_draft:
+            st.session_state[SELECTED_DRAFT_ID_KEY] = draft_id
     else:
         st.session_state.pop(ACTIVE_DRAFT_ID_KEY, None)
 
@@ -118,6 +121,7 @@ def apply_pending_draft_restore() -> None:
         pending.get("version_number"),
         pending.get("draft_name"),
         sync_draft_name_input=True,
+        sync_selected_draft=True
     )
     st.session_state["photo_pricing_draft_warnings"] = warnings
     st.session_state.pop("photo_pricing_generated_pdf", None)
@@ -153,6 +157,10 @@ def render_drafts_section(
     _migrate_legacy_draft_state(st.session_state)
 
     with st.expander("Drafts"):
+        draft_notice = st.session_state.pop(DRAFT_NOTICE_KEY, None)
+        if draft_notice:
+            st.success(draft_notice)
+
         for warning in st.session_state.pop("photo_pricing_draft_warnings", []):
             st.warning(warning)
 
@@ -196,10 +204,9 @@ def render_drafts_section(
                         saved_by_contact_id=payload["contacts"].get("internal_contact_id"),
                         version_note=version_note or None,
                     )
-                    _set_active_draft(draft.id, version.version_number, draft.draft_name)
-                    active_draft_id = draft.id
-                    render_active_status()
-                    st.success(f"Draft saved as version {version.version_number}.")
+                    _set_active_draft(draft.id, version.version_number, draft.draft_name, sync_selected_draft=True,)
+                    st.session_state[DRAFT_NOTICE_KEY] = ((f"Draft saved as version {version.version_number} and is now the active draft."))
+                    st.rerun()
                 except Exception:
                     st.error("Draft could not be saved.")
 
@@ -214,8 +221,8 @@ def render_drafts_section(
                         version_note=version_note or None,
                     )
                     st.session_state[ACTIVE_VERSION_KEY] = version.version_number
-                    render_active_status()
-                    st.success(f"Version {version.version_number} saved.")
+                    st.session_state[DRAFT_NOTICE_KEY] = (f"Version {version.version_number} saved")
+                    st.rerun()
                 except Exception:
                     st.error("New version could not be saved.")
 
@@ -229,20 +236,31 @@ def render_drafts_section(
 
         drafts = _safe_list_drafts()
         if drafts:
-            selected_options = [draft.id for draft in drafts]
-            if st.session_state.get(SELECTED_DRAFT_ID_KEY) not in selected_options:
-                st.session_state[SELECTED_DRAFT_ID_KEY] = selected_options[0]
+            draft_by_id = {draft.id: draft for draft in drafts}
+            selected_options = list(draft_by_id)
+
+            current_selected_id = st.session_state.get(SELECTED_DRAFT_ID_KEY)
+            if current_selected_id not in draft_by_id:
+                if active_draft_id in draft_by_id:
+                    st.session_state[SELECTED_DRAFT_ID_KEY] = active_draft_id
+                else:
+                    st.session_state[SELECTED_DRAFT_ID_KEY] = selected_options[0]
 
             selected_draft_id = st.selectbox(
                 "Open Draft",
                 selected_options,
-                format_func=lambda draft_id: _draft_label(next((draft for draft in drafts if draft.id == draft_id), drafts[0])),
+                format_func=lambda draft_id: _draft_label(draft_by_id[draft_id]),
                 key=SELECTED_DRAFT_ID_KEY,
             )
-            selected_draft = next((draft for draft in drafts if draft.id == selected_draft_id), drafts[0])
+
+            selected_draft = draft_by_id[selected_draft_id]
             open_cols = st.columns(2)
             with open_cols[0]:
-                if st.button("Load Draft", key="photo_pricing_open_draft"):
+                if st.button(
+                    "Load Draft",
+                    key="photo_pricing_open_draft",
+                    disabled=selected_draft_id == active_draft_id,
+                ):
                     try:
                         version = draft_repository.get_latest_version(str(selected_draft_id))
                         if version is None:
