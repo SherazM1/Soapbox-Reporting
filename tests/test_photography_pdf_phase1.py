@@ -6,6 +6,7 @@ from pathlib import Path
 from pypdf import PdfReader
 from reportlab.pdfgen import canvas
 
+from app.photography_pricing.comments_builder import build_page1_comments_payload
 from app.photography_pricing.models import ApparelInputs
 from app.photography_pricing.pdf_generator import PRICING_ROW_SLOT_TOP_Y, _page2_overlay, generate_page2_pricing_pdf
 from app.photography_pricing.pdf_mapper import Page2PricingPayload, PdfPricingRow, build_page2_pricing_payload
@@ -17,11 +18,51 @@ def _row_codes(payload: Page2PricingPayload) -> list[str]:
 
 
 def _write_pdf(path: Path, page_text: list[str]) -> None:
-    c = canvas.Canvas(str(path), pagesize=(612, 792))
+    c = canvas.Canvas(str(path), pagesize=(1785, 2526))
     for text in page_text:
-        c.drawString(72, 720, text)
+        c.drawString(72, 2450, text)
         c.showPage()
     c.save()
+
+
+def _header_payload() -> dict:
+    return {
+        "quote_metadata": {
+            "quote_title": "Large Estimate",
+            "reference_number": "TEST-REF",
+            "quote_created_date": "2026-08-14",
+            "quote_expiration_date": "2026-11-14",
+        },
+        "selected_client": {
+            "company_name": "Acme",
+            "full_name": "Ada Lovelace",
+            "email": "ada@example.com",
+        },
+        "selected_internal": {
+            "name": "Ashley Watson",
+            "title": "Photography Producer",
+            "email": "ashley@example.com",
+        },
+    }
+
+
+def _comments_payload(project_count: int) -> dict:
+    return build_page1_comments_payload(
+        selected_internal_contact={
+            "name": "Ashley Watson",
+        },
+        estimate_subject="Large Estimate",
+        subtitle_line="Spring27",
+        project_entries=[
+            {
+                "project_name": f"Project {index:02d}",
+                "on_model": index,
+                "on_model_detail": index,
+            }
+            for index in range(1, project_count + 1)
+        ],
+        custom_notes="",
+    ).to_payload()
 
 
 class PhotographyPdfPhase1Tests(unittest.TestCase):
@@ -189,6 +230,70 @@ class PhotographyPdfPhase1Tests(unittest.TestCase):
         self.assertIn("NEW PAGE 2", texts[1])
         self.assertIn("MAIN PAGE 3", texts[2])
         self.assertIn("MAIN PAGE 4", texts[3])
+        self.assertFalse(any("OLD PAGE 2" in text for text in texts))
+
+    def test_small_page1_comments_do_not_add_continuation_page(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            main_template = tmp_path / "main.pdf"
+            pricing_template = tmp_path / "pricing.pdf"
+            _write_pdf(
+                main_template,
+                [
+                    "MAIN PAGE 1",
+                    "On-model detail Model Fitting AI Gene OLD PAGE 2",
+                    "MAIN PAGE 3",
+                    "MAIN PAGE 4",
+                ],
+            )
+            _write_pdf(pricing_template, ["NEW PAGE 2"])
+
+            pdf_bytes = generate_page2_pricing_pdf(
+                build_apparel_quote(ApparelInputs(on_model_image_quantity=1)),
+                template_path=main_template,
+                pricing_template_path=pricing_template,
+                page1_comments_payload=_comments_payload(1),
+                page1_header_payload=_header_payload(),
+            )
+            reader = PdfReader(BytesIO(pdf_bytes))
+            texts = [page.extract_text() or "" for page in reader.pages]
+
+        self.assertEqual(4, len(reader.pages))
+        self.assertIn("Project 01", texts[0])
+        self.assertIn("NEW PAGE 2", texts[1])
+
+    def test_overflowing_page1_comments_add_continuation_before_pricing_page(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            main_template = tmp_path / "main.pdf"
+            pricing_template = tmp_path / "pricing.pdf"
+            _write_pdf(
+                main_template,
+                [
+                    "MAIN PAGE 1",
+                    "On-model detail Model Fitting AI Gene OLD PAGE 2",
+                    "MAIN PAGE 3",
+                    "MAIN PAGE 4",
+                ],
+            )
+            _write_pdf(pricing_template, ["NEW PAGE 2"])
+
+            pdf_bytes = generate_page2_pricing_pdf(
+                build_apparel_quote(ApparelInputs(on_model_image_quantity=1)),
+                template_path=main_template,
+                pricing_template_path=pricing_template,
+                page1_comments_payload=_comments_payload(12),
+                page1_header_payload=_header_payload(),
+            )
+            reader = PdfReader(BytesIO(pdf_bytes))
+            texts = [page.extract_text() or "" for page in reader.pages]
+            all_text = "\n".join(texts)
+
+        self.assertEqual(5, len(reader.pages))
+        for index in range(1, 13):
+            self.assertIn(f"Project {index:02d}", all_text)
+        self.assertIn("Comments continued", texts[1])
+        self.assertIn("NEW PAGE 2", texts[2])
         self.assertFalse(any("OLD PAGE 2" in text for text in texts))
 
 
