@@ -124,7 +124,7 @@ def _render_comments_composer(selected_internal_contact: dict[str, str]) -> dict
 
     rendered_projects: list[dict[str, Any]] = []
     for index, _row in enumerate(project_rows):
-        row_cols = st.columns([1.5, 0.7, 0.8, 0.8, 0.7, 0.8, 0.45])
+        row_cols = st.columns([1.5, 0.7, 0.9, 0.8, 0.8, 0.7, 0.8, 0.45])
         with row_cols[0]:
             _field_label("Project Name")
             project_name = st.text_input(
@@ -136,24 +136,30 @@ def _render_comments_composer(selected_internal_contact: dict[str, str]) -> dict
             _field_label("On Model")
             on_model = _project_number_input("On Model", f"photo_pricing_comments_on_model_{index}")
         with row_cols[2]:
+            _field_label("On Model Details")
+            on_model_detail = _project_number_input(
+                "On Model Details",
+                f"photo_pricing_comments_on_model_detail_{index}",
+            )
+        with row_cols[3]:
             _field_label("Laydown/Detail")
             laydown_detail = _project_number_input(
                 "Laydown/Detail",
                 f"photo_pricing_comments_laydown_detail_{index}",
             )
-        with row_cols[3]:
+        with row_cols[4]:
             _field_label("Color Correct")
             color_correct = _project_number_input(
                 "Color Correct",
                 f"photo_pricing_comments_color_correct_{index}",
             )
-        with row_cols[4]:
+        with row_cols[5]:
             _field_label("Post")
             post = _project_number_input("Post", f"photo_pricing_comments_post_{index}")
-        with row_cols[5]:
+        with row_cols[6]:
             _field_label("Model Hours")
             model_hours = _project_number_input("Model Hours", f"photo_pricing_comments_model_hours_{index}")
-        with row_cols[6]:
+        with row_cols[7]:
             st.write("")
             st.write("")
             if len(project_rows) > 1 and st.button("Remove", key=f"photo_pricing_comments_remove_{index}"):
@@ -164,6 +170,7 @@ def _render_comments_composer(selected_internal_contact: dict[str, str]) -> dict
             {
                 "project_name": project_name,
                 "on_model": on_model,
+                "on_model_detail": on_model_detail,
                 "laydown_detail": laydown_detail,
                 "color_correct": color_correct,
                 "post": post,

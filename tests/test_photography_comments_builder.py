@@ -35,6 +35,7 @@ class PhotographyCommentsBuilderTests(unittest.TestCase):
                 {
                     "project_name": "",
                     "on_model": 0,
+                    "on_model_detail": 0,
                     "laydown_detail": 0,
                     "color_correct": 0,
                     "post": 0,
@@ -95,6 +96,7 @@ class PhotographyCommentsBuilderTests(unittest.TestCase):
                 {
                     "project_name": "Kids Denim",
                     "on_model": 12,
+                    "on_model_detail": 2,
                     "laydown_detail": 0,
                     "color_correct": 3,
                     "post": 0,
@@ -111,7 +113,7 @@ class PhotographyCommentsBuilderTests(unittest.TestCase):
             "Spring27 - Bangladesh\n"
             "Estimate includes the following projects:\n\n"
             "Kids Denim\n"
-            "On Model= 12, Color correct: 3, Model hrs= 4\n\n"
+            "On Model= 12, On Model Details= 2, Color correct: 3, Model hrs= 4\n\n"
             "Rush timing requested.\n\n"
             "1 project=",
         )
@@ -144,6 +146,7 @@ class PhotographyCommentsBuilderTests(unittest.TestCase):
                 {
                     "project_name": "Kids Denim",
                     "on_model": 12,
+                    "on_model_detail": 2,
                     "laydown_detail": 0,
                     "color_correct": 3,
                     "post": 0,
@@ -159,7 +162,7 @@ class PhotographyCommentsBuilderTests(unittest.TestCase):
         self.assertIn("Photography Estimate for Sam's Club Kids Apparel Project:", payload.rendered_comments_block)
         self.assertIn("Spring27 - Bangladesh", payload.rendered_comments_block)
         self.assertIn("Kids Denim", payload.rendered_comments_block)
-        self.assertIn("On Model= 12, Color correct: 3, Model hrs= 4", payload.rendered_comments_block)
+        self.assertIn("On Model= 12, On Model Details= 2, Color correct: 3, Model hrs= 4", payload.rendered_comments_block)
         self.assertNotIn("Laydown/Detail=0", payload.rendered_comments_block)
         self.assertIn("Rush timing requested.", payload.rendered_comments_block)
 
@@ -175,7 +178,7 @@ class PhotographyCommentsBuilderTests(unittest.TestCase):
             subtitle_line="",
             project_entries=[
                 {"project_name": "Project A", "on_model": 2},
-                {"project_name": "Project B", "laydown_detail": 5},
+                {"project_name": "Project B", "on_model_detail": 3, "laydown_detail": 5},
             ],
             custom_notes="",
         )
@@ -184,6 +187,7 @@ class PhotographyCommentsBuilderTests(unittest.TestCase):
         self.assertEqual(payload.project_count_label, "2 projects=")
         self.assertIn("Project A", payload.rendered_comments_block)
         self.assertIn("Project B", payload.rendered_comments_block)
+        self.assertIn("On Model Details= 3", payload.rendered_comments_block)
         self.assertTrue(payload.rendered_comments_block.endswith("2 projects="))
 
 

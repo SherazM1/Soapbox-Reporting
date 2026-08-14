@@ -52,6 +52,7 @@ PRICING_STATE_KEYS = {
 PROJECT_FIELDS = (
     "project_name",
     "on_model",
+    "on_model_detail",
     "laydown_detail",
     "color_correct",
     "post",
@@ -103,6 +104,7 @@ def _project_entry_from_state(state: dict[str, Any], index: int) -> dict[str, An
     return {
         "project_name": _text(state.get(f"photo_pricing_comments_project_name_{index}")),
         "on_model": _decimal_text(state.get(f"photo_pricing_comments_on_model_{index}")),
+        "on_model_detail": _decimal_text(state.get(f"photo_pricing_comments_on_model_detail_{index}")),
         "laydown_detail": _decimal_text(state.get(f"photo_pricing_comments_laydown_detail_{index}")),
         "color_correct": _decimal_text(state.get(f"photo_pricing_comments_color_correct_{index}")),
         "post": _decimal_text(state.get(f"photo_pricing_comments_post_{index}")),
@@ -125,6 +127,7 @@ def _project_entries(payload: dict[str, Any]) -> list[dict[str, Any]]:
             {
                 "project_name": _text(raw.get("project_name")),
                 "on_model": _decimal_text(raw.get("on_model")),
+                "on_model_detail": _decimal_text(raw.get("on_model_detail")),
                 "laydown_detail": _decimal_text(raw.get("laydown_detail")),
                 "color_correct": _decimal_text(raw.get("color_correct")),
                 "post": _decimal_text(raw.get("post")),

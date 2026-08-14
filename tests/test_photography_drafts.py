@@ -127,12 +127,14 @@ def sample_state():
         "photo_pricing_project_rows": [{}, {}],
         "photo_pricing_comments_project_name_0": "",
         "photo_pricing_comments_on_model_0": 0,
+        "photo_pricing_comments_on_model_detail_0": 0,
         "photo_pricing_comments_laydown_detail_0": 0,
         "photo_pricing_comments_color_correct_0": 0,
         "photo_pricing_comments_post_0": 0,
         "photo_pricing_comments_model_hours_0": 0,
         "photo_pricing_comments_project_name_1": "Hero",
         "photo_pricing_comments_on_model_1": 5,
+        "photo_pricing_comments_on_model_detail_1": 2,
         "photo_pricing_comments_laydown_detail_1": 1,
         "photo_pricing_comments_color_correct_1": 2,
         "photo_pricing_comments_post_1": 3,
@@ -176,6 +178,7 @@ class PhotographyDraftTests(unittest.TestCase):
         self.assertEqual("425.00", normalized["pricing"]["manual_account_management_amount"])
         self.assertEqual("Custom notes only.", normalized["comments"]["custom_notes"])
         self.assertEqual("Hero", normalized["comments"]["project_entries"][1]["project_name"])
+        self.assertEqual("2.00", normalized["comments"]["project_entries"][1]["on_model_detail"])
 
     def test_draft_name_uses_title_company_and_created_date(self):
         self.assertEqual(
@@ -268,7 +271,7 @@ class PhotographyDraftTests(unittest.TestCase):
         self.assertEqual("adult", normalized["pricing"]["model_hours_mode"])
         self.assertEqual("automatic", normalized["pricing"]["account_management_mode"])
         self.assertEqual("0.00", normalized["pricing"]["manual_account_management_amount"])
-        self.assertEqual([{"project_name": "", "on_model": "0.00", "laydown_detail": "0.00", "color_correct": "0.00", "post": "0.00", "model_hours": "0.00"}], normalized["comments"]["project_entries"])
+        self.assertEqual([{"project_name": "", "on_model": "0.00", "on_model_detail": "0.00", "laydown_detail": "0.00", "color_correct": "0.00", "post": "0.00", "model_hours": "0.00"}], normalized["comments"]["project_entries"])
 
     def test_restore_reconstructs_session_state_keys_and_preserves_dates(self):
         state = {"photo_pricing_comments_project_name_9": "stale"}
@@ -290,6 +293,7 @@ class PhotographyDraftTests(unittest.TestCase):
         self.assertEqual(1.5, state["photo_pricing_kid_model_hours_single"])
         self.assertEqual([{}, {}], state["photo_pricing_project_rows"])
         self.assertEqual("Hero", state["photo_pricing_comments_project_name_1"])
+        self.assertEqual(2.0, state["photo_pricing_comments_on_model_detail_1"])
         self.assertNotIn("photo_pricing_comments_project_name_9", state)
 
     def test_restore_handles_unavailable_contacts(self):

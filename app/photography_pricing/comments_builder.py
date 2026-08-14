@@ -6,6 +6,7 @@ from typing import Any
 class ProjectCommentEntry:
     project_name: str = ""
     on_model: float = 0
+    on_model_detail: float = 0
     laydown_detail: float = 0
     color_correct: float = 0
     post: float = 0
@@ -63,6 +64,7 @@ def _has_project_content(entry: ProjectCommentEntry) -> bool:
         value > 0
         for value in (
             entry.on_model,
+            entry.on_model_detail,
             entry.laydown_detail,
             entry.color_correct,
             entry.post,
@@ -75,6 +77,7 @@ def normalize_project_entry(raw_entry: dict[str, Any]) -> ProjectCommentEntry:
     return ProjectCommentEntry(
         project_name=_clean_text(raw_entry.get("project_name")),
         on_model=_number(raw_entry.get("on_model")),
+        on_model_detail=_number(raw_entry.get("on_model_detail")),
         laydown_detail=_number(raw_entry.get("laydown_detail")),
         color_correct=_number(raw_entry.get("color_correct")),
         post=_number(raw_entry.get("post")),
@@ -90,6 +93,8 @@ def render_project_detail_line(entry: ProjectCommentEntry) -> str:
     parts = []
     if entry.on_model > 0:
         parts.append(f"On Model= {_format_number(entry.on_model)}")
+    if entry.on_model_detail > 0:
+        parts.append(f"On Model Details= {_format_number(entry.on_model_detail)}")
     if entry.laydown_detail > 0:
         parts.append(f"Laydown/Detail={_format_number(entry.laydown_detail)}")
     if entry.color_correct > 0:

@@ -333,7 +333,7 @@ class PhotographyContactIntegrationTests(unittest.TestCase):
             },
             estimate_subject="Apparel Refresh",
             subtitle_line="Spring27",
-            project_entries=[{"project_name": "Project A", "on_model": 1}],
+            project_entries=[{"project_name": "Project A", "on_model": 1, "on_model_detail": 2}],
             custom_notes="",
         ).to_payload()
         header = {
@@ -365,6 +365,7 @@ class PhotographyContactIntegrationTests(unittest.TestCase):
         self.assertIn("Quote created: July 12, 2026", text)
         self.assertIn("Quote expires: October 12, 2026", text)
         self.assertIn("Quote created by: Grace Hopper", text)
+        self.assertIn("On Model Details= 2", text)
 
 
 if __name__ == "__main__":
