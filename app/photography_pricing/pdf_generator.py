@@ -22,6 +22,9 @@ from app.photography_pricing.pdf_mapper import (
 
 MAIN_TEMPLATE_PATH = Path("templates/photographytemplate.pdf")
 PRICING_TEMPLATE_PATH = Path("templates/Page 2.pdf")
+COMMENTS_CONTINUATION_TEMPLATE_PATH = Path(
+    "templates/photographycommentscontinued.pdf"
+)
 TEMPLATE_PATH = MAIN_TEMPLATE_PATH
 GOTHAM_MEDIUM_PATH = Path("fonts/Gotham-Medium.ttf")
 GOTHAM_BOLD_PATH = Path("fonts/Gotham-Bold.ttf")
@@ -858,6 +861,9 @@ def generate_page2_pricing_pdf(
     page1_comments_payload: dict[str, Any] | None = None,
     page1_header_payload: dict[str, Any] | None = None,
     pricing_template_path: Path = PRICING_TEMPLATE_PATH,
+    comments_continuation_template_path: Path = (
+        COMMENTS_CONTINUATION_TEMPLATE_PATH
+    ),
 ) -> bytes:
     payload = build_page2_pricing_payload(quote)
 
@@ -877,10 +883,18 @@ def generate_page2_pricing_pdf(
         comment_lines=comment_chunks[0],
     )
 
+    comments_continuation_reader = (
+        PdfReader(str(comments_continuation_template_path))
+        if len(comment_chunks) > 1
+        else None
+    )
+
     for continuation_lines in comment_chunks[1:]:
-        continuation_page = writer.add_blank_page(
-            width=float(first_source_page.mediabox.width),
-            height=float(first_source_page.mediabox.height),
+        if comments_continuation_reader is None:
+            break
+
+        continuation_page = writer.add_page(
+            comments_continuation_reader.pages[0]
         )
         _merge_page1_overlay(
             continuation_page,

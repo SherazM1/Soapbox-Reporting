@@ -267,6 +267,7 @@ class PhotographyPdfPhase1Tests(unittest.TestCase):
             tmp_path = Path(tmp)
             main_template = tmp_path / "main.pdf"
             pricing_template = tmp_path / "pricing.pdf"
+            comments_continuation_template = tmp_path / "continued.pdf"
             _write_pdf(
                 main_template,
                 [
@@ -277,11 +278,16 @@ class PhotographyPdfPhase1Tests(unittest.TestCase):
                 ],
             )
             _write_pdf(pricing_template, ["NEW PAGE 2"])
+            _write_pdf(
+                comments_continuation_template,
+                ["CONTINUATION TEMPLATE"],
+            )
 
             pdf_bytes = generate_page2_pricing_pdf(
                 build_apparel_quote(ApparelInputs(on_model_image_quantity=1)),
                 template_path=main_template,
                 pricing_template_path=pricing_template,
+                comments_continuation_template_path=comments_continuation_template,
                 page1_comments_payload=_comments_payload(12),
                 page1_header_payload=_header_payload(),
             )
@@ -292,6 +298,7 @@ class PhotographyPdfPhase1Tests(unittest.TestCase):
         self.assertEqual(5, len(reader.pages))
         for index in range(1, 13):
             self.assertIn(f"Project {index:02d}", all_text)
+        self.assertIn("CONTINUATION TEMPLATE", texts[1])
         self.assertIn("Comments continued", texts[1])
         self.assertIn("NEW PAGE 2", texts[2])
         self.assertFalse(any("OLD PAGE 2" in text for text in texts))
