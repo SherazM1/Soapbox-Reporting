@@ -72,6 +72,9 @@ PAGE1_COMMENTS_TOP_Y = 1030
 PAGE1_COMMENTS_MAX_WIDTH = 1450
 PAGE1_COMMENTS_LINE_STEP = 38
 PAGE1_COMMENTS_MAX_LINES = 29
+PAGE1_CONTINUATION_TITLE_TOP_Y = 920
+PAGE1_CONTINUATION_COMMENTS_TOP_Y = 1030
+PAGE1_CONTINUATION_TITLE = "Comments continued"
 
 PAGE1_LOGO_REGION = (0, 0, 520, 360)
 
@@ -592,31 +595,10 @@ def _comments_text(
     ).strip()
 
 
-def _page1_overlay(
-    page_width: float,
-    page_height: float,
+def _page1_comment_lines(
     comments_payload: dict[str, Any] | None,
-    header_payload: dict[str, Any] | None = None,
-) -> BytesIO:
+) -> list[str]:
     _register_gotham_fonts()
-
-    overlay = BytesIO()
-    c = canvas.Canvas(
-        overlay,
-        pagesize=(page_width, page_height),
-    )
-
-    _draw_page1_header(
-        c,
-        page_height,
-        header_payload,
-    )
-
-    c.setFillColor(PAGE1_TEXT)
-    c.setFont(
-        GOTHAM_MEDIUM,
-        PAGE1_COMMENTS_FONT_SIZE,
-    )
 
     lines: list[str] = []
 
@@ -635,23 +617,114 @@ def _page1_overlay(
         else:
             lines.append("")
 
-    for index, line in enumerate(
-        lines[:PAGE1_COMMENTS_MAX_LINES]
-    ):
+    return lines
+
+
+def _line_chunks(
+    lines: list[str],
+    chunk_size: int,
+) -> list[list[str]]:
+    if chunk_size <= 0:
+        return [lines]
+
+    return [
+        lines[index : index + chunk_size]
+        for index in range(0, len(lines), chunk_size)
+    ] or [[]]
+
+
+def _draw_comment_lines(
+    c: canvas.Canvas,
+    page_height: float,
+    lines: list[str],
+    top_y: float,
+) -> None:
+    c.setFillColor(PAGE1_TEXT)
+    c.setFont(
+        GOTHAM_MEDIUM,
+        PAGE1_COMMENTS_FONT_SIZE,
+    )
+
+    for index, line in enumerate(lines):
         c.drawString(
             PAGE1_COMMENTS_LEFT_X,
             _pdf_y(
                 page_height,
-                PAGE1_COMMENTS_TOP_Y
+                top_y
                 + index * PAGE1_COMMENTS_LINE_STEP,
             ),
             line,
         )
 
+
+def _page1_overlay(
+    page_width: float,
+    page_height: float,
+    comments_payload: dict[str, Any] | None,
+    header_payload: dict[str, Any] | None = None,
+    comment_lines: list[str] | None = None,
+    continuation: bool = False,
+) -> BytesIO:
+    _register_gotham_fonts()
+
+    overlay = BytesIO()
+    c = canvas.Canvas(
+        overlay,
+        pagesize=(page_width, page_height),
+    )
+
+    if not continuation:
+        _draw_page1_header(
+            c,
+            page_height,
+            header_payload,
+        )
+
+    if continuation:
+        c.setFillColor(PAGE1_TEXT)
+        c.setFont(
+            GOTHAM_BOLD,
+            PAGE1_COMMENTS_FONT_SIZE,
+        )
+        c.drawString(
+            PAGE1_COMMENTS_LEFT_X,
+            _pdf_y(
+                page_height,
+                PAGE1_CONTINUATION_TITLE_TOP_Y,
+            ),
+            PAGE1_CONTINUATION_TITLE,
+        )
+
+    _draw_comment_lines(
+        c,
+        page_height,
+        (
+            comment_lines
+            if comment_lines is not None
+            else _page1_comment_lines(comments_payload)[
+                :PAGE1_COMMENTS_MAX_LINES
+            ]
+        ),
+        (
+            PAGE1_CONTINUATION_COMMENTS_TOP_Y
+            if continuation
+            else PAGE1_COMMENTS_TOP_Y
+        ),
+    )
+
     c.save()
     overlay.seek(0)
 
     return overlay
+
+
+def _page1_comment_chunks(
+    page1_comments_payload: dict[str, Any] | None,
+) -> list[list[str]]:
+    return _line_chunks(
+        _page1_comment_lines(page1_comments_payload),
+        PAGE1_COMMENTS_MAX_LINES,
+    )
 
 
 def _page2_overlay(
@@ -729,8 +802,15 @@ def _merge_page1_overlay(
     page: Any,
     page1_comments_payload: dict[str, Any] | None,
     page1_header_payload: dict[str, Any] | None,
+    comment_lines: list[str] | None = None,
+    continuation: bool = False,
 ) -> None:
-    if not (page1_comments_payload or page1_header_payload):
+    if not (
+        page1_comments_payload
+        or page1_header_payload
+        or comment_lines
+        or continuation
+    ):
         return
 
     width = float(page.mediabox.width)
@@ -742,6 +822,8 @@ def _merge_page1_overlay(
             page_height=height,
             comments_payload=page1_comments_payload,
             header_payload=page1_header_payload,
+            comment_lines=comment_lines,
+            continuation=continuation,
         )
     )
 
@@ -782,21 +864,37 @@ def generate_page2_pricing_pdf(
     main_reader = PdfReader(str(template_path))
     pricing_reader = PdfReader(str(pricing_template_path))
     writer = PdfWriter()
+    comment_chunks = _page1_comment_chunks(
+        page1_comments_payload
+    )
 
-    first_page = main_reader.pages[0]
+    first_source_page = main_reader.pages[0]
+    first_page = writer.add_page(first_source_page)
     _merge_page1_overlay(
         first_page,
         page1_comments_payload,
         page1_header_payload,
+        comment_lines=comment_chunks[0],
     )
-    writer.add_page(first_page)
 
-    pricing_page = pricing_reader.pages[0]
+    for continuation_lines in comment_chunks[1:]:
+        continuation_page = writer.add_blank_page(
+            width=float(first_source_page.mediabox.width),
+            height=float(first_source_page.mediabox.height),
+        )
+        _merge_page1_overlay(
+            continuation_page,
+            page1_comments_payload,
+            None,
+            comment_lines=continuation_lines,
+            continuation=True,
+        )
+
+    pricing_page = writer.add_page(pricing_reader.pages[0])
     _merge_page2_overlay(
         pricing_page,
         payload,
     )
-    writer.add_page(pricing_page)
 
     for index, page in enumerate(
         main_reader.pages[1:],
