@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Any
 
 from app.contact_management.models import ClientContact, InternalContact
 from app.photography_pricing.models import ApparelInputs
 from app.photography_pricing.quote_metadata import add_calendar_months
+from app.photography_pricing.quote_metadata import generate_reference_number
 
 
 DRAFT_SCHEMA_VERSION = 1
@@ -64,6 +65,11 @@ COMMENT_KEYS = {
     "subtitle_line": "photo_pricing_comments_subtitle_line",
     "custom_notes": "photo_pricing_comments_custom_notes",
 }
+
+GENERATED_STATE_KEYS = (
+    "photo_pricing_generated_pdf",
+    "photo_pricing_page1_comments_payload",
+)
 
 
 def _text(value: Any, fallback: str = "") -> str:
@@ -307,6 +313,54 @@ def restore_draft_payload_to_state(
             state[f"photo_pricing_comments_{field}_{index}"] = float(Decimal(str(entry.get(field) or "0")))
 
     return warnings
+
+
+def reset_quote_form_state(
+    state: dict[str, Any],
+    *,
+    today: date | None = None,
+    now: datetime | None = None,
+) -> None:
+    created = today or date.today()
+
+    state["photo_pricing_quote_title"] = ""
+    state["photo_pricing_reference_number"] = generate_reference_number(now)
+    state["photo_pricing_quote_created_date"] = created
+    state["photo_pricing_quote_expiration_date"] = add_calendar_months(
+        created,
+        3,
+    )
+    state["photo_pricing_expiration_overridden"] = False
+    state["photo_pricing_previous_created_date"] = created
+
+    state.pop("photo_pricing_client_contact_id", None)
+    state.pop("photo_pricing_internal_contact_id", None)
+
+    for payload_key, state_key in PRICING_STATE_KEYS.items():
+        value = PRICING_DEFAULTS[payload_key]
+        if payload_key in {
+            "post_production_hours",
+            "manual_account_management_amount",
+        }:
+            value = float(Decimal(str(value or "0")))
+        state[state_key] = value
+
+    state["photo_pricing_adult_model_hours"] = 0.0
+    state["photo_pricing_adult_model_hours_single"] = 0.0
+    state["photo_pricing_kid_model_hours"] = 0.0
+    state["photo_pricing_kid_model_hours_single"] = 0.0
+
+    for _key, state_key in COMMENT_KEYS.items():
+        state[state_key] = ""
+
+    state["photo_pricing_project_rows"] = [{}]
+    _clear_project_widget_keys(state)
+    state["photo_pricing_comments_project_name_0"] = ""
+    for field in PROJECT_FIELDS[1:]:
+        state[f"photo_pricing_comments_{field}_0"] = 0.0
+
+    for key in GENERATED_STATE_KEYS:
+        state.pop(key, None)
 
 
 def apparel_inputs_from_draft_payload(payload: dict[str, Any]) -> ApparelInputs:

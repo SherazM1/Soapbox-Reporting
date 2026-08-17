@@ -10,6 +10,7 @@ from app.photography_pricing import draft_repository
 from app.photography_pricing.draft_models import QuoteDraft, QuoteDraftVersion
 from app.photography_pricing.draft_service import (
     build_draft_name,
+    reset_quote_form_state,
     restore_draft_payload_to_state,
     serialize_draft_payload,
 )
@@ -230,10 +231,11 @@ def render_drafts_section(
         with save_cols[2]:
             if st.button("Start New Quote", key="photo_pricing_start_new_draft", disabled=not bool(active_draft_id)):
                 _set_active_draft(None, None)
+                reset_quote_form_state(st.session_state)
                 active_draft_id = None
                 render_active_status()
-                st.session_state.pop("photo_pricing_generated_pdf", None)
-                st.info("Current form is no longer attached to a saved draft.")
+                st.session_state[DRAFT_NOTICE_KEY] = "Started a new blank quote."
+                st.rerun()
 
         drafts = _safe_list_drafts()
         if drafts:

@@ -18,6 +18,7 @@ from app.photography_pricing.draft_service import (
     apparel_inputs_from_draft_payload,
     build_draft_name,
     normalize_draft_payload,
+    reset_quote_form_state,
     restore_draft_payload_to_state,
     serialize_draft_payload,
 )
@@ -309,6 +310,54 @@ class PhotographyDraftTests(unittest.TestCase):
         self.assertIn("Saved internal contact is no longer available.", warnings)
         self.assertNotIn("photo_pricing_client_contact_id", state)
         self.assertNotIn("photo_pricing_internal_contact_id", state)
+
+    def test_reset_quote_form_state_clears_numbers_comments_contacts_and_generated_pdf(self):
+        state = sample_state()
+        state["photo_pricing_generated_pdf"] = b"pdf"
+        state["photo_pricing_page1_comments_payload"] = {"rendered_comments_block": "old"}
+        state["photo_pricing_comments_project_name_9"] = "stale"
+
+        reset_quote_form_state(
+            state,
+            today=date(2026, 8, 17),
+            now=datetime(2026, 8, 17, 8, 45, 30),
+        )
+
+        self.assertEqual("", state["photo_pricing_quote_title"])
+        self.assertRegex(state["photo_pricing_reference_number"], r"^20260817-084530-[A-Z0-9]{4}$")
+        self.assertEqual(date(2026, 8, 17), state["photo_pricing_quote_created_date"])
+        self.assertEqual(date(2026, 11, 17), state["photo_pricing_quote_expiration_date"])
+        self.assertFalse(state["photo_pricing_expiration_overridden"])
+        self.assertNotIn("photo_pricing_client_contact_id", state)
+        self.assertNotIn("photo_pricing_internal_contact_id", state)
+
+        self.assertEqual(0, state["photo_pricing_on_model_image_quantity"])
+        self.assertEqual(0, state["photo_pricing_on_model_detail_quantity"])
+        self.assertEqual("else/default", state["photo_pricing_laydown_silo_type"])
+        self.assertEqual(0, state["photo_pricing_laydown_silo_quantity"])
+        self.assertEqual(0, state["photo_pricing_color_corrections_quantity"])
+        self.assertEqual(0.0, state["photo_pricing_post_production_hours"])
+        self.assertEqual("adult", state["photo_pricing_model_type"])
+        self.assertEqual(0.0, state["photo_pricing_adult_model_hours"])
+        self.assertEqual(0.0, state["photo_pricing_adult_model_hours_single"])
+        self.assertEqual(0.0, state["photo_pricing_kid_model_hours"])
+        self.assertEqual(0.0, state["photo_pricing_kid_model_hours_single"])
+        self.assertEqual(0, state["photo_pricing_model_fitting_quantity"])
+        self.assertEqual(0, state["photo_pricing_ai_generation_quantity"])
+        self.assertEqual("automatic", state["photo_pricing_account_management_mode"])
+        self.assertEqual(0.0, state["photo_pricing_manual_account_management_amount"])
+
+        self.assertEqual("", state["photo_pricing_comments_estimate_subject"])
+        self.assertEqual("", state["photo_pricing_comments_subtitle_line"])
+        self.assertEqual("", state["photo_pricing_comments_custom_notes"])
+        self.assertEqual([{}], state["photo_pricing_project_rows"])
+        self.assertEqual("", state["photo_pricing_comments_project_name_0"])
+        self.assertEqual(0.0, state["photo_pricing_comments_on_model_0"])
+        self.assertEqual(0.0, state["photo_pricing_comments_on_model_detail_0"])
+        self.assertNotIn("photo_pricing_comments_project_name_1", state)
+        self.assertNotIn("photo_pricing_comments_project_name_9", state)
+        self.assertNotIn("photo_pricing_generated_pdf", state)
+        self.assertNotIn("photo_pricing_page1_comments_payload", state)
 
     def test_repository_creates_draft_and_version_one(self):
         conn = FakeConnection(rows=[draft_row(0), version_row(1), draft_row(1)])
