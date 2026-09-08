@@ -1,0 +1,2333 @@
+{
+  "category": "Business and Industrial",
+  "status": "complete",
+  "source": "pn-guide-business-industrial.pdf",
+  "families": {
+    "drum_container_handling_equipment": {
+      "display_name": "Drum Container Handling Equipment",
+      "product_types": {
+
+
+        "other_drum_equipement": {
+          "display_name": "Other Drum Equipment",
+          "formula": ["Brand", "Model", "Product/Type", "Capacity", "Material"],
+          "attributes": ["Model", "Multipack Quantity"],
+          "aliases": ["other drum equipment", "drum equipment", "drum handling accesories", "barrel equipment", "other drum handling equipment"],
+          "title_keywords": ["drum equipment", "drum handling equipment", "drum accessory", "drum accessories"],
+          "context_keywords": ["drum", "barrel", "pail", "container", "55 gallon", "steel drum", "plastic drum"],
+          "negative_keywords": ["drum pump", "barrel pump", "pail pump", "hand drum pump", "electric drum pump", "pneumatic drum pump"]
+        },
+    
+  
+         "drum_pail_openers_closers": {
+          "display_name": "Drum & Pail Openers & Closers",
+          "formula": ["Brand", "Model", "Product/Type", "Capacity", "Material", "Drum And Pail Opener And CLoser Type"],
+          "attributes": ["Volume Capacity", "Drum And Pail Opener And Closer Type", "Brand"],
+          "aliases": ["drum opener", "drum closer", "pail opener", "pail closer", "drum lid opener", "drum lid closer"],
+          "title_keywords": ["drum opener", "drum closer","pail opener", "pail closer","drum lid opener","pail lid opener"],
+          "context_keywords": ["drum","pail","barrel","lid","cover","bung","plug","opening"],
+          "negative_keywords": ["drum dolly","drum truck","drum lifter","drum grab","drum rotator"]
+        },
+        
+         "drum_pail_mixers": {
+          "display_name": "Drum & Pail Mixers",
+          "formula": ["Brand", "Model", "Product/Type", "Capacity", "Material"],
+          "attributes": ["Brand", "Material","Volume Capacity"],
+          "aliases": ["drum mixer","pail mixer","drum agitator","pail agitator","drum stirrer"],
+          "title_keywords": ["drum mixer","pail mixer","drum agitator","pail agitator","barrel mixer"],
+          "context_keywords": [ "mixing","agitating","blending","stirring","drum"],
+          "negative_keywords": ["drum opener","drum closer","pail opener","pail closer","drum wrench"]
+        },
+
+         "drum_pail_lids": {
+          "display_name": "Drum & Pail lids",
+          "formula": ["Brand", "Model", "Product/Type", "Capacity", "Material"],
+          "attributes": ["Volume Capacity","Brand", "Material"],
+          "aliases": ["drum lid", "pail lid", "drum cover", "pail cover", "barrel lid"],
+          "title_keywords": ["drum lid", "pail lid", "drum cover", "pail cover", "barrel lid"],
+          "context_keywords": ["drum", "pail", "container", "cover", "closure"],
+          "negative_keywords": ["drum mixer", "pail mixer", "drum opener", "drum pump", "drum dolly"]
+        },
+
+        "drum_pail_heaters": {
+          "display_name": "Drum & Pail Heaters",
+          "formula": ["Brand", "Model", "Product/Type", "Capacity", "Material"],
+          "attributes": ["Material","Watts", "Brand"],
+          "aliases": ["drum heater", "pail heater", "barrel heater", "drum heating blanket", "pail heating blanket"],
+          "title_keywords": ["drum heater", "pail heater", "barrel heater", "drum heating blanket", "pail heating blanket"],
+          "context_keywords": ["heating", "temperature control", "warming", "55 gallon drum", "5 gallon pail"],
+          "negative_keywords": ["drum mixer", "pail mixer", "drum pump", "drum lid", "drum opener"]
+        },
+
+         "drum_pumps": {
+          "display_name": "Drum Pumps",
+          "formula": ["Brand", "Model", "Product/Type", "Capacity", "Material"],
+          "attributes": ["Brand", "Material", "Power Type"],
+          "aliases": ["drum pump", "barrel pump", "container pump", "drum transfer pump", "liquid drum pump"],
+          "title_keywords": ["drum pump", "barrel pump", "drum transfer pump", "liquid drum pump", "container pump"],
+          "context_keywords": ["fluid transfer", "liquid transfer", "55 gallon drum", "chemical transfer", "dispensing"],
+          "negative_keywords": ["drum mixer", "pail mixer", "drum heater", "drum lid", "drum opener"]
+
+    }
+  }
+},
+
+
+    "electronic_components": {
+      "display_name": "Electronic Components",
+      "product_types": {
+
+         "other_electronic_components": {
+          "display_name": "Other Electronic Components",
+          "formula": ["Brand", "Model", "Product/Type", "Count/Pack"],
+          "attributes": ["Brand", "Multipack Quantity"],
+          "aliases": ["electronic component", "electronics component", "electrical component", "electronic part", "electronics part"],
+          "title_keywords": ["electronic component", "electronics component", "electronic part", "electrical component", "electronics part"],
+          "context_keywords": ["electronics", "electrical", "circuit", "component", "industrial electronics"],
+          "negative_keywords": ["microprocessor", "transistor", "solenoid", "attenuator", "circuit board"]
+        },
+
+        "attenuators": {
+          "display_name": "Attenuators",
+          "formula": ["Brand", "Model Name", "Frequency", "Attenuator Type", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Assembled Product Length", "Brand", "Count Per Pack"],
+          "aliases": ["attenuator", "RF attenuator", "signal attenuator", "step attenuator", "radio attenuator"],
+          "title_keywords": ["attenuator", "RF attenuator", "signal attenuator", "step attenuator", "GHz attenuator"],
+          "context_keywords": ["signal reduction", "RF signal", "decibel", "frequency", "impedance"],
+          "negative_keywords": ["RF amplifier", "signal booster", "radio filter", "transistor", "signal processor"]
+        },
+
+        "digital_signal_processors": {
+          "display_name": "Digital Signal Processors",
+          "formula": ["Brand", "Model Name", "Data Bus Width", "Frequency", "Number of Pins", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Volts"],
+          "aliases": ["digital signal processor", "DSP", "DSP processor", "signal processor", "DSP chip"],
+          "title_keywords": ["digital signal processor", "DSP processor", "DSP chip", "signal processor", "DSP IC"],
+          "context_keywords": ["signal processing", "data bus", "MHz", "processor", "integrated circuit"],
+          "negative_keywords": ["microprocessor", "audio amplifier", "attenuator", "transistor", "IO module"]
+        },
+
+        "electromechanical_controllers": {
+          "display_name": "Electromechanical Controllers",
+          "formula": ["Brand", "Model Name", "Volts", "Electromechanical Controller Type", "Retail Packaging", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Assembled Product Width", "Electromechanical Controller Type"],
+          "aliases": ["electromechanical controller", "electromechanical timer", "electromechanical switch", "mechanical controller", "electrical controller"],
+          "title_keywords": ["electromechanical controller", "electromechanical timer", "electromechanical switch", "mechanical controller", "electrical controller"],
+          "context_keywords": ["control", "switching", "timer", "voltage", "industrial control"],
+          "negative_keywords": ["motor starter", "motor drive", "motor contactor", "IO module", "motion switch"]
+        },
+
+        "electronic_chokes": {
+          "display_name": "Electronic Chokes",
+          "formula": ["Brand", "Model Name", "Number of Channels", "Frequency", "Electronic Chock Type", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Assembled Product Width", "Electronic Choke Type"],
+          "aliases": ["electronic choke", "common mode choke", "EMI choke", "RF choke", "inductor choke"],
+          "title_keywords": ["electronic choke", "common mode choke", "EMI choke", "RF choke", "choke coil"],
+          "context_keywords": ["inductance", "EMI suppression", "filtering", "frequency", "coil"],
+          "negative_keywords": ["electronic coil", "transformer", "ferrite core", "radio filter", "solenoid"]
+        },
+
+        "electronic_coils": {
+          "display_name": "Electronic Coils",
+          "formula": ["Brand", "Model Name", "Maximum Inductance", "Volts", "Electronic Coil Type", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Assembled Product Length", "Brand", "Number Of Pieces"],
+          "aliases": ["electronic coil", "inductor coil", "toroidal coil", "wound coil", "Tesla coil"],
+          "title_keywords": ["electronic coil", "inductor coil", "toroidal coil", "wound coil", "Tesla coil"],
+          "context_keywords": ["inductance", "winding", "voltage", "inductor", "electromagnetic"],
+          "negative_keywords": ["electronic choke", "solenoid", "ferrite core", "transformer", "motor coil"]
+        },
+
+        "electronic_crystals": {
+          "display_name": "Electronic Crystals",
+          "formula": ["Brand", "Model Name", "Frequency", "Electronic Crystal", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Multipack Quantity"],
+          "aliases": ["electronic crystal", "crystal oscillator", "quartz crystal", "frequency crystal", "timing crystal"],
+          "title_keywords": ["electronic crystal", "quartz crystal", "crystal oscillator", "MHz crystal", "kHz crystal"],
+          "context_keywords": ["frequency", "oscillator", "quartz", "timing", "electronic circuit"],
+          "negative_keywords": ["semiconductor timer", "crystal jewelry", "crystal stone", "oscilloscope", "frequency counter"]
+        },
+
+        "electronic_ferrites": {
+          "display_name": "Electronic Ferrites",
+          "formula": ["Brand", "Model Name", "Electronic Ferrite Type", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Assembled Product Length", "Electronic Ferrite Type"],
+          "aliases": ["electronic ferrite", "ferrite core", "ferrite bead", "ferrite ring", "ferrite choke"],
+          "title_keywords": ["ferrite core", "ferrite bead", "ferrite ring", "electronic ferrite", "ferrite choke"],
+          "context_keywords": ["EMI suppression", "magnetic core", "noise filtering", "electronics", "inductor"],
+          "negative_keywords": ["electronic choke", "electronic coil", "transformer", "magnet", "radio filter"]
+        },
+
+        "fiber_optic_connectors": {
+          "display_name": "Fiber Optic Connectors",
+          "formula": ["Brand", "Model Name", "Features", "Fiber Optic ConnectrorType", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Number Of Pieces", "Assembled Product Width"],
+          "aliases": ["fiber optic connector", "fiber connector", "optical fiber connector", "fiber adapter", "fiber optic coupler"],
+          "title_keywords": ["fiber optic connector", "fiber connector", "optical connector", "fiber adapter", "fiber coupler"],
+          "context_keywords": ["fiber optic", "optical cable", "single mode", "multimode", "network"],
+          "negative_keywords": ["fiber optic cable", "ethernet connector", "coax connector", "USB connector", "circuit board"]
+        },
+
+        "io_modules": {
+          "display_name": "IO Modules",
+          "formula": ["Brand", "Model Name", "IO Module Type", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Number Of Pieces"],
+          "aliases": ["IO module", "I/O module", "input output module", "input module", "output module"],
+          "title_keywords": ["IO module", "I/O module", "input output module", "digital input module", "analog output module"],
+          "context_keywords": ["industrial control", "PLC", "input output", "automation", "control system"],
+          "negative_keywords": ["microprocessor", "motor controller", "relay", "network module", "power module"]
+        },
+
+        "lightning_rods": {
+          "display_name": "Lightning Rods",
+          "formula": ["Brand", "Model Name", "Features", "Tip Style", "Material", "Lightning Rod", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Assembled Product Height", "Material"],
+          "aliases": ["lightning rod", "lightning conductor", "air terminal", "lightning protection rod", "grounding rod"],
+          "title_keywords": ["lightning rod", "lightning conductor", "air terminal", "copper lightning rod", "lightning protection rod"],
+          "context_keywords": ["lightning protection", "grounding", "copper", "brass", "electrical protection"],
+          "negative_keywords": ["ground wire", "surge protector", "antenna", "welding rod", "grounding clamp"]
+        },
+
+        "microprocessors": {
+          "display_name": "Microprocessors",
+          "formula": ["Brand", "Model Name", "Data Bus Width", "Processor Speed", "Microprocessor", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Assembled Product Width", "Processor Speed"],
+          "aliases": ["microprocessor", "processor chip", "CPU chip", "processor IC", "microprocessor IC"],
+          "title_keywords": ["microprocessor", "processor chip", "CPU chip", "microprocessor IC", "processor IC"],
+          "context_keywords": ["CPU", "processor speed", "GHz", "data bus", "integrated circuit"],
+          "negative_keywords": ["digital signal processor", "microcontroller", "transistor", "motherboard", "graphics processor"]
+        },
+
+        "motion_actuated_switches": {
+          "display_name": "Motion Actuated Switches",
+          "formula": ["Brand", "Model Name", "Recommended Location", "Volts", "Motion Actuated Switch", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Assembled Product Height", "Multipack Quantity"],
+          "aliases": ["motion actuated switch", "motion activated switch", "motion sensor switch", "motion detection switch", "occupancy switch"],
+          "title_keywords": ["motion actuated switch", "motion activated switch", "motion sensor switch", "motion detection switch", "occupancy switch"],
+          "context_keywords": ["motion detection", "sensor", "switching", "voltage", "automation"],
+          "negative_keywords": ["light switch", "limit switch", "switch encoder", "motor starter", "proximity sensor"]
+        },
+
+        "motor_contactors": {
+          "display_name": "Motor Contactors",
+          "formula": ["Brand", "Model Name", "Number of Poles", "Volts", "Motor Contactor", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Assembled Product Width", "Brand", "Motor Contactor Type"],
+          "aliases": ["motor contactor", "electrical contactor", "AC contactor", "magnetic contactor", "power contactor"],
+          "title_keywords": ["motor contactor", "AC contactor", "magnetic contactor", "electrical contactor", "power contactor"],
+          "context_keywords": ["motor control", "pole", "voltage", "switching", "industrial electrical"],
+          "negative_keywords": ["motor starter", "motor drive", "relay", "circuit breaker", "electromechanical controller"]
+        },
+
+        "motor_drives": {
+          "display_name": "Motor Drives",
+          "formula": ["Brand", "Model Name", "Motor Drive Type", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Assembled Product Weight", "Brand", "Watts"],
+          "aliases": ["motor drive", "motor controller drive", "variable frequency drive", "VFD", "stepper motor drive"],
+          "title_keywords": ["motor drive", "variable frequency drive", "VFD", "stepper motor drive", "AC motor drive"],
+          "context_keywords": ["motor control", "variable frequency", "speed control", "automation", "electric motor"],
+          "negative_keywords": ["motor starter", "motor contactor", "electric motor", "servo motor", "motor gearbox"]
+        },
+
+        "motor_starters": {
+          "display_name": "Motor Starters",
+          "formula": ["Brand", "Model Name", "Features", "Motor Starter Type", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Assembled Product Length", "Brand", "Has Nrtl Listing Certification"],
+          "aliases": ["motor starter", "magnetic motor starter", "manual motor starter", "NEMA starter", "electric motor starter"],
+          "title_keywords": ["motor starter", "magnetic motor starter", "manual motor starter", "NEMA motor starter", "electric motor starter"],
+          "context_keywords": ["motor control", "starter", "NEMA", "pole", "industrial electrical"],
+          "negative_keywords": ["motor drive", "motor contactor", "starter motor", "motor controller", "circuit breaker"]
+        },
+
+        "optoelectronic_displays": {
+          "display_name": "Optoelectronic Displays",
+          "formula": ["Brand", "Model Name", "Display Technology", "Screen Size", "Optoelectronic Display", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Assembled Product Weight"],
+          "aliases": ["optoelectronic display", "optoelectronics display", "LED display module", "LCD display module", "electronic display module"],
+          "title_keywords": ["optoelectronic display", "LED display", "LCD display", "display module", "optoelectronics display"],
+          "context_keywords": ["display technology", "LCD", "LED", "screen", "electronic module"],
+          "negative_keywords": ["computer monitor", "television", "optoelectronic lamp", "digital signage", "touchscreen monitor"]
+        },
+
+        "optoelectronic_lamps": {
+          "display_name": "Optoelectronic Lamps",
+          "formula": ["Brand", "Model Name", "Light Bulb Color", "Optoelectronic Light", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Assembled Product Width"],
+          "aliases": ["optoelectronic lamp", "optoelectronic light", "indicator lamp", "electronic indicator light", "LED indicator lamp"],
+          "title_keywords": ["optoelectronic lamp", "optoelectronic light", "LED indicator", "indicator lamp", "electronic light"],
+          "context_keywords": ["LED", "light color", "indicator", "electronics", "illumination"],
+          "negative_keywords": ["light bulb", "flashlight", "optoelectronic display", "LED strip", "desk lamp"]
+        },
+
+        "printed_circuit_boards": {
+          "display_name": "Printed Circuit Boards",
+          "formula": ["Brand", "Model Name", "Assembled Product Length", "Assembled Product Width", "Printed Circuit Board Type", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Assembled Product Height", "Brand", "Printed Circuit Board Type"],
+          "aliases": ["printed circuit board", "PCB", "circuit board", "prototype PCB", "printed wiring board"],
+          "title_keywords": ["printed circuit board", "PCB", "circuit board", "prototype board", "double sided PCB"],
+          "context_keywords": ["electronics", "circuit", "soldering", "board", "electronic components"],
+          "negative_keywords": ["motherboard", "breadboard", "microprocessor", "IO module", "circuit breaker"]
+        },
+
+        "radio_communication_filters": {
+          "display_name": "Radio Communication Filters",
+          "formula": ["Brand", "Model Name", "Frequency", "Radio Communication Filter Type", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Watts", "Brand", "Assembled Product Weight"],
+          "aliases": ["radio communication filter", "RF filter", "radio frequency filter", "bandpass filter", "band stop filter"],
+          "title_keywords": ["radio communication filter", "RF filter", "bandpass filter", "band stop filter", "highpass filter"],
+          "context_keywords": ["radio frequency", "MHz", "GHz", "signal filtering", "communications"],
+          "negative_keywords": ["attenuator", "audio filter", "air filter", "signal amplifier", "ferrite core"]
+        },
+
+        "semiconductor_interfaces": {
+          "display_name": "Semiconductor Interfaces",
+          "formula": ["Brand", "Model Name", "Frequency", "Maximum Capacitance", "Number of Channels", "Number of Pins", "Semiconductor Interface", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Assembled Product Width", "Brand", "Number Of Pieces"],
+          "aliases": ["semiconductor interface", "interface IC", "interface chip", "semiconductor interface IC", "interface controller"],
+          "title_keywords": ["semiconductor interface", "interface IC", "interface chip", "interface controller", "semiconductor IC"],
+          "context_keywords": ["integrated circuit", "channels", "pins", "capacitance", "frequency"],
+          "negative_keywords": ["microprocessor", "transistor", "semiconductor timer", "IO module", "digital signal processor"]
+        },
+
+        "semiconductor_timers": {
+          "display_name": "Semiconductor Timers",
+          "formula": ["Brand", "Model Name", "Frequency", "Semiconductor Timer", "Retail Packaging", "Accessories Included", "Compatible Brands", "Compatible Models", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Assembled Product Width"],
+          "aliases": ["semiconductor timer", "timer IC", "timing IC", "clock timer chip", "semiconductor timing chip"],
+          "title_keywords": ["semiconductor timer", "timer IC", "timing IC", "clock timer", "timing chip"],
+          "context_keywords": ["frequency", "clock", "timing", "integrated circuit", "semiconductor"],
+          "negative_keywords": ["electronic crystal", "electromechanical timer", "microprocessor", "frequency counter", "timer switch"]
+        },
+
+        "solenoids": {
+          "display_name": "Solenoids",
+          "formula": ["Brand", "Model Name", "Volts", "Solenoid Type", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Assembled Product Width", "Brand", "Count Per Pack"],
+          "aliases": ["solenoid", "push solenoid", "pull solenoid", "tubular solenoid", "open frame solenoid"],
+          "title_keywords": ["solenoid", "push solenoid", "pull solenoid", "tubular solenoid", "open frame solenoid"],
+          "context_keywords": ["electromagnetic", "voltage", "linear actuator", "coil", "push pull"],
+          "negative_keywords": ["solenoid valve", "electronic coil", "motor", "relay", "actuator motor"]
+        },
+
+        "switch_encoders": {
+          "display_name": "Switch Encoders",
+          "formula": ["Brand", "Model Name", "Volts", "Switch Encoder Type", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Assembled Product Width", "Brand", "Switch Encoder Type"],
+          "aliases": ["switch encoder", "rotary encoder", "optical encoder", "absolute encoder", "rotary switch encoder"],
+          "title_keywords": ["switch encoder", "rotary encoder", "optical encoder", "absolute encoder", "rotary switch encoder"],
+          "context_keywords": ["position sensing", "rotation", "shaft", "optical", "electronic control"],
+          "negative_keywords": ["motion switch", "limit switch", "toggle switch", "transducer", "potentiometer"]
+        },
+
+        "transducers": {
+          "display_name": "Transducers",
+          "formula": ["Brand", "Model Name", "Frequency", "Mount Type", "Number of Pins", "Transducer Type", "Retail Packaging", "Accessories Included", "Compatible Brands", "Compatible Models", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Transducer Type", "Assembled Product Length"],
+          "aliases": ["transducer", "electronic transducer", "sonar transducer", "ultrasonic transducer", "sensor transducer"],
+          "title_keywords": ["transducer", "sonar transducer", "ultrasonic transducer", "electronic transducer", "transom transducer"],
+          "context_keywords": ["frequency", "sensor", "signal conversion", "sonar", "mount type"],
+          "negative_keywords": ["switch encoder", "pressure transmitter", "microphone", "speaker", "sensor switch"]
+        },
+
+        "transistors": {
+          "display_name": "Transistors",
+          "formula": ["Brand", "Model Name", "Volts", "Watts", "Transistor Type", "Retail Packaging", "Accessories Included", "Model", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Assembled Product Width", "Transistor Type"],
+          "aliases": ["transistor", "NPN transistor", "PNP transistor", "bipolar transistor", "power transistor"],
+          "title_keywords": ["transistor", "NPN transistor", "PNP transistor", "bipolar transistor", "power transistor"],
+          "context_keywords": ["semiconductor", "voltage", "watts", "BJT", "electronic circuit"],
+          "negative_keywords": ["MOSFET module", "microprocessor", "diode", "semiconductor interface", "voltage regulator"]
+        }
+
+      }
+    },
+
+    "energy": {
+      "display_name": "Energy",
+      "product_types": {
+        
+        "wind_turbine_blades": {
+          "display_name": "Wind Turbine Blades",
+          "formula": ["Brand", "Model", "Product/Type", "Power/Source", "Count/Pack", "Length"],
+          "attributes": ["Brand", "Assembled Product Length", "Material"],
+          "aliases": ["wind turbine blade", "windmill blade", "turbine blade", "wind generator blade", "wind power blade"],
+          "title_keywords": ["wind turbine blade", "windmill blade", "turbine blade", "wind generator blade", "wind power blade"],
+          "context_keywords": ["wind energy", "wind turbine", "renewable energy", "rotor", "blade length"],
+          "negative_keywords": ["wind turbine motor", "wind turbine tower", "wind turbine system", "solar panel", "solar cell"]
+        },
+
+        "solar_panels": {
+          "display_name": "Solar Panels",
+          "formula": ["Brand", "Model", "Product/Type", "Power/Source", "Count/Pack", "Solar Panel Type"],
+          "attributes": ["Brand", "Solar Panel Type", "Solar Panel Peak Wattage"],
+          "aliases": ["solar panel", "photovoltaic panel", "PV panel", "solar module", "photovoltaic module"],
+          "title_keywords": ["solar panel", "photovoltaic panel", "PV panel", "solar module", "photovoltaic module"],
+          "context_keywords": ["solar energy", "photovoltaic", "renewable energy", "solar power", "peak wattage"],
+          "negative_keywords": ["solar cell", "wind turbine blade", "wind turbine motor", "wind turbine tower", "wind turbine system"]
+        },
+
+        "wind_turbine_motors": {
+          "display_name": "Wind Turbine Motors",
+          "formula": ["Brand", "Model", "Product/Type", "Power/Source", "Count/Pack", "Weight"],
+          "attributes": ["Brand", "Assembled Product Weight", "Material"],
+          "aliases": ["wind turbine motor", "wind generator motor", "turbine motor", "wind power motor", "windmill motor"],
+          "title_keywords": ["wind turbine motor", "wind generator motor", "turbine motor", "wind power motor", "windmill motor"],
+          "context_keywords": ["wind energy", "wind turbine", "generator", "renewable energy", "power generation"],
+          "negative_keywords": ["wind turbine blade", "wind turbine tower", "wind turbine system", "solar panel", "solar cell"]
+        },
+
+        "wind_turbine_systems": {
+          "display_name": "Wind Turbine Systems",
+          "formula": ["Brand", "Model", "Product/Type", "Power/Source", "Count/Pack", "Wind Turbine System Type"],
+          "attributes": ["Wind Turbine System Type", "Material", "Brand"],
+          "aliases": ["wind turbine system", "wind power system", "wind energy system", "wind generator system", "wind turbine kit"],
+          "title_keywords": ["wind turbine system", "wind power system", "wind energy system", "wind generator system", "wind turbine kit"],
+          "context_keywords": ["wind energy", "renewable energy", "power generation", "wind turbine", "generator system"],
+          "negative_keywords": ["wind turbine blade", "wind turbine motor", "wind turbine tower", "solar panel", "solar cell"]
+        },
+
+        "solar_cells": {
+          "display_name": "Solar Cells",
+          "formula": ["Brand", "Model", "Material", "Product/Type", "Power/Source", "Count/Pack", "Length"],
+          "attributes": ["Assembled Product Length", "Brand", "Multipack Quantity"],
+          "aliases": ["solar cell", "photovoltaic cell", "PV cell", "solar power cell", "photovoltaic solar cell"],
+          "title_keywords": ["solar cell", "photovoltaic cell", "PV cell", "solar power cell", "photovoltaic solar cell"],
+          "context_keywords": ["solar energy", "photovoltaic", "renewable energy", "solar power", "cell material"],
+          "negative_keywords": ["solar panel", "wind turbine blade", "wind turbine motor", "wind turbine tower", "wind turbine system"]
+        },
+
+        "wind_turbine_towers": {
+          "display_name": "Wind Turbine Towers",
+          "formula": ["Brand", "Model", "Product/Type", "Power/Source", "Count/Pack", "Weight"],
+          "attributes": ["Brand", "Assembled Product Weight"],
+          "aliases": ["wind turbine tower", "windmill tower", "turbine tower", "wind generator tower", "wind power tower"],
+          "title_keywords": ["wind turbine tower", "windmill tower", "turbine tower", "wind generator tower", "wind power tower"],
+          "context_keywords": ["wind energy", "wind turbine", "tower structure", "renewable energy", "turbine support"],
+          "negative_keywords": ["wind turbine blade", "wind turbine motor", "wind turbine system", "solar panel", "solar cell"]
+        }
+    }
+  },
+    "hydraulics_pneumatics": {
+      "display_name": "Hydraulics & Pneumatics",
+      "product_types": {
+
+        "air_cylinder_sensors": {
+          "display_name": "Air Cylinder Sensors",
+          "formula": ["Brand", "Product Line", "Animal Type", "Product Type", "Form", "Product Volume"],
+          "attributes": ["Brand", "Assembled Product Width", "Condition"],
+          "aliases": ["air cylinder sensor", "pneumatic cylinder sensor", "cylinder position sensor", "air cylinder switch", "pneumatic sensor"],
+          "title_keywords": ["air cylinder sensor", "pneumatic cylinder sensor", "cylinder sensor", "air cylinder switch", "pneumatic sensor"],
+          "context_keywords": ["pneumatic cylinder", "air cylinder", "position sensing", "automation", "pneumatics"],
+          "negative_keywords": ["hydraulic cylinder", "flow switch", "speed controller", "pressure sensor", "proximity sensor"]
+        },
+
+        "replacement_hydraulic_cylinders": {
+          "display_name": "Replacement Hydraulic Cylinders",
+          "formula": ["Brand", "Product Line", "Product/Type", "Weight"],
+          "attributes": ["Assembled Product Weight", "Brand", "Color Category"],
+          "aliases": ["replacement hydraulic cylinder", "hydraulic cylinder", "replacement cylinder", "hydraulic ram", "hydraulic actuator"],
+          "title_keywords": ["replacement hydraulic cylinder", "hydraulic cylinder", "hydraulic ram", "replacement cylinder", "hydraulic actuator"],
+          "context_keywords": ["hydraulics", "hydraulic system", "fluid power", "cylinder replacement", "linear motion"],
+          "negative_keywords": ["air cylinder", "pneumatic cylinder", "flow switch", "hydraulic pump", "speed controller"]
+        },
+
+        "flow_switches": {
+          "display_name": "Flow Switches",
+          "formula": ["Brand", "Product Line", "Product/Type", "Width"],
+          "attributes": ["Assembled Product Width", "Brand", "Material"],
+          "aliases": ["flow switch", "fluid flow switch", "water flow switch", "liquid flow switch", "hydraulic flow switch"],
+          "title_keywords": ["flow switch", "fluid flow switch", "water flow switch", "liquid flow switch", "hydraulic flow switch"],
+          "context_keywords": ["fluid flow", "flow detection", "hydraulic system", "liquid", "switching"],
+          "negative_keywords": ["pressure switch", "level switch", "flow meter", "air cylinder sensor", "speed controller"]
+        },
+
+        "air_cylinder_speed_controllers": {
+          "display_name": "Air Cylinder Speed Controllers",
+          "formula": ["Brand", "Product Line", "Product/Type", "Length"],
+          "attributes": ["Brand", "Assembled Product Length", "Material"],
+          "aliases": ["air cylinder speed controller", "pneumatic speed controller", "cylinder flow controller", "air flow controller", "pneumatic cylinder controller"],
+          "title_keywords": ["air cylinder speed controller", "pneumatic speed controller", "cylinder speed controller", "air flow controller", "pneumatic controller"],
+          "context_keywords": ["pneumatics", "air cylinder", "speed control", "air flow", "flow adjustment"],
+          "negative_keywords": ["air cylinder sensor", "flow switch", "hydraulic cylinder", "motor speed controller", "pressure regulator"]
+        },
+
+        "other_hydraulics_pneumatics": {
+          "display_name": "Other Hydraulics & Pneumatics",
+          "formula": ["Brand", "Product Line", "Product/Type"],
+          "attributes": ["Condition", "Color Category", "Model"],
+          "aliases": ["hydraulics and pneumatics", "hydraulic equipment", "pneumatic equipment", "fluid power equipment", "hydraulic pneumatic equipment"],
+          "title_keywords": ["hydraulic equipment", "pneumatic equipment", "hydraulics", "pneumatics", "fluid power equipment"],
+          "context_keywords": ["fluid power", "hydraulic system", "pneumatic system", "industrial equipment", "automation"],
+          "negative_keywords": ["hydraulic cylinder", "air cylinder sensor", "flow switch", "speed controller", "hydraulic pump"]
+        }
+
+      }
+    },
+    "lab_chemicals": {
+      "display_name": "Lab Chemicals",
+      "product_types": {
+
+        "electrolyte_solutions": {
+          "display_name": "Electrolyte Solutions",
+          "formula": ["Brand", "Product Line", "Chemical Purity Percentage", "Retail Packaging", "Accessories Included", "Product Volume", "MultiPack Quantity"],
+          "attributes": ["Brand", "Shelf Life", "Multipack Quantity"],
+          "aliases": ["electrolyte solution", "laboratory electrolyte solution", "lab electrolyte solution", "electrolyte fluid", "electrolyte reagent"],
+          "title_keywords": ["electrolyte solution", "laboratory electrolyte solution", "lab electrolyte solution", "electrolyte reagent", "electrolyte fluid"],
+          "context_keywords": ["laboratory", "electrolyte", "solution", "chemical", "reagent"],
+          "negative_keywords": ["chemical solvent", "chemical acid", "chemical base", "chemical buffer", "chemical standard"]
+        },
+
+        "chemical_solvents": {
+          "display_name": "Chemical Solvents",
+          "formula": ["Brand", "Product Line", "Chemical Grade", "Chemical Purity Percentage", "Chemical Solvent Type", "Retail Packaging", "Accessories Included", "Product Volume", "MultiPack Quantity"],
+          "attributes": ["Brand", "Chemical Solvent Type", "Product Volume"],
+          "aliases": ["chemical solvent", "laboratory solvent", "lab solvent", "solvent reagent", "analytical solvent"],
+          "title_keywords": ["chemical solvent", "laboratory solvent", "lab solvent", "solvent reagent", "chemical grade solvent"],
+          "context_keywords": ["solvent", "laboratory", "chemical grade", "purity", "reagent"],
+          "negative_keywords": ["chemical acid", "chemical base", "chemical buffer", "electrolyte solution", "chemical standard"]
+        },
+
+        "bioreagents": {
+          "display_name": "Bioreagents",
+          "formula": ["Brand", "Product Line", "Chemical Grade", "Chemical Purity Percentage", "Bioreagent Type", "Form", "Retail Packaging", "Accessories Included", "Product Volume", "MultiPack Quantity"],
+          "attributes": ["Brand", "Product Volume", "Multipack Quantity"],
+          "aliases": ["bioreagent", "biological reagent", "bio reagent", "laboratory bioreagent", "biochemical reagent"],
+          "title_keywords": ["bioreagent", "biological reagent", "bio reagent", "biochemical reagent", "laboratory reagent"],
+          "context_keywords": ["biology", "laboratory", "reagent", "biochemical", "chemical purity"],
+          "negative_keywords": ["chemical solvent", "chemical acid", "chemical base", "chemical buffer", "electrolyte solution"]
+        },
+
+        "chemical_acids": {
+          "display_name": "Chemical Acids",
+          "formula": ["Brand", "Product Line", "Chemical Grade", "Chemical Purity Percentage", "Chemical Acids Type", "Form", "Retail Packaging", "Accessories Included", "Product Volume", "MultiPack Quantity"],
+          "attributes": ["Chemical Acid Type", "Brand", "Condition"],
+          "aliases": ["chemical acid", "laboratory acid", "lab acid", "acid reagent", "acid solution"],
+          "title_keywords": ["chemical acid", "laboratory acid", "acid reagent", "acid solution", "chemical grade acid"],
+          "context_keywords": ["acid", "laboratory", "chemical grade", "purity", "solution"],
+          "negative_keywords": ["chemical base", "chemical buffer", "chemical solvent", "electrolyte solution", "chemical standard"]
+        },
+
+        "lab_analytical_balances": {
+          "display_name": "Lab Analytical Balances",
+          "formula": ["Brand", "Product Line", "Maximum Weight", "Measurement Accuracy", "Retail Packaging", "Accessories Included", "Features", "MultiPack Quantity"],
+          "attributes": ["Lab Analytical Balance Type", "Brand", "Measurement Accuracy"],
+          "aliases": ["lab analytical balance", "analytical balance", "laboratory balance", "precision lab balance", "laboratory scale"],
+          "title_keywords": ["lab analytical balance", "analytical balance", "laboratory balance", "precision balance", "digital lab balance"],
+          "context_keywords": ["measurement accuracy", "maximum weight", "laboratory", "precision weighing", "analytical weighing"],
+          "negative_keywords": ["kitchen scale", "bathroom scale", "postal scale", "industrial floor scale", "chemical reagent"]
+        },
+
+        "chemical_bases": {
+          "display_name": "Chemical Bases",
+          "formula": ["Brand", "Product Line", "Chemical Grade", "Chemical Purity Percentage", "Chemical Base Type", "Form", "Retail Packaging", "Accessories Included", "Product Volume", "MultiPack Quantity"],
+          "attributes": ["Chemical Base Type", "Brand", "Condition"],
+          "aliases": ["chemical base", "laboratory base", "lab base", "base reagent", "alkaline solution"],
+          "title_keywords": ["chemical base", "laboratory base", "base reagent", "alkaline solution", "chemical grade base"],
+          "context_keywords": ["base", "alkaline", "laboratory", "chemical grade", "solution"],
+          "negative_keywords": ["chemical acid", "chemical buffer", "chemical solvent", "electrolyte solution", "chemical standard"]
+        },
+
+        "chemical_buffers": {
+          "display_name": "Chemical Buffers",
+          "formula": ["Brand", "Product Line", "pH Balance", "Chemical Grade", "Chemical Base Type", "Form", "Retail Packaging", "Accessories Included", "Product Volume", "MultiPack Quantity"],
+          "attributes": ["Manufacturer", "Assembled Product Weight", "Count Per Pack"],
+          "aliases": ["chemical buffer", "buffer solution", "laboratory buffer", "pH buffer", "calibration buffer"],
+          "title_keywords": ["chemical buffer", "buffer solution", "pH buffer", "laboratory buffer", "calibration buffer"],
+          "context_keywords": ["pH", "buffer", "laboratory", "calibration", "solution"],
+          "negative_keywords": ["chemical acid", "chemical base", "chemical solvent", "electrolyte solution", "chemical standard"]
+        },
+
+        "chemical_standards": {
+          "display_name": "Chemical Standards",
+          "formula": ["Brand", "Product Line", "pH Balance", "Chemical Grade", "Chemical Standards Type", "Form", "Retail Packaging", "Accessories Included", "Product Volume", "MultiPack Quantity"],
+          "attributes": ["Brand", "Assembled Product Weight", "Condition"],
+          "aliases": ["chemical standard", "laboratory standard", "reference standard", "calibration standard", "chemical reference"],
+          "title_keywords": ["chemical standard", "laboratory standard", "reference standard", "calibration standard", "chemical reference"],
+          "context_keywords": ["calibration", "reference", "laboratory", "chemical grade", "standard"],
+          "negative_keywords": ["chemical acid", "chemical base", "chemical solvent", "chemical buffer", "electrolyte solution"]
+        }
+
+      }
+    },
+  
+    "lab_equipment": {
+      "display_name": "Lab Equipment",
+      "product_types": {
+
+        "autoclave_accessories": {
+          "display_name": "Autoclave Accessories",
+          "formula": ["Brand", "Product Line", "Autoclave Accessory Type"],
+          "attributes": ["Brand", "Number Of Pieces", "Material"],
+          "aliases": ["autoclave accessory", "autoclave accessories", "sterilizer accessory", "autoclave replacement part", "autoclave attachment"],
+          "title_keywords": ["autoclave accessory", "autoclave basket", "autoclave replacement", "sterilizer accessory", "autoclave part"],
+          "context_keywords": ["autoclave", "sterilization", "laboratory", "sterilizer", "replacement"],
+          "negative_keywords": ["autoclave", "pressure cooker", "incubator", "desiccator", "vacuum pump"]
+        },
+
+        "autoclaves": {
+          "display_name": "Autoclaves",
+          "formula": ["Brand", "Product Line", "Volume Capacity", "Autoclave Type"],
+          "attributes": ["Amps", "Brand", "Volume Capacity"],
+          "aliases": ["autoclave", "laboratory autoclave", "steam sterilizer", "lab sterilizer", "vacuum autoclave"],
+          "title_keywords": ["autoclave", "laboratory autoclave", "steam sterilizer", "vacuum autoclave", "lab sterilizer"],
+          "context_keywords": ["sterilization", "steam", "laboratory", "volume capacity", "sterilizer"],
+          "negative_keywords": ["autoclave accessory", "pressure cooker", "incubator", "laboratory oven", "desiccator"]
+        },
+
+        "autoradiography_film": {
+          "display_name": "Autoradiography Film",
+          "formula": ["Brand", "Product Line", "Product Type", "Film Size"],
+          "attributes": ["Manufacturer", "Assembled Product Width", "Condition"],
+          "aliases": ["autoradiography film", "radiography film", "lab imaging film", "scientific imaging film", "x-ray autoradiography film"],
+          "title_keywords": ["autoradiography film", "radiography film", "lab imaging film", "autoradiographic film", "scientific film"],
+          "context_keywords": ["autoradiography", "imaging", "laboratory", "film size", "exposure"],
+          "negative_keywords": ["photographic film", "camera film", "x-ray machine", "printer film", "laminating film"]
+        },
+
+        "beakers": {
+          "display_name": "Beakers",
+          "formula": ["Brand", "Product Line", "Volume Capacity", "Material", "Beaker Type"],
+          "attributes": ["Material", "Beaker Type", "Volume Capacity"],
+          "aliases": ["lab beaker", "laboratory beaker", "glass beaker", "plastic beaker", "science beaker"],
+          "title_keywords": ["beaker", "lab beaker", "laboratory beaker", "glass beaker", "graduated beaker"],
+          "context_keywords": ["laboratory", "volume capacity", "glassware", "chemical", "measurement"],
+          "negative_keywords": ["flask", "graduated cylinder", "measuring cup", "reagent bottle", "vial"]
+        },
+
+        "bunsen_burners": {
+          "display_name": "Bunsen Burners",
+          "formula": ["Brand", "Product Line", "Fuel Type", "Bunsen Burner Type", "Product Type", "Color"],
+          "attributes": ["Assembled Product Length", "Brand", "Material"],
+          "aliases": ["bunsen burner", "laboratory burner", "lab burner", "gas burner", "meker burner"],
+          "title_keywords": ["bunsen burner", "lab burner", "laboratory burner", "gas bunsen burner", "meker burner"],
+          "context_keywords": ["laboratory", "flame", "natural gas", "heating", "burner"],
+          "negative_keywords": ["propane torch", "camp stove", "butane lighter", "heating mantle", "hot plate"]
+        },
+
+        "dermatoscopes": {
+          "display_name": "Dermatoscopes",
+          "formula": ["Brand", "Product Line", "Dermatoscope Type"],
+          "attributes": ["Brand", "Magnification", "Dermatoscope Type"],
+          "aliases": ["dermatoscope", "dermoscope", "skin scope", "skin examination scope", "dermatology scope"],
+          "title_keywords": ["dermatoscope", "dermoscope", "skin scope", "polarized dermatoscope", "dermatology scope"],
+          "context_keywords": ["dermatology", "skin examination", "magnification", "medical", "inspection"],
+          "negative_keywords": ["otoscope", "ophthalmoscope", "microscope", "endoscope", "borescope"]
+        },
+
+        "desiccants": {
+          "display_name": "Desiccants",
+          "formula": ["Brand", "Product Line", "Features", "Desiccant Type", "Product Type", "Form", "Assembled Product Weight", "Count Per Pack"],
+          "attributes": ["Desiccant Type", "Brand", "Condition"],
+          "aliases": ["desiccant", "silica gel", "moisture absorber", "drying agent", "desiccant packet"],
+          "title_keywords": ["desiccant", "silica gel", "desiccant packet", "moisture absorber", "drying agent"],
+          "context_keywords": ["moisture control", "drying", "humidity", "laboratory", "silica"],
+          "negative_keywords": ["oxygen absorber", "dehumidifier", "desiccator", "air dryer", "water absorber"]
+        },
+
+        "desiccator_accessories": {
+          "display_name": "Desiccator Accessories",
+          "formula": ["Brand", "Product Line", "Desiccator Accessory Type"],
+          "attributes": ["Manufacturer", "Material", "Condition"],
+          "aliases": ["desiccator accessory", "desiccator accessories", "desiccator replacement part", "desiccator o-ring", "desiccator part"],
+          "title_keywords": ["desiccator accessory", "desiccator replacement", "desiccator o-ring", "desiccator part", "desiccator accessory kit"],
+          "context_keywords": ["desiccator", "laboratory", "replacement", "vacuum", "seal"],
+          "negative_keywords": ["desiccant", "desiccator", "vacuum chamber", "autoclave accessory", "reagent bottle"]
+        },
+
+        "desiccators": {
+          "display_name": "Desiccators",
+          "formula": ["Brand", "Product Line", "Desiccator Type", "Product Type"],
+          "attributes": ["Brand", "Material", "Assembled Product Width"],
+          "aliases": ["desiccator", "laboratory desiccator", "vacuum desiccator", "gas purge desiccator", "lab desiccator"],
+          "title_keywords": ["desiccator", "laboratory desiccator", "vacuum desiccator", "gas purge desiccator", "lab desiccator"],
+          "context_keywords": ["dry storage", "laboratory", "moisture control", "vacuum", "sample storage"],
+          "negative_keywords": ["desiccant", "desiccator accessory", "vacuum chamber", "incubator", "autoclave"]
+        },
+
+        "dispensing_bottles": {
+          "display_name": "Dispensing Bottles",
+          "formula": ["Brand", "Product Line", "Volume Capacity", "Material", "Product Type"],
+          "attributes": ["Color", "Material", "Brand"],
+          "aliases": ["dispensing bottle", "lab dispensing bottle", "chemical dispensing bottle", "laboratory dispenser bottle", "squeeze dispensing bottle"],
+          "title_keywords": ["dispensing bottle", "lab dispensing bottle", "chemical dispenser bottle", "laboratory bottle", "squeeze bottle"],
+          "context_keywords": ["dispensing", "laboratory", "chemical", "volume capacity", "container"],
+          "negative_keywords": ["wash bottle", "reagent bottle", "spray bottle", "vial", "pipette"]
+        },
+
+        "electrophoresis_systems": {
+          "display_name": "Electrophoresis Systems",
+          "formula": ["Brand", "Product Line", "Model", "Product Type"],
+          "attributes": ["Brand", "Amps", "Volts"],
+          "aliases": ["electrophoresis system", "gel electrophoresis system", "electrophoresis unit", "electrophoresis apparatus", "gel electrophoresis equipment"],
+          "title_keywords": ["electrophoresis system", "gel electrophoresis", "electrophoresis unit", "electrophoresis apparatus", "electrophoresis equipment"],
+          "context_keywords": ["gel separation", "laboratory", "DNA", "protein", "electrical current"],
+          "negative_keywords": ["electroporator", "centrifuge", "spectrophotometer", "chromatography system", "power supply"]
+        },
+
+        "electroscopes_van_de_graffs": {
+          "display_name": "Electroscopes & Van de Graffs",
+          "formula": ["Brand", "Product Line", "Electroscope & Van de Graff Type"],
+          "attributes": ["Brand", "Electroscope And Van De Graff Type", "Assembled Product Height"],
+          "aliases": ["electroscope", "van de graaff generator", "van de graff generator", "electrostatic generator", "electrostatics apparatus"],
+          "title_keywords": ["electroscope", "van de graaff", "van de graff", "electrostatic generator", "electrostatics apparatus"],
+          "context_keywords": ["electrostatics", "high voltage", "science laboratory", "electric charge", "demonstration"],
+          "negative_keywords": ["function generator", "power supply", "static eliminator", "voltage meter", "transformer"]
+        },
+
+        "flasks": {
+          "display_name": "Flasks",
+          "formula": ["Brand", "Product Line", "Volume Capacity", "Material", "Flask Type"],
+          "attributes": ["Material", "Brand", "Lab Flask Type"],
+          "aliases": ["lab flask", "laboratory flask", "glass flask", "science flask", "borosilicate flask"],
+          "title_keywords": ["lab flask", "laboratory flask", "glass flask", "florence flask", "erlenmeyer flask"],
+          "context_keywords": ["laboratory", "glassware", "volume capacity", "chemical", "borosilicate"],
+          "negative_keywords": ["beaker", "reagent bottle", "vial", "graduated cylinder", "coffee flask"]
+        },
+
+        "homogenizer_accessories": {
+          "display_name": "Homogenizer Accessories",
+          "formula": ["Brand", "Product Line", "Homogenizer Accessory Type"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["homogenizer accessory", "homogenizer accessories", "homogenizer probe", "homogenizer replacement part", "homogenizer attachment"],
+          "title_keywords": ["homogenizer accessory", "homogenizer probe", "homogenizer generator probe", "homogenizer part", "homogenizer attachment"],
+          "context_keywords": ["homogenizer", "laboratory", "sample preparation", "probe", "replacement"],
+          "negative_keywords": ["homogenizer", "blender", "mixer", "stirrer", "sonicator"]
+        },
+
+        "hydrometers": {
+          "display_name": "Hydrometers",
+          "formula": ["Brand", "Product Line", "Homogenizer Type"],
+          "attributes": ["Hydrometer Type", "Brand", "Material"],
+          "aliases": ["hydrometer", "laboratory hydrometer", "specific gravity hydrometer", "density hydrometer", "testing hydrometer"],
+          "title_keywords": ["hydrometer", "laboratory hydrometer", "specific gravity hydrometer", "density hydrometer", "triple scale hydrometer"],
+          "context_keywords": ["specific gravity", "density", "liquid testing", "laboratory", "measurement"],
+          "negative_keywords": ["hygrometer", "thermometer", "refractometer", "homogenizer", "pH meter"]
+        },
+
+        "lab_agar_media": {
+          "display_name": "Lab Agar Media",
+          "formula": ["Brand", "Product Line", "Product Type", "Form", "Size"],
+          "attributes": ["Brand", "Size", "Condition"],
+          "aliases": ["lab agar media", "agar media", "culture media", "laboratory agar", "microbiology agar"],
+          "title_keywords": ["lab agar media", "agar media", "culture media", "laboratory agar", "agar powder"],
+          "context_keywords": ["microbiology", "culture", "laboratory", "agar", "growth media"],
+          "negative_keywords": ["petri dish", "agar plate", "food agar", "gelatin", "chemical reagent"]
+        },
+
+        "lab_filters": {
+          "display_name": "Lab Filters",
+          "formula": ["Brand", "Product Line", "Lab Filter Type"],
+          "attributes": ["Assembled Product Width", "Brand", "Material"],
+          "aliases": ["lab filter", "laboratory filter", "filter membrane", "lab filtration filter", "membrane filter"],
+          "title_keywords": ["lab filter", "laboratory filter", "filter membrane", "membrane filter", "lab filtration"],
+          "context_keywords": ["filtration", "laboratory", "membrane", "sample preparation", "filter"],
+          "negative_keywords": ["air filter", "water filter", "coffee filter", "radio filter", "oil filter"]
+        },
+
+        "magnetic_stirrers": {
+          "display_name": "Magnetic Stirrers",
+          "formula": ["Brand", "Product Line", "Magnetic Stirrer Type"],
+          "attributes": ["Magnetic Stirrer Type", "Brand", "Model"],
+          "aliases": ["magnetic stirrer", "magnetic stirring machine", "lab stirrer", "laboratory magnetic stirrer", "magnetic mixer"],
+          "title_keywords": ["magnetic stirrer", "magnetic stirring machine", "lab stirrer", "laboratory stirrer", "magnetic mixer"],
+          "context_keywords": ["mixing", "laboratory", "stirring", "magnetic", "sample preparation"],
+          "negative_keywords": ["overhead mixer", "drum mixer", "homogenizer", "blender", "heating mantle"]
+        },
+
+        "medical_pinwheels": {
+          "display_name": "Medical Pinwheels",
+          "formula": ["Brand", "Product Line", "Features", "Material", "Product Type", "Color"],
+          "attributes": ["Number Of Pieces", "Brand", "Material"],
+          "aliases": ["medical pinwheel", "neurological pinwheel", "sensory pinwheel", "diagnostic pinwheel", "Wartenberg pinwheel"],
+          "title_keywords": ["medical pinwheel", "neurological pinwheel", "sensory pinwheel", "diagnostic pinwheel", "Wartenberg pinwheel"],
+          "context_keywords": ["neurological exam", "sensory testing", "medical", "diagnostic", "reflex examination"],
+          "negative_keywords": ["toy pinwheel", "wind spinner", "reflex hammer", "dermatoscope", "massage roller"]
+        },
+
+        "medical_reflex_hammers": {
+          "display_name": "Medical Reflex Hammers",
+          "formula": ["Brand", "Product Line", "Medical Reflex Hammer Type", "Color"],
+          "attributes": ["Hammer Head Material", "Brand", "Medical Reflex Hammer Type"],
+          "aliases": ["medical reflex hammer", "reflex hammer", "neurological hammer", "diagnostic reflex hammer", "percussion hammer"],
+          "title_keywords": ["medical reflex hammer", "reflex hammer", "neurological hammer", "percussion hammer", "diagnostic hammer"],
+          "context_keywords": ["reflex testing", "neurological exam", "medical", "diagnostic", "percussion"],
+          "negative_keywords": ["claw hammer", "mallet", "medical pinwheel", "massage hammer", "surgical hammer"]
+        },
+
+        "pipette_tips": {
+          "display_name": "Pipette Tips",
+          "formula": ["Brand", "Product Line", "Volume Capacity", "Pipette Tip Type", "Product Type"],
+          "attributes": ["Brand", "Assembled Product Width", "Material"],
+          "aliases": ["pipette tip", "pipette tips", "micropipette tip", "laboratory pipette tip", "disposable pipette tip"],
+          "title_keywords": ["pipette tip", "pipette tips", "micropipette tips", "lab pipette tips", "disposable pipette tips"],
+          "context_keywords": ["pipetting", "laboratory", "liquid handling", "volume capacity", "disposable"],
+          "negative_keywords": ["pipette", "pipettor", "syringe needle", "dropper", "reagent bottle"]
+        },
+
+        "pipettes": {
+          "display_name": "Pipettes",
+          "formula": ["Brand", "Product Line", "Volume Capacity", "Pipette Type"],
+          "attributes": ["Material", "Pipette Type", "Brand"],
+          "aliases": ["pipette", "laboratory pipette", "transfer pipette", "pasteur pipette", "graduated pipette"],
+          "title_keywords": ["pipette", "laboratory pipette", "transfer pipette", "pasteur pipette", "graduated pipette"],
+          "context_keywords": ["liquid handling", "laboratory", "volume capacity", "transfer", "measurement"],
+          "negative_keywords": ["pipette tip", "pipettor", "syringe", "dropper bottle", "burette"]
+        },
+
+        "pipettor_accessories": {
+          "display_name": "Pipettor Accessories",
+          "formula": ["Brand", "Product Line", "Pipettor Accessory Type"],
+          "attributes": ["Manufacturer", "Material", "Condition"],
+          "aliases": ["pipettor accessory", "pipettor accessories", "pipette stand", "pipettor rack", "pipettor replacement part"],
+          "title_keywords": ["pipettor accessory", "pipettor rack", "pipettor storage rack", "pipette stand", "pipettor part"],
+          "context_keywords": ["pipettor", "laboratory", "storage", "liquid handling", "accessory"],
+          "negative_keywords": ["pipettor", "pipette", "pipette tip", "test tube rack", "syringe pump"]
+        },
+
+        "pipettors": {
+          "display_name": "Pipettors",
+          "formula": ["Brand", "Product Line", "Pipettor Type", "Product Type"],
+          "attributes": ["Brand", "Assembled Product Weight", "Assembled Product Length"],
+          "aliases": ["pipettor", "laboratory pipettor", "micropipettor", "multi-channel pipettor", "single-channel pipettor"],
+          "title_keywords": ["pipettor", "laboratory pipettor", "micropipettor", "multi-channel pipettor", "single-channel pipettor"],
+          "context_keywords": ["liquid handling", "laboratory", "pipetting", "volume transfer", "precision"],
+          "negative_keywords": ["pipette tip", "pipette", "syringe", "syringe pump", "dropper"]
+        },
+
+        "reagent_bottles": {
+          "display_name": "Reagent Bottles",
+          "formula": ["Brand", "Product Line", "Volume Capacity", "Material", "Product Type"],
+          "attributes": ["Manufacturer", "Material", "Multipack Quantity"],
+          "aliases": ["reagent bottle", "laboratory reagent bottle", "chemical bottle", "lab storage bottle", "chemical storage bottle"],
+          "title_keywords": ["reagent bottle", "laboratory bottle", "chemical bottle", "lab reagent bottle", "chemical storage bottle"],
+          "context_keywords": ["reagent", "laboratory", "chemical storage", "volume capacity", "container"],
+          "negative_keywords": ["dispensing bottle", "wash bottle", "vial", "water bottle", "spray bottle"]
+        },
+
+        "syringe_pumps": {
+          "display_name": "Syringe Pumps",
+          "formula": ["Brand", "Product Line", "Model", "Syringe Pump Type"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["syringe pump", "laboratory syringe pump", "infusion syringe pump", "precision syringe pump", "syringe infusion pump"],
+          "title_keywords": ["syringe pump", "laboratory syringe pump", "infusion syringe pump", "precision syringe pump", "syringe infusion pump"],
+          "context_keywords": ["fluid delivery", "laboratory", "infusion", "syringe", "flow control"],
+          "negative_keywords": ["medical infusion pump", "syringe", "syringe needle", "vacuum pump", "peristaltic pump"]
+        },
+
+        "titrators": {
+          "display_name": "Titrators",
+          "formula": ["Brand", "Product Line", "Model", "Product Type"],
+          "attributes": ["Condition", "Multipack Quantity", "Color Category"],
+          "aliases": ["titrator", "laboratory titrator", "automatic titrator", "digital titrator", "chemical titrator"],
+          "title_keywords": ["titrator", "laboratory titrator", "automatic titrator", "digital titrator", "chemical titrator"],
+          "context_keywords": ["titration", "laboratory", "chemical analysis", "measurement", "analytical"],
+          "negative_keywords": ["burette", "pH meter", "spectrophotometer", "pipette", "chemical reagent"]
+        },
+
+        "vacuum_pumps": {
+          "display_name": "Vacuum Pumps",
+          "formula": ["Brand", "Product Line", "CFM", "Horsepower", "Number of Stages", "Product Type"],
+          "attributes": ["Vacuum Pump Type", "Brand", "Volts"],
+          "aliases": ["vacuum pump", "laboratory vacuum pump", "lab vacuum pump", "rotary vacuum pump", "scientific vacuum pump"],
+          "title_keywords": ["vacuum pump", "laboratory vacuum pump", "lab vacuum pump", "rotary vacuum pump", "scientific vacuum pump"],
+          "context_keywords": ["vacuum", "CFM", "horsepower", "laboratory", "pressure"],
+          "negative_keywords": ["syringe pump", "water pump", "air compressor", "drum pump", "hydraulic pump"]
+        },
+
+        "vials": {
+          "display_name": "Vials",
+          "formula": ["Brand", "Product Line", "Volume Capacity", "Material", "Product Type"],
+          "attributes": ["Material", "Brand", "Assembled Product Length"],
+          "aliases": ["lab vial", "laboratory vial", "sample vial", "glass vial", "chemical vial"],
+          "title_keywords": ["vial", "lab vial", "laboratory vial", "sample vial", "glass vial"],
+          "context_keywords": ["sample storage", "laboratory", "chemical", "volume capacity", "container"],
+          "negative_keywords": ["reagent bottle", "test tube", "dispensing bottle", "wash bottle", "medicine vial"]
+        },
+
+        "wash_bottles": {
+          "display_name": "Wash Bottles",
+          "formula": ["Brand", "Product Line", "Volume Capacity", "Material", "Product Type"],
+          "attributes": ["Brand", "Material", "Volume Capacity"],
+          "aliases": ["wash bottle", "laboratory wash bottle", "lab wash bottle", "squeeze wash bottle", "chemical wash bottle"],
+          "title_keywords": ["wash bottle", "laboratory wash bottle", "lab wash bottle", "squeeze wash bottle", "chemical wash bottle"],
+          "context_keywords": ["laboratory", "washing", "rinsing", "chemical", "squeeze bottle"],
+          "negative_keywords": ["dispensing bottle", "reagent bottle", "spray bottle", "water bottle", "vial"]
+        },
+
+        "other_lab_equipment": {
+          "display_name": "Other Lab Equipment",
+          "formula": ["Brand", "Product Line", "Product/Type", "Material", "Size", "Count/Pack"],
+          "attributes": ["Assembled Product Width", "Assembled Product Length", "Assembled Product Height"],
+          "aliases": ["lab equipment", "laboratory equipment", "other lab equipment", "scientific lab equipment", "laboratory apparatus"],
+          "title_keywords": ["lab equipment", "laboratory equipment", "scientific equipment", "lab apparatus", "laboratory apparatus"],
+          "context_keywords": ["laboratory", "science", "testing", "research", "equipment"],
+          "negative_keywords": ["beaker", "pipette", "autoclave", "vacuum pump", "magnetic stirrer"]
+        }
+
+      }
+    },
+
+    "lab_utensils": {
+      "display_name": "Lab Utensils",
+      "product_types": {
+
+        "lab_syringe_needles": {
+          "display_name": "Lab Syringe Needles",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Gauge"],
+          "attributes": ["Gauge", "Material", "Piece Count"],
+          "aliases": ["lab syringe needle", "laboratory syringe needle", "syringe needle", "lab needle", "dispensing needle"],
+          "title_keywords": ["lab syringe needle", "laboratory syringe needle", "syringe needle", "lab needle", "dispensing needle"],
+          "context_keywords": ["laboratory", "syringe", "gauge", "needle", "liquid handling"],
+          "negative_keywords": ["lab syringe", "pipette tip", "syringe pump", "scalpel blade", "medical needle"]
+        },
+
+        "lab_spoons_spatulas_scoops": {
+          "display_name": "Lab Spoons, Spatulas & Scoops",
+          "formula": ["Brand", "Model", "Material", "Product/Type", "Key Feature", "Count/Pack", "Lab Spoon Spatula And Scoop Type"],
+          "attributes": ["Brand", "Material", "Lab Spoon Spatula And Scoop Type"],
+          "aliases": ["lab spoon", "lab spatula", "lab scoop", "laboratory spatula", "laboratory scoop"],
+          "title_keywords": ["lab spoon", "lab spatula", "lab scoop", "laboratory spatula", "laboratory scoop"],
+          "context_keywords": ["laboratory", "sample handling", "chemical transfer", "powder", "stainless steel"],
+          "negative_keywords": ["kitchen spoon", "cooking spatula", "ice scoop", "measuring spoon", "lab scraper"]
+        },
+
+        "lab_scalpel_blades": {
+          "display_name": "Lab Scalpel Blades",
+          "formula": ["Brand", "Model", "Material", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Count Per Pack", "Brand", "Material"],
+          "aliases": ["lab scalpel blade", "laboratory scalpel blade", "scalpel blade", "dissection blade", "replacement scalpel blade"],
+          "title_keywords": ["lab scalpel blade", "laboratory scalpel blade", "scalpel blade", "dissection blade", "replacement scalpel blade"],
+          "context_keywords": ["laboratory", "dissection", "cutting", "scalpel", "precision"],
+          "negative_keywords": ["lab scalpel", "utility blade", "razor blade", "knife blade", "saw blade"]
+        },
+
+        "lab_test_sieves": {
+          "display_name": "Lab Test Sieves",
+          "formula": ["Brand", "Model", "Material", "Product/Type", "Key Feature", "Count/Pack", "Height"],
+          "attributes": ["Brand", "Assembled Product Height", "Material"],
+          "aliases": ["lab test sieve", "laboratory sieve", "test sieve", "particle sieve", "laboratory screen"],
+          "title_keywords": ["lab test sieve", "laboratory sieve", "test sieve", "particle sieve", "lab sieve"],
+          "context_keywords": ["laboratory", "particle testing", "screening", "sieving", "material analysis"],
+          "negative_keywords": ["kitchen sieve", "flour sifter", "strainer", "filter membrane", "mesh basket"]
+        },
+
+        "lab_dissecting_equipment_kits": {
+          "display_name": "Lab Dissecting Equipment & Kits",
+          "formula": ["Brand", "Model", "Material", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Material", "Lab Dissecting Equipment And Kit Type"],
+          "aliases": ["lab dissecting kit", "dissection kit", "laboratory dissecting equipment", "dissecting tools", "lab dissection equipment"],
+          "title_keywords": ["lab dissecting kit", "dissection kit", "laboratory dissecting equipment", "dissecting tools", "lab dissection kit"],
+          "context_keywords": ["laboratory", "dissection", "biology", "specimen", "science"],
+          "negative_keywords": ["surgical kit", "tool kit", "scalpel blade", "medical kit", "craft knife set"]
+        },
+
+        "lab_syringes": {
+          "display_name": "Lab Syringes",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Lab Syringe Type"],
+          "attributes": ["Lab Syringe Type", "Material", "Brand"],
+          "aliases": ["lab syringe", "laboratory syringe", "scientific syringe", "dispensing syringe", "measurement syringe"],
+          "title_keywords": ["lab syringe", "laboratory syringe", "scientific syringe", "dispensing syringe", "measurement syringe"],
+          "context_keywords": ["laboratory", "liquid handling", "measurement", "dispensing", "sample preparation"],
+          "negative_keywords": ["syringe needle", "syringe pump", "pipette", "medical syringe", "grease syringe"]
+        },
+
+        "lab_cell_scrapers_spreaders": {
+          "display_name": "Lab Cell Scrapers & Spreaders",
+          "formula": ["Brand", "Model", "Material", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Material", "Count Per Pack"],
+          "aliases": ["lab cell scraper", "cell scraper", "cell spreader", "laboratory cell scraper", "laboratory cell spreader"],
+          "title_keywords": ["lab cell scraper", "cell scraper", "cell spreader", "laboratory cell scraper", "laboratory cell spreader"],
+          "context_keywords": ["cell culture", "laboratory", "microbiology", "sample preparation", "cell handling"],
+          "negative_keywords": ["paint scraper", "kitchen scraper", "razor scraper", "lab spatula", "window scraper"]
+        },
+
+        "lab_scalpels": {
+          "display_name": "Lab Scalpels",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Weight"],
+          "attributes": ["Brand", "Assembled Product Weight", "Handle Material"],
+          "aliases": ["lab scalpel", "laboratory scalpel", "dissection scalpel", "precision scalpel", "science scalpel"],
+          "title_keywords": ["lab scalpel", "laboratory scalpel", "dissection scalpel", "precision scalpel", "science scalpel"],
+          "context_keywords": ["laboratory", "dissection", "precision cutting", "scalpel", "specimen"],
+          "negative_keywords": ["scalpel blade", "utility knife", "craft knife", "box cutter", "surgical scissors"]
+        },
+
+        "lab_sharps_containers": {
+          "display_name": "Lab Sharps Containers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Lab Sharps Container Type"],
+          "attributes": ["Brand", "Lab Sharps Container Type", "Material"],
+          "aliases": ["lab sharps container", "sharps container", "laboratory sharps container", "needle disposal container", "sharps disposal container"],
+          "title_keywords": ["lab sharps container", "sharps container", "needle disposal container", "sharps disposal container", "laboratory sharps container"],
+          "context_keywords": ["laboratory", "sharps disposal", "needle disposal", "biohazard", "waste container"],
+          "negative_keywords": ["trash can", "recycling bin", "specimen container", "storage container", "waste bag"]
+        },
+
+        "lab_samplers": {
+          "display_name": "Lab Samplers",
+          "formula": ["Brand", "Model", "Material", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Material", "Brand", "Volume Capacity"],
+          "aliases": ["lab sampler", "laboratory sampler", "sample collector", "sampling tool", "scientific sampler"],
+          "title_keywords": ["lab sampler", "laboratory sampler", "sample collector", "sampling tool", "scientific sampler"],
+          "context_keywords": ["laboratory", "sampling", "sample collection", "testing", "volume capacity"],
+          "negative_keywords": ["audio sampler", "food sampler", "pipette", "lab syringe", "specimen container"]
+        }
+
+      }
+    },
+
+    "labware": {
+      "display_name": "Labware",
+      "product_types": {
+
+        "lab_distillation_apparatus": {
+          "display_name": "Lab Distillation Apparatus",
+          "formula": ["Brand", "Model", "Material", "Product/Type", "Key Feature", "Count/Pack", "Lab Distillation Apparatus Type"],
+          "attributes": ["Lab Distillation Apparatus Type", "Brand", "Material"],
+          "aliases": ["lab distillation apparatus", "laboratory distillation apparatus", "distillation equipment", "distillation setup", "lab distillation system"],
+          "title_keywords": ["lab distillation apparatus", "distillation apparatus", "laboratory distillation", "distillation equipment", "distillation system"],
+          "context_keywords": ["distillation", "laboratory", "separation", "chemical processing", "labware"],
+          "negative_keywords": ["condenser", "evaporator", "flask", "chromatography column", "vacuum chamber"]
+        },
+
+        "lab_chromatography_columns": {
+          "display_name": "Lab Chromatography Columns",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Volume Capacity", "Condition", "Multipack Quantity"],
+          "aliases": ["lab chromatography column", "chromatography column", "laboratory column", "separation column", "chromatographic column"],
+          "title_keywords": ["lab chromatography column", "chromatography column", "laboratory chromatography", "separation column", "chromatographic column"],
+          "context_keywords": ["chromatography", "separation", "laboratory", "column", "chemical analysis"],
+          "negative_keywords": ["column packing", "TLC plate", "chromatography paper", "developing tank", "distillation apparatus"]
+        },
+
+        "lab_supply_dispensers": {
+          "display_name": "Lab Supply Dispensers",
+          "formula": ["Brand", "Model", "Material", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Material", "Count Per Pack"],
+          "aliases": ["lab supply dispenser", "laboratory dispenser", "lab dispenser", "supply dispenser", "laboratory supply dispenser"],
+          "title_keywords": ["lab supply dispenser", "laboratory dispenser", "lab dispenser", "supply dispenser", "laboratory supply dispenser"],
+          "context_keywords": ["laboratory", "dispensing", "supplies", "storage", "lab organization"],
+          "negative_keywords": ["dispensing bottle", "pipettor", "reagent bottle", "wash bottle", "chemical dispenser"]
+        },
+
+        "lab_immersion_heaters": {
+          "display_name": "Lab Immersion Heaters",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Length"],
+          "attributes": ["Brand", "Assembled Product Length", "Material"],
+          "aliases": ["lab immersion heater", "laboratory immersion heater", "immersion heater", "lab liquid heater", "laboratory heater"],
+          "title_keywords": ["lab immersion heater", "laboratory immersion heater", "immersion heater", "liquid heater", "lab heater"],
+          "context_keywords": ["heating", "laboratory", "liquid", "immersion", "temperature"],
+          "negative_keywords": ["heating mantle", "heat block", "drum heater", "water heater", "lab furnace"]
+        },
+
+        "lab_condensers": {
+          "display_name": "Lab Condensers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Width"],
+          "attributes": ["Brand", "Assembled Product Width", "Condition"],
+          "aliases": ["lab condenser", "laboratory condenser", "chemistry condenser", "glass condenser", "distillation condenser"],
+          "title_keywords": ["lab condenser", "laboratory condenser", "chemistry condenser", "distillation condenser", "glass condenser"],
+          "context_keywords": ["condensation", "distillation", "laboratory", "cooling", "chemistry"],
+          "negative_keywords": ["air conditioner condenser", "refrigeration condenser", "evaporator", "heat exchanger", "distillation apparatus"]
+        },
+
+        "lab_heat_blocks": {
+          "display_name": "Lab Heat Blocks",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Width"],
+          "attributes": ["Brand", "Assembled Product Width", "Material"],
+          "aliases": ["lab heat block", "laboratory heat block", "dry block heater", "heating block", "lab heating block"],
+          "title_keywords": ["lab heat block", "laboratory heat block", "dry block heater", "heating block", "lab block heater"],
+          "context_keywords": ["laboratory", "heating", "temperature control", "samples", "thermal"],
+          "negative_keywords": ["heating mantle", "immersion heater", "lab furnace", "hot plate", "heater blanket"]
+        },
+
+        "lab_shaker_accessories": {
+          "display_name": "Lab Shaker Accessories",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Length"],
+          "attributes": ["Brand", "Assembled Product Length", "Condition"],
+          "aliases": ["lab shaker accessory", "laboratory shaker accessory", "shaker accessory", "lab shaker attachment", "shaker replacement part"],
+          "title_keywords": ["lab shaker accessory", "shaker accessory", "laboratory shaker accessory", "shaker attachment", "shaker part"],
+          "context_keywords": ["lab shaker", "laboratory", "mixing", "shaking", "accessory"],
+          "negative_keywords": ["lab shaker", "magnetic stirrer", "vortex mixer", "incubator", "centrifuge"]
+        },
+
+        "lab_chromatography_column_packings": {
+          "display_name": "Lab Chromatography Column Packings",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Condition", "Multipack Quantity", "Piece Count"],
+          "aliases": ["chromatography column packing", "column packing", "chromatography packing", "column packing material", "lab column packing"],
+          "title_keywords": ["chromatography column packing", "column packing", "lab column packing", "chromatography packing", "packing material"],
+          "context_keywords": ["chromatography", "column", "separation", "laboratory", "packing"],
+          "negative_keywords": ["chromatography column", "TLC plate", "chromatography paper", "solid phase", "test tube"]
+        },
+
+        "lab_thermal_cyclers": {
+          "display_name": "Lab Thermal Cyclers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Volume Capacity", "Condition", "Multipack Quantity"],
+          "aliases": ["lab thermal cycler", "thermal cycler", "PCR machine", "PCR thermal cycler", "laboratory thermal cycler"],
+          "title_keywords": ["thermal cycler", "PCR machine", "lab thermal cycler", "PCR thermal cycler", "laboratory thermal cycler"],
+          "context_keywords": ["PCR", "laboratory", "thermal cycling", "DNA", "temperature control"],
+          "negative_keywords": ["incubator", "heat block", "lab furnace", "centrifuge", "heating mantle"]
+        },
+
+        "lab_burettes": {
+          "display_name": "Lab Burettes",
+          "formula": ["Brand", "Model", "Material", "Product/Type", "Key Feature", "Count/Pack", "Height"],
+          "attributes": ["Brand", "Material", "Assembled Product Height"],
+          "aliases": ["lab burette", "laboratory burette", "burette", "titration burette", "graduated burette"],
+          "title_keywords": ["lab burette", "laboratory burette", "burette", "titration burette", "graduated burette"],
+          "context_keywords": ["titration", "laboratory", "liquid measurement", "chemistry", "graduated"],
+          "negative_keywords": ["pipette", "graduated cylinder", "syringe", "reagent bottle", "titrator"]
+        },
+
+        "lab_microplates": {
+          "display_name": "Lab Microplates",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Length"],
+          "attributes": ["Brand", "Assembled Product Length", "Condition"],
+          "aliases": ["lab microplate", "microplate", "microtiter plate", "laboratory microplate", "well plate"],
+          "title_keywords": ["lab microplate", "microplate", "microtiter plate", "well plate", "laboratory microplate"],
+          "context_keywords": ["laboratory", "assay", "sample testing", "wells", "microbiology"],
+          "negative_keywords": ["petri dish", "TLC plate", "culture dish", "test tube rack", "sample tray"]
+        },
+
+        "lab_sample_bags": {
+          "display_name": "Lab Sample Bags",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Length"],
+          "attributes": ["Brand", "Assembled Product Length", "Multipack Quantity"],
+          "aliases": ["lab sample bag", "laboratory sample bag", "specimen bag", "sampling bag", "lab specimen bag"],
+          "title_keywords": ["lab sample bag", "laboratory sample bag", "specimen bag", "sampling bag", "lab specimen bag"],
+          "context_keywords": ["sample collection", "laboratory", "specimen", "storage", "testing"],
+          "negative_keywords": ["trash bag", "food storage bag", "shopping bag", "sample container", "poly bag"]
+        },
+
+        "lab_furnaces": {
+          "display_name": "Lab Furnaces",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Height"],
+          "attributes": ["Assembled Product Height", "Brand", "Volume Capacity"],
+          "aliases": ["lab furnace", "laboratory furnace", "muffle furnace", "scientific furnace", "high temperature lab furnace"],
+          "title_keywords": ["lab furnace", "laboratory furnace", "muffle furnace", "scientific furnace", "high temperature furnace"],
+          "context_keywords": ["laboratory", "high temperature", "heating", "thermal processing", "sample preparation"],
+          "negative_keywords": ["home furnace", "kiln", "heating mantle", "heat block", "immersion heater"]
+        },
+
+        "lab_glassware": {
+          "display_name": "Lab Glassware",
+          "formula": ["Brand", "Model", "Material", "Product/Type", "Key Feature", "Count/Pack", "Lab Glassware Type"],
+          "attributes": ["Material", "Lab Glassware Type", "Multipack Quantity"],
+          "aliases": ["lab glassware", "laboratory glassware", "science glassware", "chemical glassware", "laboratory vessels"],
+          "title_keywords": ["lab glassware", "laboratory glassware", "science glassware", "chemical glassware", "lab glassware set"],
+          "context_keywords": ["laboratory", "chemistry", "glass", "sample preparation", "measurement"],
+          "negative_keywords": ["drinkware", "kitchen glassware", "beaker", "flask", "reagent bottle"]
+        },
+
+        "lab_chromatography_solid_phases": {
+          "display_name": "Lab Chromatography Solid Phases",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Condition", "Multipack Quantity", "Piece Count"],
+          "aliases": ["chromatography solid phase", "solid phase chromatography", "stationary phase", "chromatography sorbent", "lab solid phase"],
+          "title_keywords": ["chromatography solid phase", "solid phase chromatography", "stationary phase", "chromatography sorbent", "lab solid phase"],
+          "context_keywords": ["chromatography", "separation", "stationary phase", "laboratory", "analysis"],
+          "negative_keywords": ["column packing", "TLC plate", "chromatography paper", "chromatography column", "liquid phase"]
+        },
+
+        "lab_carboys": {
+          "display_name": "Lab Carboys",
+          "formula": ["Brand", "Manufacturer", "Model", "Product/Type", "Key Feature", "Count/Pack", "Length"],
+          "attributes": ["Manufacturer", "Assembled Product Length", "Multipack Quantity"],
+          "aliases": ["lab carboy", "laboratory carboy", "chemical carboy", "storage carboy", "liquid carboy"],
+          "title_keywords": ["lab carboy", "laboratory carboy", "chemical carboy", "storage carboy", "liquid carboy"],
+          "context_keywords": ["laboratory", "liquid storage", "chemical storage", "container", "bulk liquid"],
+          "negative_keywords": ["water jug", "reagent bottle", "dispensing bottle", "vial", "wash bottle"]
+        },
+
+        "lab_baths": {
+          "display_name": "Lab Baths",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Width"],
+          "attributes": ["Brand", "Assembled Product Width", "Volume Capacity"],
+          "aliases": ["lab bath", "laboratory bath", "water bath", "laboratory water bath", "scientific bath"],
+          "title_keywords": ["lab bath", "laboratory bath", "water bath", "laboratory water bath", "scientific bath"],
+          "context_keywords": ["laboratory", "temperature control", "water bath", "heating", "samples"],
+          "negative_keywords": ["bathtub", "circulating pump", "immersion heater", "incubator", "heating mantle"]
+        },
+
+        "lab_specimen_collection_containers": {
+          "display_name": "Lab Specimen Collection Containers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Lab Specimen Collection Container Type"],
+          "attributes": ["Lab Specimen Collection Container Type", "Brand", "Condition"],
+          "aliases": ["specimen collection container", "lab specimen container", "laboratory specimen container", "sample collection container", "specimen cup"],
+          "title_keywords": ["specimen collection container", "lab specimen container", "sample container", "specimen cup", "laboratory specimen container"],
+          "context_keywords": ["specimen collection", "laboratory", "sample storage", "testing", "container"],
+          "negative_keywords": ["sharps container", "reagent bottle", "sample bag", "food container", "vial"]
+        },
+
+        "other_labware": {
+          "display_name": "Other Labware",
+          "formula": ["Brand", "Condition", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Condition", "Piece Count", "Manufacturer Part Number"],
+          "aliases": ["other labware", "labware", "laboratory ware", "laboratory supplies", "lab apparatus"],
+          "title_keywords": ["labware", "other labware", "laboratory supplies", "laboratory ware", "lab apparatus"],
+          "context_keywords": ["laboratory", "science", "research", "testing", "lab supplies"],
+          "negative_keywords": ["beaker", "flask", "pipette", "test tube rack", "reagent bottle"]
+        },
+
+        "lab_boiling_stones": {
+          "display_name": "Lab Boiling Stones",
+          "formula": ["Brand", "Manufacturer", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Manufacturer", "Condition", "Multipack Quantity"],
+          "aliases": ["lab boiling stone", "boiling stone", "boiling chip", "boiling chips", "laboratory boiling stone"],
+          "title_keywords": ["lab boiling stone", "boiling stone", "boiling chip", "boiling chips", "laboratory boiling stones"],
+          "context_keywords": ["laboratory", "boiling", "chemistry", "nucleation", "heating"],
+          "negative_keywords": ["landscape stone", "aquarium stone", "raw stone", "boiling flask", "ceramic media"]
+        },
+
+        "lab_glassware_washers": {
+          "display_name": "Lab Glassware Washers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["lab glassware washer", "laboratory glassware washer", "glassware washing machine", "lab washer", "laboratory washer"],
+          "title_keywords": ["lab glassware washer", "laboratory glassware washer", "glassware washer", "lab washer", "laboratory washer"],
+          "context_keywords": ["laboratory", "cleaning", "glassware", "washing", "lab equipment"],
+          "negative_keywords": ["dishwasher", "bottle washer", "wash bottle", "washing machine", "glass cleaner"]
+        },
+
+        "lab_chromatography_tlc_plates": {
+          "display_name": "Lab Chromatography TLC Plates",
+          "formula": ["Brand", "Manufacturer", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Manufacturer", "Condition", "Multipack Quantity"],
+          "aliases": ["TLC plate", "chromatography TLC plate", "thin layer chromatography plate", "lab TLC plate", "chromatography plate"],
+          "title_keywords": ["TLC plate", "chromatography TLC plate", "thin layer chromatography plate", "lab TLC plate", "chromatography plate"],
+          "context_keywords": ["chromatography", "thin layer chromatography", "laboratory", "separation", "analysis"],
+          "negative_keywords": ["microplate", "chromatography paper", "developing tank", "column packing", "petri dish"]
+        },
+
+        "lab_evaporators": {
+          "display_name": "Lab Evaporators",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Width"],
+          "attributes": ["Brand", "Assembled Product Width", "Condition"],
+          "aliases": ["lab evaporator", "laboratory evaporator", "rotary evaporator", "sample evaporator", "scientific evaporator"],
+          "title_keywords": ["lab evaporator", "laboratory evaporator", "rotary evaporator", "sample evaporator", "scientific evaporator"],
+          "context_keywords": ["evaporation", "laboratory", "solvent removal", "sample preparation", "chemistry"],
+          "negative_keywords": ["HVAC evaporator", "humidifier", "condenser", "distillation apparatus", "vacuum trap"]
+        },
+
+        "lab_vacuum_traps": {
+          "display_name": "Lab Vacuum Traps",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Condition", "Multipack Quantity", "Color Category"],
+          "aliases": ["lab vacuum trap", "laboratory vacuum trap", "vacuum trap", "cold trap", "vacuum pump trap"],
+          "title_keywords": ["lab vacuum trap", "laboratory vacuum trap", "vacuum trap", "cold trap", "vacuum pump trap"],
+          "context_keywords": ["vacuum", "laboratory", "vapor trapping", "vacuum system", "contamination"],
+          "negative_keywords": ["vacuum pump", "vacuum chamber", "plumbing trap", "animal trap", "evaporator"]
+        },
+
+        "lab_incubator_accessories": {
+          "display_name": "Lab Incubator Accessories",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["lab incubator accessory", "incubator accessory", "laboratory incubator accessory", "incubator replacement part", "incubator attachment"],
+          "title_keywords": ["lab incubator accessory", "incubator accessory", "laboratory incubator accessory", "incubator part", "incubator attachment"],
+          "context_keywords": ["incubator", "laboratory", "temperature control", "replacement", "accessory"],
+          "negative_keywords": ["lab incubator", "egg incubator", "thermal cycler", "lab shaker", "heating mantle"]
+        },
+
+        "test_tube_racks": {
+          "display_name": "Test Tube Racks",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Multipack Quantity", "Manufacturer Part Number", "Model"],
+          "aliases": ["test tube rack", "laboratory test tube rack", "tube rack", "lab tube rack", "test tube holder rack"],
+          "title_keywords": ["test tube rack", "laboratory test tube rack", "tube rack", "lab tube rack", "test tube holder"],
+          "context_keywords": ["test tubes", "laboratory", "storage", "sample organization", "rack"],
+          "negative_keywords": ["pipette rack", "wine rack", "storage rack", "test tube", "centrifuge tube"]
+        },
+
+        "lab_chromatography_paper": {
+          "display_name": "Lab Chromatography Paper",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Width"],
+          "attributes": ["Brand", "Assembled Product Width", "Material"],
+          "aliases": ["chromatography paper", "lab chromatography paper", "laboratory chromatography paper", "chromatographic paper", "paper chromatography sheet"],
+          "title_keywords": ["chromatography paper", "lab chromatography paper", "paper chromatography", "chromatographic paper", "laboratory chromatography paper"],
+          "context_keywords": ["chromatography", "laboratory", "separation", "paper", "chemical analysis"],
+          "negative_keywords": ["filter paper", "printer paper", "TLC plate", "chromatography column", "litmus paper"]
+        },
+
+        "lab_chromatography_tlc_developing_tanks": {
+          "display_name": "Lab Chromatography TLC Developing Tanks",
+          "formula": ["Brand", "Manufacturer", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Manufacturer", "Condition", "Multipack Quantity"],
+          "aliases": ["TLC developing tank", "chromatography developing tank", "thin layer chromatography tank", "TLC chamber", "chromatography chamber"],
+          "title_keywords": ["TLC developing tank", "chromatography developing tank", "TLC chamber", "thin layer chromatography tank", "chromatography chamber"],
+          "context_keywords": ["chromatography", "TLC", "laboratory", "developing chamber", "separation"],
+          "negative_keywords": ["TLC plate", "chromatography column", "chemical tank", "water tank", "chromatography paper"]
+        },
+
+        "lab_vacuum_chambers": {
+          "display_name": "Lab Vacuum Chambers",
+          "formula": ["Brand", "Model", "Material", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Material", "Brand", "Size"],
+          "aliases": ["lab vacuum chamber", "laboratory vacuum chamber", "vacuum chamber", "vacuum vessel", "scientific vacuum chamber"],
+          "title_keywords": ["lab vacuum chamber", "laboratory vacuum chamber", "vacuum chamber", "vacuum vessel", "scientific vacuum chamber"],
+          "context_keywords": ["vacuum", "laboratory", "pressure", "testing", "vacuum system"],
+          "negative_keywords": ["vacuum pump", "vacuum trap", "desiccator", "pressure chamber", "vacuum bag"]
+        },
+
+        "lab_centrifuges": {
+          "display_name": "Lab Centrifuges",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Volume Capacity", "Maximum Speed"],
+          "aliases": ["lab centrifuge", "laboratory centrifuge", "centrifuge machine", "scientific centrifuge", "benchtop centrifuge"],
+          "title_keywords": ["lab centrifuge", "laboratory centrifuge", "centrifuge machine", "benchtop centrifuge", "scientific centrifuge"],
+          "context_keywords": ["centrifugation", "laboratory", "sample separation", "RPM", "maximum speed"],
+          "negative_keywords": ["washing machine", "centrifuge tube", "thermal cycler", "lab shaker", "homogenizer"]
+        },
+
+        "lab_incubators": {
+          "display_name": "Lab Incubators",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Width"],
+          "attributes": ["Assembled Product Width", "Brand", "Material"],
+          "aliases": ["lab incubator", "laboratory incubator", "scientific incubator", "culture incubator", "microbiology incubator"],
+          "title_keywords": ["lab incubator", "laboratory incubator", "scientific incubator", "culture incubator", "microbiology incubator"],
+          "context_keywords": ["incubation", "laboratory", "temperature control", "culture", "microbiology"],
+          "negative_keywords": ["egg incubator", "incubator accessory", "thermal cycler", "lab furnace", "heating mantle"]
+        },
+
+        "lab_heating_mantles": {
+          "display_name": "Lab Heating Mantles",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Height"],
+          "attributes": ["Brand", "Assembled Product Height", "Material"],
+          "aliases": ["lab heating mantle", "laboratory heating mantle", "heating mantle", "flask heating mantle", "electric heating mantle"],
+          "title_keywords": ["lab heating mantle", "laboratory heating mantle", "heating mantle", "flask heating mantle", "electric heating mantle"],
+          "context_keywords": ["laboratory", "heating", "flask", "temperature control", "chemistry"],
+          "negative_keywords": ["heat block", "immersion heater", "lab furnace", "heating blanket", "hot plate"]
+        },
+
+        "labware_closures": {
+          "display_name": "Labware Closures",
+          "formula": ["Brand", "Model", "Material", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Material", "Brand", "Size"],
+          "aliases": ["labware closure", "laboratory closure", "lab container closure", "labware cap", "laboratory stopper"],
+          "title_keywords": ["labware closure", "laboratory closure", "labware cap", "laboratory stopper", "lab container closure"],
+          "context_keywords": ["laboratory", "closure", "container", "sealing", "labware"],
+          "negative_keywords": ["bottle cap", "drum lid", "jar lid", "reagent bottle", "container lid"]
+        },
+
+        "lab_shakers": {
+          "display_name": "Lab Shakers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Width"],
+          "attributes": ["Brand", "Assembled Product Width", "Material"],
+          "aliases": ["lab shaker", "laboratory shaker", "orbital shaker", "scientific shaker", "sample shaker"],
+          "title_keywords": ["lab shaker", "laboratory shaker", "orbital shaker", "scientific shaker", "sample shaker"],
+          "context_keywords": ["shaking", "laboratory", "mixing", "sample preparation", "agitation"],
+          "negative_keywords": ["shaker accessory", "magnetic stirrer", "vortex mixer", "cocktail shaker", "incubator"]
+        }
+
+      }
+    },
+
+    "manufacturing": {
+      "display_name": "Manufacturing",
+      "product_types": {
+
+        "textile_machinery": {
+          "display_name": "Textile Machinery",
+          "formula": ["Brand", "Product/Type", "Key Feature", "Count/Pack", "Weight", "Textile Machinery Type"],
+          "attributes": ["Assembled Product Weight", "Textile Machinery Type", "Condition"],
+          "aliases": ["textile machinery", "textile machine", "fabric machinery", "textile manufacturing equipment", "fabric production machine"],
+          "title_keywords": ["textile machinery", "textile machine", "fabric machinery", "textile manufacturing equipment", "textile production machine"],
+          "context_keywords": ["textile manufacturing", "fabric production", "industrial", "machinery", "textiles"],
+          "negative_keywords": ["beading machine", "sewing machine", "embroidery machine", "knitting machine", "printing machine"]
+        },
+
+        "beading_machines": {
+          "display_name": "Beading Machines",
+          "formula": ["Brand", "Condition", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Beading Machine Type"],
+          "aliases": ["beading machine", "bead machine", "beading equipment", "bead making machine", "industrial beading machine"],
+          "title_keywords": ["beading machine", "bead machine", "beading equipment", "bead making machine", "industrial beading machine"],
+          "context_keywords": ["beading", "manufacturing", "industrial", "production", "machine"],
+          "negative_keywords": ["textile machinery", "jewelry beads", "beading supplies", "beading needles", "sewing machine"]
+        }
+
+      }
+    },
+  
+    "raw_materials": {
+      "display_name": "Raw Materials",
+      "product_types": {
+
+        "carbon_graphite_raw_materials": {
+          "display_name": "Carbon & Graphite Raw Materials",
+          "formula": ["Brand", "Model", "Features", "Shape OR Thickness OR Fineness", "Material", "Carbon & Graphite Raw Material Type", "Form", "Items Included OR Retail Packaging", "Diameter OR Weight", "Assembled Product Height", "Assembled Product Length", "Assembled Product Width", "Count Per Pack"],
+          "attributes": ["Material", "Carbon And Graphite Raw Material Type", "Brand"],
+          "aliases": ["carbon raw material", "graphite raw material", "carbon graphite material", "graphite stock", "carbon stock"],
+          "title_keywords": ["carbon raw material", "graphite raw material", "carbon graphite", "graphite material", "carbon material"],
+          "context_keywords": ["carbon", "graphite", "industrial material", "raw stock", "fabrication"],
+          "negative_keywords": ["carbon fiber fabric", "graphite pencil", "charcoal", "foam board", "ceramic material"]
+        },
+
+        "ceramics_raw_materials": {
+          "display_name": "Ceramics Raw Materials",
+          "formula": ["Brand", "Model", "Features", "Fineness", "Ceramics Raw Material Type", "Material", "Form", "Items Included", "Color", "Diameter OR Weight", "Assembled Product Height OR Thickness", "Assembled Product Width", "Assembled Product Length", "Count Per Pack"],
+          "attributes": ["Color", "Brand", "Material"],
+          "aliases": ["ceramic raw material", "ceramics raw material", "ceramic material", "ceramic stock", "ceramic manufacturing material"],
+          "title_keywords": ["ceramic raw material", "ceramics raw material", "ceramic material", "ceramic stock", "ceramic fiber material"],
+          "context_keywords": ["ceramic", "manufacturing", "raw material", "fabrication", "industrial"],
+          "negative_keywords": ["ceramic cookware", "ceramic tile", "pottery finished product", "glass material", "foam board"]
+        },
+
+        "foam_board": {
+          "display_name": "Foam Board",
+          "formula": ["Brand", "Model", "Features", "Shape", "Mount Type", "Foam Board Type", "Form", "Items Included", "Assembled Product Width", "Assembled Product Length", "Thickness OR Assembled Product Height", "Color", "Count Per Pack"],
+          "attributes": ["Brand", "Foam Board Type", "Color"],
+          "aliases": ["foam board", "foam core board", "foam panel", "foam sheet", "mounting foam board"],
+          "title_keywords": ["foam board", "foam core board", "foam panel", "foam sheet", "mounting board"],
+          "context_keywords": ["foam", "board", "sheet", "mounting", "display material"],
+          "negative_keywords": ["insulation board", "poster board", "cardboard", "rubber sheet", "plastic sheet"]
+        },
+
+        "glass_raw_materials": {
+          "display_name": "Glass Raw Materials",
+          "formula": ["Brand", "Model", "Features", "Color OR Shape", "Thickness", "Material OR Glass Raw Material Type", "Form", "Items Included", "Color", "Weight", "Diameter OR Assembled Product Width", "Assembled Product Length", "Count Per Pack"],
+          "attributes": ["Brand", "Material", "Color"],
+          "aliases": ["glass raw material", "raw glass", "glass stock", "industrial glass material", "glass manufacturing material"],
+          "title_keywords": ["glass raw material", "raw glass", "glass stock", "glass material", "industrial glass"],
+          "context_keywords": ["glass", "raw material", "fabrication", "manufacturing", "industrial"],
+          "negative_keywords": ["drinking glass", "glassware", "window", "mirror", "fiberglass insulation"]
+        },
+
+        "metals": {
+          "display_name": "Metals",
+          "formula": ["Brand", "Model", "Features", "Shape OR Thickness", "Metal Type", "Form", "Material OR Product Name Type", "Items Included", "Assembled Product Width", "Assembled Product Length", "Assembled Product Height", "Count Per Pack"],
+          "attributes": ["Material", "Color", "Metal Type"],
+          "aliases": ["metal raw material", "metal stock", "raw metal", "industrial metal", "metal material"],
+          "title_keywords": ["metal raw material", "metal stock", "raw metal", "metal bar", "metal sheet"],
+          "context_keywords": ["metal", "fabrication", "raw stock", "industrial", "manufacturing"],
+          "negative_keywords": ["metal furniture", "metal tool", "finished hardware", "metal appliance", "jewelry"]
+        },
+
+        "plastics_raw_materials": {
+          "display_name": "Plastics Raw Materials",
+          "formula": ["Brand", "Model", "Features", "Thickness OR Shape", "Hardness Rating", "Material", "Plastics Raw Material Type", "Form", "Items Included", "Assembled Product Height OR Inner Diameter", "Assembled Product Width OR Outer Diameter", "Assembled Product Length", "Count Per Pack"],
+          "attributes": ["Material", "Color", "Brand"],
+          "aliases": ["plastic raw material", "plastics raw material", "plastic stock", "industrial plastic material", "plastic fabrication material"],
+          "title_keywords": ["plastic raw material", "plastic stock", "plastic material", "plastic sheet", "plastic tubing"],
+          "context_keywords": ["plastic", "fabrication", "raw material", "industrial", "polymer"],
+          "negative_keywords": ["plastic container", "plastic toy", "plastic bag", "finished plastic product", "foam board"]
+        },
+
+        "rubber_raw_materials": {
+          "display_name": "Rubber Raw Materials",
+          "formula": ["Brand", "Model", "Features", "Texture OR Shape", "Material", "Rubber Raw Material Type", "Form", "Items Included", "Thickness OR Diameter", "Assembled Product Width", "Assembled Product Length", "Color", "Count Per Pack"],
+          "attributes": ["Material", "Brand", "Rubber Raw Material Type"],
+          "aliases": ["rubber raw material", "raw rubber", "rubber stock", "industrial rubber material", "rubber sheet material"],
+          "title_keywords": ["rubber raw material", "raw rubber", "rubber stock", "rubber sheet", "rubber material"],
+          "context_keywords": ["rubber", "industrial", "fabrication", "raw material", "elastomer"],
+          "negative_keywords": ["rubber mat", "rubber gloves", "rubber band", "finished gasket", "foam rubber product"]
+        },
+
+        "sand": {
+          "display_name": "Sand",
+          "formula": ["Brand", "Model", "Features", "Stone Creation Method", "Color", "Material", "Sand Type", "Items Included OR Retail Packaging", "Form", "Fineness", "Size Descriptor", "Weight OR Assembled Product Weight", "Count Per Pack"],
+          "attributes": ["Material", "Sand Type", "Color"],
+          "aliases": ["industrial sand", "raw sand", "silica sand", "manufacturing sand", "material sand"],
+          "title_keywords": ["industrial sand", "raw sand", "silica sand", "sand material", "manufacturing sand"],
+          "context_keywords": ["sand", "granules", "raw material", "fineness", "industrial"],
+          "negative_keywords": ["play sand", "sandbox sand", "aquarium sand", "cat litter", "decorative finished product"]
+        },
+
+        "shims_shim_stock_raw_materials": {
+          "display_name": "Shims & Shim Stock Raw Materials",
+          "formula": ["Brand", "Model", "Features", "Shape", "Thickness", "Shim & Shim Stock Raw Material Type", "Items Included", "Material", "Assembled Product Width", "Assembled Product Length", "Tensile Strength", "Count Per Pack"],
+          "attributes": ["Material", "Brand", "Shim And Shim Stock Raw Material Type"],
+          "aliases": ["shim stock", "shim material", "raw shim stock", "metal shim stock", "industrial shim material"],
+          "title_keywords": ["shim stock", "shim material", "raw shim stock", "metal shim stock", "shim assortment"],
+          "context_keywords": ["shim", "stock", "thickness", "fabrication", "tensile strength"],
+          "negative_keywords": ["door shim", "furniture shim", "wheel spacer", "washer", "finished spacer"]
+        },
+
+        "stone_raw_materials": {
+          "display_name": "Stone Raw Materials",
+          "formula": ["Brand", "Model", "Features", "Stone Creation Method OR Stone Treatment", "Material", "Stone Raw Material Type", "Product Name Type", "Stone Form", "Items Included", "Weight", "Assembled Product Width", "Assembled Product Length", "Count Per Pack"],
+          "attributes": ["Material", "Color", "Assembled Product Weight"],
+          "aliases": ["stone raw material", "raw stone", "stone material", "natural stone material", "industrial stone"],
+          "title_keywords": ["stone raw material", "raw stone", "stone material", "natural stone", "stone stock"],
+          "context_keywords": ["stone", "raw material", "natural", "fabrication", "mineral"],
+          "negative_keywords": ["decorative stone product", "countertop", "stone jewelry", "paver", "finished tile"]
+        },
+
+        "textile_raw_materials": {
+          "display_name": "Textile Raw Materials",
+          "formula": ["Brand", "Model", "Features", "Pattern OR Theme OR Color OR Thickness OR Texture", "Textile Raw Material Type", "Fabric Material Name OR Material", "Form OR Fabric Purchase Form", "Items Included", "Assembled Product Length", "Assembled Product Width", "Assembled Product Weight", "Color", "Count Per Pack"],
+          "attributes": ["Brand", "Material", "Assembled Product Length"],
+          "aliases": ["textile raw material", "fabric raw material", "textile material", "fabric stock", "raw textile"],
+          "title_keywords": ["textile raw material", "fabric raw material", "textile material", "fabric stock", "raw fabric"],
+          "context_keywords": ["textile", "fabric", "raw material", "manufacturing", "material"],
+          "negative_keywords": ["finished clothing", "blanket", "curtain", "upholstered furniture", "sewing machine"]
+        }
+
+      }
+    },
+
+    "scientific_instruments": {
+      "display_name": "Scientific Instruments",
+      "product_types": {
+
+        "calibration_setting_rings": {
+          "display_name": "Calibration Setting Rings",
+          "formula": ["Brand", "Product Line", "Inside Diameter", "Outside Diameter", "Thickness", "Product Type", "Color"],
+          "attributes": ["Condition", "Model", "Multipack Quantity"],
+          "aliases": ["calibration setting ring", "setting ring", "gage setting ring", "calibration ring", "precision setting ring"],
+          "title_keywords": ["calibration setting ring", "setting ring", "gage setting ring", "calibration ring", "precision ring"],
+          "context_keywords": ["calibration", "measurement", "inside diameter", "outside diameter", "precision"],
+          "negative_keywords": ["bearing ring", "retaining ring", "o-ring", "jewelry ring", "piston ring"]
+        },
+
+        "calibration_surface_plates": {
+          "display_name": "Calibration Surface Plates",
+          "formula": ["Brand", "Product Line", "Assembled Product Length", "Assembled Product Width", "Assembled Product Height", "Grade", "Material", "Product Type", "Color"],
+          "attributes": ["Brand", "Material", "Grade"],
+          "aliases": ["calibration surface plate", "surface plate", "granite surface plate", "inspection surface plate", "precision surface plate"],
+          "title_keywords": ["calibration surface plate", "surface plate", "granite surface plate", "precision surface plate", "inspection plate"],
+          "context_keywords": ["calibration", "inspection", "precision", "flatness", "measurement"],
+          "negative_keywords": ["dinner plate", "steel plate", "mounting plate", "hot plate", "base plate"]
+        },
+
+        "electroporators": {
+          "display_name": "Electroporators",
+          "formula": ["Brand", "Product Line", "Electroporator Type", "size"],
+          "attributes": ["Condition", "Charging Time", "Minimum Capacitance"],
+          "aliases": ["electroporator", "electroporation system", "electroporation machine", "electroporation device", "electroporator machine"],
+          "title_keywords": ["electroporator", "electroporation system", "electroporation machine", "electroporation device", "electroporator solution"],
+          "context_keywords": ["electroporation", "laboratory", "cells", "capacitance", "biological research"],
+          "negative_keywords": ["electrophoresis system", "power supply", "centrifuge", "incubator", "thermal cycler"]
+        },
+
+        "fluorometers": {
+          "display_name": "Fluorometers",
+          "formula": ["Brand", "Product Line", "Fluorometer Type"],
+          "attributes": ["Model", "Fluorometer Type", "Manufacturer"],
+          "aliases": ["fluorometer", "fluorescence meter", "spectrofluorometer", "fluorescence analyzer", "fluorescence instrument"],
+          "title_keywords": ["fluorometer", "spectrofluorometer", "fluorescence meter", "fluorescence analyzer", "fluorescence instrument"],
+          "context_keywords": ["fluorescence", "laboratory", "measurement", "optical", "analysis"],
+          "negative_keywords": ["spectrometer", "spectrophotometer", "luminometer", "colorimeter", "light meter"]
+        },
+
+        "anemometers": {
+          "display_name": "Anemometers",
+          "formula": ["Brand", "Product Line", "Mount Type", "Display Technology", "Anemometer Type"],
+          "attributes": ["Mount Type", "Speed Range", "Brand"],
+          "aliases": ["anemometer", "wind speed meter", "air velocity meter", "wind meter", "airflow meter"],
+          "title_keywords": ["anemometer", "wind speed meter", "air velocity meter", "wind meter", "hot wire anemometer"],
+          "context_keywords": ["wind speed", "air velocity", "airflow", "measurement", "weather"],
+          "negative_keywords": ["barometer", "flow meter", "weather station", "tachometer", "pressure gauge"]
+        },
+
+        "barometers": {
+          "display_name": "Barometers",
+          "formula": ["Brand", "Product Line", "Mount Type", "Display Technology", "Barometer Type"],
+          "attributes": ["Brand", "Barometer Type", "Color"],
+          "aliases": ["barometer", "pressure barometer", "atmospheric pressure meter", "aneroid barometer", "digital barometer"],
+          "title_keywords": ["barometer", "aneroid barometer", "digital barometer", "pressure barometer", "atmospheric pressure meter"],
+          "context_keywords": ["atmospheric pressure", "weather", "measurement", "pressure", "meteorology"],
+          "negative_keywords": ["anemometer", "pressure gauge", "manometer", "thermometer", "hygrometer"]
+        },
+
+        "calibration_weights": {
+          "display_name": "Calibration Weights",
+          "formula": ["Brand", "Product Line", "Piece Count", "Calibration Weight Mass", "Material", "Calibration Weight Type"],
+          "attributes": ["Brand", "Material", "Calibration Weight Mass"],
+          "aliases": ["calibration weight", "calibration weights", "scale calibration weight", "precision weight", "calibration weight set"],
+          "title_keywords": ["calibration weight", "calibration weights", "precision weight", "scale calibration weight", "calibration weight set"],
+          "context_keywords": ["calibration", "mass", "scale", "precision", "measurement"],
+          "negative_keywords": ["gym weight", "dumbbell", "fishing weight", "ankle weight", "counterweight"]
+        },
+
+        "calorimeters": {
+          "display_name": "Calorimeters",
+          "formula": ["Brand", "Product Line", "Calorimeter Type"],
+          "attributes": ["Brand", "Condition", "Model"],
+          "aliases": ["calorimeter", "laboratory calorimeter", "heat calorimeter", "bomb calorimeter", "constant pressure calorimeter"],
+          "title_keywords": ["calorimeter", "laboratory calorimeter", "bomb calorimeter", "constant pressure calorimeter", "heat calorimeter"],
+          "context_keywords": ["heat measurement", "laboratory", "thermal energy", "calorimetry", "measurement"],
+          "negative_keywords": ["colorimeter", "thermometer", "spectrometer", "heat meter", "temperature probe"]
+        },
+
+        "gas_monitors": {
+          "display_name": "Gas Monitors",
+          "formula": ["Brand", "Product Line", "Gas Type", "Gas Monitor Type", "Product Type"],
+          "attributes": ["Gas Type", "Mount Type", "Brand"],
+          "aliases": ["gas monitor", "gas detector", "gas detection monitor", "gas analyzer", "gas monitoring device"],
+          "title_keywords": ["gas monitor", "gas detector", "gas detection monitor", "gas analyzer", "single gas monitor"],
+          "context_keywords": ["gas detection", "air quality", "safety", "monitoring", "gas concentration"],
+          "negative_keywords": ["smoke detector", "carbon monoxide alarm", "gas valve", "gas regulator", "pressure gauge"]
+        },
+
+        "homogenizers": {
+          "display_name": "Homogenizers",
+          "formula": ["Brand", "Product Line", "Hydrometer Type"],
+          "attributes": ["Brand", "Homogenizer Type", "Color Category"],
+          "aliases": ["homogenizer", "laboratory homogenizer", "lab homogenizer", "sample homogenizer", "ultrasonic homogenizer"],
+          "title_keywords": ["homogenizer", "laboratory homogenizer", "lab homogenizer", "sample homogenizer", "ultrasonic homogenizer"],
+          "context_keywords": ["sample preparation", "laboratory", "homogenization", "mixing", "research"],
+          "negative_keywords": ["hydrometer", "blender", "magnetic stirrer", "food processor", "drum mixer"]
+        },
+
+        "luminometers": {
+          "display_name": "Luminometers",
+          "formula": ["Brand", "Product Line", "Luminometer Type"],
+          "attributes": ["Brand", "Luminometer Type", "Measurement Accuracy"],
+          "aliases": ["luminometer", "luminescence meter", "microplate luminometer", "light emission meter", "luminescence analyzer"],
+          "title_keywords": ["luminometer", "microplate luminometer", "luminescence meter", "luminescence analyzer", "light emission meter"],
+          "context_keywords": ["luminescence", "laboratory", "light measurement", "microplate", "analysis"],
+          "negative_keywords": ["light meter", "fluorometer", "spectrophotometer", "photometer", "lux meter"]
+        },
+
+        "multiparameter_meters": {
+          "display_name": "Multiparameter Meters",
+          "formula": ["Brand", "Product Line", "Product Type"],
+          "attributes": ["Brand", "Assembled Product Weight", "Condition"],
+          "aliases": ["multiparameter meter", "multi parameter meter", "multiparameter tester", "water quality meter", "multi-function meter"],
+          "title_keywords": ["multiparameter meter", "multi parameter meter", "multiparameter tester", "water quality meter", "multi-function meter"],
+          "context_keywords": ["measurement", "water quality", "laboratory", "testing", "multiple parameters"],
+          "negative_keywords": ["multimeter", "pH meter", "flow meter", "power meter", "energy meter"]
+        },
+
+        "osmometers": {
+          "display_name": "Osmometers",
+          "formula": ["Brand", "Product Line", "Osmometers Type"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["osmometer", "laboratory osmometer", "membrane osmometer", "freezing point osmometer", "vapor pressure osmometer"],
+          "title_keywords": ["osmometer", "laboratory osmometer", "membrane osmometer", "freezing point osmometer", "vapor pressure osmometer"],
+          "context_keywords": ["osmolality", "osmotic pressure", "laboratory", "measurement", "solution analysis"],
+          "negative_keywords": ["pH meter", "refractometer", "spectrometer", "hydrometer", "pressure meter"]
+        },
+
+        "ph_meters": {
+          "display_name": "pH Meters",
+          "formula": ["Brand", "Product Line", "Product Type", "Minimum pH", "Maximum pH", "pH Accuracy"],
+          "attributes": ["Brand", "Ph Accuracy", "Maximum Ph"],
+          "aliases": ["pH meter", "digital pH meter", "laboratory pH meter", "pH tester", "pH measuring meter"],
+          "title_keywords": ["pH meter", "digital pH meter", "laboratory pH meter", "pH tester", "pH measuring meter"],
+          "context_keywords": ["pH", "acidity", "alkalinity", "laboratory", "measurement"],
+          "negative_keywords": ["pH test strips", "TDS meter", "moisture meter", "multimeter", "thermometer"]
+        },
+
+        "ph_test_strips": {
+          "display_name": "pH Test Strips",
+          "formula": ["Brand", "Product Line", "Product Type", "Count Per Pack"],
+          "attributes": ["Condition", "Brand", "Maximum Ph"],
+          "aliases": ["pH test strip", "pH test strips", "pH paper", "litmus test strip", "pH indicator strip"],
+          "title_keywords": ["pH test strips", "pH test strip", "pH paper", "litmus strips", "pH indicator strips"],
+          "context_keywords": ["pH", "testing", "acidity", "alkalinity", "indicator"],
+          "negative_keywords": ["pH meter", "urine test strip", "pool test strip", "glucose test strip", "water meter"]
+        },
+
+        "refractometers": {
+          "display_name": "Refractometers",
+          "formula": ["Brand", "Product Line", "Minimum Brix Range", "Maximum Brix Range", "Product Type", "Features"],
+          "attributes": ["Brand", "Display Technology", "Model"],
+          "aliases": ["refractometer", "Brix refractometer", "digital refractometer", "optical refractometer", "handheld refractometer"],
+          "title_keywords": ["refractometer", "Brix refractometer", "digital refractometer", "optical refractometer", "handheld refractometer"],
+          "context_keywords": ["Brix", "refractive index", "measurement", "laboratory", "concentration"],
+          "negative_keywords": ["spectrometer", "hydrometer", "pH meter", "telescope", "microscope"]
+        },
+
+        "spectrometers": {
+          "display_name": "Spectrometers",
+          "formula": ["Brand", "Product Line", "Spectrometer Type"],
+          "attributes": ["Brand", "Assembled Product Weight", "Condition"],
+          "aliases": ["spectrometer", "laboratory spectrometer", "optical spectrometer", "mass spectrometer", "absorption spectrometer"],
+          "title_keywords": ["spectrometer", "laboratory spectrometer", "optical spectrometer", "absorption spectrometer", "scientific spectrometer"],
+          "context_keywords": ["spectrum", "laboratory", "optical analysis", "measurement", "spectroscopy"],
+          "negative_keywords": ["spectrophotometer", "spectrum analyzer", "fluorometer", "refractometer", "colorimeter"]
+        },
+
+        "spectrophotometers": {
+          "display_name": "Spectrophotometers",
+          "formula": ["Brand", "Product Line", "Spectrophotometer Type"],
+          "attributes": ["Brand", "Assembled Product Width", "Condition"],
+          "aliases": ["spectrophotometer", "laboratory spectrophotometer", "UV-VIS spectrophotometer", "UV spectrophotometer", "visible spectrophotometer"],
+          "title_keywords": ["spectrophotometer", "UV-VIS spectrophotometer", "laboratory spectrophotometer", "UV spectrophotometer", "dual beam spectrophotometer"],
+          "context_keywords": ["spectrophotometry", "absorbance", "laboratory", "optical analysis", "wavelength"],
+          "negative_keywords": ["spectrometer", "fluorometer", "colorimeter", "light meter", "spectrum analyzer"]
+        },
+
+        "turbidity_meters": {
+          "display_name": "Turbidity Meters",
+          "formula": ["Brand", "Product Line", "Product Type"],
+          "attributes": ["Brand", "Multipack Quantity", "Condition"],
+          "aliases": ["turbidity meter", "turbidity tester", "turbidimeter", "water turbidity meter", "laboratory turbidity meter"],
+          "title_keywords": ["turbidity meter", "turbidity tester", "turbidimeter", "water turbidity meter", "laboratory turbidity meter"],
+          "context_keywords": ["turbidity", "water quality", "clarity", "laboratory", "measurement"],
+          "negative_keywords": ["pH meter", "TDS meter", "flow meter", "moisture meter", "light meter"]
+        },
+
+        "viscometers": {
+          "display_name": "Viscometers",
+          "formula": ["Brand", "Product Line", "Viscometer Type"],
+          "attributes": ["Manufacturer", "Has Written Warranty", "Viscometer Type"],
+          "aliases": ["viscometer", "laboratory viscometer", "viscosity meter", "rotational viscometer", "oscillating piston viscometer"],
+          "title_keywords": ["viscometer", "viscosity meter", "laboratory viscometer", "rotational viscometer", "oscillating piston viscometer"],
+          "context_keywords": ["viscosity", "fluid measurement", "laboratory", "liquid testing", "rheology"],
+          "negative_keywords": ["flow meter", "hydrometer", "refractometer", "pressure gauge", "density meter"]
+        },
+
+        "other_scientific_instruments": {
+          "display_name": "Other Scientific Instruments",
+          "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Color", "Size", "Count Per Pack"],
+          "attributes": ["Condition", "Count Per Pack", "Multipack Quantity"],
+          "aliases": ["scientific instrument", "laboratory instrument", "science instrument", "scientific measuring instrument", "other scientific instrument"],
+          "title_keywords": ["scientific instrument", "laboratory instrument", "science instrument", "scientific equipment", "scientific measuring instrument"],
+          "context_keywords": ["scientific", "laboratory", "measurement", "research", "testing"],
+          "negative_keywords": ["spectrometer", "pH meter", "viscometer", "barometer", "anemometer"]
+        }
+
+      }
+    },
+  
+    "store_school_restaurant_business_supplies": {
+      "display_name": "Store, School, Restaurant & Business Supplies",
+      "product_types": {
+
+        "display_cases": {
+          "display_name": "Display Cases",
+          "formula": ["Brand", "Model/Product Line", "Features", "Material/Metal Type", "Subject/Theme/Occasion/Style", "Display Case Type", "Items Included/Retail Packaging", "Number of Shelves/Compartments", "Holding Capacity", "Assembled Product Length", "Assembled Product Width", "Assembled Product Height", "Color", "Count/CountPerPack"],
+          "attributes": ["Brand", "Material", "Display Case Type"],
+          "aliases": ["display case", "display cabinet", "showcase", "display enclosure", "collectible display case"],
+          "title_keywords": ["display case", "display cabinet", "showcase", "acrylic display case", "collectible display case"],
+          "context_keywords": ["display", "retail", "collectibles", "shelves", "showcase"],
+          "negative_keywords": ["retail display case", "storage cabinet", "shipping case", "phone case", "tool case"]
+        },
+
+        "gridwall_bases": {
+          "display_name": "Gridwall Bases",
+          "formula": ["Brand", "Model/Product Line", "Features", "Recommended Use/Occasion", "Product Name Type", "Items Included/Retail Packaging", "Assembled Product Length", "Assembled Product Width", "Assembled Product Height", "Color", "Count/CountPerPack"],
+          "attributes": ["Assembled Product Length", "Count Per Pack", "Material"],
+          "aliases": ["gridwall base", "grid wall base", "grid panel base", "gridwall stand base", "retail gridwall base"],
+          "title_keywords": ["gridwall base", "grid wall base", "grid panel base", "gridwall stand", "retail gridwall base"],
+          "context_keywords": ["gridwall", "retail display", "merchandising", "floorstanding", "fixture"],
+          "negative_keywords": ["gridwall panel", "slatwall panel", "display case", "shelf", "shopping cart"]
+        },
+
+        "gridwall_panels": {
+          "display_name": "Gridwall Panels",
+          "formula": ["Brand", "Model/Product Line", "Features", "Product Name Type", "Items Included/Retail Packaging", "Assembled Product Length", "Assembled Product Width", "Assembled Product Height", "Color", "Count/CountPerPack"],
+          "attributes": ["Material", "Multipack Quantity", "Brand"],
+          "aliases": ["gridwall panel", "grid wall panel", "retail grid panel", "grid display panel", "merchandising gridwall"],
+          "title_keywords": ["gridwall panel", "grid wall panel", "retail grid panel", "grid display panel", "gridwall display"],
+          "context_keywords": ["gridwall", "retail display", "merchandising", "panel", "fixture"],
+          "negative_keywords": ["gridwall base", "slatwall panel", "pegboard", "display case", "wire shelf"]
+        },
+
+        "hand_dryers": {
+          "display_name": "Hand Dryers",
+          "formula": ["Brand", "Model/Product Line", "Features", "Hand Dryer Type", "Items Included/Retail Packaging", "Watts/Volts", "Dry Time", "Assembled Product Length", "Assembled Product Width", "Assembled Product Height", "Color/Pattern", "Count/CountPerPack"],
+          "attributes": ["Assembled Product Width", "Material", "Mount Type"],
+          "aliases": ["hand dryer", "electric hand dryer", "commercial hand dryer", "automatic hand dryer", "wall mounted hand dryer"],
+          "title_keywords": ["hand dryer", "electric hand dryer", "commercial hand dryer", "automatic hand dryer", "high speed hand dryer"],
+          "context_keywords": ["restroom", "hand drying", "commercial", "automatic", "wall mount"],
+          "negative_keywords": ["hair dryer", "clothes dryer", "paper towel dispenser", "air blower", "hand sanitizer dispenser"]
+        },
+
+        "janitor_housekeeping_carts": {
+          "display_name": "Janitor-Housekeeping Carts",
+          "formula": ["Brand", "Model/Product Line", "Features", "Number of Compartments/Shelves", "Janitor-Housekeeping Cart Type", "Items Included/Retail Packaging", "Assembled Product Length", "Assembled Product Width", "Assembled Product Height", "Color", "Count/CountPerPack"],
+          "attributes": ["Brand", "Material", "Janitor Housekeeping Cart Type"],
+          "aliases": ["janitor cart", "housekeeping cart", "janitorial cart", "cleaning cart", "maintenance cart"],
+          "title_keywords": ["janitor cart", "housekeeping cart", "janitorial cart", "cleaning cart", "commercial housekeeping cart"],
+          "context_keywords": ["cleaning", "janitorial", "housekeeping", "commercial", "storage"],
+          "negative_keywords": ["shopping cart", "utility wagon", "laundry cart", "service cart", "medical cart"]
+        },
+
+        "mannequins": {
+          "display_name": "Mannequins",
+          "formula": ["Brand", "Model/Product Line", "Features", "Material", "Theme/Occasion/Target Audience", "Gender", "Body Descriptor/Age Group/Body Part", "Mannequin Style", "Items Included/Retail Packaging", "Clothing Size", "Assembled Product Height", "Color/Pattern", "Count/CountPerPack"],
+          "attributes": ["Material", "Mannequin Style", "Condition"],
+          "aliases": ["mannequin", "display mannequin", "retail mannequin", "dress form", "store mannequin"],
+          "title_keywords": ["mannequin", "retail mannequin", "display mannequin", "dress form", "store mannequin"],
+          "context_keywords": ["retail display", "clothing", "fashion", "store fixture", "display"],
+          "negative_keywords": ["mannequin head", "necklace bust", "doll", "tailoring dummy toy", "statue"]
+        },
+
+        "necklace_bust": {
+          "display_name": "Necklace Bust",
+          "formula": ["Brand", "Model/Product Line", "Features", "Material", "Target Audience/Theme/Occasion", "Product Name Type", "Items Included/Retail Packaging", "Size Descriptor", "Assembled Product Height", "Color/Pattern", "Count/CountPerPack"],
+          "attributes": ["Brand", "Color", "Material"],
+          "aliases": ["necklace bust", "jewelry bust", "necklace display bust", "jewelry display stand", "necklace display holder"],
+          "title_keywords": ["necklace bust", "jewelry bust", "necklace display", "jewelry display stand", "necklace holder"],
+          "context_keywords": ["jewelry display", "retail", "necklace", "merchandising", "display"],
+          "negative_keywords": ["mannequin", "jewelry box", "necklace", "earring rack", "display case"]
+        },
+
+        "oxygen_absorbers": {
+          "display_name": "Oxygen Absorbers",
+          "formula": ["Brand", "Model/Product Line", "Features", "Absorbency", "Oxygen Absorber Type", "Form", "Items Included/Retail Packaging", "Color", "Count/CountPerPack"],
+          "attributes": ["Oxygen Absorber Type", "Brand", "Material"],
+          "aliases": ["oxygen absorber", "oxygen absorber packet", "oxygen scavenger", "oxygen absorbing packet", "food oxygen absorber"],
+          "title_keywords": ["oxygen absorber", "oxygen absorber packet", "oxygen scavenger", "food oxygen absorber", "oxygen absorbing packet"],
+          "context_keywords": ["food storage", "oxygen removal", "preservation", "packet", "moisture control"],
+          "negative_keywords": ["desiccant", "silica gel", "moisture absorber", "air purifier", "oxygen concentrator"]
+        },
+
+        "poly_bag_dispensers": {
+          "display_name": "Poly Bag Dispensers",
+          "formula": ["Brand", "Model/Product Line", "Features", "Material", "Product Name Type", "Items Included/Retail Packaging", "Assembled Product Length", "Assembled Product Width", "Assembled Product Height", "Color", "Count/CountPerPack"],
+          "attributes": ["Brand", "Material", "Condition"],
+          "aliases": ["poly bag dispenser", "plastic bag dispenser", "bag dispenser", "retail bag dispenser", "poly bag holder"],
+          "title_keywords": ["poly bag dispenser", "plastic bag dispenser", "bag dispenser", "poly bag holder", "retail bag dispenser"],
+          "context_keywords": ["poly bags", "retail", "dispensing", "bag holder", "store supplies"],
+          "negative_keywords": ["poly bag", "trash bag dispenser", "paper towel dispenser", "glove dispenser", "food dispenser"]
+        },
+
+        "poly_bags": {
+          "display_name": "Poly Bags",
+          "formula": ["Brand", "Model/Product Line", "Features", "Size Descriptor", "Theme/Occasion", "Material", "Poly Bag Type", "Message", "Form", "Items Included/Retail Packaging", "Assembled Product Length", "Assembled Product Width", "Assembled Product Height", "Color", "Count/CountPerPack"],
+          "attributes": ["Brand", "Material", "Poly Bag Type"],
+          "aliases": ["poly bag", "plastic poly bag", "retail poly bag", "clear poly bag", "packaging poly bag"],
+          "title_keywords": ["poly bag", "plastic poly bag", "clear poly bag", "retail poly bag", "packaging bag"],
+          "context_keywords": ["packaging", "plastic", "retail", "storage", "bag"],
+          "negative_keywords": ["poly bag dispenser", "trash bag", "shopping bag", "sample bag", "food storage bag"]
+        },
+
+        "recycling_bins": {
+          "display_name": "Recycling Bins",
+          "formula": ["Brand", "Model/Product Line", "Features", "Volume Capacity", "Material", "Product Name Type", "Items Included/Retail Packaging", "Color", "Count/CountPerPack"],
+          "attributes": ["Color", "Brand", "Material"],
+          "aliases": ["recycling bin", "recycle bin", "recycling container", "commercial recycling bin", "recycling receptacle"],
+          "title_keywords": ["recycling bin", "recycle bin", "recycling container", "commercial recycling bin", "recycling receptacle"],
+          "context_keywords": ["recycling", "waste", "commercial", "container", "trash"],
+          "negative_keywords": ["trash can", "sharps container", "storage bin", "sanitary receptacle", "compost bin"]
+        },
+
+        "restaurant_booth_seats": {
+          "display_name": "Restaurant Booth Seats",
+          "formula": ["Brand", "Model/Product Line", "Features", "Style/Theme", "Material", "Restaurant Booth Seat Type", "Items Included/Retail Packaging", "Assembled Product Length", "Assembled Product Width", "Assembled Product Height", "Color/Pattern", "Count/CountPerPack"],
+          "attributes": ["Color", "Count Per Pack", "Condition"],
+          "aliases": ["restaurant booth seat", "restaurant booth", "commercial booth seating", "diner booth", "restaurant booth seating"],
+          "title_keywords": ["restaurant booth", "restaurant booth seat", "commercial booth seating", "diner booth", "restaurant seating"],
+          "context_keywords": ["restaurant", "commercial seating", "booth", "dining", "furniture"],
+          "negative_keywords": ["car seat", "stadium seat", "bench seat", "office chair", "restaurant chair"]
+        },
+
+        "retail_display_cases": {
+          "display_name": "Retail Display Cases",
+          "formula": ["Brand", "Model/Product Line", "Features", "Size Descriptor", "Style/Theme", "Number of Shelves", "Material", "Retail Display Case Type", "Items Included/Retail Packaging", "Assembled Product Length", "Assembled Product Width", "Assembled Product Height", "Color", "Count/CountPerPack"],
+          "attributes": ["Material", "Brand", "Retail Display Case Type"],
+          "aliases": ["retail display case", "retail showcase", "store display case", "merchandise display case", "commercial display case"],
+          "title_keywords": ["retail display case", "retail showcase", "store display case", "commercial display case", "merchandise display case"],
+          "context_keywords": ["retail", "merchandising", "showcase", "store fixture", "display"],
+          "negative_keywords": ["display case", "storage cabinet", "jewelry box", "shipping case", "tool cabinet"]
+        },
+
+        "sanitary_products_receptacles": {
+          "display_name": "Sanitary Products Receptacles",
+          "formula": ["Brand", "Model/Product Line", "Features", "Material", "Size Descriptor/Number of Compartments", "Product Name Type", "Items Included/Retail Packaging", "Assembled Product Length", "Assembled Product Width", "Assembled Product Height", "Color/Pattern", "Count/CountPerPack"],
+          "attributes": ["Multipack Quantity", "Material", "Brand"],
+          "aliases": ["sanitary product receptacle", "sanitary napkin receptacle", "feminine hygiene receptacle", "sanitary disposal bin", "hygiene waste receptacle"],
+          "title_keywords": ["sanitary receptacle", "sanitary napkin receptacle", "feminine hygiene receptacle", "sanitary disposal bin", "hygiene receptacle"],
+          "context_keywords": ["restroom", "sanitary disposal", "hygiene", "commercial", "waste"],
+          "negative_keywords": ["recycling bin", "trash can", "sharps container", "storage bin", "paper towel dispenser"]
+        },
+
+        "slatwall_panels": {
+          "display_name": "Slatwall Panels",
+          "formula": ["Brand", "Model", "Features", "Material", "Orientation", "Product Name Type", "Items Included/Retail Packaging", "Assembled Product Length", "Assembled Product Width", "Color", "Count/CountPerPack"],
+          "attributes": ["Color", "Mount Type", "Brand"],
+          "aliases": ["slatwall panel", "slat wall panel", "retail slatwall", "slatwall display panel", "store slatwall panel"],
+          "title_keywords": ["slatwall panel", "slat wall panel", "retail slatwall", "slatwall display", "store slatwall panel"],
+          "context_keywords": ["slatwall", "retail display", "merchandising", "wall panel", "store fixture"],
+          "negative_keywords": ["gridwall panel", "pegboard", "wall paneling", "slatwall shelf", "display case"]
+        },
+
+        "slatwall_shelves": {
+          "display_name": "Slatwall Shelves",
+          "formula": ["Brand", "Model", "Features", "Material", "Orientation", "Product Name Type", "Items Included/Retail Packaging", "Assembled Product Length", "Assembled Product Width", "Color", "Count/CountPerPack"],
+          "attributes": ["Assembled Product Width", "Material", "Brand"],
+          "aliases": ["slatwall shelf", "slatwall shelves", "slat wall shelf", "retail slatwall shelf", "slatwall display shelf"],
+          "title_keywords": ["slatwall shelf", "slatwall shelves", "slat wall shelf", "retail slatwall shelf", "slatwall display shelf"],
+          "context_keywords": ["slatwall", "retail display", "shelf", "merchandising", "store fixture"],
+          "negative_keywords": ["slatwall panel", "gridwall shelf", "bookshelf", "wall shelf", "display case"]
+        },
+
+        "shopping_carts": {
+          "display_name": "Shopping Carts",
+          "formula": ["Brand", "Model/Product Line", "Features", "Size Descriptor", "Material", "Product Name Type", "Items Included/Retail Packaging", "Color", "Count/CountPerPack"],
+          "attributes": ["Shopping Cart Type", "Material", "Assembled Product Height"],
+          "aliases": ["shopping cart", "grocery cart", "retail shopping cart", "store cart", "shopping trolley"],
+          "title_keywords": ["shopping cart", "grocery cart", "retail shopping cart", "store cart", "shopping trolley"],
+          "context_keywords": ["retail", "shopping", "grocery", "store", "cart"],
+          "negative_keywords": ["janitor cart", "utility cart", "laundry cart", "golf cart", "wagon"]
+        },
+
+        "stanchions": {
+          "display_name": "Stanchions",
+          "formula": ["Brand", "Model/Product Line", "Material", "Number of Columns/Shelves", "Product Name Type", "Items Included", "Assembled Product Length", "Assembled Product Width", "Assembled Product Height", "Color", "Count/CountPerPack", "Condition"],
+          "attributes": ["Brand", "Assembled Product Height", "Material"],
+          "aliases": ["stanchion", "queue stanchion", "crowd control stanchion", "barrier post", "retractable belt stanchion"],
+          "title_keywords": ["stanchion", "queue stanchion", "crowd control stanchion", "barrier post", "retractable belt stanchion"],
+          "context_keywords": ["crowd control", "queue", "barrier", "commercial", "post"],
+          "negative_keywords": ["fence post", "traffic cone", "sign post", "vending machine", "bollard"]
+        },
+
+        "take_out_containers": {
+          "display_name": "Take-Out Containers",
+          "formula": ["Brand", "Model/Product Line", "Volume Capacity", "Features", "Size Descriptor", "Material", "Message", "Product Name Type", "Container Type", "Items Included/Retail Packaging", "Lid Style", "Assembled Product Length", "Assembled Product Width", "Assembled Product Height", "Color", "Count/CountPerPack"],
+          "attributes": ["Material", "Container Type", "Lid Style"],
+          "aliases": ["take-out container", "takeout container", "food takeout container", "restaurant food container", "to-go container"],
+          "title_keywords": ["take-out container", "takeout container", "to-go container", "food takeout container", "restaurant container"],
+          "context_keywords": ["restaurant", "food service", "takeout", "to-go", "food packaging"],
+          "negative_keywords": ["food storage container", "specimen container", "shipping box", "trash container", "recycling bin"]
+        },
+
+        "vending_machines": {
+          "display_name": "Vending Machines",
+          "formula": ["Brand", "Model/Product Line", "Features", "Material", "Number of Columns/Shelves/Rows", "Product Name Type", "Items Included", "Assembled Product Length", "Assembled Product Width", "Assembled Product Height", "Color", "Count/CountPerPack"],
+          "attributes": ["Vending Machine Type", "Brand", "Material"],
+          "aliases": ["vending machine", "snack vending machine", "commercial vending machine", "beverage vending machine", "automatic vending machine"],
+          "title_keywords": ["vending machine", "snack vending machine", "commercial vending machine", "beverage vending machine", "automatic vending machine"],
+          "context_keywords": ["vending", "commercial", "snacks", "beverages", "retail"],
+          "negative_keywords": ["ATM machine", "arcade machine", "coffee maker", "dispenser", "slot machine"]
+        }
+
+      }
+    },
+    
+    "testing_measurement_equipment": {
+      "display_name": "Testing & Measurement Equipment",
+      "product_types": {
+
+        "stroboscopes": {
+          "display_name": "Stroboscopes",
+          "formula": ["Brand", "Manufacturer", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Manufacturer", "Condition", "Multipack Quantity"],
+          "aliases": ["stroboscope", "strobe tachometer", "industrial stroboscope", "strobe tester", "inspection strobe"],
+          "title_keywords": ["stroboscope", "strobe tachometer", "industrial stroboscope", "strobe tester", "inspection strobe"],
+          "context_keywords": ["strobe", "rotation", "inspection", "speed measurement", "testing"],
+          "negative_keywords": ["strobe light", "party light", "flashlight", "tachometer", "camera flash"]
+        },
+
+        "gage_block_accessories": {
+          "display_name": "Gage Block Accessories",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Gage Block Accessory Type"],
+          "attributes": ["Brand", "Gage Block Accessory Type", "Condition"],
+          "aliases": ["gage block accessory", "gauge block accessory", "gage block accessories", "gauge block accessories", "gage block attachment"],
+          "title_keywords": ["gage block accessory", "gauge block accessory", "gage block accessories", "gage block attachment", "gage block accessory kit"],
+          "context_keywords": ["gage block", "calibration", "precision", "measurement", "metrology"],
+          "negative_keywords": ["gage block", "calibration weight", "v-block", "gage ball", "shim stock"]
+        },
+
+        "sunshine_recorders": {
+          "display_name": "Sunshine Recorders",
+          "formula": ["Brand", "Condition", "Model", "Product/Type", "Key Feature", "Count/Pack", "Net Content UOM", "Net Content"],
+          "attributes": ["Condition", "Product Net Content Uom", "Product Net Content Quantity"],
+          "aliases": ["sunshine recorder", "sunshine duration recorder", "solar recorder", "sunlight recorder", "sunshine measuring instrument"],
+          "title_keywords": ["sunshine recorder", "sunshine duration recorder", "solar recorder", "sunlight recorder", "sunshine instrument"],
+          "context_keywords": ["sunshine duration", "solar radiation", "weather", "meteorology", "measurement"],
+          "negative_keywords": ["solar radiation meter", "data logger", "chart recorder", "weather station", "light meter"]
+        },
+
+        "combustion_analyzers": {
+          "display_name": "Combustion Analyzers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Number Of Pieces", "Condition"],
+          "aliases": ["combustion analyzer", "flue gas analyzer", "combustion tester", "burner analyzer", "emissions analyzer"],
+          "title_keywords": ["combustion analyzer", "flue gas analyzer", "combustion tester", "burner analyzer", "emissions analyzer"],
+          "context_keywords": ["combustion", "flue gas", "emissions", "HVAC testing", "measurement"],
+          "negative_keywords": ["gas monitor", "air quality monitor", "oxygen sensor", "smoke detector", "gas detector"]
+        },
+
+        "function_generators": {
+          "display_name": "Function Generators",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Warranty"],
+          "attributes": ["Brand", "Has Written Warranty", "Maximum Frequency"],
+          "aliases": ["function generator", "signal generator", "waveform generator", "frequency generator", "electronic function generator"],
+          "title_keywords": ["function generator", "signal generator", "waveform generator", "frequency generator", "electronic function generator"],
+          "context_keywords": ["waveform", "frequency", "signal testing", "electronics", "laboratory"],
+          "negative_keywords": ["frequency counter", "pulse generator", "spectrum analyzer", "power supply", "oscilloscope"]
+        },
+
+        "inspection_mirrors": {
+          "display_name": "Inspection Mirrors",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Inspection Mirror Type"],
+          "attributes": ["Inspection Mirror Type", "Brand", "Condition"],
+          "aliases": ["inspection mirror", "telescoping inspection mirror", "mechanics inspection mirror", "inspection viewing mirror", "industrial inspection mirror"],
+          "title_keywords": ["inspection mirror", "telescoping inspection mirror", "mechanics mirror", "inspection viewing mirror", "industrial inspection mirror"],
+          "context_keywords": ["inspection", "visibility", "maintenance", "testing", "hard to reach"],
+          "negative_keywords": ["wall mirror", "makeup mirror", "dental mirror", "rearview mirror", "decorative mirror"]
+        },
+
+        "data_loggers": {
+          "display_name": "Data Loggers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Warranty"],
+          "attributes": ["Brand", "Has Written Warranty", "Condition"],
+          "aliases": ["data logger", "data recorder", "measurement logger", "digital data logger", "monitoring data logger"],
+          "title_keywords": ["data logger", "data recorder", "digital data logger", "measurement logger", "monitoring logger"],
+          "context_keywords": ["data recording", "measurement", "monitoring", "logging", "instrumentation"],
+          "negative_keywords": ["chart recorder", "audio recorder", "dash camera", "USB drive", "data storage"]
+        },
+
+        "oscilloscopes": {
+          "display_name": "Oscilloscopes",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Oscilloscope Type"],
+          "attributes": ["Oscilloscope Type", "Brand", "Number Of Pieces"],
+          "aliases": ["oscilloscope", "digital oscilloscope", "scope meter", "electronic oscilloscope", "bench oscilloscope"],
+          "title_keywords": ["oscilloscope", "digital oscilloscope", "bench oscilloscope", "electronic oscilloscope", "scope meter"],
+          "context_keywords": ["waveform", "signal measurement", "electronics", "voltage", "testing"],
+          "negative_keywords": ["oscilloscope accessory", "spectrum analyzer", "multimeter", "function generator", "monitor"]
+        },
+
+        "micrometers": {
+          "display_name": "Micrometers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Micrometer Type", "Micrometer Accuracy"],
+          "attributes": ["Brand", "Micrometer Type", "Micrometer Accuracy"],
+          "aliases": ["micrometer", "precision micrometer", "digital micrometer", "outside micrometer", "mechanical micrometer"],
+          "title_keywords": ["micrometer", "digital micrometer", "precision micrometer", "outside micrometer", "mechanical micrometer"],
+          "context_keywords": ["precision measurement", "dimensional measurement", "accuracy", "metrology", "inspection"],
+          "negative_keywords": ["micrometer head", "caliper", "depth gauge", "thickness gauge", "gage block"]
+        },
+
+        "capacitance_resistance_meters": {
+          "display_name": "Capacitance & Resistance Meters",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Capacitance And Resistance Meter Type"],
+          "attributes": ["Brand", "Capacitance And Resistance Meter Type", "Condition"],
+          "aliases": ["capacitance resistance meter", "capacitance meter", "resistance meter", "LCR meter", "component measurement meter"],
+          "title_keywords": ["capacitance resistance meter", "capacitance meter", "resistance meter", "LCR meter", "component meter"],
+          "context_keywords": ["capacitance", "resistance", "electronics", "measurement", "circuit testing"],
+          "negative_keywords": ["multimeter", "ohmmeter", "component tester", "voltmeter", "frequency counter"]
+        },
+
+        "calibration_v_blocks": {
+          "display_name": "Calibration V-Blocks",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["calibration v-block", "v-block", "precision v-block", "inspection v-block", "metrology v-block"],
+          "title_keywords": ["calibration v-block", "precision v-block", "inspection v-block", "metrology v-block", "v-block"],
+          "context_keywords": ["calibration", "precision", "metrology", "inspection", "workholding"],
+          "negative_keywords": ["engine block", "gage block", "mounting block", "heat block", "terminal block"]
+        },
+
+        "micrometer_heads": {
+          "display_name": "Micrometer Heads",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["micrometer head", "micrometer measuring head", "precision micrometer head", "digital micrometer head", "measurement head"],
+          "title_keywords": ["micrometer head", "precision micrometer head", "micrometer measuring head", "digital micrometer head", "measurement head"],
+          "context_keywords": ["micrometer", "precision measurement", "metrology", "adjustment", "dimensional measurement"],
+          "negative_keywords": ["micrometer", "caliper", "screw head", "gauge head", "microphone head"]
+        },
+
+        "solar_radiation_meters": {
+          "display_name": "Solar Radiation Meters",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["solar radiation meter", "solar irradiance meter", "irradiance meter", "solar power meter", "solar intensity meter"],
+          "title_keywords": ["solar radiation meter", "solar irradiance meter", "irradiance meter", "solar power meter", "solar intensity meter"],
+          "context_keywords": ["solar radiation", "irradiance", "sunlight", "measurement", "solar energy"],
+          "negative_keywords": ["sunshine recorder", "light meter", "solar panel", "power meter", "UV meter"]
+        },
+
+        "hygrometers": {
+          "display_name": "Hygrometers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Display Technology", "Hygrometer Type"],
+          "attributes": ["Display Technology", "Brand", "Hygrometer Type"],
+          "aliases": ["hygrometer", "humidity meter", "digital hygrometer", "humidity gauge", "moisture hygrometer"],
+          "title_keywords": ["hygrometer", "humidity meter", "digital hygrometer", "humidity gauge", "moisture hygrometer"],
+          "context_keywords": ["humidity", "moisture", "measurement", "environmental monitoring", "relative humidity"],
+          "negative_keywords": ["thermohygrometer", "thermometer", "moisture meter", "barometer", "weather station"]
+        },
+
+        "hardness_test_blocks": {
+          "display_name": "Hardness Test Blocks",
+          "formula": ["Brand", "Manufacturer", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Manufacturer", "Condition", "Multipack Quantity"],
+          "aliases": ["hardness test block", "hardness calibration block", "hardness reference block", "test block", "hardness standard block"],
+          "title_keywords": ["hardness test block", "hardness calibration block", "hardness reference block", "hardness standard block", "test block"],
+          "context_keywords": ["hardness testing", "calibration", "reference", "metrology", "material testing"],
+          "negative_keywords": ["hardness tester", "gage block", "calibration v-block", "heat block", "building block"]
+        },
+
+        "chart_recorder_paper": {
+          "display_name": "Chart Recorder Paper",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Number Of Pieces", "Brand", "Chart Recorder Paper Type"],
+          "aliases": ["chart recorder paper", "recording chart paper", "instrument chart paper", "recorder paper", "measurement chart paper"],
+          "title_keywords": ["chart recorder paper", "recording chart paper", "recorder paper", "instrument chart paper", "measurement chart paper"],
+          "context_keywords": ["chart recorder", "recording", "measurement", "paper", "instrumentation"],
+          "negative_keywords": ["chart recorder pen", "chart recorder", "printer paper", "graph paper", "receipt paper"]
+        },
+
+        "thermal_imaging_cameras": {
+          "display_name": "Thermal Imaging Cameras",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Multipack Quantity", "Condition"],
+          "aliases": ["thermal imaging camera", "thermal camera", "infrared camera", "IR imaging camera", "thermal imager"],
+          "title_keywords": ["thermal imaging camera", "thermal camera", "infrared camera", "thermal imager", "IR camera"],
+          "context_keywords": ["thermal imaging", "infrared", "temperature", "inspection", "heat detection"],
+          "negative_keywords": ["security camera", "digital camera", "borescope", "night vision camera", "webcam"]
+        },
+
+        "pressure_transmitters": {
+          "display_name": "Pressure Transmitters",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["pressure transmitter", "pressure transducer", "industrial pressure transmitter", "pressure sensor transmitter", "process pressure transmitter"],
+          "title_keywords": ["pressure transmitter", "pressure transducer", "industrial pressure transmitter", "pressure sensor", "process pressure transmitter"],
+          "context_keywords": ["pressure measurement", "process control", "industrial", "transmitter", "instrumentation"],
+          "negative_keywords": ["pressure gauge", "pressure switch", "manometer", "transducer", "pressure regulator"]
+        },
+
+        "borescopes": {
+          "display_name": "Borescopes",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Length"],
+          "attributes": ["Assembled Product Length", "Brand", "Condition"],
+          "aliases": ["borescope", "inspection camera", "video borescope", "industrial borescope", "inspection scope"],
+          "title_keywords": ["borescope", "inspection camera", "video borescope", "industrial borescope", "inspection scope"],
+          "context_keywords": ["inspection", "camera", "probe", "maintenance", "hard to reach"],
+          "negative_keywords": ["endoscope", "security camera", "thermal camera", "microscope", "webcam"]
+        },
+
+        "spectrum_analyzers": {
+          "display_name": "Spectrum Analyzers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Number Of Pieces", "Spectrum Analyzer Type"],
+          "aliases": ["spectrum analyzer", "RF spectrum analyzer", "signal spectrum analyzer", "frequency spectrum analyzer", "electronic spectrum analyzer"],
+          "title_keywords": ["spectrum analyzer", "RF spectrum analyzer", "signal spectrum analyzer", "frequency spectrum analyzer", "electronic spectrum analyzer"],
+          "context_keywords": ["frequency", "RF", "signal analysis", "electronics", "spectrum"],
+          "negative_keywords": ["spectrometer", "oscilloscope", "logic analyzer", "function generator", "frequency counter"]
+        },
+
+        "oscilloscope_accessories": {
+          "display_name": "Oscilloscope Accessories",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["oscilloscope accessory", "oscilloscope accessories", "scope accessory", "oscilloscope attachment", "oscilloscope replacement part"],
+          "title_keywords": ["oscilloscope accessory", "oscilloscope accessories", "scope accessory", "oscilloscope attachment", "oscilloscope part"],
+          "context_keywords": ["oscilloscope", "signal testing", "electronics", "measurement", "accessory"],
+          "negative_keywords": ["oscilloscope", "test probe", "multimeter", "spectrum analyzer", "function generator"]
+        },
+
+        "chart_recorder_pens": {
+          "display_name": "Chart Recorder Pens",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["chart recorder pen", "recorder pen", "chart recording pen", "instrument recorder pen", "chart pen"],
+          "title_keywords": ["chart recorder pen", "recorder pen", "chart recording pen", "instrument recorder pen", "chart pen"],
+          "context_keywords": ["chart recorder", "recording", "instrumentation", "measurement", "replacement pen"],
+          "negative_keywords": ["writing pen", "marker", "chart recorder paper", "chart recorder", "plotter pen"]
+        },
+
+        "bench_top_power_supplies": {
+          "display_name": "Bench Top Power Supplies",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Power/Source", "Capacity", "Amps"],
+          "attributes": ["Brand", "Amps", "Condition"],
+          "aliases": ["bench top power supply", "benchtop power supply", "laboratory power supply", "DC bench power supply", "variable power supply"],
+          "title_keywords": ["bench top power supply", "benchtop power supply", "lab power supply", "DC power supply", "variable power supply"],
+          "context_keywords": ["electronics", "power", "amps", "laboratory", "testing"],
+          "negative_keywords": ["computer power supply", "battery charger", "wall adapter", "UPS", "power strip"]
+        },
+
+        "other_test_measurement_equipment": {
+          "display_name": "Other Test & Measurement Equipment",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Warranty Info"],
+          "attributes": ["Warranty Information", "Count Per Pack", "Number Of Pieces"],
+          "aliases": ["test measurement equipment", "testing equipment", "measurement equipment", "test instrument", "measurement instrument"],
+          "title_keywords": ["test equipment", "measurement equipment", "testing instrument", "measurement instrument", "test and measurement"],
+          "context_keywords": ["testing", "measurement", "instrumentation", "inspection", "laboratory"],
+          "negative_keywords": ["oscilloscope", "micrometer", "hygrometer", "manometer", "component tester"]
+        },
+
+        "vibration_meters": {
+          "display_name": "Vibration Meters",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Vibration Meter Type"],
+          "attributes": ["Brand", "Vibration Meter Type", "Condition"],
+          "aliases": ["vibration meter", "vibration tester", "vibration analyzer", "vibration measurement meter", "industrial vibration meter"],
+          "title_keywords": ["vibration meter", "vibration tester", "vibration analyzer", "industrial vibration meter", "vibration measurement meter"],
+          "context_keywords": ["vibration", "machinery", "condition monitoring", "measurement", "maintenance"],
+          "negative_keywords": ["sound meter", "tachometer", "accelerometer", "motion sensor", "frequency meter"]
+        },
+
+        "thermohygrometers": {
+          "display_name": "Thermohygrometers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Thermohygrometer Type", "Display Technology"],
+          "attributes": ["Thermohygrometer Type", "Display Technology", "Brand"],
+          "aliases": ["thermohygrometer", "temperature humidity meter", "thermo hygrometer", "digital thermohygrometer", "temperature humidity gauge"],
+          "title_keywords": ["thermohygrometer", "thermo hygrometer", "temperature humidity meter", "digital thermohygrometer", "temperature humidity gauge"],
+          "context_keywords": ["temperature", "humidity", "environmental monitoring", "measurement", "display"],
+          "negative_keywords": ["hygrometer", "thermometer", "weather station", "moisture meter", "barometer"]
+        },
+
+        "test_probes_leads": {
+          "display_name": "Test Probes & Leads",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Count Per Pack", "Number Of Pieces"],
+          "aliases": ["test probe", "test lead", "test probes and leads", "meter test leads", "electrical test probes"],
+          "title_keywords": ["test probes", "test leads", "meter test leads", "electrical test probes", "test probe lead"],
+          "context_keywords": ["electrical testing", "measurement", "multimeter", "probe", "electronics"],
+          "negative_keywords": ["oscilloscope accessory", "medical probe", "temperature probe", "jumper cable", "charging cable"]
+        },
+
+        "circuit_tracers_analyzers": {
+          "display_name": "Circuit Tracers & Analyzers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["circuit tracer", "circuit analyzer", "electrical circuit tracer", "wire tracer", "circuit tracing analyzer"],
+          "title_keywords": ["circuit tracer", "circuit analyzer", "wire tracer", "electrical circuit tracer", "circuit tracing analyzer"],
+          "context_keywords": ["electrical testing", "circuit tracing", "wiring", "diagnostics", "measurement"],
+          "negative_keywords": ["logic analyzer", "component tester", "cable tester", "multimeter", "network analyzer"]
+        },
+
+        "chart_recorders": {
+          "display_name": "Chart Recorders",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["chart recorder", "data chart recorder", "measurement recorder", "strip chart recorder", "instrument chart recorder"],
+          "title_keywords": ["chart recorder", "strip chart recorder", "data chart recorder", "measurement recorder", "instrument chart recorder"],
+          "context_keywords": ["recording", "measurement", "data", "instrumentation", "chart"],
+          "negative_keywords": ["chart recorder paper", "chart recorder pen", "data logger", "audio recorder", "printer"]
+        },
+
+        "ohmmeters": {
+          "display_name": "Ohmmeters",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Ohmmeter Type"],
+          "attributes": ["Brand", "Ohmmeter Type", "Condition"],
+          "aliases": ["ohmmeter", "resistance meter", "digital ohmmeter", "micro ohmmeter", "electrical ohmmeter"],
+          "title_keywords": ["ohmmeter", "resistance meter", "digital ohmmeter", "micro ohmmeter", "electrical ohmmeter"],
+          "context_keywords": ["resistance", "ohms", "electrical testing", "measurement", "electronics"],
+          "negative_keywords": ["multimeter", "capacitance meter", "voltmeter", "ammeter", "component tester"]
+        },
+
+        "emf_meters": {
+          "display_name": "EMF Meters",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Warranty", "Frequency Range"],
+          "attributes": ["Brand", "Has Written Warranty", "Frequency Range"],
+          "aliases": ["EMF meter", "electromagnetic field meter", "electromagnetic radiation meter", "EMF detector", "field strength meter"],
+          "title_keywords": ["EMF meter", "electromagnetic field meter", "EMF detector", "electromagnetic radiation meter", "field strength meter"],
+          "context_keywords": ["electromagnetic field", "frequency", "radiation measurement", "testing", "field strength"],
+          "negative_keywords": ["RF spectrum analyzer", "radiation detector", "metal detector", "voltage detector", "Gauss meter"]
+        },
+
+        "logic_analyzers": {
+          "display_name": "Logic Analyzers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["logic analyzer", "digital logic analyzer", "USB logic analyzer", "digital signal analyzer", "logic testing analyzer"],
+          "title_keywords": ["logic analyzer", "digital logic analyzer", "USB logic analyzer", "digital signal analyzer", "logic testing analyzer"],
+          "context_keywords": ["digital signals", "electronics", "debugging", "logic", "signal analysis"],
+          "negative_keywords": ["spectrum analyzer", "oscilloscope", "circuit analyzer", "network analyzer", "component tester"]
+        },
+
+        "component_testers": {
+          "display_name": "Component Testers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Warranty"],
+          "attributes": ["Brand", "Has Written Warranty", "Condition"],
+          "aliases": ["component tester", "electronic component tester", "transistor tester", "circuit component tester", "electronic tester"],
+          "title_keywords": ["component tester", "electronic component tester", "transistor tester", "circuit component tester", "electronic tester"],
+          "context_keywords": ["electronics", "components", "testing", "diagnostics", "circuits"],
+          "negative_keywords": ["multimeter", "circuit analyzer", "logic analyzer", "battery tester", "cable tester"]
+        },
+
+        "gage_blocks": {
+          "display_name": "Gage Blocks",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Gage Block Type"],
+          "attributes": ["Number Of Pieces", "Brand", "Gage Block Type"],
+          "aliases": ["gage block", "gauge block", "precision gage block", "calibration block", "slip gauge"],
+          "title_keywords": ["gage block", "gauge block", "precision gage block", "calibration block", "slip gauge"],
+          "context_keywords": ["metrology", "calibration", "precision", "dimensional measurement", "inspection"],
+          "negative_keywords": ["gage block accessory", "hardness test block", "v-block", "building block", "heat block"]
+        },
+
+        "calibration_standard_rods": {
+          "display_name": "Calibration Standard Rods",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["calibration standard rod", "calibration rod", "reference rod", "measurement standard rod", "precision calibration rod"],
+          "title_keywords": ["calibration standard rod", "calibration rod", "reference rod", "precision calibration rod", "measurement standard rod"],
+          "context_keywords": ["calibration", "reference standard", "precision", "measurement", "metrology"],
+          "negative_keywords": ["threaded rod", "welding rod", "ground rod", "gage block", "metal rod"]
+        },
+
+        "thermowells": {
+          "display_name": "Thermowells",
+          "formula": ["Brand", "Manufacturer", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Manufacturer", "Condition", "Multipack Quantity"],
+          "aliases": ["thermowell", "temperature thermowell", "sensor thermowell", "industrial thermowell", "thermometer well"],
+          "title_keywords": ["thermowell", "temperature thermowell", "sensor thermowell", "industrial thermowell", "thermometer well"],
+          "context_keywords": ["temperature measurement", "sensor protection", "process control", "industrial", "instrumentation"],
+          "negative_keywords": ["thermometer", "temperature probe", "thermostat", "thermocouple", "pressure well"]
+        },
+
+        "temperature_indicators": {
+          "display_name": "Temperature Indicators",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Count Per Pack", "Brand", "Condition"],
+          "aliases": ["temperature indicator", "temperature indicator device", "thermal indicator", "temperature display", "temperature monitoring indicator"],
+          "title_keywords": ["temperature indicator", "thermal indicator", "temperature display", "temperature monitoring indicator", "temperature indicator device"],
+          "context_keywords": ["temperature", "monitoring", "measurement", "thermal", "indicator"],
+          "negative_keywords": ["thermometer", "temperature controller", "thermostat", "temperature probe", "heat indicator label"]
+        },
+
+        "frequency_counters_pulse_generators": {
+          "display_name": "Frequency Counters & Pulse Generators",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Number Of Pieces", "Condition"],
+          "aliases": ["frequency counter", "pulse generator", "frequency counter pulse generator", "electronic frequency counter", "signal pulse generator"],
+          "title_keywords": ["frequency counter", "pulse generator", "frequency counter pulse generator", "signal pulse generator", "electronic frequency counter"],
+          "context_keywords": ["frequency", "pulse", "electronics", "signal testing", "measurement"],
+          "negative_keywords": ["function generator", "spectrum analyzer", "frequency meter", "tachometer", "signal amplifier"]
+        },
+
+        "manometers": {
+          "display_name": "Manometers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack", "Manometer Type"],
+          "attributes": ["Brand", "Manometer Type", "Manufacturer"],
+          "aliases": ["manometer", "pressure manometer", "digital manometer", "differential manometer", "pressure measurement meter"],
+          "title_keywords": ["manometer", "digital manometer", "pressure manometer", "differential manometer", "pressure meter"],
+          "context_keywords": ["pressure", "differential pressure", "measurement", "HVAC", "testing"],
+          "negative_keywords": ["pressure gauge", "barometer", "pressure transmitter", "vacuum gauge", "flow meter"]
+        },
+
+        "dimensional_measurement_gauges": {
+          "display_name": "Dimensional Measurement Gauges",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Number Of Pieces", "Maximum Measuring Range"],
+          "aliases": ["dimensional measurement gauge", "dimension gauge", "precision measuring gauge", "measurement gauge", "dimensional inspection gauge"],
+          "title_keywords": ["dimensional measurement gauge", "dimension gauge", "precision measuring gauge", "measurement gauge", "inspection gauge"],
+          "context_keywords": ["dimensional measurement", "inspection", "precision", "measuring range", "metrology"],
+          "negative_keywords": ["pressure gauge", "fuel gauge", "wire gauge", "micrometer", "caliper"]
+        },
+
+        "hardness_testers": {
+          "display_name": "Hardness Testers",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Count Per Pack", "Condition"],
+          "aliases": ["hardness tester", "material hardness tester", "digital hardness tester", "portable hardness tester", "hardness testing instrument"],
+          "title_keywords": ["hardness tester", "material hardness tester", "digital hardness tester", "portable hardness tester", "hardness testing instrument"],
+          "context_keywords": ["hardness testing", "materials", "measurement", "inspection", "quality control"],
+          "negative_keywords": ["hardness test block", "durometer", "tensile tester", "moisture tester", "component tester"]
+        },
+
+        "gage_balls": {
+          "display_name": "Gage Balls",
+          "formula": ["Brand", "Model", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Multipack Quantity", "Condition"],
+          "aliases": ["gage ball", "gauge ball", "precision gage ball", "measurement ball", "inspection gage ball"],
+          "title_keywords": ["gage ball", "gauge ball", "precision gage ball", "measurement ball", "inspection gage ball"],
+          "context_keywords": ["metrology", "precision measurement", "inspection", "calibration", "diameter"],
+          "negative_keywords": ["ball bearing", "steel ball", "sports ball", "gage block", "calibration weight"]
+        },
+
+        "colorimeters": {
+          "display_name": "Colorimeters",
+          "formula": ["Brand", "Model", "Power Type", "Product/Type", "Key Feature", "Count/Pack"],
+          "attributes": ["Brand", "Power Type", "Number Of Pieces"],
+          "aliases": ["colorimeter", "digital colorimeter", "laboratory colorimeter", "color measurement meter", "color analysis instrument"],
+          "title_keywords": ["colorimeter", "digital colorimeter", "laboratory colorimeter", "color measurement meter", "color analysis instrument"],
+          "context_keywords": ["color measurement", "laboratory", "optical analysis", "testing", "colorimetry"],
+          "negative_keywords": ["calorimeter", "spectrophotometer", "color sensor", "paint color reader", "light meter"]
+        }
+
+      }
+    }
+  }
+}
+
+
+
+
+
+    

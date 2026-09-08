@@ -1,255 +1,520 @@
 {
   "category": "Photography",
-  "status": "partial",
-  "source": "PhotographyContentStyleGuide.pdf",
+  "status": "complete",
+  "source": "pn-guide-photography.pdf",
   "families": {
-    "camera_accessories":{
-        "display_name": "Camera Accessories",
-        "product_types": {
+    "camera_accessories": {
+      "display_name": "Camera Accessories",
+      "product_types": {
         "other_camera_accessories": {
-             "display_name": "Other Camera Accessories",
-                    "formula": ["Brand", "Condition", "Model", "Product Line", "Product/Type", "Key Feature", "Color", "Count/Pack", "Mount/Attachment"],
-                    "attributes": ["Condition", "Number of Pieces", "Multipack Quantity"],
-                    "aliases": ["miscellaneous", "other", "camera"],
-                    "title_keywords": ["camera", "accessories"],
-                    "context_keywords": ["camera", "accessory", "photography"],
-                    "negative_keywords": ["smoke detector", "carbon monoxide detector", "fire extinguisher"]
-                },
-        "camera_camcorder_mounts": {
-            "display_name": "Camera & Camcorder Mounts",
-            "formula": ["Brand", "Model/Product Line", "Features", "Camera & Camcorder Mount Type", "Accessories Included/Retail Packaging", "Compatible Devices/Compatible Cameras", "Color", "Count(Count Per Pack)"],
-            "attributes": ["Brand", "Camera and Camcorder Mount Type", "Features"],
-            "aliases": ["mount", "stand", "tripod"],
-            "title_keywords": ["camera", "camcorder", "mount"],
-            "context_keywords": ["camera mount", "mount", "photography"],
-            "negative_keywords": ["lens", "camera"]
+          "display_name": "Other Camera Accessories",
+          "formula": ["Brand", "Condition", "Model", "Product Line", "Product/Type", "Key Feature", "Color", "Count/Pack", "Mount/Attachment"],
+          "attributes": ["Condition", "Number Of Pieces", "Multipack Quantity"],
+          "aliases": ["camera accessory", "camera accessories", "photography accessory", "camera add-on"],
+          "title_keywords": ["camera accessory", "camera accessories", "photography accessory", "camera add-on"],
+          "context_keywords": ["photography", "camera equipment", "camera accessory", "mounting"],
+          "negative_keywords": ["camera lens", "camera bag", "tripod", "camera flash"]
+        },
+        "camera_and_camcorder_mounts": {
+          "display_name": "Camera & Camcorder Mounts",
+          "formula": ["Brand", "Model/Product Line", "Features", "Camera & Camcorder Mount Type", "Accessories Included/Retail Packaging", "Compatible Devices/Compatible Cameras", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Camera And Camcorder Mount Type", "Features"],
+          "aliases": ["camera mount", "camcorder mount", "camera mounting bracket", "camera holder"],
+          "title_keywords": ["camera mount", "camcorder mount", "camera mounting bracket", "camera holder"],
+          "context_keywords": ["photography", "camera mounting", "camcorder mounting", "support hardware"],
+          "negative_keywords": ["tripod", "tripod head", "camera stabilizer", "selfie stick"]
         },
         "camera_accessory_bundles": {
-            "display_name": "Camera Accessory Bundles",
-            "formula": ["Brand", "Model/Product Line", "Features", "Digital Camera Type", "Camera Accessory Bundle Type", "Retail Packaging/Accessories Included", "Compatible Cameras", "Color", "Count(Count Per Pack)"],
-            "attributes": ["Brand", "Features", "Camera Accessory Bundle Type"],
-            "aliases": ["bundle", "set"],
-            "title_keywords": ["camera", "accessory", "bundle"],
-            "context_keywords": ["camera accessory bundle", "bundle", "photography"],
-            "negative_keywords": ["lens", "case"]
+          "display_name": "Camera Accessory Bundles",
+          "formula": ["Brand", "Model/Product Line", "Features", "Digital Camera Type", "Camera Accessory Bundle Type", "Retail Packaging/Accessories Included", "Compatible Cameras", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Camera Accessory Bundle Type"],
+          "aliases": ["camera accessory bundle", "camera accessory kit", "camera bundle", "photography accessory kit"],
+          "title_keywords": ["camera accessory bundle", "camera accessory kit", "camera bundle", "photography accessory kit"],
+          "context_keywords": ["photography", "camera accessories", "accessory set", "camera kit"],
+          "negative_keywords": ["camera bag", "tripod", "camera lens", "camera flash"]
         },
-        "camera_bag_padded": {
-            "display_name": "Camera Bag Padded Partitions",
-            "formula": ["Camera Bag & Case Type", "Brand", "Product Line", "Features", "Number of Compartments", "Product Name Type", "Accessories Included/Retail Packaging", "Color", "Count(Count Per Pack)"],
-            "attributes": ["Brand", "Camera Bag Type", "Features"],
-            "aliases": ["camera bag", "padded bag"],
-            "title_keywords": ["camera", "bag", "padded"],
-            "context_keywords": ["padded camera bag", "camera bag", "photography"],
-            "negative_keywords": ["lens", "case"]
+        "camera_bag_padded_partitions": {
+          "display_name": "Camera Bag Padded Partitions",
+          "formula": ["Brand", "Product line", "Features", "Number of Compartments", "Product Name Type", "Accessories Included/Retail Packaging", "Camera Bag & Case Type", "Color/Pattern", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Camera Bag And Case Type"],
+          "aliases": ["camera bag partition", "camera bag divider", "padded camera divider", "camera case insert"],
+          "title_keywords": ["camera bag partition", "camera bag divider", "padded camera divider", "camera case insert"],
+          "context_keywords": ["photography", "camera storage", "padded divider", "equipment organization"],
+          "negative_keywords": ["camera bag", "lens case", "tripod case", "camera vest"]
         },
-        "camera_bags_cases": {
-            "display_name": "Camera Bags & Cases",
-            "formula": ["Product Line", "Brand", "Features", "Case Style/Bag Style", "Compatible Cameras/Camera Type", "Accessories Included/Retail Packaging", "Color/Pattern", "Count(Count Per Pack)"],
-            "attributes": ["Brand", "Camera Bag And Case Type", "Features"],
-            "aliases": ["camera bag", "camera case"],
-            "title_keywords": ["camera", "bag", "case"],
-            "context_keywords": ["camera bag", "camera case", "photography"],
-            "negative_keywords": ["lens", "accessory"]
+        "camera_bags_and_cases": {
+          "display_name": "Camera Bags & Cases",
+          "formula": ["Brand", "Product Line", "Features", "Case Style/Bag Style", "Camera Bag & Case Type", "Compatible Cameras/Camera Type", "Accessories Included/Retail Packaging", "Color/Pattern", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Camera Bag And Case Type", "Features"],
+          "aliases": ["camera bag", "camera case", "camera carrying case", "photography bag"],
+          "title_keywords": ["camera bag", "camera case", "camera carrying case", "photography bag"],
+          "context_keywords": ["photography", "camera storage", "equipment protection", "carrying case"],
+          "negative_keywords": ["camera bag partition", "lens case", "tripod case", "camera vest"]
         },
         "camera_battery_grips": {
-            "display_name": "Camera Battery Grips",
-            "formula": ["Model/Product Line", "Brand", "Camera Battery Grip Type", "Volts", "Accessories Included/Retail Packaging", "Features", "Color", "Count(Count Per Pack)"],
-            "attributes": ["Brand", "Features", "Camera Battery Grip Type"],
-            "aliases": ["battery grip", "grip"],
-            "title_keywords": ["camera", "battery", "grip"],
-            "context_keywords": ["camera battery grip", "battery grip", "photography"],
-            "negative_keywords": ["lens", "case"]
+          "display_name": "Camera Battery Grips",
+          "formula": ["Brand", "Model/Product Line", "Volts", "Features", "Camera Battery Grip Type", "Accessories Included/Retail Packaging", "Compatible Cameras", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Camera Battery Grip Type", "Features"],
+          "aliases": ["camera battery grip", "battery grip", "vertical battery grip", "camera power grip"],
+          "title_keywords": ["camera battery grip", "battery grip", "vertical battery grip", "camera power grip"],
+          "context_keywords": ["photography", "camera power", "battery grip", "camera handling"],
+          "negative_keywords": ["camera battery", "battery charger", "camera strap", "docking station"]
         },
-        "camera_belts_harnesses":{
-            "display_name": "Camera Belts & Harnesses",
-            "formula": ["Product Line", "Digital Camera Type/Film Camera Type/Compatible Cameras", "Brand", "Features", "Number of Compartments", "Color/Pattern", "Count(Count Per Pack)"],
-            "attributes": ["Brand", "Features", "Color"],
-            "aliases": ["belt", "harness"],
-            "title_keywords": ["camera", "belt", "harness"],
-            "context_keywords": ["camera belt", "camera harness", "photography"],
-            "negative_keywords": ["lens", "case"]
+        "camera_belts_and_harnesses": {
+          "display_name": "Camera Belts & Harnesses",
+          "formula": ["Brand", "Product Line", "Features", "Number of Compartments", "Product Name Type", "Digital Camera Type/Film Camera Type/Compatible Cameras", "Color/Pattern", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Color"],
+          "aliases": ["camera harness", "camera belt", "camera carrying harness", "photography harness"],
+          "title_keywords": ["camera harness", "camera belt", "camera carrying harness", "photography harness"],
+          "context_keywords": ["photography", "camera carrying", "wearable support", "camera transport"],
+          "negative_keywords": ["camera strap", "camera vest", "camera bag", "tripod"]
         },
-        "camera_cleaning": {
-            "display_name": "Camera Cleaning Equipment",
-            "formula": ["Product Line", "Brand", "Product Name Type", "Features", "Product Multifunction Descriptor", "Cleanser Formula", "Accessories Included/Retail Packaging", "Color/Pattern", "Count(Count Per Pack)"],
-            "attributes": ["Brand", "Number Of Pieces", "Cleanser Form"],
-            "aliases": ["cleaning kit", "cleaning supplies"],
-            "title_keywords": ["camera", "cleaning", "supplies"],
-            "context_keywords": ["camera cleaning kit", "cleaning supplies", "photography"],
-            "negative_keywords": ["lens", "case"]
+        "camera_cleaning_equipment": {
+          "display_name": "Camera Cleaning Equipment",
+          "formula": ["Brand", "Product Line", "Product Multifunction Descriptor", "Features", "Product Name Type", "Cleanser Form", "Accessories Included/Retail Packaging", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Number Of Pieces", "Cleanser Form"],
+          "aliases": ["camera cleaning equipment", "camera cleaning kit", "lens cleaning kit", "camera cleaner"],
+          "title_keywords": ["camera cleaning equipment", "camera cleaning kit", "lens cleaning kit", "camera cleaner"],
+          "context_keywords": ["photography", "camera maintenance", "lens cleaning", "equipment care"],
+          "negative_keywords": ["camera tool kit", "lens filter", "lens cap", "camera bag"]
         },
-        "camera_docking": {
-            "display_name": "Camera Docking Stations",
-            "formula": ["Product Line/Model", "Product Multifunction Descriptor", "Brand", "Camera Docking Station Type", "Features", "Compatible Devices", "Accessories Included/Retail Packaging", "Color", "Count(Count Per Pack)"],
-            "attributes": ["Brand", "Features", "Color"],
-            "aliases": ["docking station", "charging station"],
-            "title_keywords": ["camera", "docking", "station"],
-            "context_keywords": ["camera docking station", "charging station", "photography"],
-            "negative_keywords": ["lens", "case"]
-        },        "camera_film": {
+        "camera_docking_stations": {
+          "display_name": "Camera Docking Stations",
+          "formula": ["Brand", "Product Line/Model", "Features", "Product Multifunction Descriptor", "Connector Type", "Memory Card Type", "Camera Docking Station Type", "Accessories Included/Retail Package", "Compatiable Devices", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Features", "Brand", "Power Type"],
+          "aliases": ["camera docking station", "camera dock", "camera charging dock", "camera data dock"],
+          "title_keywords": ["camera docking station", "camera dock", "camera charging dock", "camera data dock"],
+          "context_keywords": ["photography", "camera connectivity", "charging dock", "data transfer"],
+          "negative_keywords": ["battery grip", "battery charger", "card reader", "camera mount"]
+        },
+        "camera_film": {
           "display_name": "Camera Film",
-          "formula": ["Brand", "Product Line/Model", "Features", "Camera Film Type", "Accessories Included/Retail Packaging", ",", "No. of Exposures", ",", "Dimensions (W x L)", ",", "Count/Count Per Pack"],
+          "formula": ["Brand", "Product Line/Model", "Features", "Camera Film Type", "Accessories Included/Retail Packaging", "No. of \"Exposures\"", "Dimensions (WxL)", "Count(Count Per Pack)"],
           "attributes": ["Brand", "Camera Film Type", "Film Size"],
-          "aliases": ["camera film", "film roll", "instant film", "photo film"],
-          "title_keywords": ["camera film", "film roll", "instant film", "photo film"],
-          "context_keywords": ["exposures", "film size", "multipack"],
-          "negative_keywords": ["camera film backs holders", "camera film winders", "camera flash", "camera lens", "camera remote control", "camera strap"]
+          "aliases": ["camera film", "photographic film", "35mm film", "film roll"],
+          "title_keywords": ["camera film", "photographic film", "35mm film", "film roll"],
+          "context_keywords": ["photography", "analog photography", "film exposure", "film camera"],
+          "negative_keywords": ["film back", "film winder", "digital camera", "instant camera"]
         },
-        "camera_film_backs_holders": {
+        "camera_film_backs_and_holders": {
           "display_name": "Camera Film Backs & Holders",
-          "formula": ["Brand", "Product Line/Model", "Features", "Material", "Camera Film Back & Holder Type", "Accessories Included/Retail Packaging", "Compatible Models/Compatible Cameras/Camera Type", ",", "Film Size", ",", "Color", ",", "Count/Count Per Pack"],
+          "formula": ["Brand", "Product Line/Model", "Features", "Material", "Camera Film Back & Holder Type", "Accessories Included/Retail Packaging", "Compatible Models/Compatible Cameras/Camera Type", "Film Size", "Color", "Count(Count Per Pack)"],
           "attributes": ["Brand", "Multipack Quantity", "Condition"],
-          "aliases": ["camera film back", "camera film holder", "film back", "film holder"],
-          "title_keywords": ["camera film back", "camera film holder", "film back", "film holder"],
-          "context_keywords": ["compatible camera", "film size", "color", "multipack"],
-          "negative_keywords": ["camera film", "camera film winders", "camera flash adapters", "camera lens", "camera strap", "camera remote control"]
+          "aliases": ["camera film back", "film holder", "film back holder", "camera film holder"],
+          "title_keywords": ["camera film back", "film holder", "film back holder", "camera film holder"],
+          "context_keywords": ["photography", "film camera", "film loading", "film holder"],
+          "negative_keywords": ["camera film", "film winder", "digital camera back", "lens board"]
         },
         "camera_film_winders": {
           "display_name": "Camera Film Winders",
-          "formula": ["Brand", "Product Line", "Features", "Camera Film Winder Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Camera Type", ",", "Color", ",", "Count/Count Per Pack", "(Condition)"],
+          "formula": ["Brand", "Product Line", "Features", "Camera Film Winder Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Camera Type", "Color", "Count(Count Per Pack)"],
           "attributes": ["Condition", "Features", "Multipack Quantity"],
-          "aliases": ["camera film winder", "film winder", "film advance winder"],
-          "title_keywords": ["camera film winder", "film winder", "film advance winder"],
-          "context_keywords": ["compatible cameras", "color", "condition", "multipack"],
-          "negative_keywords": ["camera film", "camera film backs holders", "camera remote controls", "camera stabilizers", "camera flash", "camera strap"]
+          "aliases": ["camera film winder", "film winder", "automatic film winder", "camera motor winder"],
+          "title_keywords": ["camera film winder", "film winder", "automatic film winder", "camera motor winder"],
+          "context_keywords": ["photography", "film camera", "film advance", "camera mechanism"],
+          "negative_keywords": ["camera film", "film back", "digital camera back", "camera remote control"]
         },
         "camera_flash_adapters": {
           "display_name": "Camera Flash Adapters",
-          "formula": ["Brand", "Product Line", "Features", "Camera Flash Adapter Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Camera Type/Compatible Model", ",", "Color", ",", "Count/Count Per Pack"],
+          "formula": ["Brand", "Product Line", "Features", "Camera Flash Adapter Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Camera Type/Compatible Model", "Color", "Count(Count Per Pack)"],
           "attributes": ["Brand", "Number Of Pieces", "Features"],
-          "aliases": ["camera flash adapter", "flash adapter", "hot shoe adapter"],
-          "title_keywords": ["camera flash adapter", "flash adapter", "hot shoe adapter"],
-          "context_keywords": ["compatible camera", "color", "pieces"],
-          "negative_keywords": ["camera flash brackets", "camera flash diffusers", "camera flashes", "camera lighting sync cords", "camera remote controls", "camera lens"]
+          "aliases": ["camera flash adapter", "flash adapter", "hot shoe adapter", "flash shoe adapter"],
+          "title_keywords": ["camera flash adapter", "flash adapter", "hot shoe adapter", "flash shoe adapter"],
+          "context_keywords": ["photography", "camera flash", "hot shoe", "flash mounting"],
+          "negative_keywords": ["flash bracket", "flash diffuser", "camera flash", "flash trigger"]
         },
         "camera_flash_brackets": {
           "display_name": "Camera Flash Brackets",
-          "formula": ["Brand", "Product Line", "Features", "Camera Flash Bracket Type", "Accessories Included/Retail Packaging", "Compatible Device/Compatible Cameras", ",", "Color", ",", "Count/Count Per Pack"],
+          "formula": ["Brand", "Product Line", "Features", "Camera Flash Bracket Type", "Accessories Included/Retail Packaging", "Compatible Device/Compatible Cameras", "Color", "Count(Count Per Pack)"],
           "attributes": ["Brand", "Number Of Pieces", "Features"],
-          "aliases": ["camera flash bracket", "flash bracket"],
-          "title_keywords": ["camera flash bracket", "flash bracket"],
-          "context_keywords": ["compatible device", "compatible camera", "color", "pieces"],
-          "negative_keywords": ["camera flash adapters", "camera flash diffusers", "camera flashes", "camera stabilizers", "tripod head", "phone mount"]
+          "aliases": ["camera flash bracket", "flash bracket", "flash mounting bracket", "camera flash mount"],
+          "title_keywords": ["camera flash bracket", "flash bracket", "flash mounting bracket", "camera flash mount"],
+          "context_keywords": ["photography", "camera flash", "flash mounting", "lighting support"],
+          "negative_keywords": ["flash adapter", "flash diffuser", "flash snoot", "camera flash"]
         },
         "camera_flash_diffusers": {
           "display_name": "Camera Flash Diffusers",
-          "formula": ["Brand", "Product Line", "Features", "Size", "Camera Flash Diffuser Type", "Accessories Included/Retail Packaging", "Compatible Device/Compatible Camera/Camera Flash Type", ",", "Color", ",", "Count/Count Per Pack", "(Condition)"],
+          "formula": ["Brand", "Product Line", "Features", "Size", "Camera Flash Diffuser Type", "Accessories Included/Retail Packaging", "Compatible Deivce/Compatible Camera/Camera Flash Type", "Color", "Count(Count Per Pack)"],
           "attributes": ["Brand", "Camera Flash Diffuser Type", "Features"],
-          "aliases": ["camera flash diffuser", "flash diffuser", "flash softbox"],
-          "title_keywords": ["camera flash diffuser", "flash diffuser", "flash softbox"],
-          "context_keywords": ["size", "compatible flash type", "color", "condition"],
-          "negative_keywords": ["camera flash brackets", "camera flash adapters", "camera flash snoots", "camera flashes", "camera lighting sync cords", "camera lens"]
+          "aliases": ["camera flash diffuser", "flash diffuser", "speedlight diffuser", "flash softener"],
+          "title_keywords": ["camera flash diffuser", "flash diffuser", "speedlight diffuser", "flash softener"],
+          "context_keywords": ["photography", "camera flash", "light diffusion", "flash lighting"],
+          "negative_keywords": ["flash snoot", "flash bracket", "camera flash", "flash adapter"]
         },
         "camera_flash_slave_trigger_units": {
           "display_name": "Camera Flash Slave Trigger Units",
-          "formula": ["Brand", "Product Line/Model", "Features", "Sensor Type", "Connector Type", "Camera Flash Slave Trigger Unit Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Model", ",", "Color", ",", "Count/Count Per Pack"],
+          "formula": ["Brand", "Product Line/Model", "Features", "Sensor Type", "Connector Type", "Camera Flash Slave Trigger Unit Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Model", "Color", "Count(Count Per Pack)"],
           "attributes": ["Brand", "Features", "Condition"],
-          "aliases": ["flash slave trigger", "camera flash slave trigger unit", "slave trigger unit"],
-          "title_keywords": ["flash slave trigger", "camera flash slave trigger unit", "slave trigger unit"],
-          "context_keywords": ["sensor type", "connector type", "compatible camera", "color"],
-          "negative_keywords": ["camera flashes", "camera lighting sync cords", "camera flash adapters", "camera remote controls", "wireless trigger", "microphone trigger"]
+          "aliases": ["flash slave trigger", "camera flash trigger", "wireless flash trigger", "slave flash trigger"],
+          "title_keywords": ["flash slave trigger", "camera flash trigger", "wireless flash trigger", "slave flash trigger"],
+          "context_keywords": ["photography", "camera flash", "wireless triggering", "flash synchronization"],
+          "negative_keywords": ["camera remote control", "sync cord", "flash adapter", "camera flash"]
         },
         "camera_flash_snoots": {
           "display_name": "Camera Flash Snoots",
-          "formula": ["Brand", "Product Line", "Features", "Camera Flash Snoot Type", "Accessories Included/Retail Packaging", "Compatible Models", ",", "Color", ",", "Count/Count Per Pack"],
+          "formula": ["Brand", "Product Line", "Features", "Camera Flash Snoot Type", "Accessories Included/Retail Packaging", "Compatible Models", "Color", "Count(Count Per Pack)"],
           "attributes": ["Brand", "Camera Flash Snoot Type", "Features"],
-          "aliases": ["camera flash snoot", "flash snoot"],
-          "title_keywords": ["camera flash snoot", "flash snoot"],
-          "context_keywords": ["compatible model", "color", "multipack"],
-          "negative_keywords": ["camera flash diffusers", "camera flash brackets", "camera flashes", "camera flash adapters", "lens hood", "camera lcd hood"]
+          "aliases": ["camera flash snoot", "flash snoot", "speedlight snoot", "flash light modifier"],
+          "title_keywords": ["camera flash snoot", "flash snoot", "speedlight snoot", "flash light modifier"],
+          "context_keywords": ["photography", "camera flash", "light control", "flash modifier"],
+          "negative_keywords": ["flash diffuser", "flash bracket", "camera flash", "on-camera light"]
         },
         "camera_flashes": {
           "display_name": "Camera Flashes",
-          "formula": ["Brand", "Product Line/Model", "Features", "Sensor Type", "Watts/Volts", "Camera Flash Type", "Accessories Included/Retail Packaging", "Camera Type/Compatible Cameras/Compatible Models", ",", "Color", ",", "Count/Count Per Pack", "(Condition)"],
+          "formula": ["Brand", "Product Line/Model", "Features", "Sensor Type", "Watts/Volts", "Camera Flash Type", "Accessories Included/Retail Packaging", "Camera Type/Compatible Cameras/Compatible Models", "Color", "Count(Count Per Pack)"],
           "attributes": ["Brand", "Features", "Camera Flash Type"],
-          "aliases": ["camera flash", "camera flashes", "speedlight", "strobe flash"],
-          "title_keywords": ["camera flash", "camera flashes", "speedlight", "strobe flash"],
-          "context_keywords": ["sensor type", "watts", "volts", "compatible camera", "condition"],
-          "negative_keywords": ["camera flash adapters", "camera flash brackets", "camera flash diffusers", "camera flash snoots", "camera lighting sync cords", "camera remote controls"]
+          "aliases": ["camera flash", "external camera flash", "speedlight", "shoe mount flash"],
+          "title_keywords": ["camera flash", "external camera flash", "speedlight", "shoe mount flash"],
+          "context_keywords": ["photography", "flash photography", "camera lighting", "external flash"],
+          "negative_keywords": ["flash diffuser", "flash snoot", "flash bracket", "on-camera light"]
         },
         "camera_lcd_hoods": {
           "display_name": "Camera LCD Hoods",
-          "formula": ["Brand", "Product Line", "Features", "Camera LCD Hood Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models", ",", "Color", ",", "Count/Count Per Pack"],
+          "formula": ["Brand", "Product Line", "Features", "Camera LCD Hood Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models", "Color", "Count(Count Per Pack)"],
           "attributes": ["Brand", "Features", "Color"],
-          "aliases": ["camera lcd hood", "lcd hood", "screen hood"],
-          "title_keywords": ["camera lcd hood", "lcd hood", "screen hood"],
-          "context_keywords": ["compatible camera", "compatible model", "color", "multipack"],
-          "negative_keywords": ["lens hood", "camera flash snoots", "camera rain covers", "camera remote controls", "monitor hood", "phone hood"]
+          "aliases": ["camera LCD hood", "LCD screen hood", "camera screen shade", "LCD sun hood"],
+          "title_keywords": ["camera LCD hood", "LCD screen hood", "camera screen shade", "LCD sun hood"],
+          "context_keywords": ["photography", "camera display", "screen shading", "LCD protection"],
+          "negative_keywords": ["lens hood", "camera rain cover", "lens cap", "camera case"]
         },
         "camera_lenses": {
           "display_name": "Camera Lenses",
-          "formula": ["Brand", "Product Line/Model", "Features", "Focal Length", "Focus Type", "Minimum Aperture", "Lens Diameter", "Camera Lens Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models", ",", "Color", ",", "Count/Count Per Pack", "(Condition)"],
+          "formula": ["Brand", "Product Line/Model", "Features", "Focal Length", "Focus Type", "Minimum Aperture", "Lens Diameter", "Camera Lens Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models", "Color", "Count(Count Per Pack)"],
           "attributes": ["Brand", "Camera Lens Type", "Maximum Aperture"],
-          "aliases": ["camera lens", "camera lenses"],
-          "title_keywords": ["camera lens", "camera lenses"],
-          "context_keywords": ["focal length", "focus type", "aperture", "lens diameter", "compatible camera"],
-          "negative_keywords": ["lens filter", "camera lcd hood", "camera flashes", "camera stabilizers", "camera strap", "telescope lens"]
+          "aliases": ["camera lens", "photography lens", "interchangeable lens", "digital camera lens"],
+          "title_keywords": ["camera lens", "photography lens", "interchangeable lens", "digital camera lens"],
+          "context_keywords": ["photography", "camera optics", "focal length", "camera lens"],
+          "negative_keywords": ["surveillance camera lens", "conversion lens", "lens filter", "lens mount adapter"]
         },
         "camera_lighting_sync_cords": {
           "display_name": "Camera Lighting Sync Cords",
-          "formula": ["Brand", "Product Line/Model", "Features", "Connector Type", "Camera Lighting Sync Cord Type", "Accessories Included/Retail Packaging", "Camera Flash Type/Compatible Cameras", ",", "Color", ",", "Count/Count Per Pack"],
+          "formula": ["Brand", "Product Line/Model", "Features", "Connector Type", "Camera Lighting Sync Cord Type", "Accessories Included/Retail Packaging", "Camera Flash Type/Compatible Cameras", "Color", "Count(Count Per Pack)"],
           "attributes": ["Brand", "Features", "Condition"],
-          "aliases": ["camera lighting sync cord", "flash sync cord", "sync cord"],
-          "title_keywords": ["camera lighting sync cord", "flash sync cord", "sync cord"],
-          "context_keywords": ["connector type", "compatible flash", "compatible camera", "color"],
-          "negative_keywords": ["camera flash adapters", "camera flash slave trigger units", "camera flashes", "camera remote controls", "audio cable", "usb cable"]
+          "aliases": ["camera sync cord", "flash sync cord", "lighting sync cable", "camera flash cable"],
+          "title_keywords": ["camera sync cord", "flash sync cord", "lighting sync cable", "camera flash cable"],
+          "context_keywords": ["photography", "flash synchronization", "camera lighting", "wired trigger"],
+          "negative_keywords": ["camera remote control", "flash trigger", "docking station", "video camera microphone"]
         },
         "camera_rain_covers": {
           "display_name": "Camera Rain Covers",
-          "formula": ["Brand", "Product Line/Model", "Features", "Camera Rain Cover Type", "Accessories Included/Retail Packaging", "Compatible Camera/Compatible Model", ",", "Color", ",", "Count/Count Per Pack"],
+          "formula": ["Brand", "Product Line/Model", "Features", "Sensor Type", "Camera Remote Control Type", "Accessories Included/Retail Packaging", "Compatible Camera/Compatible Model", "Color", "Count(Count Per Pack)"],
           "attributes": ["Camera Rain Cover Type", "Brand", "Features"],
-          "aliases": ["camera rain cover", "camera rain covers", "camera weather cover"],
-          "title_keywords": ["camera rain cover", "camera rain covers", "camera weather cover"],
-          "context_keywords": ["compatible camera", "compatible model", "color", "multipack"],
-          "negative_keywords": ["camera remote controls", "camera lcd hoods", "camera strap", "camera case", "rain poncho", "lens cover"]
+          "aliases": ["camera rain cover", "camera weather cover", "camera rain protector", "camera waterproof cover"],
+          "title_keywords": ["camera rain cover", "camera weather cover", "camera rain protector", "camera waterproof cover"],
+          "context_keywords": ["photography", "weather protection", "camera protection", "outdoor shooting"],
+          "negative_keywords": ["underwater camera housing", "camera bag", "camera skin", "camera vest"]
         },
         "camera_remote_controls": {
           "display_name": "Camera Remote Controls",
-          "formula": ["Brand", "Product Line/Model", "Features", "Sensor Type", "Camera Remote Control Type", "Accessories Included/Retail Packaging", "Compatible Camera/Compatible Model", ",", "Color", ",", "Count/Count Per Pack"],
+          "formula": ["Brand", "Product Line/Model", "Features", "Sensor Type", "Camera Remote Control Type", "Accessories Included/Retail Packaging", "Compatible Camera/Compatible Model", "Color", "Count(Count Per Pack)"],
           "attributes": ["Features", "Camera Remote Control Type", "Brand"],
-          "aliases": ["camera remote control", "camera remote", "shutter remote"],
-          "title_keywords": ["camera remote control", "camera remote", "shutter remote"],
-          "context_keywords": ["sensor type", "compatible camera", "compatible model", "color"],
-          "negative_keywords": ["camera rain covers", "camera lighting sync cords", "camera flash slave trigger units", "camera stabilizers", "tv remote", "drone remote"]
+          "aliases": ["camera remote control", "camera shutter remote", "remote shutter release", "camera trigger remote"],
+          "title_keywords": ["camera remote control", "camera shutter remote", "remote shutter release", "camera trigger remote"],
+          "context_keywords": ["photography", "remote shutter", "camera control", "wireless shooting"],
+          "negative_keywords": ["flash trigger", "sync cord", "selfie stick", "docking station"]
         },
         "camera_stabilizers": {
           "display_name": "Camera Stabilizers",
-          "formula": ["Brand", "Product Line/Model", "Features", "Camera Stabilizer Type", "Accessories Included/Retail Packaging", "Compatible Models/Compatible Cameras", ",", "Color", ",", "Count/Count Per Pack"],
+          "formula": ["Brand", "Product Line/Model", "Features", "Camera Stabilizer Type", "Accessories Included/Retail Packaging", "Compatible Models/Compatible Cameras", "Color", "Count(Count Per Pack)"],
           "attributes": ["Brand", "Features", "Camera Stabilizer Type"],
-          "aliases": ["camera stabilizer", "camera stabilizers", "gimbal"],
-          "title_keywords": ["camera stabilizer", "camera stabilizers", "gimbal"],
-          "context_keywords": ["compatible camera", "compatible model", "color", "multipack"],
-          "negative_keywords": ["camera tripod", "camera strap", "camera remote controls", "camera flashes", "phone stabilizer", "camera rig handle"]
+          "aliases": ["camera stabilizer", "camera gimbal", "video stabilizer", "handheld camera stabilizer"],
+          "title_keywords": ["camera stabilizer", "camera gimbal", "video stabilizer", "handheld camera stabilizer"],
+          "context_keywords": ["photography", "videography", "camera stabilization", "smooth motion"],
+          "negative_keywords": ["tripod", "monopod", "selfie stick", "camera mount"]
         },
         "camera_straps": {
           "display_name": "Camera Straps",
-          "formula": ["Brand", "Product Line", "Features", "Fabric Material Name/Material", "Style", "Camera Strap Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Camera Type", ",", "Color/Pattern", ",", "Count/Count Per Pack"],
+          "formula": ["Brand", "Product Line", "Features", "Fabric Material Name/Material", "Style", "Camera Strap Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Camera Type", "Color/Pattern", "Count(Count Per Pack)"],
           "attributes": ["Brand", "Camera Strap Type", "Material"],
-          "aliases": ["camera strap", "camera straps", "neck strap", "wrist strap"],
-          "title_keywords": ["camera strap", "camera straps", "neck strap", "wrist strap"],
-          "context_keywords": ["style", "material", "compatible camera", "color", "pattern"],
-          "negative_keywords": ["camera stabilizers", "camera vests jackets", "camera bag strap", "guitar strap", "watch strap", "lanyard"]
+          "aliases": ["camera strap", "camera neck strap", "camera shoulder strap", "camera wrist strap"],
+          "title_keywords": ["camera strap", "camera neck strap", "camera shoulder strap", "camera wrist strap"],
+          "context_keywords": ["photography", "camera carrying", "wearable support", "camera security"],
+          "negative_keywords": ["camera harness", "camera belt", "camera bag", "camera vest"]
         },
         "camera_tool_kits": {
           "display_name": "Camera Tool Kits",
-          "formula": ["Brand", "Product Line/Model", "Features", "Product Multifunction Descriptor", "Camera Tool Kit Type", "Retail Packaging", "Accessories Included", ",", "Color", ",", "Count/Count Per Pack"],
+          "formula": ["Brand", "Product Line/Model", "Features", "Product Multifunction Descriptor", "Camera Tool Kit Type", "Retail Packaging", "Accessories Included", "Color", "Count(Count Per Pack)"],
           "attributes": ["Camera Tool Kit Type", "Brand", "Number Of Pieces"],
-          "aliases": ["camera tool kit", "camera cleaning kit", "camera repair kit"],
-          "title_keywords": ["camera tool kit", "camera cleaning kit", "camera repair kit"],
-          "context_keywords": ["multifunction", "set", "color", "pieces"],
-          "negative_keywords": ["camera straps", "camera remote controls", "camera stabilizers", "camera lenses", "tool box", "phone repair kit"]
+          "aliases": ["camera tool kit", "camera repair kit", "camera maintenance tools", "photography tool kit"],
+          "title_keywords": ["camera tool kit", "camera repair kit", "camera maintenance tools", "photography tool kit"],
+          "context_keywords": ["photography", "camera maintenance", "repair tools", "equipment service"],
+          "negative_keywords": ["camera cleaning equipment", "camera accessory bundle", "tripod", "lens"]
         },
-        "camera_vests_jackets": {
+        "camera_vests_and_jackets": {
           "display_name": "Camera Vests & Jackets",
-          "formula": ["Brand", "Product Line", "Features", "Product Multifunction Descriptor", "Number of Compartments", "Clothing Size Group", "Camera Vest & Jacket Type", "Accessories Included", ",", "Clothing Size", ",", "Color/Pattern", ",", "Count/Count Per Pack"],
-          "attributes": ["Brand", "Camera Vest And Jacket Type", "Clothing Size"],
-          "aliases": ["camera vest", "camera jacket", "photography vest", "photography jacket"],
-          "title_keywords": ["camera vest", "camera jacket", "photography vest", "photography jacket"],
-          "context_keywords": ["compartments", "clothing size", "color", "pattern", "multipack"],
-          "negative_keywords": ["camera strap", "camera bag", "photo backpack", "fishing vest", "hunting vest", "safety vest"]
+          "formula": ["Brand", "Product Line", "Features", "Product Multifunction Descriptor", "Number of Compartments", "Clothing Size Group", "Camera Vest & Jacket Type", "Accessories Included", "Clothing Size", "Color/Pattern", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Clothing Size", "Features"],
+          "aliases": ["camera vest", "photography vest", "camera jacket", "photographer vest"],
+          "title_keywords": ["camera vest", "photography vest", "camera jacket", "photographer vest"],
+          "context_keywords": ["photography", "wearable storage", "camera carrying", "field photography"],
+          "negative_keywords": ["camera harness", "camera strap", "camera bag", "rain cover"]
+        },
+        "conversion_lenses": {
+          "display_name": "Conversion Lenses",
+          "formula": ["Brand", "Product Line/Model", "Features", "Focal Length/Optical Zoom", "Lens Diameter", "Camera Lens Type", "Accessories Included/Retail Packaging", "Compatible Cameras", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Maximum Aperture"],
+          "aliases": ["conversion lens", "camera conversion lens", "wide angle converter", "telephoto converter"],
+          "title_keywords": ["conversion lens", "camera conversion lens", "wide angle converter", "telephoto converter"],
+          "context_keywords": ["photography", "camera optics", "lens conversion", "focal length"],
+          "negative_keywords": ["camera lens", "lens filter", "lens mount adapter", "lens extension tube"]
+        },
+        "dew_shields": {
+          "display_name": "Dew Shields",
+          "formula": ["Brand", "Product Line", "Features", "Dew Shield Type", "Accessories Included/Retail Packaging", "Compatible Camera/Compatible Models", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Color", "Condition", "Features"],
+          "aliases": ["dew shield", "camera dew shield", "lens dew shield", "optical dew shield"],
+          "title_keywords": ["dew shield", "camera dew shield", "lens dew shield", "optical dew shield"],
+          "context_keywords": ["photography", "lens protection", "dew prevention", "optical equipment"],
+          "negative_keywords": ["lens hood", "lens cap", "rain cover", "lens filter"]
+        },
+        "digital_camera_backs": {
+          "display_name": "Digital Camera Backs",
+          "formula": ["Brand", "Product Line", "Features", "Sensor Type", "Focus Type", "Digital Camera Back Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models", "Memory Card Type", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Condition"],
+          "aliases": ["digital camera back", "digital back", "camera digital back", "medium format digital back"],
+          "title_keywords": ["digital camera back", "digital back", "camera digital back", "medium format digital back"],
+          "context_keywords": ["photography", "digital imaging", "camera sensor", "camera back"],
+          "negative_keywords": ["film camera back", "digital camera part", "battery grip", "docking station"]
+        },
+        "digital_camera_parts": {
+          "display_name": "Digital Camera Parts",
+          "formula": ["Brand", "Product Line", "Features", "Digital Camera Part Type", "Accessores Included/Retail Packaging", "Digital Camera Type/Compatible Cameras/Compatible Models", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Number Of Pieces", "Features"],
+          "aliases": ["digital camera part", "camera replacement part", "digital camera component", "camera repair part"],
+          "title_keywords": ["digital camera part", "camera replacement part", "digital camera component", "camera repair part"],
+          "context_keywords": ["photography", "digital camera", "replacement component", "camera repair"],
+          "negative_keywords": ["film camera part", "digital camera back", "battery grip", "camera accessory bundle"]
+        },
+        "film_camera_parts": {
+          "display_name": "Film Camera Parts",
+          "formula": ["Brand", "Product Line", "Features", "Film Camera Part Type", "Accessories Included/Retail Packaging", "Film Camera Type/Compatible Cameras/Compatible Models", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Count Per Pack", "Features"],
+          "aliases": ["film camera part", "analog camera part", "film camera replacement part", "camera film component"],
+          "title_keywords": ["film camera part", "analog camera part", "film camera replacement part", "camera film component"],
+          "context_keywords": ["photography", "film camera", "replacement component", "camera repair"],
+          "negative_keywords": ["digital camera part", "film camera back", "film winder", "camera film"]
+        },
+        "follow_focus_levers": {
+          "display_name": "Follow-Focus Levers",
+          "formula": ["Brand", "Product Line", "Features", "Camera Type", "Follow-Focus Lever Type", "Accessories Included/Retail Packaging", "Campatible Cameras/Compatible Models", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Condition"],
+          "aliases": ["follow focus lever", "camera focus lever", "focus control lever", "lens follow focus lever"],
+          "title_keywords": ["follow focus lever", "camera focus lever", "focus control lever", "lens follow focus lever"],
+          "context_keywords": ["photography", "videography", "focus control", "lens adjustment"],
+          "negative_keywords": ["camera remote control", "camera stabilizer", "lens support", "tripod head"]
+        },
+        "lens_boards": {
+          "display_name": "Lens Boards",
+          "formula": ["Brand", "Product Line", "Features", "Size/Lens Diameter", "Lens Board Type", "Accessories Included/Retail Packaging", "Compatible Models/Compatible Cameras", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Color", "Brand", "Condition"],
+          "aliases": ["lens board", "camera lens board", "view camera lens board", "lens mounting board"],
+          "title_keywords": ["lens board", "camera lens board", "view camera lens board", "lens mounting board"],
+          "context_keywords": ["photography", "camera lens mounting", "view camera", "lens support"],
+          "negative_keywords": ["lens cap", "lens mount adapter", "lens filter holder", "tripod head"]
+        },
+        "lens_caps": {
+          "display_name": "Lens Caps",
+          "formula": ["Brand", "Product Line", "Features", "Lens Diameter", "Lens Cap Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Lens Cap Type"],
+          "aliases": ["lens cap", "camera lens cap", "front lens cap", "rear lens cap"],
+          "title_keywords": ["lens cap", "camera lens cap", "front lens cap", "rear lens cap"],
+          "context_keywords": ["photography", "lens protection", "camera optics", "dust protection"],
+          "negative_keywords": ["lens hood", "lens filter", "lens case", "lens board"]
+        },
+        "lens_cases": {
+          "display_name": "Lens Cases",
+          "formula": ["Brand", "Product Line", "Features", "Number of Compartments", "Fabric Material Name/Material", "Case Style/Bag Style", "Lens Case Type", "Accessories Included/Retail Packaging", "Camera Type/Compatible Cameras/Compatible Models", "Size", "Color/Pattern", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Lens Case Type"],
+          "aliases": ["lens case", "camera lens case", "lens pouch", "lens carrying case"],
+          "title_keywords": ["lens case", "camera lens case", "lens pouch", "lens carrying case"],
+          "context_keywords": ["photography", "lens storage", "equipment protection", "camera optics"],
+          "negative_keywords": ["camera bag", "tripod case", "lens cap", "padded partition"]
+        },
+        "lens_extension_tubes": {
+          "display_name": "Lens Extension Tubes",
+          "formula": ["Brand", "Product Line/Model", "Features", "Lens Diameter", "Lens Extension Tube Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models/Camera Lens Type", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Condition"],
+          "aliases": ["lens extension tube", "camera extension tube", "macro extension tube", "lens spacer tube"],
+          "title_keywords": ["lens extension tube", "camera extension tube", "macro extension tube", "lens spacer tube"],
+          "context_keywords": ["photography", "macro photography", "lens spacing", "camera optics"],
+          "negative_keywords": ["lens mount adapter", "conversion lens", "filter step ring", "lens support"]
+        },
+        "lens_filter_holders": {
+          "display_name": "Lens Filter Holders",
+          "formula": ["Brand", "Product Line", "Features", "Size/Lens Diameter", "Lens Filter Holder Type", "Lens Filter Type", "Accessories Included/Retail Packaging", "Compatible Models", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Color"],
+          "aliases": ["lens filter holder", "camera filter holder", "filter mounting holder", "lens filter mount"],
+          "title_keywords": ["lens filter holder", "camera filter holder", "filter mounting holder", "lens filter mount"],
+          "context_keywords": ["photography", "lens filters", "filter mounting", "camera optics"],
+          "negative_keywords": ["lens filter", "filter step ring", "lens cap", "lens hood"]
+        },
+        "lens_filter_step_rings": {
+          "display_name": "Lens Filter Step Rings",
+          "formula": ["Brand", "Product Line/Model", "Features", "Size/Lens Diameter", "Lens Filter Step Ring Type", "Accessories Included/Retail Packaging", "Compatible Models", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Number Of Pieces", "Features"],
+          "aliases": ["lens step ring", "filter step ring", "step up ring", "step down ring"],
+          "title_keywords": ["lens step ring", "filter step ring", "step up ring", "step down ring"],
+          "context_keywords": ["photography", "lens filters", "filter sizing", "camera optics"],
+          "negative_keywords": ["lens filter holder", "lens filter", "lens mount adapter", "extension tube"]
+        },
+        "lens_filters": {
+          "display_name": "Lens Filters",
+          "formula": ["Brand", "Product Line", "Lens Diameter", "Features", "Lens Filter Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Color Category", "Lens Filter Type"],
+          "aliases": ["lens filter", "camera lens filter", "photography filter", "optical lens filter"],
+          "title_keywords": ["lens filter", "camera lens filter", "photography filter", "optical lens filter"],
+          "context_keywords": ["photography", "camera optics", "filtering", "lens protection"],
+          "negative_keywords": ["lens filter holder", "filter step ring", "lens cap", "conversion lens"]
+        },
+        "lens_hoods": {
+          "display_name": "Lens Hoods",
+          "formula": ["Brand", "Product Line", "Features", "Attachment Type", "Lens Diameter", "Lens Hood Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Lens Hood Type", "Multipack Quantity"],
+          "aliases": ["lens hood", "camera lens hood", "lens shade", "camera sun hood"],
+          "title_keywords": ["lens hood", "camera lens hood", "lens shade", "camera sun hood"],
+          "context_keywords": ["photography", "lens shading", "flare reduction", "camera optics"],
+          "negative_keywords": ["dew shield", "lens cap", "lens filter", "rain cover"]
+        },
+        "lens_mount_adapters": {
+          "display_name": "Lens Mount Adapters",
+          "formula": ["Brand", "Product Line", "Model", "Features", "Focus Type", "Lens Mount Adapter Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Model1s", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Lens Mount Adapter Type"],
+          "aliases": ["lens mount adapter", "camera mount adapter", "lens adapter", "camera lens adapter"],
+          "title_keywords": ["lens mount adapter", "camera mount adapter", "lens adapter", "camera lens adapter"],
+          "context_keywords": ["photography", "lens compatibility", "camera mount", "camera optics"],
+          "negative_keywords": ["lens extension tube", "filter step ring", "lens board", "camera mount"]
+        },
+        "lens_supports": {
+          "display_name": "Lens Supports",
+          "formula": ["Brand", "Product Line", "Features", "Lens Diameter", "Lens Support Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Condition"],
+          "aliases": ["lens support", "camera lens support", "lens support bracket", "telephoto lens support"],
+          "title_keywords": ["lens support", "camera lens support", "lens support bracket", "telephoto lens support"],
+          "context_keywords": ["photography", "lens stability", "camera rig", "heavy lens support"],
+          "negative_keywords": ["tripod head", "follow-focus lever", "camera stabilizer", "lens mount adapter"]
+        },
+        "light_meters": {
+          "display_name": "Light Meters",
+          "formula": ["Brand", "Product Line", "Features", "Sensor Type", "Light Meter Type", "Accessories Included/Retail Packaging", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Sensor Type", "Brand", "Features"],
+          "aliases": ["light meter", "photography light meter", "exposure meter", "camera exposure meter"],
+          "title_keywords": ["light meter", "photography light meter", "exposure meter", "camera exposure meter"],
+          "context_keywords": ["photography", "exposure measurement", "ambient light", "metering"],
+          "negative_keywords": ["on-camera light", "solar radiation meter", "camera flash", "luminometer"]
+        },
+        "monopods": {
+          "display_name": "Monopods",
+          "formula": ["Brand", "Product Line", "Features", "Size/Assembled Product Height", "Material", "Monopod Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Maximum Height", "Material"],
+          "aliases": ["monopod", "camera monopod", "photography monopod", "video monopod"],
+          "title_keywords": ["monopod", "camera monopod", "photography monopod", "video monopod"],
+          "context_keywords": ["photography", "camera support", "single leg support", "videography"],
+          "negative_keywords": ["tripod", "selfie stick", "camera stabilizer", "camera mount"]
+        },
+        "on_camera_lights": {
+          "display_name": "On-Camera Lights",
+          "formula": ["Brand", "Product Line/Model", "Features", "Watts/Volts", "Color Temperature", "On-Camera Light Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models/Compatible Brands", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "On Camera Light Type", "Features"],
+          "aliases": ["on-camera light", "camera video light", "LED camera light", "shoe mount light"],
+          "title_keywords": ["on-camera light", "camera video light", "LED camera light", "shoe mount light"],
+          "context_keywords": ["photography", "videography", "continuous lighting", "camera lighting"],
+          "negative_keywords": ["camera flash", "light meter", "flash diffuser", "studio light"]
+        },
+        "selfie_sticks": {
+          "display_name": "Selfie Sticks",
+          "formula": ["Brand", "Product Line", "Features", "Product Name Type", "Accessories Included/Retail Packaging", "Cell Phone Type/Compatible Cameras", "Attachment Style", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Color"],
+          "aliases": ["selfie stick", "camera selfie stick", "phone selfie stick", "extendable selfie stick"],
+          "title_keywords": ["selfie stick", "camera selfie stick", "phone selfie stick", "extendable selfie stick"],
+          "context_keywords": ["photography", "mobile photography", "camera support", "self portrait"],
+          "negative_keywords": ["monopod", "tripod", "camera stabilizer", "camera mount"]
+        },
+        "skins_for_cameras": {
+          "display_name": "Skins for Cameras",
+          "formula": ["Brand", "Product Line", "Features", "Fabric Material Name/Material", "Style/Theme", "Case Style", "Product Name Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models/Camera Type", "Color/Pattern", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Color", "Features"],
+          "aliases": ["camera skin", "camera decal skin", "camera wrap", "protective camera skin"],
+          "title_keywords": ["camera skin", "camera decal skin", "camera wrap", "protective camera skin"],
+          "context_keywords": ["photography", "camera protection", "camera customization", "surface wrap"],
+          "negative_keywords": ["camera case", "rain cover", "camera bag", "underwater housing"]
+        },
+        "surveillance_camera_housings": {
+          "display_name": "Surveillance Camera Housings",
+          "formula": ["Brand", "Product Line", "Features", "Surveillance Camera Housing Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Surveillance Camera Housing Type"],
+          "aliases": ["surveillance camera housing", "security camera housing", "CCTV camera enclosure", "camera protective housing"],
+          "title_keywords": ["surveillance camera housing", "security camera housing", "CCTV camera enclosure", "camera protective housing"],
+          "context_keywords": ["surveillance", "security camera", "weather protection", "camera enclosure"],
+          "negative_keywords": ["underwater camera housing", "camera rain cover", "surveillance camera lens", "dummy camera"]
+        },
+        "surveillance_camera_lenses": {
+          "display_name": "Surveillance Camera Lenses",
+          "formula": ["Brand", "Product Line", "Features", "Focal Length/Optical Zoom", "Focus Type/Sensor Type", "Lens Diameter", "Surveillance Camera Lens Type", "Accessories Included/Retail Packaging", "Compatible Models/Compatible Cameras", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Focus Type", "Surveillance Camera Lens Type"],
+          "aliases": ["surveillance camera lens", "CCTV lens", "security camera lens", "surveillance lens"],
+          "title_keywords": ["surveillance camera lens", "CCTV lens", "security camera lens", "surveillance lens"],
+          "context_keywords": ["surveillance", "security camera", "camera optics", "CCTV"],
+          "negative_keywords": ["camera lens", "surveillance housing", "conversion lens", "lens filter"]
+        },
+        "tripod_cases": {
+          "display_name": "Tripod Cases",
+          "formula": ["Brand", "Product Line", "Features", "Size", "Case Style/Bag Style", "Material/Fabric Material Name", "Tripod Case Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models", "Color/Pattern", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Material"],
+          "aliases": ["tripod case", "tripod carrying case", "tripod bag", "tripod storage bag"],
+          "title_keywords": ["tripod case", "tripod carrying case", "tripod bag", "tripod storage bag"],
+          "context_keywords": ["photography", "tripod storage", "equipment transport", "carrying case"],
+          "negative_keywords": ["camera bag", "lens case", "padded partition", "tripod"]
+        },
+        "tripod_heads": {
+          "display_name": "Tripod Heads",
+          "formula": ["Brand", "Product Line/Model", "Features", "Size", "Tripod Head Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Compatible Models", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Attachment Style", "Features"],
+          "aliases": ["tripod head", "camera tripod head", "ball head", "pan tilt head"],
+          "title_keywords": ["tripod head", "camera tripod head", "ball head", "pan tilt head"],
+          "context_keywords": ["photography", "camera support", "tripod mounting", "camera positioning"],
+          "negative_keywords": ["tripod", "camera mount", "monopod", "camera stabilizer"]
+        },
+        "tripods": {
+          "display_name": "Tripods",
+          "formula": ["Brand", "Product Line/Model", "Features", "Assembled Product Height", "Material", "Tripod Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Camera Type/Compatible Models", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Tripod Type", "Features"],
+          "aliases": ["tripod", "camera tripod", "photography tripod", "video tripod"],
+          "title_keywords": ["tripod", "camera tripod", "photography tripod", "video tripod"],
+          "context_keywords": ["photography", "camera support", "three leg stand", "videography"],
+          "negative_keywords": ["monopod", "selfie stick", "camera stabilizer", "tripod head"]
+        },
+        "underwater_camera_housings": {
+          "display_name": "Underwater Camera Housings",
+          "formula": ["Brand", "Product Line/Model", "Features", "Underwater Camera Housing Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Camera Type/Compatible Models", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Underwater Camera Housing Type"],
+          "aliases": ["underwater camera housing", "camera dive housing", "waterproof camera housing", "underwater housing"],
+          "title_keywords": ["underwater camera housing", "camera dive housing", "waterproof camera housing", "underwater housing"],
+          "context_keywords": ["photography", "underwater photography", "waterproof protection", "camera enclosure"],
+          "negative_keywords": ["camera rain cover", "surveillance camera housing", "camera case", "waterproof bag"]
+        },
+        "video_camera_microphones": {
+          "display_name": "Video Camera Microphones",
+          "formula": ["Brand", "Product Line/Model", "Features", "Video Camera Microphone Type", "Accessories Included/Retail Packaging", "Compatible Cameras/Camera Type/Video Camera Type/Movie Camera Type", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Video Camera Microphone Type", "Features", "Brand"],
+          "aliases": ["video camera microphone", "camera microphone", "on-camera microphone", "camcorder microphone"],
+          "title_keywords": ["video camera microphone", "camera microphone", "on-camera microphone", "camcorder microphone"],
+          "context_keywords": ["videography", "camera audio", "external microphone", "sound recording"],
+          "negative_keywords": ["on-camera light", "sync cord", "video camera part", "audio recorder"]
+        },
+        "video_camera_parts": {
+          "display_name": "Video Camera Parts",
+          "formula": ["Brand", "Product Line/Model", "Features", "Material", "Video Camera Part Type", "Accessories Included/Retail Packaging", "Compatible Models/Video Camera Type", "Color", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Features", "Video Camera Part Type"],
+          "aliases": ["video camera part", "camcorder part", "video camera replacement part", "camcorder replacement part"],
+          "title_keywords": ["video camera part", "camcorder part", "video camera replacement part", "camcorder replacement part"],
+          "context_keywords": ["videography", "camcorder", "replacement component", "camera repair"],
+          "negative_keywords": ["digital camera part", "film camera part", "video camera microphone", "camera accessory bundle"]
+
+
         }
-        }
+      }
     },
+    
     "cameras_camcorders": {
       "display_name": "Cameras & Camcorders",
       "product_types": {
@@ -655,7 +920,7 @@
           "context_keywords": ["rapid selenium toner", "32 oz"],
           "negative_keywords": ["printer toner", "photography developer", "photography fixer", "photography stop bath", "ink cartridge", "powder toner"]
         }
-        }
+      }
     },
     "drones_accessories": {
       "display_name": "Drones & Accessories",
@@ -892,8 +1157,5 @@
         }
       }
     }
-
-}
-
-
+  }
 }
