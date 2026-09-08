@@ -434,5 +434,99 @@ class PhotographyDraftTests(unittest.TestCase):
         self.assertGreater(len(pdf_bytes), 1000)
 
 
+class StartNewQuoteTests(unittest.TestCase):
+    def test_transition_clears_stale_actions_and_preserves_browser_selection(self):
+        state = sample_state()
+        expected = dict(state)
+        reset_quote_form_state(expected)
+        stale_keys = (
+            draft_ui.ACTIVE_DRAFT_ID_KEY,
+            draft_ui.ACTIVE_VERSION_KEY,
+            draft_ui.ACTIVE_DRAFT_NAME_KEY,
+            draft_ui.PENDING_DRAFT_LOAD_KEY,
+            draft_ui.DELETE_CONFIRM_DRAFT_ID_KEY,
+            draft_ui.LEGACY_LOADED_DRAFT_ID_KEY,
+            draft_ui.LEGACY_LOADED_VERSION_KEY,
+            draft_ui.LEGACY_OPEN_DRAFT_ID_KEY,
+            "photo_pricing_draft_warnings",
+            "photo_pricing_draft_name",
+            "photo_pricing_draft_version_note",
+            "photo_pricing_generated_pdf",
+            "photo_pricing_page1_comments_payload",
+        )
+        state.update({key: "stale" for key in stale_keys})
+        state[draft_ui.SELECTED_DRAFT_ID_KEY] = "draft-1"
+        state["photo_pricing_restore_version_number"] = 2
+        state["hub_view"] = "photography_pricing"
+        with patch.object(draft_ui.st, "session_state", state):
+            draft_ui._start_new_quote()
+            draft_ui.apply_pending_draft_restore()
+        draft_ui._migrate_legacy_draft_state(state)
+        for key in stale_keys:
+            self.assertNotIn(key, state)
+        for key, value in expected.items():
+            if key != "photo_pricing_reference_number":
+                self.assertEqual(value, state[key], key)
+        self.assertNotEqual("REF-123", state["photo_pricing_reference_number"])
+        self.assertNotIn("photo_pricing_client_contact_id", state)
+        self.assertNotIn("photo_pricing_internal_contact_id", state)
+        self.assertEqual("draft-1", state[draft_ui.SELECTED_DRAFT_ID_KEY])
+        self.assertEqual(2, state["photo_pricing_restore_version_number"])
+        self.assertEqual("photography_pricing", state["hub_view"])
+
+    def test_start_new_quote_through_real_streamlit_widgets(self):
+        from copy import deepcopy
+        from streamlit.testing.v1 import AppTest
+        from app.contact_management.models import ClientContact, InternalContact
+        from app.photography_pricing.draft_models import QuoteDraft
+
+        saved = QuoteDraft(*draft_row(1))
+        saved_before = deepcopy(saved)
+        client = ClientContact("client-1", None, "Company", "First", "Last", "client@example.com")
+        internal = InternalContact("internal-1", "Internal", "Producer", "internal@example.com")
+        app = AppTest.from_string(
+            "from app.photography_pricing.apparel_estimator import render_photography_pricing\n"
+            "render_photography_pricing()\n"
+        )
+        for key, value in sample_state().items():
+            app.session_state[key] = value
+        app.session_state[draft_ui.ACTIVE_DRAFT_ID_KEY] = saved.id
+        app.session_state[draft_ui.ACTIVE_VERSION_KEY] = 1
+        app.session_state[draft_ui.ACTIVE_DRAFT_NAME_KEY] = saved.draft_name
+        app.session_state[draft_ui.LEGACY_LOADED_DRAFT_ID_KEY] = saved.id
+        app.session_state[draft_ui.LEGACY_LOADED_VERSION_KEY] = 1
+        app.session_state["photo_pricing_generated_pdf"] = b"old pdf"
+        with (
+            patch("app.photography_pricing.apparel_estimator.render_contact_management"),
+            patch("app.contact_management.contact_ui.safe_list_active_client_contacts", return_value=[client]),
+            patch("app.contact_management.contact_ui.safe_list_active_internal_contacts", return_value=[internal]),
+            patch.object(draft_ui, "draft_repository") as repository,
+        ):
+            repository.list_drafts.return_value = [saved]
+            repository.list_versions.return_value = []
+            app.run()
+            self.assertEqual(0, len(app.exception))
+            self.assertFalse(app.button(key="photo_pricing_start_new_draft").disabled)
+            app.button(key="photo_pricing_start_new_draft").click().run()
+            self.assertEqual(0, len(app.exception))
+            self.assertTrue(app.button(key="photo_pricing_start_new_draft").disabled)
+            self.assertEqual("", app.text_input(key="photo_pricing_quote_title").value)
+            self.assertEqual(0, app.number_input(key="photo_pricing_on_model_image_quantity").value)
+            self.assertEqual("", app.text_input(key="photo_pricing_comments_project_name_0").value)
+            self.assertEqual("", app.text_area(key="photo_pricing_comments_custom_notes").value)
+            self.assertEqual("client-1", app.session_state["photo_pricing_client_contact_id"])
+            self.assertEqual("internal-1", app.session_state["photo_pricing_internal_contact_id"])
+            self.assertNotIn("photo_pricing_generated_pdf", app.session_state)
+            self.assertEqual(saved.id, app.session_state[draft_ui.SELECTED_DRAFT_ID_KEY])
+            app.run()
+            self.assertEqual(0, len(app.exception))
+            self.assertNotIn(draft_ui.ACTIVE_DRAFT_ID_KEY, app.session_state)
+            self.assertTrue(app.button(key="photo_pricing_save_new_version").disabled)
+            self.assertFalse(app.button(key="photo_pricing_open_draft").disabled)
+            for call in repository.mock_calls:
+                self.assertIn(call[0], ("list_drafts", "list_versions"))
+            self.assertEqual(saved_before, saved)
+
+
 if __name__ == "__main__":
     unittest.main()

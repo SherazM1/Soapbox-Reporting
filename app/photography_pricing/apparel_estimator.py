@@ -142,9 +142,9 @@ def _render_comments_composer(selected_internal_contact: dict[str, str]) -> dict
                 f"photo_pricing_comments_on_model_detail_{index}",
             )
         with row_cols[3]:
-            _field_label("Laydown/Detail")
+            _field_label("Laydown")
             laydown_detail = _project_number_input(
-                "Laydown/Detail",
+                "Laydown",
                 f"photo_pricing_comments_laydown_detail_{index}",
             )
         with row_cols[4]:
@@ -209,6 +209,7 @@ def _mark_expiration_overridden() -> None:
 def _render_quote_setup() -> tuple[Any, Any, Any]:
     st.subheader("Quote Setup")
     render_contact_management()
+    drafts_container = st.container()
 
     contact_col, internal_col = st.columns(2)
     with contact_col:
@@ -260,6 +261,12 @@ def _render_quote_setup() -> tuple[Any, Any, Any]:
         quote_created_date=quote_created_date,
         quote_expiration_date=quote_expiration_date,
     )
+    # Preserve contact/metadata initialization order while showing Drafts above it.
+    with drafts_container:
+        render_drafts_section(
+            selected_client=selected_client,
+            selected_internal=selected_internal,
+        )
     return selected_client, selected_internal, metadata
 
 
@@ -494,27 +501,14 @@ def render_photography_pricing() -> None:
         st.stop()
 
     selected_client, selected_internal, quote_metadata = _render_quote_setup()
-    render_drafts_section(
-        selected_client=selected_client,
-        selected_internal=selected_internal,
-    )
 
-    inputs, summary_col = _render_apparel_inputs()
+    inputs, _ = _render_apparel_inputs()
     quote = build_apparel_quote(inputs)
     quote_payload = quote.to_payload()
 
-    with summary_col:
-        _render_summary(quote)
-
-    st.subheader("Pricing Rows")
-    st.dataframe(
-        pd.DataFrame(_line_table_rows(quote_payload)),
-        hide_index=True,
-        use_container_width=True,
-    )
-
     selected_internal_payload = contact_payload(selected_internal)
     _render_comments_composer(selected_internal_payload)
+    _render_summary(quote)
 
     if st.button("Generate PDF", key="photo_pricing_generate_pdf"):
         from app.photography_pricing.pdf_generator import generate_page2_pricing_pdf
@@ -550,3 +544,10 @@ def render_photography_pricing() -> None:
             mime="application/pdf",
             key="photo_pricing_download_pdf",
         )
+
+    st.subheader("Pricing Rows")
+    st.dataframe(
+        pd.DataFrame(_line_table_rows(quote_payload)),
+        hide_index=True,
+        use_container_width=True,
+    )

@@ -90,6 +90,24 @@ def _set_active_draft(
         st.session_state.pop(ACTIVE_DRAFT_NAME_KEY, None)
 
 
+def _start_new_quote() -> None:
+    """Reset before widgets render, through the button's on_click callback."""
+    reset_quote_form_state(st.session_state)
+    _set_active_draft(None, None)
+    for key in (
+        PENDING_DRAFT_LOAD_KEY,
+        DELETE_CONFIRM_DRAFT_ID_KEY,
+        LEGACY_LOADED_DRAFT_ID_KEY,
+        LEGACY_LOADED_VERSION_KEY,
+        LEGACY_OPEN_DRAFT_ID_KEY,
+        "photo_pricing_draft_warnings",
+        "photo_pricing_draft_name",
+        "photo_pricing_draft_version_note",
+    ):
+        st.session_state.pop(key, None)
+    st.session_state[DRAFT_NOTICE_KEY] = "Started a new blank quote."
+
+
 def _contact_id_sets() -> tuple[set[str], set[str]]:
     clients = {contact.id for contact in safe_list_active_client_contacts()}
     internals = {contact.id for contact in safe_list_active_internal_contacts()}
@@ -229,13 +247,12 @@ def render_drafts_section(
                     st.error("New version could not be saved.")
 
         with save_cols[2]:
-            if st.button("Start New Quote", key="photo_pricing_start_new_draft", disabled=not bool(active_draft_id)):
-                _set_active_draft(None, None)
-                reset_quote_form_state(st.session_state)
-                active_draft_id = None
-                render_active_status()
-                st.session_state[DRAFT_NOTICE_KEY] = "Started a new blank quote."
-                st.rerun()
+            st.button(
+                "Start New Quote",
+                key="photo_pricing_start_new_draft",
+                disabled=not bool(active_draft_id),
+                on_click=_start_new_quote,
+            )
 
         drafts = _safe_list_drafts()
         if drafts:

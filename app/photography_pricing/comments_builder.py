@@ -96,7 +96,7 @@ def render_project_detail_line(entry: ProjectCommentEntry) -> str:
     if entry.on_model_detail > 0:
         parts.append(f"On Model Details= {_format_number(entry.on_model_detail)}")
     if entry.laydown_detail > 0:
-        parts.append(f"Laydown/Detail={_format_number(entry.laydown_detail)}")
+        parts.append(f"Laydown={_format_number(entry.laydown_detail)}")
     if entry.color_correct > 0:
         parts.append(f"Color correct: {_format_number(entry.color_correct)}")
     if entry.post > 0:

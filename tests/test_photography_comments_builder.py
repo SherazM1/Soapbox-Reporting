@@ -163,7 +163,7 @@ class PhotographyCommentsBuilderTests(unittest.TestCase):
         self.assertIn("Spring27 - Bangladesh", payload.rendered_comments_block)
         self.assertIn("Kids Denim", payload.rendered_comments_block)
         self.assertIn("On Model= 12, On Model Details= 2, Color correct: 3, Model hrs= 4", payload.rendered_comments_block)
-        self.assertNotIn("Laydown/Detail=0", payload.rendered_comments_block)
+        self.assertNotIn("Laydown=0", payload.rendered_comments_block)
         self.assertIn("Rush timing requested.", payload.rendered_comments_block)
 
     def test_many_project_rendering_uses_plural_count(self) -> None:
@@ -189,6 +189,51 @@ class PhotographyCommentsBuilderTests(unittest.TestCase):
         self.assertIn("Project B", payload.rendered_comments_block)
         self.assertIn("On Model Details= 3", payload.rendered_comments_block)
         self.assertTrue(payload.rendered_comments_block.endswith("2 projects="))
+
+
+class LaydownWordingTests(unittest.TestCase):
+    def test_old_draft_renders_laydown_in_ui_preview_and_pdf(self):
+        from io import BytesIO
+        from pypdf import PdfReader
+        from streamlit.testing.v1 import AppTest
+        from app.photography_pricing.draft_service import normalize_draft_payload, restore_draft_payload_to_state
+        from app.photography_pricing.models import ApparelInputs
+        from app.photography_pricing.quote_builder import build_apparel_quote
+        from app.photography_pricing.pdf_mapper import build_page2_pricing_payload
+        from app.photography_pricing.pdf_generator import generate_page2_pricing_pdf
+
+        old_payload = {"comments": {"project_entries": [
+            {"project_name": "Legacy Project", "laydown_detail": "12.00", "on_model_detail": "2.00"}
+        ]}}
+        normalized = normalize_draft_payload(old_payload)
+        self.assertEqual("12.00", normalized["comments"]["project_entries"][0]["laydown_detail"])
+        state = {}
+        restore_draft_payload_to_state(old_payload, state)
+        self.assertEqual(12.0, state["photo_pricing_comments_laydown_detail_0"])
+        app = AppTest.from_string(
+            "from app.photography_pricing.apparel_estimator import _render_comments_composer\n"
+            "_render_comments_composer({'name': 'Producer'})\n"
+        )
+        for key, value in state.items():
+            app.session_state[key] = value
+        app.run()
+        self.assertEqual(0, len(app.exception))
+        self.assertEqual("Laydown", app.number_input(key="photo_pricing_comments_laydown_detail_0").label)
+        comments = app.session_state["photo_pricing_page1_comments_payload"]
+        self.assertIn("Laydown=12", app.text[0].value)
+        self.assertIn("On Model Details= 2", comments["rendered_comments_block"])
+        self.assertNotIn("Laydown/Detail", comments["rendered_comments_block"])
+        self.assertEqual(12.0, comments["project_entries"][0]["laydown_detail"])
+        quote = build_apparel_quote(ApparelInputs(laydown_silo_quantity=12, on_model_detail_quantity=2))
+        rows = {row.code: row for row in build_page2_pricing_payload(quote).rows}
+        self.assertEqual("Laydown Silo", rows["laydown_silo"].label)
+        self.assertEqual("On-Model Detail", rows["on_model_detail"].label)
+        self.assertEqual(1665, quote.total)
+        reader = PdfReader(BytesIO(generate_page2_pricing_pdf(quote, page1_comments_payload=comments)))
+        self.assertIn("Laydown=12", reader.pages[0].extract_text())
+        self.assertNotIn("Laydown/Detail", reader.pages[0].extract_text())
+        self.assertIn("Laydown Silo", reader.pages[1].extract_text())
+        self.assertIn("On-Model Detail", reader.pages[1].extract_text())
 
 
 if __name__ == "__main__":

@@ -109,9 +109,23 @@ def render_client_contact_select() -> Optional[ClientContact]:
     if st.session_state.get("photo_pricing_client_contact_id") not in active_ids:
         st.session_state.pop("photo_pricing_client_contact_id", None)
 
+    search = st.text_input(
+        "Client Contact Search",
+        key="photo_pricing_client_contact_search",
+        placeholder="Search by company, name, or email...",
+    ).strip().casefold()
+    matching_contacts = [contact for contact in contacts if search in contact.dropdown_label.casefold()]
+    selected_contact = _contact_by_id(contacts, st.session_state.get("photo_pricing_client_contact_id"))
+    if not matching_contacts:
+        st.info("No matching client contacts. Clear or change the search to browse contacts.")
+    # Keep the current selection available so filtering cannot change the quote.
+    if selected_contact is not None and selected_contact not in matching_contacts:
+        matching_contacts.insert(0, selected_contact)
+        st.caption("Current client contact retained; it does not match this search.")
+
     selected_id = st.selectbox(
         "Client Contact",
-        [contact.id for contact in contacts],
+        [contact.id for contact in matching_contacts],
         format_func=lambda contact_id: (_contact_by_id(contacts, contact_id) or contacts[0]).dropdown_label,
         key="photo_pricing_client_contact_id",
     )

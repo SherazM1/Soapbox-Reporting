@@ -368,5 +368,75 @@ class PhotographyContactIntegrationTests(unittest.TestCase):
         self.assertIn("On Model Details= 2", text)
 
 
+class ClientContactSearchTests(unittest.TestCase):
+    def test_search_selection_no_match_and_draft_restore(self):
+        from streamlit.testing.v1 import AppTest
+        from app.contact_management.models import ClientContact, InternalContact
+        from app.photography_pricing import draft_ui
+        from app.photography_pricing.draft_service import serialize_draft_payload
+
+        contacts = [
+            ClientContact("client-a", None, "Alpha Company", "Ada", "Lovelace", "ada@alpha.test"),
+            ClientContact("client-b", None, "Beta Studio", "Grace", "Hopper", "grace@beta.test"),
+            ClientContact("client-c", None, "Gamma", "Alan", "Turing", "alan@gamma.test"),
+        ]
+        internal = InternalContact("internal-a", "Producer", "Lead", "producer@test.com")
+        app = AppTest.from_string(
+            "import streamlit as st\n"
+            "from app.photography_pricing.draft_ui import apply_pending_draft_restore\n"
+            "from app.contact_management.contact_ui import render_client_contact_select, render_internal_contact_select, contact_payload\n"
+            "apply_pending_draft_restore()\n"
+            "st.session_state['test_client_payload'] = contact_payload(render_client_contact_select())\n"
+            "render_internal_contact_select()\n"
+        )
+        with (
+            patch("app.contact_management.contact_ui.safe_list_active_client_contacts", return_value=contacts),
+            patch("app.contact_management.contact_ui.safe_list_active_internal_contacts", return_value=[internal]),
+            patch.object(draft_ui, "_contact_id_sets", return_value=({c.id for c in contacts}, {internal.id})),
+        ):
+            app.run()
+            labels = [c.dropdown_label for c in contacts]
+            self.assertEqual(labels, app.selectbox(key="photo_pricing_client_contact_id").options)
+            for search in ("BETA STUDIO", "grace hopper", "GRACE@BETA.TEST"):
+                app.text_input(key="photo_pricing_client_contact_search").set_value(search).run()
+                self.assertEqual(labels[:2], app.selectbox(key="photo_pricing_client_contact_id").options)
+                self.assertEqual("client-a", app.session_state["photo_pricing_client_contact_id"])
+            app.selectbox(key="photo_pricing_client_contact_id").select("client-b").run()
+            self.assertEqual("client-b", app.session_state["photo_pricing_client_contact_id"])
+            self.assertEqual("Grace Hopper", app.session_state["test_client_payload"]["full_name"])
+            app.text_input(key="photo_pricing_client_contact_search").set_value("no such contact").run()
+            self.assertEqual(0, len(app.exception))
+            self.assertIn("No matching client contacts", app.info[0].value)
+            self.assertEqual("client-b", app.session_state["photo_pricing_client_contact_id"])
+            self.assertEqual([labels[1]], app.selectbox(key="photo_pricing_client_contact_id").options)
+            payload = serialize_draft_payload({"photo_pricing_client_contact_id": "client-c"})
+            self.assertNotIn("photo_pricing_client_contact_search", str(payload))
+            app.session_state[draft_ui.PENDING_DRAFT_LOAD_KEY] = {
+                "draft_id": "draft-c", "version_number": 1, "payload": payload,
+            }
+            app.run()
+            self.assertEqual(0, len(app.exception))
+            self.assertEqual("", app.text_input(key="photo_pricing_client_contact_search").value)
+            self.assertEqual("client-c", app.session_state["photo_pricing_client_contact_id"])
+            self.assertEqual(labels, app.selectbox(key="photo_pricing_client_contact_id").options)
+            self.assertEqual("internal-a", app.session_state["photo_pricing_internal_contact_id"])
+
+    def test_no_match_without_previous_selection(self):
+        from streamlit.testing.v1 import AppTest
+        from app.contact_management.models import ClientContact
+
+        app = AppTest.from_string(
+            "from app.contact_management.contact_ui import render_client_contact_select\n"
+            "render_client_contact_select()\n"
+        )
+        app.session_state["photo_pricing_client_contact_search"] = "unknown"
+        contact = ClientContact("client-a", None, "Alpha", "Ada", "Lovelace", "ada@alpha.test")
+        with patch("app.contact_management.contact_ui.safe_list_active_client_contacts", return_value=[contact]):
+            app.run()
+            self.assertEqual(0, len(app.exception))
+            self.assertIsNone(app.selectbox[0].value)
+            self.assertEqual([], app.selectbox[0].options)
+
+
 if __name__ == "__main__":
     unittest.main()

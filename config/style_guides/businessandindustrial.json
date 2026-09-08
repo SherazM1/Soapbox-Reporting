@@ -8,7 +8,7 @@
       "product_types": {
 
 
-        "other_drum_equipement": {
+        "other_drum_equipment": {
           "display_name": "Other Drum Equipment",
           "formula": ["Brand", "Model", "Product/Type", "Capacity", "Material"],
           "attributes": ["Model", "Multipack Quantity"],
