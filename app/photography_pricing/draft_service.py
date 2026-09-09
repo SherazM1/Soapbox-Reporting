@@ -262,6 +262,7 @@ def restore_draft_payload_to_state(
 ) -> list[str]:
     normalized = normalize_draft_payload(payload)
     state.pop("photo_pricing_client_contact_search", None)
+    state["photo_pricing_client_search_revision"] = state.get("photo_pricing_client_search_revision", 0) + 1
     metadata = normalized["quote_metadata"]
     contacts = normalized["contacts"]
     pricing = normalized["pricing"]
@@ -327,6 +328,7 @@ def reset_quote_form_state(
 ) -> None:
     created = today or date.today()
     state.pop("photo_pricing_client_contact_search", None)
+    state["photo_pricing_client_search_revision"] = state.get("photo_pricing_client_search_revision", 0) + 1
 
     state["photo_pricing_quote_title"] = ""
     state["photo_pricing_reference_number"] = generate_reference_number(now)

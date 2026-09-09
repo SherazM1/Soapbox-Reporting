@@ -497,6 +497,7 @@ class StartNewQuoteTests(unittest.TestCase):
         app.session_state[draft_ui.LEGACY_LOADED_VERSION_KEY] = 1
         app.session_state["photo_pricing_generated_pdf"] = b"old pdf"
         with (
+            patch("app.contact_management.client_autocomplete._component"),
             patch("app.photography_pricing.apparel_estimator.render_contact_management"),
             patch("app.contact_management.contact_ui.safe_list_active_client_contacts", return_value=[client]),
             patch("app.contact_management.contact_ui.safe_list_active_internal_contacts", return_value=[internal]),

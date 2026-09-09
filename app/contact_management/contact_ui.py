@@ -127,13 +127,9 @@ def rank_client_contacts(contacts: Iterable[ClientContact], query: str) -> list[
     )
 
 
-def _select_client_contact_result() -> None:
-    selected_id = st.session_state.get("photo_pricing_client_contact_result")
-    if selected_id is not None:
-        st.session_state["photo_pricing_client_contact_id"] = selected_id
-
-
 def render_client_contact_select() -> Optional[ClientContact]:
+    from app.contact_management.client_autocomplete import render_client_autocomplete
+
     contacts = safe_list_active_client_contacts()
     if not contacts:
         st.warning("No active client contacts are available.")
@@ -141,36 +137,16 @@ def render_client_contact_select() -> Optional[ClientContact]:
 
     active_ids = {contact.id for contact in contacts}
     if st.session_state.get("photo_pricing_client_contact_id") not in active_ids:
-        st.session_state.pop("photo_pricing_client_contact_id", None)
-
-    search = st.text_input(
-        "Client Contact Search",
-        key="photo_pricing_client_contact_search",
-        placeholder="Search by company, name, or email...",
-    ).strip().casefold()
-    matching_contacts = rank_client_contacts(contacts, search)
-    # Preserve the normal fresh-visit default, but never select a search match implicitly.
-    if not search and "photo_pricing_client_contact_id" not in st.session_state:
         st.session_state["photo_pricing_client_contact_id"] = contacts[0].id
-    selected_contact = _contact_by_id(contacts, st.session_state.get("photo_pricing_client_contact_id"))
-    if not matching_contacts:
-        st.info("No matching client contacts. Clear or change the search to browse contacts.")
-    if selected_contact is not None and selected_contact not in matching_contacts:
-        st.caption(f"Selected client contact: {selected_contact.dropdown_label} (outside current results)")
 
-    st.session_state["photo_pricing_client_contact_result"] = (
-        selected_contact.id if selected_contact in matching_contacts else None
-    )
-    st.selectbox(
+    render_client_autocomplete(contacts, st.session_state["photo_pricing_client_contact_id"])
+    selected_id = st.selectbox(
         "Client Contact",
-        [contact.id for contact in matching_contacts],
+        [contact.id for contact in contacts],
         format_func=lambda contact_id: (_contact_by_id(contacts, contact_id) or contacts[0]).dropdown_label,
-        key="photo_pricing_client_contact_result",
-        index=None,
-        placeholder="Select a matching contact",
-        on_change=_select_client_contact_result,
+        key="photo_pricing_client_contact_id",
     )
-    return selected_contact
+    return _contact_by_id(contacts, selected_id)
 
 
 def render_internal_contact_select() -> Optional[InternalContact]:

@@ -29,6 +29,7 @@ class PhotographyLayoutTests(unittest.TestCase):
         app.session_state["photo_pricing_comments_laydown_detail_0"] = 12.0
         expected_quote = build_apparel_quote(ApparelInputs(on_model_image_quantity=5))
         with (
+            patch("app.contact_management.client_autocomplete._component"),
             patch.object(apparel_estimator, "render_contact_management", side_effect=contact_management),
             patch("app.contact_management.contact_ui.safe_list_active_client_contacts", return_value=[client]),
             patch("app.contact_management.contact_ui.safe_list_active_internal_contacts", return_value=[internal]),
@@ -64,11 +65,11 @@ class PhotographyLayoutTests(unittest.TestCase):
             self.assertEqual("$1,375.00", metrics["Final Total"])
             summary_text = next(markdown.value for markdown in app.markdown
                                 if markdown.value.startswith("Image Count For Account Management:"))
-            self.assertIn("Running Subtotal: **$1,375.00**", summary_text)
+            self.assertIn("Running Subtotal: **\\$1,375.00**", summary_text)
             self.assertIn("Image Count For Account Management: **5**", summary_text)
             self.assertIn("Account Management Tier: **Less than 35 images**", summary_text)
-            self.assertIn("Automatic Account Management Fee: **$175.00**", summary_text)
-            self.assertIn("Account Management Fee Used: **$175.00**", summary_text)
+            self.assertIn("Automatic Account Management Fee: **\\$175.00**", summary_text)
+            self.assertIn("Account Management Fee Used: **\\$175.00**", summary_text)
             review_columns = [column for column in app.columns
                               if any(e.type == "subheader" and e.value in ("Summary", "Pricing Rows")
                                      for e in column)]
@@ -81,7 +82,7 @@ class PhotographyLayoutTests(unittest.TestCase):
             self.assertEqual("Laydown", app.number_input(key="photo_pricing_comments_laydown_detail_0").label)
             self.assertEqual(0.0, app.number_input(key="photo_pricing_comments_colors_0").value)
             app.number_input(key="photo_pricing_comments_colors_0").set_value(4.0).run()
-            self.assertIn("5 images total\n1 project=", app.session_state["photo_pricing_page1_comments_payload"]["rendered_comments_block"])
+            self.assertIn("1 project= 5 images total", app.session_state["photo_pricing_page1_comments_payload"]["rendered_comments_block"])
             app.text_area(key="photo_pricing_comments_custom_notes").set_value("Preserve these notes").run()
             app.button(key="photo_pricing_generate_pdf").click().run()
             self.assertEqual(0, len(app.exception))
@@ -93,7 +94,7 @@ class PhotographyLayoutTests(unittest.TestCase):
             self.assertEqual(app.session_state["photo_pricing_page1_comments_payload"], comments)
             self.assertIn("Laydown=12", comments["rendered_comments_block"])
             self.assertIn("Colors=4", comments["rendered_comments_block"])
-            self.assertIn("5 images total\n1 project=", comments["rendered_comments_block"])
+            self.assertIn("1 project= 5 images total", comments["rendered_comments_block"])
             self.assertEqual("client-1", generate.call_args.kwargs["page1_header_payload"]["selected_client"]["id"])
             self.assertEqual(b"pdf fixture", app.session_state["photo_pricing_generated_pdf"])
 

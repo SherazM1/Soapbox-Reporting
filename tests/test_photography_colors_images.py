@@ -21,8 +21,10 @@ class ColorsImagesTests(unittest.TestCase):
         payload = comments([{"colors": 3, "color_correct": 2}], 194)
         self.assertIn("Color correct: 2, Colors=3", payload.rendered_comments_block)
         self.assertEqual(1, comments([{"colors": 3}], 0).project_count)
-        self.assertTrue(payload.rendered_comments_block.endswith("194 images total\n1 project="))
-        self.assertTrue(comments([], 0).rendered_comments_block.endswith("0 images total\n0 projects="))
+        self.assertTrue(payload.rendered_comments_block.endswith("1 project= 194 images total"))
+        self.assertTrue(comments([], 0).rendered_comments_block.endswith("0 projects= 0 images total"))
+        self.assertTrue(comments([], 40).rendered_comments_block.endswith("0 projects= 40 images total"))
+        self.assertNotIn("194 images total", payload.rendered_comments_block.splitlines())
 
     def test_colors_draft_roundtrip_reindex_and_no_pricing_effect(self):
         old = {}
@@ -53,7 +55,7 @@ class ColorsImagesTests(unittest.TestCase):
         text = "\n".join(page.extract_text() or "" for page in reader.pages)
         for index in range(18):
             self.assertIn(f"Colors={index + 1}", text)
-        self.assertIn("194 images total\n18 projects=", text)
+        self.assertIn("18 projects= 194 images total", text)
         self.assertIn("Laydown=6", text)
         self.assertNotIn("Laydown/Detail", text)
 

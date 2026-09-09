@@ -482,7 +482,7 @@ def _render_summary(quote_payload: Any) -> None:
         f"Automatic Account Management Fee: **{_money(quote_payload.derived_account_management_fee)}**",
         f"{fee_label}: **{_money(quote_payload.account_management_amount_used)}**",
         f"Running Subtotal: **{_money(quote_payload.subtotal)}**",
-    ]))
+    ]).replace("$", "\\$"))
     st.metric("Final Total", _money(quote_payload.total))
 
 

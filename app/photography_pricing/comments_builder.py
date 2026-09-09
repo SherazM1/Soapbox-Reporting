@@ -169,9 +169,7 @@ def build_page1_comments_payload(
         lines.append(notes)
         lines.append("")
 
-    if total_images is not None:
-        lines.append(f"{total_images} images total")
-    lines.append(count_label)
+    lines.append(f"{count_label} {total_images} images total" if total_images is not None else count_label)
 
     return Page1CommentsPayload(
         selected_internal_contact=contact,
