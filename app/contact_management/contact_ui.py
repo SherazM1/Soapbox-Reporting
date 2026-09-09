@@ -99,6 +99,40 @@ def contact_payload(contact: ClientContact | InternalContact | None) -> dict[str
     }
 
 
+def rank_client_contacts(contacts: Iterable[ClientContact], query: str) -> list[ClientContact]:
+    contacts = [contact for contact in contacts if contact.active]
+    query = query.strip().casefold()
+    if not query:
+        return contacts
+
+    def priority(contact: ClientContact) -> int:
+        first, last, full, company, email = (
+            value.casefold() for value in (
+                contact.first_name, contact.last_name, contact.full_name,
+                contact.company_name, contact.email,
+            )
+        )
+        matches = (
+            first.startswith(query), last.startswith(query), full.startswith(query),
+            query in first, query in last, query in full,
+            company.startswith(query), query in company,
+            email.startswith(query), query in email,
+        )
+        return next((index for index, match in enumerate(matches) if match), 10)
+
+    return sorted(
+        (contact for contact in contacts if priority(contact) < 10),
+        key=lambda contact: (priority(contact), contact.full_name.casefold(),
+                             contact.company_name.casefold(), contact.email.casefold(), contact.id),
+    )
+
+
+def _select_client_contact_result() -> None:
+    selected_id = st.session_state.get("photo_pricing_client_contact_result")
+    if selected_id is not None:
+        st.session_state["photo_pricing_client_contact_id"] = selected_id
+
+
 def render_client_contact_select() -> Optional[ClientContact]:
     contacts = safe_list_active_client_contacts()
     if not contacts:
@@ -114,22 +148,29 @@ def render_client_contact_select() -> Optional[ClientContact]:
         key="photo_pricing_client_contact_search",
         placeholder="Search by company, name, or email...",
     ).strip().casefold()
-    matching_contacts = [contact for contact in contacts if search in contact.dropdown_label.casefold()]
+    matching_contacts = rank_client_contacts(contacts, search)
+    # Preserve the normal fresh-visit default, but never select a search match implicitly.
+    if not search and "photo_pricing_client_contact_id" not in st.session_state:
+        st.session_state["photo_pricing_client_contact_id"] = contacts[0].id
     selected_contact = _contact_by_id(contacts, st.session_state.get("photo_pricing_client_contact_id"))
     if not matching_contacts:
         st.info("No matching client contacts. Clear or change the search to browse contacts.")
-    # Keep the current selection available so filtering cannot change the quote.
     if selected_contact is not None and selected_contact not in matching_contacts:
-        matching_contacts.insert(0, selected_contact)
-        st.caption("Current client contact retained; it does not match this search.")
+        st.caption(f"Selected client contact: {selected_contact.dropdown_label} (outside current results)")
 
-    selected_id = st.selectbox(
+    st.session_state["photo_pricing_client_contact_result"] = (
+        selected_contact.id if selected_contact in matching_contacts else None
+    )
+    st.selectbox(
         "Client Contact",
         [contact.id for contact in matching_contacts],
         format_func=lambda contact_id: (_contact_by_id(contacts, contact_id) or contacts[0]).dropdown_label,
-        key="photo_pricing_client_contact_id",
+        key="photo_pricing_client_contact_result",
+        index=None,
+        placeholder="Select a matching contact",
+        on_change=_select_client_contact_result,
     )
-    return _contact_by_id(contacts, selected_id)
+    return selected_contact
 
 
 def render_internal_contact_select() -> Optional[InternalContact]:

@@ -369,6 +369,30 @@ class PhotographyContactIntegrationTests(unittest.TestCase):
 
 
 class ClientContactSearchTests(unittest.TestCase):
+    def test_ranked_matches_and_stable_order(self):
+        from app.contact_management.contact_ui import rank_client_contacts
+
+        def contact(identifier, first, last, company="Acme", email="person@example.test", active=True):
+            return ClientContact(identifier, None, company, first, last, email, active)
+
+        contacts = [
+            contact("email", "Amy", "Owen", email="l@example.test"),
+            contact("company", "Amy", "Owen", company="London"),
+            contact("contains", "Alan", "Owen"),
+            contact("last", "Arthur", "Lin"),
+            contact("lisa", "Lisa", "Gao"),
+            contact("laura", "Laura", "Xu"),
+            contact("lilian", "Lilian", "Zhou"),
+            contact("inactive", "Lara", "Smith", active=False),
+        ]
+        self.assertEqual(contacts[:-1], rank_client_contacts(contacts, ""))
+        self.assertEqual(["laura", "lilian", "lisa", "last", "contains", "company", "email"],
+                         [c.id for c in rank_client_contacts(contacts, "L")])
+        self.assertEqual(["lilian", "lisa", "last"], [c.id for c in rank_client_contacts(contacts, "Li")])
+        self.assertEqual(rank_client_contacts(contacts, "li"), rank_client_contacts(reversed(contacts), " LI "))
+        self.assertEqual([], rank_client_contacts(contacts, "no match"))
+        self.assertEqual([contacts[4]], rank_client_contacts(contacts, "Lisa Gao"))
+
     def test_search_selection_no_match_and_draft_restore(self):
         from streamlit.testing.v1 import AppTest
         from app.contact_management.models import ClientContact, InternalContact
@@ -396,19 +420,19 @@ class ClientContactSearchTests(unittest.TestCase):
         ):
             app.run()
             labels = [c.dropdown_label for c in contacts]
-            self.assertEqual(labels, app.selectbox(key="photo_pricing_client_contact_id").options)
+            self.assertEqual(labels, app.selectbox(key="photo_pricing_client_contact_result").options)
             for search in ("BETA STUDIO", "grace hopper", "GRACE@BETA.TEST"):
                 app.text_input(key="photo_pricing_client_contact_search").set_value(search).run()
-                self.assertEqual(labels[:2], app.selectbox(key="photo_pricing_client_contact_id").options)
+                self.assertEqual([labels[1]], app.selectbox(key="photo_pricing_client_contact_result").options)
                 self.assertEqual("client-a", app.session_state["photo_pricing_client_contact_id"])
-            app.selectbox(key="photo_pricing_client_contact_id").select("client-b").run()
+            app.selectbox(key="photo_pricing_client_contact_result").select("client-b").run()
             self.assertEqual("client-b", app.session_state["photo_pricing_client_contact_id"])
             self.assertEqual("Grace Hopper", app.session_state["test_client_payload"]["full_name"])
             app.text_input(key="photo_pricing_client_contact_search").set_value("no such contact").run()
             self.assertEqual(0, len(app.exception))
             self.assertIn("No matching client contacts", app.info[0].value)
             self.assertEqual("client-b", app.session_state["photo_pricing_client_contact_id"])
-            self.assertEqual([labels[1]], app.selectbox(key="photo_pricing_client_contact_id").options)
+            self.assertEqual([], app.selectbox(key="photo_pricing_client_contact_result").options)
             payload = serialize_draft_payload({"photo_pricing_client_contact_id": "client-c"})
             self.assertNotIn("photo_pricing_client_contact_search", str(payload))
             app.session_state[draft_ui.PENDING_DRAFT_LOAD_KEY] = {
@@ -418,7 +442,7 @@ class ClientContactSearchTests(unittest.TestCase):
             self.assertEqual(0, len(app.exception))
             self.assertEqual("", app.text_input(key="photo_pricing_client_contact_search").value)
             self.assertEqual("client-c", app.session_state["photo_pricing_client_contact_id"])
-            self.assertEqual(labels, app.selectbox(key="photo_pricing_client_contact_id").options)
+            self.assertEqual(labels, app.selectbox(key="photo_pricing_client_contact_result").options)
             self.assertEqual("internal-a", app.session_state["photo_pricing_internal_contact_id"])
 
     def test_no_match_without_previous_selection(self):

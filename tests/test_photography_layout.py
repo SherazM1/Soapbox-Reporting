@@ -55,15 +55,27 @@ class PhotographyLayoutTests(unittest.TestCase):
                 position("text_input", "Quote Title"),
                 position("subheader", "Page 1 Comments"),
                 position("subheader", "Summary"),
-                position("button", "Generate PDF"),
                 position("subheader", "Pricing Rows"),
+                position("button", "Generate PDF"),
             ]
             self.assertEqual(sorted(positions), positions)
             self.assertEqual(1, sum(e.type == "subheader" and e.value == "Summary" for e in elements))
             metrics = {metric.label: metric.value for metric in app.metric}
             self.assertEqual("$1,375.00", metrics["Final Total"])
-            self.assertEqual("$1,375.00", metrics["Running Subtotal"])
-            self.assertEqual("5", metrics["Image Count For Account Management"])
+            summary_text = next(markdown.value for markdown in app.markdown
+                                if markdown.value.startswith("Image Count For Account Management:"))
+            self.assertIn("Running Subtotal: **$1,375.00**", summary_text)
+            self.assertIn("Image Count For Account Management: **5**", summary_text)
+            self.assertIn("Account Management Tier: **Less than 35 images**", summary_text)
+            self.assertIn("Automatic Account Management Fee: **$175.00**", summary_text)
+            self.assertIn("Account Management Fee Used: **$175.00**", summary_text)
+            review_columns = [column for column in app.columns
+                              if any(e.type == "subheader" and e.value in ("Summary", "Pricing Rows")
+                                     for e in column)]
+            self.assertEqual(2, len(review_columns))
+            self.assertEqual("Summary", review_columns[0].subheader[0].value)
+            self.assertEqual("Pricing Rows", review_columns[1].subheader[0].value)
+            self.assertEqual("primary", app.button(key="photo_pricing_generate_pdf").proto.type)
             self.assertEqual(apparel_estimator._line_table_rows(expected_quote.to_payload()),
                              app.dataframe[0].value.to_dict("records"))
             self.assertEqual("Laydown", app.number_input(key="photo_pricing_comments_laydown_detail_0").label)

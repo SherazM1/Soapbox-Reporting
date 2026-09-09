@@ -12,6 +12,7 @@ from app.contact_management.contact_ui import (
 from app.photography_pricing.comments_builder import build_page1_comments_payload
 from app.photography_pricing.draft_ui import render_drafts_section
 from app.photography_pricing.draft_ui import apply_pending_draft_restore
+from app.photography_pricing.draft_service import update_project_rows
 from app.photography_pricing.models import ApparelInputs
 from app.photography_pricing.pricing_rules import (
     AI_GENERATION_MARKUP_RATE,
@@ -91,6 +92,10 @@ def _project_number_input(label: str, key: str) -> float:
     )
 
 
+def _update_project_rows(remove_index: int | None = None) -> None:
+    update_project_rows(st.session_state, remove_index)
+
+
 def _render_comments_composer(selected_internal_contact: dict[str, str]) -> dict[str, Any]:
     _init_comments_state()
 
@@ -118,9 +123,7 @@ def _render_comments_composer(selected_internal_contact: dict[str, str]) -> dict
 
     st.markdown("#### Project Entries")
     project_rows = st.session_state["photo_pricing_project_rows"]
-    if st.button("Add Project", key="photo_pricing_comments_add_project"):
-        project_rows.append({})
-        st.rerun()
+    st.button("Add Project", key="photo_pricing_comments_add_project", on_click=_update_project_rows)
 
     rendered_projects: list[dict[str, Any]] = []
     for index, _row in enumerate(project_rows):
@@ -162,9 +165,9 @@ def _render_comments_composer(selected_internal_contact: dict[str, str]) -> dict
         with row_cols[7]:
             st.write("")
             st.write("")
-            if len(project_rows) > 1 and st.button("Remove", key=f"photo_pricing_comments_remove_{index}"):
-                project_rows.pop(index)
-                st.rerun()
+            if len(project_rows) > 1:
+                st.button("Remove", key=f"photo_pricing_comments_remove_{index}",
+                          on_click=_update_project_rows, args=(index,))
 
         rendered_projects.append(
             {
@@ -463,17 +466,19 @@ def _render_apparel_inputs() -> tuple[ApparelInputs, Any]:
 
 def _render_summary(quote_payload: Any) -> None:
     st.subheader("Summary")
-    st.metric("Image Count For Account Management", quote_payload.derived_total_image_count)
-    st.write(f"Account Management Tier: **{account_management_tier_label(quote_payload.derived_total_image_count)}**")
-    st.write(f"Automatic Account Management Fee: **{_money(quote_payload.derived_account_management_fee)}**")
-    if quote_payload.account_management_mode == "manual":
-        st.write(f"Manual Account Management Amount Used: **{_money(quote_payload.account_management_amount_used)}**")
-    else:
-        st.write(f"Account Management Fee Used: **{_money(quote_payload.account_management_amount_used)}**")
-    st.divider()
-    subtotal_col, total_col = st.columns(2)
-    subtotal_col.metric("Running Subtotal", _money(quote_payload.subtotal))
-    total_col.metric("Final Total", _money(quote_payload.total))
+    fee_label = (
+        "Manual Account Management Amount Used"
+        if quote_payload.account_management_mode == "manual"
+        else "Account Management Fee Used"
+    )
+    st.markdown("  \n".join([
+        f"Image Count For Account Management: **{quote_payload.derived_total_image_count}**",
+        f"Account Management Tier: **{account_management_tier_label(quote_payload.derived_total_image_count)}**",
+        f"Automatic Account Management Fee: **{_money(quote_payload.derived_account_management_fee)}**",
+        f"{fee_label}: **{_money(quote_payload.account_management_amount_used)}**",
+        f"Running Subtotal: **{_money(quote_payload.subtotal)}**",
+    ]))
+    st.metric("Final Total", _money(quote_payload.total))
 
 
 def render_photography_pricing() -> None:
@@ -508,9 +513,18 @@ def render_photography_pricing() -> None:
 
     selected_internal_payload = contact_payload(selected_internal)
     _render_comments_composer(selected_internal_payload)
-    _render_summary(quote)
+    summary_col, pricing_col = st.columns([1, 1.5], gap="large")
+    with summary_col:
+        _render_summary(quote)
+    with pricing_col:
+        st.subheader("Pricing Rows")
+        st.dataframe(
+            pd.DataFrame(_line_table_rows(quote_payload)),
+            hide_index=True,
+            width="stretch",
+        )
 
-    if st.button("Generate PDF", key="photo_pricing_generate_pdf"):
+    if st.button("Generate PDF", key="photo_pricing_generate_pdf", type="primary", width="stretch"):
         from app.photography_pricing.pdf_generator import generate_page2_pricing_pdf
 
         page1_header_payload = _build_page1_header_payload(
@@ -544,10 +558,3 @@ def render_photography_pricing() -> None:
             mime="application/pdf",
             key="photo_pricing_download_pdf",
         )
-
-    st.subheader("Pricing Rows")
-    st.dataframe(
-        pd.DataFrame(_line_table_rows(quote_payload)),
-        hide_index=True,
-        use_container_width=True,
-    )

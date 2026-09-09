@@ -388,6 +388,30 @@ def apparel_inputs_from_draft_payload(payload: dict[str, Any]) -> ApparelInputs:
     )
 
 
+def update_project_rows(state: dict[str, Any], remove_index: int | None = None) -> None:
+    """Add or remove a logical project before its widgets render."""
+    rows = state.get("photo_pricing_project_rows") or [{}]
+    if remove_index is not None and (len(rows) <= 1 or not 0 <= remove_index < len(rows)):
+        return
+    entries = [
+        {field: state.get(f"photo_pricing_comments_{field}_{index}",
+                          "" if field == "project_name" else 0.0)
+         for field in PROJECT_FIELDS}
+        for index in range(len(rows))
+    ]
+    if remove_index is None:
+        entries.append({field: "" if field == "project_name" else 0.0 for field in PROJECT_FIELDS})
+    else:
+        entries.pop(remove_index)
+    _clear_project_widget_keys(state)
+    state["photo_pricing_project_rows"] = [{} for _ in entries]
+    for index, entry in enumerate(entries):
+        for field, value in entry.items():
+            state[f"photo_pricing_comments_{field}_{index}"] = value
+    for key in GENERATED_STATE_KEYS:
+        state.pop(key, None)
+
+
 def _clear_project_widget_keys(state: dict[str, Any]) -> None:
     prefixes = tuple(f"photo_pricing_comments_{field}_" for field in PROJECT_FIELDS)
     for key in list(state.keys()):
