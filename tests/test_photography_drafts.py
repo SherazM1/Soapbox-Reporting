@@ -272,7 +272,7 @@ class PhotographyDraftTests(unittest.TestCase):
         self.assertEqual("adult", normalized["pricing"]["model_hours_mode"])
         self.assertEqual("automatic", normalized["pricing"]["account_management_mode"])
         self.assertEqual("0.00", normalized["pricing"]["manual_account_management_amount"])
-        self.assertEqual([{"project_name": "", "on_model": "0.00", "on_model_detail": "0.00", "laydown_detail": "0.00", "color_correct": "0.00", "post": "0.00", "model_hours": "0.00"}], normalized["comments"]["project_entries"])
+        self.assertEqual([{"project_name": "", "on_model": "0.00", "on_model_detail": "0.00", "laydown_detail": "0.00", "color_correct": "0.00", "post": "0.00", "model_hours": "0.00", "colors": "0.00"}], normalized["comments"]["project_entries"])
 
     def test_restore_reconstructs_session_state_keys_and_preserves_dates(self):
         state = {"photo_pricing_comments_project_name_9": "stale"}

@@ -96,7 +96,7 @@ def _update_project_rows(remove_index: int | None = None) -> None:
     update_project_rows(st.session_state, remove_index)
 
 
-def _render_comments_composer(selected_internal_contact: dict[str, str]) -> dict[str, Any]:
+def _render_comments_composer(selected_internal_contact: dict[str, str], total_images: int | None = None) -> dict[str, Any]:
     _init_comments_state()
 
     st.subheader("Page 1 Comments")
@@ -127,7 +127,7 @@ def _render_comments_composer(selected_internal_contact: dict[str, str]) -> dict
 
     rendered_projects: list[dict[str, Any]] = []
     for index, _row in enumerate(project_rows):
-        row_cols = st.columns([1.5, 0.7, 0.9, 0.8, 0.8, 0.7, 0.8, 0.45])
+        row_cols = st.columns([1.5, 0.7, 0.9, 0.8, 0.8, 0.7, 0.7, 0.8, 0.45])
         with row_cols[0]:
             _field_label("Project Name")
             project_name = st.text_input(
@@ -157,12 +157,15 @@ def _render_comments_composer(selected_internal_contact: dict[str, str]) -> dict
                 f"photo_pricing_comments_color_correct_{index}",
             )
         with row_cols[5]:
+            _field_label("Colors")
+            colors = _project_number_input("Colors", f"photo_pricing_comments_colors_{index}")
+        with row_cols[6]:
             _field_label("Post")
             post = _project_number_input("Post", f"photo_pricing_comments_post_{index}")
-        with row_cols[6]:
+        with row_cols[7]:
             _field_label("Model Hours")
             model_hours = _project_number_input("Model Hours", f"photo_pricing_comments_model_hours_{index}")
-        with row_cols[7]:
+        with row_cols[8]:
             st.write("")
             st.write("")
             if len(project_rows) > 1:
@@ -176,6 +179,7 @@ def _render_comments_composer(selected_internal_contact: dict[str, str]) -> dict
                 "on_model_detail": on_model_detail,
                 "laydown_detail": laydown_detail,
                 "color_correct": color_correct,
+                "colors": colors,
                 "post": post,
                 "model_hours": model_hours,
             }
@@ -195,6 +199,7 @@ def _render_comments_composer(selected_internal_contact: dict[str, str]) -> dict
         subtitle_line=subtitle_line,
         project_entries=rendered_projects,
         custom_notes=custom_notes,
+        total_images=total_images,
     )
     payload_dict = payload.to_payload()
     st.session_state["photo_pricing_page1_comments_payload"] = payload_dict
@@ -512,7 +517,7 @@ def render_photography_pricing() -> None:
     quote_payload = quote.to_payload()
 
     selected_internal_payload = contact_payload(selected_internal)
-    _render_comments_composer(selected_internal_payload)
+    _render_comments_composer(selected_internal_payload, total_images=quote.derived_total_image_count)
     summary_col, pricing_col = st.columns([1, 1.5], gap="large")
     with summary_col:
         _render_summary(quote)

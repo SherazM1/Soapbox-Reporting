@@ -8,6 +8,7 @@ class ProjectCommentEntry:
     on_model: float = 0
     on_model_detail: float = 0
     laydown_detail: float = 0
+    colors: float = 0
     color_correct: float = 0
     post: float = 0
     model_hours: float = 0
@@ -67,6 +68,7 @@ def _has_project_content(entry: ProjectCommentEntry) -> bool:
             entry.on_model_detail,
             entry.laydown_detail,
             entry.color_correct,
+            entry.colors,
             entry.post,
             entry.model_hours,
         )
@@ -80,6 +82,7 @@ def normalize_project_entry(raw_entry: dict[str, Any]) -> ProjectCommentEntry:
         on_model_detail=_number(raw_entry.get("on_model_detail")),
         laydown_detail=_number(raw_entry.get("laydown_detail")),
         color_correct=_number(raw_entry.get("color_correct")),
+        colors=max(0, _number(raw_entry.get("colors"))),
         post=_number(raw_entry.get("post")),
         model_hours=_number(raw_entry.get("model_hours")),
     )
@@ -99,6 +102,8 @@ def render_project_detail_line(entry: ProjectCommentEntry) -> str:
         parts.append(f"Laydown={_format_number(entry.laydown_detail)}")
     if entry.color_correct > 0:
         parts.append(f"Color correct: {_format_number(entry.color_correct)}")
+    if entry.colors > 0:
+        parts.append(f"Colors={_format_number(entry.colors)}")
     if entry.post > 0:
         parts.append(f"Post= {_format_number(entry.post)}")
     if entry.model_hours > 0:
@@ -113,6 +118,7 @@ def build_page1_comments_payload(
     subtitle_line: str,
     project_entries: list[dict[str, Any]],
     custom_notes: str,
+    total_images: int | None = None,
 ) -> Page1CommentsPayload:
     contact = dict(selected_internal_contact)
     subject = _clean_text(estimate_subject)
@@ -122,7 +128,7 @@ def build_page1_comments_payload(
         entry for entry in (normalize_project_entry(raw) for raw in project_entries) if _has_project_content(entry)
     )
     count = len(normalized_entries)
-    has_structured_content = bool(subject or subtitle or normalized_entries)
+    has_structured_content = bool(subject or subtitle or normalized_entries or total_images is not None)
     count_label = project_count_label(count) if has_structured_content else ""
     intro_text = f"Photography Estimate for {subject}:" if subject else ("Photography Estimate:" if has_structured_content else "")
 
@@ -163,6 +169,8 @@ def build_page1_comments_payload(
         lines.append(notes)
         lines.append("")
 
+    if total_images is not None:
+        lines.append(f"{total_images} images total")
     lines.append(count_label)
 
     return Page1CommentsPayload(

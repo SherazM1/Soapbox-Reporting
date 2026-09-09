@@ -56,6 +56,7 @@ PROJECT_FIELDS = (
     "on_model_detail",
     "laydown_detail",
     "color_correct",
+    "colors",
     "post",
     "model_hours",
 )
@@ -115,6 +116,7 @@ def _project_entry_from_state(state: dict[str, Any], index: int) -> dict[str, An
         "color_correct": _decimal_text(state.get(f"photo_pricing_comments_color_correct_{index}")),
         "post": _decimal_text(state.get(f"photo_pricing_comments_post_{index}")),
         "model_hours": _decimal_text(state.get(f"photo_pricing_comments_model_hours_{index}")),
+        "colors": _decimal_text(state.get(f"photo_pricing_comments_colors_{index}")),
     }
 
 
@@ -138,6 +140,7 @@ def _project_entries(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 "color_correct": _decimal_text(raw.get("color_correct")),
                 "post": _decimal_text(raw.get("post")),
                 "model_hours": _decimal_text(raw.get("model_hours")),
+                "colors": _decimal_text(raw.get("colors")),
             }
         )
     return entries or [{field: ("" if field == "project_name" else "0.00") for field in PROJECT_FIELDS}]

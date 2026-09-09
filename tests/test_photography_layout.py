@@ -79,6 +79,9 @@ class PhotographyLayoutTests(unittest.TestCase):
             self.assertEqual(apparel_estimator._line_table_rows(expected_quote.to_payload()),
                              app.dataframe[0].value.to_dict("records"))
             self.assertEqual("Laydown", app.number_input(key="photo_pricing_comments_laydown_detail_0").label)
+            self.assertEqual(0.0, app.number_input(key="photo_pricing_comments_colors_0").value)
+            app.number_input(key="photo_pricing_comments_colors_0").set_value(4.0).run()
+            self.assertIn("5 images total\n1 project=", app.session_state["photo_pricing_page1_comments_payload"]["rendered_comments_block"])
             app.text_area(key="photo_pricing_comments_custom_notes").set_value("Preserve these notes").run()
             app.button(key="photo_pricing_generate_pdf").click().run()
             self.assertEqual(0, len(app.exception))
@@ -89,6 +92,8 @@ class PhotographyLayoutTests(unittest.TestCase):
             comments = generate.call_args.kwargs["page1_comments_payload"]
             self.assertEqual(app.session_state["photo_pricing_page1_comments_payload"], comments)
             self.assertIn("Laydown=12", comments["rendered_comments_block"])
+            self.assertIn("Colors=4", comments["rendered_comments_block"])
+            self.assertIn("5 images total\n1 project=", comments["rendered_comments_block"])
             self.assertEqual("client-1", generate.call_args.kwargs["page1_header_payload"]["selected_client"]["id"])
             self.assertEqual(b"pdf fixture", app.session_state["photo_pricing_generated_pdf"])
 
