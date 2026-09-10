@@ -6,6 +6,12 @@ import streamlit as st
 
 from app.contact_management.database import ContactManagementError
 from app.contact_management.models import ClientContact, InternalContact
+from app.contact_management.contact_cache import (
+    list_active_client_contacts,
+    list_active_internal_contacts,
+    list_all_client_contacts,
+    list_all_internal_contacts,
+)
 from app.contact_management.repositories import (
     ContactValidationError,
     create_client_contact,
@@ -14,10 +20,6 @@ from app.contact_management.repositories import (
     deactivate_internal_contact,
     get_client_contact,
     get_internal_contact,
-    list_active_client_contacts,
-    list_active_internal_contacts,
-    list_all_client_contacts,
-    list_all_internal_contacts,
     reactivate_client_contact,
     reactivate_internal_contact,
     update_client_contact,

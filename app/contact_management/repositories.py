@@ -175,6 +175,9 @@ def create_client_contact(
         params,
         conn=conn,
     )
+    from app.contact_management.contact_cache import invalidate_client_contacts
+
+    invalidate_client_contacts()
     return _client_from_row(row)
 
 
@@ -210,6 +213,9 @@ def update_client_contact(
         params,
         conn=conn,
     )
+    from app.contact_management.contact_cache import invalidate_client_contacts
+
+    invalidate_client_contacts()
     return _client_from_row(row)
 
 
@@ -219,6 +225,9 @@ def deactivate_client_contact(contact_id: str, *, conn: object | None = None) ->
         (str(contact_id),),
         conn=conn,
     )
+    from app.contact_management.contact_cache import invalidate_client_contacts
+
+    invalidate_client_contacts()
     return _client_from_row(row) if row else None
 
 
@@ -228,6 +237,9 @@ def reactivate_client_contact(contact_id: str, *, conn: object | None = None) ->
         (str(contact_id),),
         conn=conn,
     )
+    from app.contact_management.contact_cache import invalidate_client_contacts
+
+    invalidate_client_contacts()
     return _client_from_row(row) if row else None
 
 
@@ -292,6 +304,9 @@ def upsert_client_contact_from_hubspot(
         params,
         conn=conn,
     )
+    from app.contact_management.contact_cache import invalidate_client_contacts
+
+    invalidate_client_contacts()
     return _client_from_row(row)
 
 
@@ -328,6 +343,9 @@ def create_internal_contact(
         _internal_params(name=name, title=title, email=email, active=active),
         conn=conn,
     )
+    from app.contact_management.contact_cache import invalidate_internal_contacts
+
+    invalidate_internal_contacts()
     return _internal_from_row(row)
 
 
@@ -350,6 +368,9 @@ def update_internal_contact(
         (*_internal_params(name=name, title=title, email=email, active=active), str(contact_id)),
         conn=conn,
     )
+    from app.contact_management.contact_cache import invalidate_internal_contacts
+
+    invalidate_internal_contacts()
     return _internal_from_row(row)
 
 
@@ -359,6 +380,9 @@ def deactivate_internal_contact(contact_id: str, *, conn: object | None = None) 
         (str(contact_id),),
         conn=conn,
     )
+    from app.contact_management.contact_cache import invalidate_internal_contacts
+
+    invalidate_internal_contacts()
     return _internal_from_row(row) if row else None
 
 
@@ -368,6 +392,9 @@ def reactivate_internal_contact(contact_id: str, *, conn: object | None = None) 
         (str(contact_id),),
         conn=conn,
     )
+    from app.contact_management.contact_cache import invalidate_internal_contacts
+
+    invalidate_internal_contacts()
     return _internal_from_row(row) if row else None
 
 

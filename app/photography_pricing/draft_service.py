@@ -69,6 +69,7 @@ COMMENT_KEYS = {
 
 GENERATED_STATE_KEYS = (
     "photo_pricing_generated_pdf",
+    "photo_pricing_generated_pdf_inputs",
     "photo_pricing_page1_comments_payload",
 )
 
