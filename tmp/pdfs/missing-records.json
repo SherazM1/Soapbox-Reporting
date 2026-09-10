@@ -1,0 +1,900 @@
+[
+    {
+        "name":  "Basketball Backboard Pads",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable. Only list top 2 features. If there is only 1 top feature, don\u0027t add a filler second feature.) + Basketball Backboard Size + Basketball Pad Type",
+        "attributes":  [
+                           "Brand",
+                           "Product Net Content Uom",
+                           "Product Net Content Quantity"
+                       ],
+        "body":  "Basketball Backboard Pads\r\n\r\nFORMULA  Brand + Product Line (if applicable) + Features (if applicable. Only list top 2 features. If there is only 1 top feature, don\u0027t add a filler second feature.) + Basketball Backboard Size +\r\n         Basketball Pad Type\r\n\r\nEXAMPLE \"Goalrilla Pro-Style Weatherproof 50\" Bolt-On Backboard Padding\"\r\n\r\nATTRIBUTES Brand  Product Net Content Uom           Product Net Content Quantity\r\n\r\n"
+    },
+    {
+        "name":  "Basketball Backboards",
+        "formula":  "Brand + Product Line (if applicable) + Basketball Backboard Size + Features (if applicable. Only list 1 top feature) + Material (if applicable) + Basketball Backboard Type + (Recommended Location (if applicable))",
+        "attributes":  [
+                           "Basketball Backboard Type",
+                           "Brand",
+                           "Basketball Backboard Size"
+                       ],
+        "body":  "Basketball Backboards\r\n\r\nFORMULA Brand + Product Line (if applicable) + Basketball Backboard Size + Features (if applicable. Only list 1 top feature) + Material (if applicable) + Basketball Backboard Type +\r\n               (Recommended Location (if applicable))\r\n\r\nEXAMPLE \"Goalsetter Pro-Style 72\" Adjustable Acrylic Backboard and Rim Combo (Indoor)\"\r\n\r\nATTRIBUTES Basketball Backboard Type  Brand         Basketball Backboard Size\r\n\r\n"
+    },
+    {
+        "name":  "Basketball Court Accessories",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable. Only list 1 feature) + Recommended Location (if applicable) + Basketball Court Accessory Type",
+        "attributes":  [
+                           "Brand",
+                           "Has Written Warranty",
+                           "Basketball Court Accessory Type"
+                       ],
+        "body":  "Basketball Court Accessories\r\n\r\nFORMULA Brand + Product Line (if applicable) + Features (if applicable. Only list 1 feature) + Recommended Location (if applicable) + Basketball Court Accessory Type\r\n\r\nEXAMPLE \"Spadling Pro Heavy Duty Outdoor Replacement Net\"\r\n\r\nATTRIBUTES Brand  Has Written Warranty     Basketball Court Accessory Type\r\n"
+    },
+    {
+        "name":  "Basketball Mounting Kits",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable. Only list 1 top feature) + Size (if applicable) + Basketball Backboard Type + Product Type",
+        "attributes":  [
+                           "Brand",
+                           "Basketball Backboard Type",
+                           "Condition"
+                       ],
+        "body":  "\fBasketball Mounting Kits\r\n\r\nFORMULA Brand + Product Line (if applicable) + Features (if applicable. Only list 1 top feature) + Size (if applicable) + Basketball Backboard Type + Product Type\r\n\r\nEXAMPLE \"Spalding Adjustable-Height Wall-Mounted Basketball Mounting Kit\"\r\n\r\nATTRIBUTES Brand    Basketball Backboard Type  Condition\r\n\r\n"
+    },
+    {
+        "name":  "Basketball Nets",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable. Only list top 2 features) + Recommended Location (if applicable) + Material (if applicable) + Baskeball Net Type + \",\" + Color Category + Color (if applicable. If Color is used, please omit Color Category. Only list one of the color attributes) + (Piece Count + \"Pack\")(Only list if Piece Count is more than 1. Omit \"Pack\" if Piece Count is not listed)",
+        "attributes":  [
+                           "Brand",
+                           "Basketball Net Type",
+                           "Condition"
+                       ],
+        "body":  "Basketball Nets\r\n\r\nFORMULA Brand + Product Line (if applicable) + Features (if applicable. Only list top 2 features) + Recommended Location (if applicable) + Material (if applicable) + Baskeball Net Type + \",\"\r\n               + Color Category + Color (if applicable. If Color is used, please omit Color Category. Only list one of the color attributes) + (Piece Count + \"Pack\")(Only list if Piece Count is more than 1.\r\n               Omit \"Pack\" if Piece Count is not listed)\r\n\r\nEXAMPLE \"Spalding Official NBA On-Court Durable Indoor Nylon Basketball Net, White (2 Pack)\"\r\n\r\nATTRIBUTES Brand    Basketball Net Type     Condition\r\n\r\n"
+    },
+    {
+        "name":  "Basketball Pole Pads",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable. Only list 1 feature) + Sports Team (if applicable) + Thickness + Basketball Pole Pad Type + \",\" + \"Fits\" + Diameter + \"Pole\"",
+        "attributes":  [
+                           "Brand",
+                           "Thickness",
+                           "Warranty Url"
+                       ],
+        "body":  "Basketball Pole Pads\r\n\r\nFORMULA Brand + Product Line (if applicable) + Features (if applicable. Only list 1 feature) + Sports Team (if applicable) + Thickness + Basketball Pole Pad Type + \",\" + \"Fits\" + Diameter\r\n               + \"Pole\"\r\n\r\nEXAMPLE \"Goalrilla Deluxe All-Weather Kansas State Wildcats 1.5\" Basketball Pole Pad, Fits 5\" Pole\"\r\n\r\nATTRIBUTES Brand    Thickness   Warranty Url\r\n\r\n"
+    },
+    {
+        "name":  "Basketball Returns",
+        "formula":  "Brand + Product Line (if applicable) + Feature (if applicable. Only list 1 feature) + Basketball Return Type + \"with\" Items Included (if applicable. Only list 2 items. Use \"and\" between the 2 items) (Color Category)(If the product has a specific color, please use Color instead of Color Category)",
+        "attributes":  [
+                           "Brand",
+                           "Basketball Return Type",
+                           "Multipack Quantity"
+                       ],
+        "body":  "Basketball Returns\r\n\r\nFORMULA Brand + Product Line (if applicable) + Feature (if applicable. Only list 1 feature) + Basketball Return Type + \"with\" Items Included (if applicable. Only list 2 items. Use \"and\" between the\r\n               2 items) (Color Category)(If the product has a specific color, please use Color instead of Color Category)\r\n\r\nEXAMPLE \"Spradling Right Back Atcha Easy Fold Basketball Shot Trainer with Foldable Arms and Net (Black)\"\r\n\r\nATTRIBUTES Brand    Basketball Return Type     Multipack Quantity\r\n\r\n"
+    },
+    {
+        "name":  "Basketball Rims",
+        "formula":  "Brand + Product Line (if applicable) + Feature (if applicable. Only list top 2 features) + Diameter + Mount Type + Basketball Rim Type (Recommended Location) (if applicable)",
+        "attributes":  [
+                           "Basketball Rim Type",
+                           "Brand",
+                           "Mount Type"
+                       ],
+        "body":  "Basketball Rims\r\n\r\nFORMULA Brand + Product Line (if applicable) + Feature (if applicable. Only list top 2 features) + Diameter + Mount Type + Basketball Rim Type (Recommended Location) (if applicable)\r\n\r\nEXAMPLE \"Silverback Deluxe All-Weather Heavy Duty 18\" Wall Mounted Single Basketball Rim (Indoor/Outdoor)\"\r\n\r\nATTRIBUTES Basketball Rim Type  Brand       Mount Type\r\n"
+    },
+    {
+        "name":  "Basketball Storage",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable. Only list 1 feature) + Number of Tiers (if applicable. Only use if item is a storage rack) + \"Tier\" (Omit the word Tier if Number of Tiers is not used) + Recommended Location (if applicable) + Basketball Storage Type + (Holding Capacity + \"Balls\") (Do not use Holding Capacity if product only hold 1 ball. Omit the word Balls if Holding Capacity is not used)",
+        "attributes":  [
+                           "Basketball Storage Type",
+                           "Brand",
+                           "Count Per Pack"
+                       ],
+        "body":  "\fBasketball Storage\r\n\r\nFORMULA Brand + Product Line (if applicable) + Features (if applicable. Only list 1 feature) + Number of Tiers (if applicable. Only use if item is a storage rack) + \"Tier\" (Omit the word Tier if\r\n               Number of Tiers is not used) + Recommended Location (if applicable) + Basketball Storage Type + (Holding Capacity + \"Balls\") (Do not use Holding Capacity if product only hold 1 ball.\r\n               Omit the word Balls if Holding Capacity is not used)\r\n\r\nEXAMPLE \"Tandem Heavy Duty 4-Tier Indoor Portable Storage Rack (12 Balls)\"\r\n\r\nATTRIBUTES Basketball Storage Type   Brand     Count Per Pack\r\n\r\n"
+    },
+    {
+        "name":  "Basketballs",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable. List 1 feature) + Basketball Type + \"with\" + Accessories Included (if applicable. Only list up to 2 accessories. Please use \"and\" between the 2 accessories. If there is only 1 accessory, omit the word \"and\") + \",\" + Basketball Size",
+        "attributes":  [
+                           "Brand",
+                           "Basketball Size",
+                           "Age Group"
+                       ],
+        "body":  "Basketballs\r\n\r\nFORMULA  Brand + Product Line (if applicable) + Features (if applicable. List 1 feature) + Basketball Type + \"with\" +\r\n         Accessories Included (if applicable. Only list up to 2 accessories. Please use \"and\" between the 2 accessories. If there is only 1 accessory, omit the word \"and\") + \",\" + Basketball Size\r\n\r\nEXAMPLE \"Spalding NCAA Superior Grip Indoor Basketball with Needle and Pump, Size 7 (29.5\")\"\r\n\r\nATTRIBUTES Brand    Basketball Size  Age Group\r\n\r\n"
+    },
+    {
+        "name":  "In Ground Basketball Systems",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable. Only list 1 top feature) + Basketball Backboard Size + Backboard Material + Product Type",
+        "attributes":  [
+                           "Brand",
+                           "Basketball Backboard Size",
+                           "Minimum Height"
+                       ],
+        "body":  "In Ground Basketball Systems\r\n\r\nFORMULA Brand + Product Line (if applicable) + Features (if applicable. Only list 1 top feature) + Basketball Backboard Size + Backboard Material + Product Type\r\n\r\nEXAMPLE \"Spalding MVP Shatter-Proof 72\" Tempered Glass In Ground Basketball System\"\r\n\r\nATTRIBUTES Brand    Basketball Backboard Size   Minimum Height\r\n\r\n"
+    },
+    {
+        "name":  "Mounted Basketball Systems",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable. Only list 1 top feature) + Basketball Backboard Size + Backboard Material + Mount Type + Product Type + (Recommended Location) (if applicable)",
+        "attributes":  [
+                           "Brand",
+                           "Age Group",
+                           "Basketball Backboard Size"
+                       ],
+        "body":  "Mounted Basketball Systems\r\n\r\nFORMULA Brand + Product Line (if applicable) + Features (if applicable. Only list 1 top feature) + Basketball Backboard Size + Backboard Material + Mount Type + Product Type +\r\n               (Recommended Location) (if applicable)\r\n\r\nEXAMPLE \"Goalsetter FT Series Adjustable-Height 50\" Acrylic Wall Mounted Basketball System (Indoor)\"\r\n\r\nATTRIBUTES Brand    Age Group        Basketball Backboard Size\r\n"
+    },
+    {
+        "name":  "Poolside Basketball Systems",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable. Only list 1 top feature. This will not be Adjustable Height) + Minimum Height (if applicable. Omit if item is not adjustable) + \"-\" (Omit if Minimum Height and Maximum Height are not used) + Maximum Height (if applicable. Omit if item is not adjustable) + Adjustable Height (If item is not adjustable, please omit) + Recommended Location (if applicable) + Product Type + (Age Group)",
+        "attributes":  [
+                           "Brand",
+                           "Number Of Pieces",
+                           "Age Group"
+                       ],
+        "body":  "\fPoolside Basketball Systems\r\n\r\nFORMULA  Brand + Product Line (if applicable) + Features (if applicable. Only list 1 top feature. This will not be Adjustable Height) + Minimum Height (if applicable. Omit if item is not adjustable) +\r\n         \"-\" (Omit if Minimum Height and Maximum Height are not used) + Maximum Height (if applicable. Omit if item is not adjustable) + Adjustable Height (If item is not adjustable, please omit) +\r\n         Recommended Location (if applicable) + Product Type + (Age Group)\r\n\r\nEXAMPLE \"GoSports Splash Pro Portable 47\" - 79\" Adjustable Height Outdoor Poolside Basketball System (Adult)\"\r\n\r\nATTRIBUTES Brand      Number Of Pieces  Age Group\r\n\r\n"
+    },
+    {
+        "name":  "Portable Basketball Systems",
+        "formula":  "Brand + Product Line (if applicable) + Minimum Height (if applicable. Omit if item is not adjustable) + \"-\" (Omit if Minimum Height and Maximum Height are not used) + Maximum Height (if applicable. Omit if item is not adjustable) + Adjustable Height (If item is not adjustable, please omit) + Basketball Backboard Size + Features (if applicable. Only list 1 top feature. Do not list Adjustable Height) + Recommended Location (if applicable) + Product Type + (Age Group)",
+        "attributes":  [
+                           "Brand",
+                           "Age Group",
+                           "Maximum Height"
+                       ],
+        "body":  "Portable Basketball Systems\r\n\r\nFORMULA  Brand + Product Line (if applicable) + Minimum Height (if applicable. Omit if item is not adjustable) + \"-\" (Omit if Minimum Height and Maximum Height are not used) +\r\n         Maximum Height (if applicable. Omit if item is not adjustable) + Adjustable Height (If item is not adjustable, please omit) + Basketball Backboard Size +\r\n         Features (if applicable. Only list 1 top feature. Do not list Adjustable Height) + Recommended Location (if applicable) + Product Type + (Age Group)\r\n\r\nEXAMPLE \"Spalding NBA Pro 7ft - 9ft Adjustable Height 54\" Shatterproof Outdoor Portable Basketball System (Adult)\"\r\n\r\nATTRIBUTES Brand      Age Group  Maximum Height\r\n\r\n"
+    },
+    {
+        "name":  "Other Basketball Supplies",
+        "formula":  "Brand + Condition + Product Line + Product/Type + Key Feature + Color + Size",
+        "attributes":  [
+                           "Condition",
+                           "Model",
+                           "Multipack Quantity"
+                       ],
+        "body":  "Other Basketball Supplies\r\n\r\nFORMULA Brand + Condition + Product Line + Product/Type + Key Feature + Color + Size\r\n\r\nEXAMPLE \"Ozark Trail Refurbished Premium Basketball Supply, Waterproof Silver Large\"\r\n\r\nATTRIBUTES Condition  Model      Multipack Quantity\r\n\r\n"
+    },
+    {
+        "name":  "Basketball Shooter Sleeves",
+        "formula":  "Brand + Product Name1 + Age Group2 + Features3 + Product Type + \",\" + Color + Pattern1 + \",\" + Clothing Size + (Retail Packaging)1",
+        "attributes":  [
+                           "Age Group",
+                           "Brand",
+                           "Multipack Quantity"
+                       ],
+        "body":  "Basketball Shooter Sleeves\r\n\r\nFORMULA Brand + Product Name1 + Age Group2 + Features3 + Product Type + \",\" + Color + Pattern1 + \",\" + Clothing Size + (Retail Packaging)1\r\n\r\nFOOTNOTES 1. If applicable. 2. Age Group = Child please use \"Kids\" Age Group = Tween or Teen please use \"Youth\" Age Group = Adult please use \"Adult\" 3. If applicable. Only list 1 top\r\n                feature.\r\n\r\nEXAMPLE \"McDavid HEX Adult Compression Basketball Shooter Sleeve, Black, Medium (Single Piece)\"\r\n\r\nATTRIBUTES Age Group  Brand      Multipack Quantity\r\n\r\nBat-and-Ball Sports\r\n"
+    },
+    {
+        "name":  "Batting Bat Grips \u0026 Grip Tape",
+        "formula":  "Brand + Model1 + Model Name2 + Product Line3 + Feature4 + Grip Material5 + Grip Type6 + Thickness7 + Title8 + Items Included9 + \",\" + Color10 + \",\" + Size11 + \",\" + Count(Count Per Pack)12",
+        "attributes":  [
+                           "Brand",
+                           "Grip Type",
+                           "Thickness"
+                       ],
+        "body":  "\fBatting Bat Grips \u0026 Grip Tape\r\n\r\nFORMULA  Brand + Model1 + Model Name2 + Product Line3 + Feature4 + Grip Material5 + Grip Type6 + Thickness7 + Title8 + Items Included9 + \",\" + Color10 + \",\" + Size11 +\r\n         \",\" + Count(Count Per Pack)12\r\n\r\nFOOTNOTES 1. Only add Model when applicable 2. Mention Model Name if applicable 3. Add Product Line when applicable 4. Singular. Mention the Feature, only when applicable. 5.\r\n                Mention the Grip Material of the product 6. Add the Grip Type of the product 7. Add the Thickness of the Grip Tape 8. Mention the Product Type 9. Only if, Retail Packaging\r\n                = Accessories included or Items Included. If the Accessories/ Items Includes more than 1 of some items, put \"comes with \"( # )\"product name\", If not, Omit. 10. Mention the\r\n                Color, when applicable. 11. Include the size of the product. 12. Count/Count Per Pack, when applicable.\r\n\r\nEXAMPLE 1. \"Lizard Skins DSP Ultra Durable Polymer Textured 1.8 mm Softball Bat Grip Tape, Black\"\r\n            2. \"Grip-N-Rip Flared II Softball Bat Taper, Blue\"\r\n\r\nATTRIBUTES Brand  Grip Type    Thickness\r\n\r\n"
+    },
+    {
+        "name":  "Batting Cages",
+        "formula":  "Brand + Model1 + Model Name2 + Product Line3 + Feature4 + Frame Material5 + Batting Cage Type6 + Title7 + Items Included8 + \",\" + Color9 + \",\" + Size10 + \",\" + Count(Count Per Pack)11 + Number of Pieces12",
+        "attributes":  [
+                           "Brand",
+                           "Batting Cage Type",
+                           "Condition"
+                       ],
+        "body":  "Batting Cages\r\n\r\nFORMULA Brand + Model1 + Model Name2 + Product Line3 + Feature4 + Frame Material5 + Batting Cage Type6 + Title7 + Items Included8 + \",\" + Color9 + \",\" + Size10 + \",\"\r\n               + Count(Count Per Pack)11 + Number of Pieces12\r\n\r\nFOOTNOTES 1. Only add Model when applicable 2. Mention Model Name if applicable 3. Add Product Line when applicable 4. Singular. Mention the Feature, only when applicable. 5.\r\n                Mention the Frame Material of the product 6. Add the Batting Cage Type of the product 7. Mention the Product Type 8. Only if, Retail Packaging = Accessories included or\r\n                Items Included. If the Accessories/ Items Includes more than 1 of some items, put \"comes with \"( # )\"product name\", If not, Omit. 9. Mention the Color, when applicable. 10.\r\n                Include the size of the product. 11. /12. Mention Count/Count Per Pack/ Number of Pieces, when applicable.\r\n\r\nEXAMPLE \"Kapler LDN-5 Framed Steel Outdoor Softball Batting Cage with Wheels, Black, 44\u0027 x 12\u0027 x 10\u0027\"\r\n\r\nATTRIBUTES Brand  Batting Cage Type  Condition\r\n"
+    },
+    {
+        "name":  "Pitching Enclosures",
+        "formula":  "Brand + Model1 + Model Name2 + Product Line3 + Feature4 + Frame Material5 + Pitching Enclosure Type6 + Title7 + Items Included8 + \",\" + Color9 + \",\" + Size10 + \",\" + Count(Count Per Pack)11 + Number of Pieces12",
+        "attributes":  [
+                           "Color",
+                           "Condition",
+                           "Multipack Quantity"
+                       ],
+        "body":  "\fPitching Enclosures\r\n\r\nFORMULA  Brand + Model1 + Model Name2 + Product Line3 + Feature4 + Frame Material5 + Pitching Enclosure Type6 + Title7 + Items Included8 + \",\" + Color9 + \",\" + Size10 +\r\n         \",\" + Count(Count Per Pack)11 + Number of Pieces12\r\n\r\nFOOTNOTES 1. Only add Model when applicable 2. Mention Model Name if applicable 3. Add Product Line when applicable 4. Singular. Mention the Feature, only when applicable. 5.\r\n                Mention the Frame Material of the product 6. Add the Pitching Enclosure Type of the product 7. Mention the Product Type 8. Only if, Retail Packaging = Accessories\r\n                included or Items Included. If the Accessories/ Items Includes more than 1 of some items, put \"comes with \"( # )\"product name\", If not, Omit. 9. Mention the Color, when\r\n                applicable. 10. Include the size of the product. 11. /12. Mention the Count/Count Per Pack/ Number of Pieces, when applicable.\r\n\r\nEXAMPLE \"Morpilot Portable Pitching Enclosure with Carry Bag and Strike Zone Target, Red, 7\u0027 x 7\u0027\"\r\n\r\nATTRIBUTES Color     Condition  Multipack Quantity\r\n\r\n"
+    },
+    {
+        "name":  "Softball Bats",
+        "formula":  "Brand + Model1 + Model Name2 + Product Line3 + Feature4 + Material5 + Barrel Diameter6 + Grip Type7 + Softball Bat Type8 + Title9 + Items Included10 + \",\" + Color11 + \",\" + Bat Drop12 + \",\" Size13 + Count(Count Per Pack)14 + Condition15",
+        "attributes":  [
+                           "Brand",
+                           "Size",
+                           "Bat Drop"
+                       ],
+        "body":  "Softball Bats\r\n\r\nFORMULA  Brand + Model1 + Model Name2 + Product Line3 + Feature4 + Material5 + Barrel Diameter6 + Grip Type7 + Softball Bat Type8 + Title9 + Items Included10 + \",\" +\r\n         Color11 + \",\" + Bat Drop12 + \",\" Size13 + Count(Count Per Pack)14 + Condition15\r\n\r\nFOOTNOTES 1. Only add Model when applicable 2. Mention Model Name if applicable 3. Add Product Line when applicable 4. Singular. Mention the Feature, only when applicable. 5.\r\n                Mention the Material of the product 6. Add the Barrel Diameter of the product 7. Specify the Grip Type of the bat 8. Specify the Softball Bat Type for the bat 9. Mention the\r\n                Product Type 10. Only if, Retail Packaging = Accessories included or Items Included. If the Accessories/ Items Includes more than 1 of some items, put \"comes with \"( #\r\n                )\"product name\", If not, Omit. 11. Mention the Color, when applicable. 12. Mention the Bat Drop of the product 13. Include the Size of the product. 14. Count/Count Per\r\n                Pack, when applicable. 15. Only list Condition of the item between brackets, when available. (ie. Refurbished). Omit, if New.\r\n\r\nEXAMPLE \"Easton Amethyst Bamboo 2 1/4\" Barrel Ring Fast Pitch Softball Bat, Black, -11, 34\"/28 oz\"\r\n\r\nATTRIBUTES Brand     Size       Bat Drop\r\n"
+    },
+    {
+        "name":  "Softballs",
+        "formula":  "Brand + Model1 + Model Name2 + Product Line3 + Skill Level4 + Feature5 + Material6 + Softball Type7 + Title8 + Items Included9 + \",\" + Color10 + \",\" + Size11 + Count(Count Per Pack)12",
+        "attributes":  [
+                           "Brand",
+                           "Softball Type",
+                           "Expertise Level"
+                       ],
+        "body":  "\fSoftballs\r\n\r\nFORMULA    Brand + Model1 + Model Name2 + Product Line3 + Skill Level4 + Feature5 + Material6 + Softball Type7 + Title8 + Items Included9 + \",\" + Color10 + \",\" + Size11 +\r\n           Count(Count Per Pack)12\r\n\r\nFOOTNOTES 1. Only add Model when applicable 2. Mention Model Name if applicable 3. Add Product Line when applicable 4. Add the related Skill Level 5. Singular. Mention the\r\n                Feature, only when applicable. 6. Mention the Material of the product 7. Specify the Softball Type for the product 8. Mention the Product Type 9. Only if, Retail Packaging =\r\n                Accessories included or Items Included. If the Accessories/ Items Includes more than 1 of some items, put \"comes with \"( # )\"product name\", If not, Omit. 10. Mention the\r\n                Color, when applicable. 11. Mention the Size of the product 12. Count/Count Per Pack, when applicable.\r\n\r\nEXAMPLE \"Rawlings NCAA Recreational Seam Technology Fastpitch Softballs, Yellow, 12 Inch, Pack of 4\"\r\n\r\nATTRIBUTES Brand  Softball Type     Expertise Level\r\n\r\n"
+    },
+    {
+        "name":  "Wiffle Balls",
+        "formula":  "Brand + Model1 + Model Name2 + Product Line3 + Skill Level4 + Feature5 + Material6 + Wiffle Ball Type7 + Title8 + Items Included9 + \",\" + Color10 + \",\" + Size11 + Count(Count Per Pack)12",
+        "attributes":  [
+                           "Count Per Pack",
+                           "Wiffle Ball Type",
+                           "Color"
+                       ],
+        "body":  "Wiffle Balls\r\n\r\nFORMULA Brand + Model1 + Model Name2 + Product Line3 + Skill Level4 + Feature5 + Material6 + Wiffle Ball Type7 + Title8 + Items Included9 + \",\" + Color10 + \",\" + Size11\r\n               + Count(Count Per Pack)12\r\n\r\nFOOTNOTES 1. Only add Model when applicable 2. Mention Model Name if applicable 3. Add Product Line when applicable 4. Add the related Skill Level 5. Singular. Mention the\r\n                Feature, only when applicable. 6. Mention the Material of the product 7. Specify the Wiffle Ball Type for the product 8. Mention the Product Type 9. Only if, Retail Packaging\r\n                = Accessories included or Items Included. If the Accessories/ Items Includes more than 1 of some items, put \"comes with \"( # )\"product name\", If not, Omit. 10. Mention the\r\n                Color, when applicable. 11. Mention the Size of the product 12. Count/Count Per Pack, when applicable.\r\n\r\nEXAMPLE \"Easton Training Perforated Plastic Hollow Wiffle Balls, White, 9\", Pack of 6\"\r\n\r\nATTRIBUTES Count Per Pack  Wiffle Ball Type    Color\r\n\r\nBilliards\r\n\r\n"
+    },
+    {
+        "name":  "Boat Cleats",
+        "formula":  "Brand + Product Line (if applicable) + Color + Features (if applicable) + Assembled Product Length + Material + Dock Cleat Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Assembled Product Weight",
+                           "Dock Cleat Type",
+                           "Brand"
+                       ],
+        "body":  "Boat Cleats\r\n\r\nFORMULA Brand + Product Line (if applicable) + Color + Features (if applicable) + Assembled Product Length + Material + Dock Cleat Type + \"with\" Accessories Included (if applicable) +\r\n               (Count if more than 1 + \"Count\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 2. If product has specific color like Blazing Orange,\r\n                please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both.\r\n\r\nEXAMPLE \"Attwood Silver 10\" Stainless Steel Open-Based Cleat\"\r\n\r\nATTRIBUTES Assembled Product Weight  Dock Cleat Type  Brand\r\n\r\n"
+    },
+    {
+        "name":  "Boat Fenders",
+        "formula":  "Brand + Product Line (if applicable) + Color + Features (if applicable) + Diameter (if applicable) + Boat Fender Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Pack\" if more than 1 Count)",
+        "attributes":  [
+                           "Brand",
+                           "Condition",
+                           "Material"
+                       ],
+        "body":  "Boat Fenders\r\n\r\nFORMULA Brand + Product Line (if applicable) + Color + Features (if applicable) + Diameter (if applicable) + Boat Fender Type + \"with\" Accessories Included (if applicable) + (Count if more\r\n               than 1 + \"Pack\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2. 1.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Taylor Made Super Gard All-Purpose 17\" Round Boat Fender\"\r\n\r\nATTRIBUTES Brand    Condition  Material\r\n"
+    },
+    {
+        "name":  "Boat Hooks",
+        "formula":  "Brand + Product Line (if applicable) + Material + Features (if applicable) + Assembled Product Length + Boat Hook Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Brand",
+                           "Boat Hook Type",
+                           "Material"
+                       ],
+        "body":  "\fBoat Hooks\r\n\r\nFORMULA Brand + Product Line (if applicable) + Material + Features (if applicable) + Assembled Product Length + Boat Hook Type + \"with\" Accessories Included (if applicable) + (Count if\r\n               more than 1 + \"Count\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Attwood Aluminum Floating 7\u0027 Fixed Length Boat Hook\"\r\n\r\nATTRIBUTES Brand  Boat Hook Type       Material\r\n\r\n"
+    },
+    {
+        "name":  "Boating Anchors",
+        "formula":  "Brand + Product Line (if applicable) + Color + Material + Piece Count (if Boating Anchor Type = \"Kit\") + Assembled Product Weight + Boating Anchor Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Brand",
+                           "Boating Anchor Type",
+                           "Material"
+                       ],
+        "body":  "Boating Anchors\r\n\r\nFORMULA Brand + Product Line (if applicable) + Color + Material + Piece Count (if Boating Anchor Type = \"Kit\") + Assembled Product Weight + Boating Anchor Type + \"with\" Accessories\r\n               Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Perco Red PVC Coated Steel 21 lb Slip-Ring Penetrating Fluke Anchor\"\r\n\r\nATTRIBUTES Brand  Boating Anchor Type       Material\r\n\r\n"
+    },
+    {
+        "name":  "Dock Boxes",
+        "formula":  "Brand + Product Line (if applicable) + Color Category + Pattern (if applicable) + Size Descriptor (if applicable) + Features (if applicable) + Material + Dock Box Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Brand",
+                           "Warranty Url",
+                           "Material"
+                       ],
+        "body":  "Dock Boxes\r\n\r\nFORMULA Brand + Product Line (if applicable) + Color Category + Pattern (if applicable) + Size Descriptor (if applicable) + Features (if applicable) + Material + Dock Box Type + \"with\"\r\n               Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Suncor White Large Lockable Fiberglass Boat Dock Box\"\r\n\r\nATTRIBUTES Brand  Warranty Url    Material\r\n"
+    },
+    {
+        "name":  "Dock Cleats",
+        "formula":  "Brand + Product Line (if applicable) + Color + Features(if applicable) + Assembled Product Length + Material + Dock Cleat Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Brand",
+                           "Dock Cleat Type",
+                           "Material"
+                       ],
+        "body":  "\fDock Cleats\r\n\r\nFORMULA Brand + Product Line (if applicable) + Color + Features(if applicable) + Assembled Product Length + Material + Dock Cleat Type + \"with\" Accessories Included (if applicable) +\r\n               (Count if more than 1 + \"Count\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Attwood Silver 10\" Stainless Steel Open-Based Cleat\"\r\n\r\nATTRIBUTES Brand  Dock Cleat Type  Material\r\n\r\n"
+    },
+    {
+        "name":  "Dock Guards",
+        "formula":  "Brand + Product Line (if applicable) + Color + Features (if applicable) + Material + Assembled Product Length + Dock Guard Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Brand",
+                           "Dock Guard Type",
+                           "Material"
+                       ],
+        "body":  "Dock Guards\r\n\r\nFORMULA Brand + Product Line (if applicable) + Color + Features (if applicable) + Material + Assembled Product Length + Dock Guard Type + \"with\" Accessories Included (if applicable) +\r\n               (Count if more than 1 + \"Count\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Attwood White UV Resistant Rubber 10\u0027 Straight Dock Bumper\"\r\n\r\nATTRIBUTES Brand  Dock Guard Type  Material\r\n\r\n"
+    },
+    {
+        "name":  "Dock Ladders",
+        "formula":  "Brand + Product Line (if applicable) + Material + Number of Steps \"Step\" + Dock Ladder Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Brand",
+                           "Material",
+                           "Dock Ladder Type"
+                       ],
+        "body":  "Dock Ladders\r\n\r\nFORMULA Brand + Product Line (if applicable) + Material + Number of Steps \"Step\" + Dock Ladder Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if\r\n               more than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Taylor Made Aluminum 5 Step Fixed Dock Ladder\"\r\n\r\nATTRIBUTES Brand  Material  Dock Ladder Type\r\n"
+    },
+    {
+        "name":  "Dock Lines \u0026 Rope",
+        "formula":  "Brand + Product Line (if applicable) + Color + Diameter \"x\" Assembled Product Length + Dock Line and Rope Type + Product Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Brand",
+                           "Diameter",
+                           "Dock Line And Rope Type"
+                       ],
+        "body":  "\fDock Lines \u0026 Rope\r\n\r\nFORMULA Brand + Product Line (if applicable) + Color + Diameter \"x\" Assembled Product Length + Dock Line and Rope Type + Product Type + \"with\" Accessories Included (if applicable) +\r\n               (Count if more than 1 + \"Count\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"New England Navy Blue 3/4\" x 25\u0027 Double-Braid Dock Line\"\r\n\r\nATTRIBUTES Brand   Diameter      Dock Line And Rope Type\r\n\r\n"
+    },
+    {
+        "name":  "Dock Steps",
+        "formula":  "Brand + Product Line (if applicable) + Material + Features + Number of Steps \"Step\" + Dock Step Type + Product Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Brand",
+                           "Manufacturer",
+                           "Material"
+                       ],
+        "body":  "Dock Steps\r\n\r\nFORMULA Brand + Product Line (if applicable) + Material + Features + Number of Steps \"Step\" + Dock Step Type + Product Type + \"with\" Accessories Included (if applicable) + (Count if\r\n               more than 1 + \"Count\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Taylor Made Fiberglass Floating 5 Step Permanent Dock Steps\"\r\n\r\nATTRIBUTES Brand   Manufacturer  Material\r\n\r\n"
+    },
+    {
+        "name":  "Mooring Buoys",
+        "formula":  "Brand + Product Line (if applicable) + Color + Material + Diameter + Mooring Buoy Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Brand",
+                           "Color",
+                           "Material"
+                       ],
+        "body":  "Mooring Buoys\r\n\r\nFORMULA Brand + Product Line (if applicable) + Color + Material + Diameter + Mooring Buoy Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more\r\n               than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Attwood Bright Orange HDPE 24\" Mooring Buoy\"\r\n\r\nATTRIBUTES Brand   Color     Material\r\n\r\nBoat Electronic Accessories\r\n"
+    },
+    {
+        "name":  "Boat Autopilots",
+        "formula":  "Brand + Product Line (if applicable) + Color + Pattern (if applicable) + Features (if applicable) + Boat Autopilot Type + Product Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Assembled Product Width",
+                           "Brand",
+                           "Power Type"
+                       ],
+        "body":  "\fBoat Autopilots\r\n\r\nFORMULA Brand + Product Line (if applicable) + Color + Pattern (if applicable) + Features (if applicable) + Boat Autopilot Type + Product Type + \"with\" Accessories Included (if applicable)\r\n               + (Count if more than 1 + \"Count\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 2. If product has specific color like Blazing Orange,\r\n                please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both.\r\n\r\nEXAMPLE \"Garmin Marine Pre-Calibrated Above-Deck Tiller Boat Autopilot with Cabling Kit\"\r\n\r\nATTRIBUTES Assembled Product Width  Brand       Power Type\r\n\r\n"
+    },
+    {
+        "name":  "Boating EPIRBs",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable) + Boating EPIRB Type + Product Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Brand",
+                           "Assembled Product Weight",
+                           "Power Type"
+                       ],
+        "body":  "Boating EPIRBs\r\n\r\nFORMULA Brand + Product Line (if applicable) + Features (if applicable) + Boating EPIRB Type + Product Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\"\r\n               if more than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2. 1.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"ACR Waterproof Catergory 2 INMARSAT E EPIRB with Hydrostatic Release Unit\"\r\n\r\nATTRIBUTES Brand      Assembled Product Weight  Power Type\r\n\r\n"
+    },
+    {
+        "name":  "Depth Finders",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable) + Depth Finder Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Frequency",
+                           "Brand",
+                           "Material"
+                       ],
+        "body":  "Depth Finders\r\n\r\nFORMULA Brand + Product Line (if applicable) + Features (if applicable) + Depth Finder Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1\r\n               Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Norcross Hawkeye Waterproof Depth Finder with Transducer Mount\"\r\n\r\nATTRIBUTES Frequency  Brand         Material\r\n\r\nBoat Motors \u0026 Accessories\r\n"
+    },
+    {
+        "name":  "Boat Motor Flushers",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable) + Boat Motor Flusher Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Boat Motor Flusher Type",
+                           "Brand",
+                           "Material"
+                       ],
+        "body":  "\fBoat Motor Flushers\r\n\r\nFORMULA Brand + Product Line (if applicable) + Features (if applicable) + Boat Motor Flusher Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1\r\n               Count)\r\n\r\nFOOTNOTES 1. Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 2. If product has specific color like Blazing Orange,\r\n                please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both.\r\n\r\nEXAMPLE \"Moeller Tool-Free Circular Dual Water Feed Boat Motor Flusher\"\r\n\r\nATTRIBUTES Boat Motor Flusher Type    Brand  Material\r\n\r\n"
+    },
+    {
+        "name":  "Boat Motors",
+        "formula":  "Brand + Product Line (if applicable) + Color + Pattern (if applicable) + Features (if applicable) + Horsepower + Boat Motor Type + \"with\" Motor Starter Type (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Brand",
+                           "Boat Motor Type",
+                           "Horsepower"
+                       ],
+        "body":  "Boat Motors\r\n\r\nFORMULA Brand + Product Line (if applicable) + Color + Pattern (if applicable) + Features (if applicable) + Horsepower + Boat Motor Type + \"with\" Motor Starter Type (Count if more than 1\r\n               + \"Count\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2. 1.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Evinrude Low Vibration 200 HP Outboard Boat Motor\"\r\n\r\nATTRIBUTES Brand     Boat Motor Type       Horsepower\r\n\r\n"
+    },
+    {
+        "name":  "Boat Outboard Motor Brackets",
+        "formula":  "Brand + Product Line (if applicable) + Color + Material + Features (if applicable) + Boat Outboard Motor Bracket Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count) + (Maximum Load Weight \"Max\" + Maximum Engine Power \"Max\")",
+        "attributes":  [
+                           "Brand",
+                           "Material",
+                           "Color"
+                       ],
+        "body":  "Boat Outboard Motor Brackets\r\n\r\nFORMULA Brand + Product Line (if applicable) + Color + Material + Features (if applicable) + Boat Outboard Motor Bracket Type + \"with\" Accessories Included (if applicable) + (Count if more\r\n               than 1 + \"Count\" if more than 1 Count) + (Maximum Load Weight \"Max\" + Maximum Engine Power \"Max\")\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Panther Black Aluminum 4-Stroke Outboard Motor Bracket (263 lb Max 35 HP Max)\"\r\n\r\nATTRIBUTES Brand     Material       Color\r\n"
+    },
+    {
+        "name":  "Boat Propellers",
+        "formula":  "Brand + Product Line (if applicable) + Color + Material + Diameter \"x\" Blade Pitch + Boat Propeller Type + Number of Blades \"Blades\" + Impeller Propeller + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Brand",
+                           "Number Of Blades",
+                           "Material"
+                       ],
+        "body":  "\fBoat Propellers\r\n\r\nFORMULA Brand + Product Line (if applicable) + Color + Material + Diameter \"x\" Blade Pitch + Boat Propeller Type + Number of Blades \"Blades\" + Impeller Propeller + \"with\"\r\n               Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Evinrude Stainless Steel 14\" x 17\" Outboard 4 Blades Propeller with Installation Parts\"\r\n\r\nATTRIBUTES Brand     Number Of Blades  Material\r\n\r\n"
+    },
+    {
+        "name":  "Boating Bilge Pumps",
+        "formula":  "Brand + Product Line (if applicable) + Gallons Per Hour \"GPH\" + Boating Bilge Pump Type + Product Type \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Brand",
+                           "Boating Bilge Pump Type",
+                           "Gallons Per Hour"
+                       ],
+        "body":  "Boating Bilge Pumps\r\n\r\nFORMULA  Brand + Product Line (if applicable) + Gallons Per Hour \"GPH\" + Boating Bilge Pump Type + Product Type \"with\" Accessories Included (if applicable) + (Count if more than 1 +\r\n         \"Count\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Jabsco 1500 GPH Electric Automatic Boating Bilge Pump\"\r\n\r\nATTRIBUTES Brand     Boating Bilge Pump Type  Gallons Per Hour\r\n\r\n"
+    },
+    {
+        "name":  "Trolling Motors",
+        "formula":  "Brand + Product Line (if applicable) + Color + Water Type + Steering Type \"Steer\" + Shaft Length \"Shaft\" + Thrust \"Thrust\" (if applicable) + Power Type + Boat Motor Type + \"with\" Motor Starter Type \"and\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Brand",
+                           "Boat Motor Type",
+                           "Power Type"
+                       ],
+        "body":  "Trolling Motors\r\n\r\nFORMULA  Brand + Product Line (if applicable) + Color + Water Type + Steering Type \"Steer\" + Shaft Length \"Shaft\" + Thrust \"Thrust\" (if applicable) + Power Type + Boat Motor Type +\r\n         \"with\" Motor Starter Type \"and\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Endura Clear White Freshwater Foot Steer 36\" Shaft 45 lb Thrust Electric Bow Mount Trolling Motor\"\r\n\r\nATTRIBUTES Brand     Boat Motor Type   Power Type\r\n\r\nBoat Plumbing\r\n"
+    },
+    {
+        "name":  "Boating Heads",
+        "formula":  "Brand + Product Line (if applicable) + Color + Pattern (if applicable) + Material + Features (if applicable) + Boating Head Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Material",
+                           "Assembled Product Width",
+                           "Brand"
+                       ],
+        "body":  "\fBoating Heads\r\n\r\nFORMULA Brand + Product Line (if applicable) + Color + Pattern (if applicable) + Material + Features (if applicable) + Boating Head Type + \"with\" Accessories Included (if applicable) +\r\n               (Count if more than 1 + \"Count\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 2. If product has specific color like Blazing Orange,\r\n                please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both.\r\n\r\nEXAMPLE \"Jabsco Pure White Vitreous China Foot Flush Electric Marine Toilet\"\r\n\r\nATTRIBUTES Material      Assembled Product Width  Brand\r\n\r\n"
+    },
+    {
+        "name":  "Boating Holding Tanks",
+        "formula":  "Brand + Product Line (if applicable) + Volume Capacity + Thickness \"Wall\" + Material + Boating Holding Tank Type + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Manufacturer",
+                           "Volume Capacity",
+                           "Material"
+                       ],
+        "body":  "Boating Holding Tanks\r\n\r\nFORMULA Brand + Product Line (if applicable) + Volume Capacity + Thickness \"Wall\" + Material + Boating Holding Tank Type + (Count if more than 1 + \"Count\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2. 1.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Todd 28 gal 1/4\" Wall Polyethylene Marine Holding Tank\"\r\n\r\nATTRIBUTES Manufacturer  Volume Capacity          Material\r\n\r\n"
+    },
+    {
+        "name":  "Boating Waste Management Products",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable) + Boating Waste Management Product Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 + \"Count\" if more than 1 Count)",
+        "attributes":  [
+                           "Assembled Product Weight",
+                           "Assembled Product Height",
+                           "Manufacturer"
+                       ],
+        "body":  "Boating Waste Management Products\r\n\r\nFORMULA  Brand + Product Line (if applicable) + Features (if applicable) + Boating Waste Management Product Type + \"with\" Accessories Included (if applicable) + (Count if more than 1 +\r\n         \"Count\" if more than 1 Count)\r\n\r\nFOOTNOTES 1. If product has specific color like Blazing Orange, please use Color attribute in place of Color Category. Only use one color attribute in title structure. Do not use both. 2.\r\n                Only list 1 Component Option. If there are no features, please omit attribute and the word \"with\" in title structure. 3. Only list \"Count\" if more than 1 Count.\r\n\r\nEXAMPLE \"Todd Holding Tank Cleaner\"\r\n\r\nATTRIBUTES Assembled Product Weight  Assembled Product Height  Manufacturer\r\n\r\nBoating\r\n"
+    },
+    {
+        "name":  "Boat Docks",
+        "formula":  "Brand + Material + Boat Dock Type(,) Assembled Product Height + Assembled Product Length + Assembled Product Width",
+        "attributes":  [
+                           "Brand",
+                           "Material",
+                           "Frame Material"
+                       ],
+        "body":  "\fBoat Docks\r\n\r\nFORMULA Brand + Material + Boat Dock Type(,) Assembled Product Height + Assembled Product Length + Assembled Product Width\r\n\r\nEXAMPLE \"Patriot Deluxe L-Style Aluminum Frame Floating Deck with Cedar Decking\"\r\n\r\nATTRIBUTES Brand  Material   Frame Material\r\n\r\n"
+    },
+    {
+        "name":  "Dinghies",
+        "formula":  "Brand + Model + Submodel + Seating Capacity + Size + Inflatable Raft Type(,) Accessories Included",
+        "attributes":  [
+                           "Brand",
+                           "Material",
+                           "Seating Capacity"
+                       ],
+        "body":  "Dinghies\r\n\r\nFORMULA Brand + Model + Submodel + Seating Capacity + Size + Inflatable Raft Type(,) Accessories Included\r\n\r\nEXAMPLE \"Highfield Sport Inflatable Dinghy\"\r\n\r\nATTRIBUTES Brand  Material   Seating Capacity\r\n\r\n"
+    },
+    {
+        "name":  "Inflatable Rafts",
+        "formula":  "Brand + Model + Submodel + Seating Capacity + Size + Inflatable Raft Type(,) Accessories Included",
+        "attributes":  [
+                           "Brand",
+                           "Age Group",
+                           "Inflatable Raft Type"
+                       ],
+        "body":  "Inflatable Rafts\r\n\r\nFORMULA Brand + Model + Submodel + Seating Capacity + Size + Inflatable Raft Type(,) Accessories Included\r\n\r\nEXAMPLE \"Rocky Mountain Rafts Ocean Blue 5-Person Polyurethane Whitewater Rafting Inflatable Raft with Paddles\"\r\n\r\nATTRIBUTES Brand  Age Group       Inflatable Raft Type\r\n\r\n"
+    },
+    {
+        "name":  "Life Rafts",
+        "formula":  "Brand + Model + Submodel + Seating Capacity + Size + Life Raft Type(,) Accessories Included",
+        "attributes":  [
+                           "Brand",
+                           "Count Per Pack",
+                           "Condition"
+                       ],
+        "body":  "Life Rafts\r\n\r\nFORMULA Brand + Model + Submodel + Seating Capacity + Size + Life Raft Type(,) Accessories Included\r\n\r\nEXAMPLE \"Superior Life-Saving ISO Wave Racer Coastal Life Raft, 4-Person\"\r\n\r\nATTRIBUTES Brand  Count Per Pack  Condition\r\n\r\n"
+    },
+    {
+        "name":  "Pedal Boats",
+        "formula":  "Brand + Model + Submodel + Seating Capacity + Size + Peddle Boat Type(,) Accessories Included",
+        "attributes":  [
+                           "Brand",
+                           "Material",
+                           "Seating Capacity"
+                       ],
+        "body":  "Pedal Boats\r\n\r\nFORMULA Brand + Model + Submodel + Seating Capacity + Size + Peddle Boat Type(,) Accessories Included\r\n\r\nEXAMPLE \"Monaco DLX Angler 5-Seat Pedal Boat with Canopy\"\r\n\r\nATTRIBUTES Brand  Material   Seating Capacity\r\n"
+    },
+    {
+        "name":  "Personal Watercraft",
+        "formula":  "Vehicle Year (if applicable) + Brand + Vehicle Make (if applicable) + Personal Watercraft Type",
+        "attributes":  [
+                           "Brand",
+                           "Assembled Product Weight",
+                           "Power Type"
+                       ],
+        "body":  "\fPersonal Watercraft\r\n\r\nFORMULA Vehicle Year (if applicable) + Brand + Vehicle Make (if applicable) + Personal Watercraft Type\r\n\r\nEXAMPLE \"2023 Jet Ski Deluxe Sport Personal Watercraft\"\r\n\r\nATTRIBUTES Brand      Assembled Product Weight  Power Type\r\n\r\n"
+    },
+    {
+        "name":  "Powerboats \u0026 Motorboats",
+        "formula":  "Brand + Model + Submodel + Seating Capacity + Size + Motorboats \u0026 Powerboats(,) Accessories Included",
+        "attributes":  [
+                           "Assembled Product Weight",
+                           "Seating Capacity",
+                           "Brand"
+                       ],
+        "body":  "Powerboats \u0026 Motorboats\r\n\r\nFORMULA Brand + Model + Submodel + Seating Capacity + Size + Motorboats \u0026 Powerboats(,) Accessories Included\r\n\r\nEXAMPLE \"2022 Nor-Tech 390 Sport Cruiser\"\r\n\r\nATTRIBUTES Assembled Product Weight  Seating Capacity    Brand\r\n\r\nBowling\r\n\r\n"
+    },
+    {
+        "name":  "Other Bowling Supplies",
+        "formula":  "Brand + Product Line + Product/Type + Material + Color + Count/Pack",
+        "attributes":  [
+                           "Condition",
+                           "Ib Retail Packaging",
+                           "Multipack Quantity"
+                       ],
+        "body":  "Other Bowling Supplies\r\n\r\nFORMULA Brand + Product Line + Product/Type + Material + Color + Count/Pack\r\n\r\nEXAMPLE \"Spalding Pro Series Bowling Supply, Carbon Fiber Blue 6 Pack\"\r\n\r\nATTRIBUTES Condition    Ib Retail Packaging     Multipack Quantity\r\n"
+    },
+    {
+        "name":  "Bowling Ball Polishers",
+        "formula":  "Brand + Product Line1 + Character Group2 + Character2 + Sports Team2 + Sports League2 + Material3 + Bowling Ball Polisher Type4 + Retail Packaging5 + \"w/\" + Accessories Included6, + Product Volume7, + Color8 + (Count Per Pack9 + \"Count\") + MultiPack Quantity10 + \"Pack\"",
+        "attributes":  [
+                           "Assembled Product Length",
+                           "Assembled Product Weight",
+                           "Brand"
+                       ],
+        "body":  "\fBowling Ball Polishers\r\n\r\nFORMULA  Brand + Product Line1 + Character Group2 + Character2 + Sports Team2 + Sports League2 + Material3 + Bowling Ball Polisher Type4 + Retail Packaging5 + \"w/\" +\r\n         Accessories Included6, + Product Volume7, + Color8 + (Count Per Pack9 + \"Count\") + MultiPack Quantity10 + \"Pack\"\r\n\r\nFOOTNOTES 1. If there is a value for Global Brand License \u0026 Character or Character Group, use Global Brand License value instead of Brand. Global Brand License can be used in\r\n                conjunction with Brand. Ex: Disney by Sterlite. 2. If applicable, maximum value of 1, otherwise omit 3. If applicable, maximum value of 1, if Material =Microfiber or Leather,\r\n                list and Omit all other values. 4. Singular 5. Required, Omit if Value = Single Piece. If Retail Packaging, Omit Color 6. If applicable, maximum value of 1, add \"w/\" in front of\r\n                Accessories Included. If more than 1 values list as w/ Accessories Included. 7. If applicable, maximum value of 1, list in oz, fl oz 8. Conditionally Required, If Bowling Ball\r\n                Polisher Type = Bowling Ball Seesaw, Bowling Ball Towel or Bowling Ball Pad, then Required. If more than 1 color, Separate with \"/\", if more than 2 Colors list as Multi-color\r\n                 9. Only use if Count is greater than 1 10. Multipack quantity if \u003e than 1\r\n\r\nEXAMPLE 1. \"Storm Surface Management Bowling Ball Cleaner Kit, w/Cleaner/Polish/Microfiber Towel\"\r\n            2. \"TAONMEISU Microfiber Bowling Ball Seesaw, Black/Red\"\r\n            3. \"Genesis Pure Surface Pad 2000 Grit Bowling Ball Pad, Orange\"\r\n            4. \"Colaxi Microfiber Bowling Ball Seesaw Set, (2 Pack)\"\r\n            5. \"Storm Reacta Clean Bowling Ball Cleaner, 4 oz\"\r\n\r\nATTRIBUTES Assembled Product Length  Assembled Product Weight  Brand\r\n"
+    },
+    {
+        "name":  "Bowling Balls",
+        "formula":  "Brand + Global Brand License1 + Product Line2 + Athlete3 + Character Group3 + Character3 + Sports Team3 + Sports League3 + Pattern4 \"or\" + Theme4 + Skill Level5 + Coverstock Type6 + Bowling Ball Type7 + Retail Packaging8 + \"w/\" + Accessories Included9 + (Count Per Pack10 + \"Count\") + MultiPack Quantity11 + \"Pack\"",
+        "attributes":  [
+                           "Assembled Product Weight",
+                           "Expertise Level",
+                           "Brand"
+                       ],
+        "body":  "\fBowling Balls\r\n\r\nFORMULA  Brand + Global Brand License1 + Product Line2 + Athlete3 + Character Group3 + Character3 + Sports Team3 + Sports League3 + Pattern4 \"or\" + Theme4 + Skill Level5 +\r\n         Coverstock Type6 + Bowling Ball Type7 + Retail Packaging8 + \"w/\" + Accessories Included9 + (Count Per Pack10 + \"Count\") + MultiPack Quantity11 + \"Pack\"\r\n\r\nFOOTNOTES 1. If there is a value for Global Brand License \u0026 Character or Character Group, use Global Brand License value instead of Brand. Global Brand License can be used in\r\n                conjunction with Brand. Ex: Disney by Sterlite. 2. If applicable, maximum value of 1, otherwise omit 3. If applicable, maximum value of 1 4. If applicable, Theme or Pattern,\r\n                but not both. 5. If applicable, maximum value of 1, If value = Beginner\u0027s list, and omit all other values 6. Required, maximum value of 1 7. Singular 8. Required, Omit if Value\r\n                = Single Piece. 9. If applicable, maximum value of 1, add \"w/\" in front of Accessories Included. If more than 1 values list as w/ Accessories Included. 10. Only use if Count is\r\n                greater than 1 11. Multipack quantity if \u003e than 1\r\n\r\nEXAMPLE 1. \"Brunswick Hearts Glow Viz-A-Ball Beginner\u0027s Pearl Reactive Undrilled Bowling Ball\"\r\n            2. \"Strikeforce Green Bay Packers Plastic Undrilled Bowling Ball\"\r\n            3. \"OTB Bowling Strong US Flag Plastic Undrilled Bowling Ball\"\r\n            4. \"OTB Bowling Spongebob \u0026 Patrick Bubble Plastic Undrilled Bowling Ball\"\r\n            5. \"PBA 50th Anniversary Dick Weber Polyester Undrilled Bowling Ball\"\r\n            6. \"Hammer Black Widow Urethane Pearl Reactive Undrilled Bowling Ball\"\r\n            7. \"Hammer Taboo Hybrid Reactive Undrilled Bowling Ball\"\r\n\r\nATTRIBUTES Assembled Product Weight  Expertise Level  Brand\r\n\r\n"
+    },
+    {
+        "name":  "Bowling Equipment Sets",
+        "formula":  "Brand + Product Line1 + Bowling Ball Accessory Set, + \"w/\" + Accessories Included2 + (Count Per Pack3 + \"Count\") + MultiPack Quantity4. + \"Pack\"",
+        "attributes":  [
+                           "Assembled Product Weight",
+                           "Brand",
+                           "Assembled Product Width"
+                       ],
+        "body":  "Bowling Equipment Sets\r\n\r\nFORMULA Brand + Product Line1 + Bowling Ball Accessory Set, + \"w/\" + Accessories Included2 + (Count Per Pack3 + \"Count\") + MultiPack Quantity4. + \"Pack\"\r\n\r\nFOOTNOTES 1. If applicable, otherwise Omit. 2. If applicable, maximum value of 3, add \"w/\" in front of Accessories Included, separate with\"/\". If more than 1 values list as w/ Accessories\r\n                Included. 3. Only use if Count is greater than 1 4. Multipack quantity if \u003e than 1\r\n\r\nEXAMPLE \"Columbia 300 Bowling Ball Accessory Set w/Grip Sack/Tape Insert/Ball Cup\"\r\n\r\nATTRIBUTES Assembled Product Weight  Brand  Assembled Product Width\r\n"
+    },
+    {
+        "name":  "Bowling Insert Tape",
+        "formula":  "Brand + Product Line1 + Assembled Product Width2 + \"Bowling Tape\" + Retail Packaging3 + \"w/\" + Accessories Included4, + Color5 + (Count Per Pack6 + \"Count\") + MultiPack Quantity7 + \"Pack\"",
+        "attributes":  [
+                           "Brand",
+                           "Assembled Product Width",
+                           "Multipack Quantity"
+                       ],
+        "body":  "\fBowling Insert Tape\r\n\r\nFORMULA  Brand + Product Line1 + Assembled Product Width2 + \"Bowling Tape\" + Retail Packaging3 + \"w/\" + Accessories Included4, + Color5 + (Count Per Pack6 + \"Count\") +\r\n         MultiPack Quantity7 + \"Pack\"\r\n\r\nFOOTNOTES 1. If applicable, maximum value of 1, otherwise omit 2. Required, maximum value of 1, if Retail Packaging = Single Piece, omit 3. Required, Omit if Value = Single Piece. 4. If\r\n                applicable, maximum value of 1, add \"w/\" in front of Accessories Included. If more than 1 values list as w/ Accessories Included. 5. Required, If more than 1 color, Separate\r\n                with \"\u0026\", if more than 2 Colors list as Multi-color 6. Only use if Count is greater than 1 7. Multipack quantity if \u003e than 1\r\n\r\nEXAMPLE 1. \"Motiv Flex 1\" Bowling Tape, Black (40 Count)\"\r\n            2. \"Brunswick 3/4\" Bowling Tape, Black (30 Count)\"\r\n            3. \"Storm 1\" Bowling Tape, White (500 Count)\"\r\n            4. \"Genesis Excel Copper Performance 1\" Bowling Tape Sample Pack, Assorted Colors (8 Count)\"\r\n\r\nATTRIBUTES Brand     Assembled Product Width   Multipack Quantity\r\n\r\n"
+    },
+    {
+        "name":  "Bowling Pins",
+        "formula":  "Brand + Product Line1 + Character Group2 + Character 2 + Sports Team2 + Sports League2 + Core Material3 + Bowling Pin Type4 + Retail Packaging5 + \"w/\" + Accessories Included6, + Color7 + ( Count Per Pack8 + \"Count\") + MultiPack Quantity9 + \"Pack\"",
+        "attributes":  [
+                           "Brand",
+                           "Assembled Product Weight",
+                           "Shell Material"
+                       ],
+        "body":  "Bowling Pins\r\n\r\nFORMULA  Brand + Product Line1 + Character Group2 + Character 2 + Sports Team2 + Sports League2 + Core Material3 + Bowling Pin Type4 + Retail Packaging5 + \"w/\" +\r\n         Accessories Included6, + Color7 + ( Count Per Pack8 + \"Count\") + MultiPack Quantity9 + \"Pack\"\r\n\r\nFOOTNOTES 1. If applicable, maximum value of 1, otherwise omit 2. If applicable, maximum value of 1 3. Required, if Core Material = Wood, list as Wooden, and omit all other values 4.\r\n                Singular or Plural 5. Required, Omit if Value = Single Piece. 6. If applicable, maximum value of 1, add \"w/\" in front of Accessories Included. If more than 1 values list as w/\r\n                Accessories Included. Omit Color 7. If applicable, If more than 1 color, Separate with \"\u0026\", if more than 2 Colors list as Multi-color . Character Group, Character, Sports Team,\r\n                or Sports League, Omit Color 8. Only use if Count is greater than 1 9. Multipack quantity if \u003e than 1\r\n\r\nEXAMPLE 1. \"Get Out! Wooden Lawn Bowling Pin Set, (12 Count)\"\r\n            2. \"Champion Sports Plastic Candlepin Bowling Pins Set, w/Scoresheet, White (Count 13)\"\r\n            3. \"Strikeforce Kentucky Wildcats Novelty Bowling Pin\"\r\n            4. \"Champion Sports Plastic Candlepin Bowling Pin Set, Multi-color\"\r\n\r\nATTRIBUTES Brand     Assembled Product Weight  Shell Material\r\n"
+    },
+    {
+        "name":  "Home Bowling Alleys",
+        "formula":  "Brand + Product Line1 + Recommended Location2 + \"Home Bowling Alley Mat\", + Assembled Product Width3 \"x\" + Assembled Product Length3, + Color4 + (Count Per Pack5 + \"Count\") + MultiPack Quantity6 + \"Pack\"",
+        "attributes":  [
+                           "Assembled Product Weight",
+                           "Condition",
+                           "Ib Retail Packaging"
+                       ],
+        "body":  "\fHome Bowling Alleys\r\n\r\nFORMULA  Brand + Product Line1 + Recommended Location2 + \"Home Bowling Alley Mat\", + Assembled Product Width3 \"x\" + Assembled Product Length3, + Color4 + (Count Per Pack5 +\r\n         \"Count\") + MultiPack Quantity6 + \"Pack\"\r\n\r\nFOOTNOTES 1. If applicable, otherwise Omit. 2. Required, maximum value of 1, add \"x\" after Assembled Product Width 3. Required, maximum value of 1 4. If applicable, If more than 1\r\n                color, Separate with \"\u0026\", if more than 2 Colors list as Multi-color. 5. Only use if Count is greater than 1 6. Multipack quantity if \u003e than 1\r\n\r\nEXAMPLE 1. \"Cramer Indoor Home Bowling Alley Mat, 42\" x 240\"\"\r\n            2. \"Flagship Carpets Strikes N\u0027 Spares Indoor Home Bowling Alley Mat - 20\u0027 x 40\"W\"\r\n\r\nATTRIBUTES Assembled Product Weight      Condition  Ib Retail Packaging\r\n\r\nBoxing\r\n\r\n"
+    },
+    {
+        "name":  "Other Boxing Supplies",
+        "formula":  "Brand + Product Line + Product/Type + Key Feature + Material + Color + Size + Count/Pack + Net Content UOM",
+        "attributes":  [
+                           "Product Net Content Quantity",
+                           "Product Net Content Uom",
+                           "Condition"
+                       ],
+        "body":  "Other Boxing Supplies\r\n\r\nFORMULA Brand + Product Line + Product/Type + Key Feature + Material + Color + Size + Count/Pack + Net Content UOM\r\n\r\nEXAMPLE \"Athletic Works Pro Series Boxing Supply, Waterproof Neoprene White Medium 6 Pack 8 fl oz\"\r\n\r\nATTRIBUTES Product Net Content Quantity  Product Net Content Uom  Condition\r\n"
+    },
+    {
+        "name":  "Boxing \u0026 Martial Arts Strike Pads",
+        "formula":  "Brand/Global Brand License1 + Sports League2 + Athlete2 + Product Line2 + Age Group3 + Size Descriptor2 + Features4 + Shape2 + Material2 + Sport5/Activity5/Body Part5 + \"Pad\"/\"Guard\" + Retail Packaging6 + \"with\"/\"and\" Items Included7, Color, Size2, Count8 \"Pack\"/Piece Count8\"Piece\"",
+        "attributes":  [
+                           "Brand",
+                           "Material",
+                           "Age Group"
+                       ],
+        "body":  "\fBoxing \u0026 Martial Arts Strike Pads\r\n\r\nFORMULA  Brand/Global Brand License1 + Sports League2 + Athlete2 + Product Line2 + Age Group3 + Size Descriptor2 + Features4 + Shape2 + Material2 +\r\n         Sport5/Activity5/Body Part5 + \"Pad\"/\"Guard\" + Retail Packaging6 + \"with\"/\"and\" Items Included7, Color, Size2, Count8 \"Pack\"/Piece Count8\"Piece\"\r\n\r\nFOOTNOTES 1. Use Brand or Global Brand License (if there is one). These attributes can be used separately or together. 2. If applicable. Max of 1 value in the product name. 3. If\r\n                applicable, include Age Group. If the value is Child, list Youth or Kids. If the value is Adult, it\u0027s unnecessary to list, but is ok if desired. 4. If applicable. Max of 2 values in the\r\n                product name. 5. Use Sport OR Activity OR Body Part. Sport can be used in combination with Activity or Body Part. At least one of these attributes need to be used. Ex:\r\n                Strike 6. If applicable. Omit if the value = Single Piece. If the item is part of a set/kit/system, list it here. 7. If applicable. Only include if there is a value present for Items\r\n                Included. If someone is included with the item, list it as \"with\" Items Included or \"and\" Items Included. Ex: with Sparring Helmet 8. Only include Count \"Pack\" if Count is\r\n                greater than 1. Ex: 2 Pack. If the item is part of a kit/set/system and the items aren\u0027t identical, use Piece Count \"Piece\". Ex: 3 Piece\r\n\r\nEXAMPLE 1. \"TITLE MMA Micro Thai Pads, Red/Black/White, 1 Pair\"\r\n            2. \"TITLE Gel Thigh Thai Pads, Black/Red, 1 Pair\"\r\n            3. \"TITLE Contoured Leather Muay Thai Pads, Black/White, 1 Pair\"\r\n            4. \"RDX Kickboxing Strike Pad, Black/White, 1 Pair\"\r\n            5. \"RDX MMA Youth Foam Shin Muay Thai Pads, Black, 1 Pair\"\r\n\r\nATTRIBUTES Brand  Material  Age Group\r\n"
+    },
+    {
+        "name":  "Boxing Gloves",
+        "formula":  "Brand + Sports League1 + Athlete1 + Product Line1 + Age Group2 + Features3 + Material1/Fabric Material Name1 + Boxing Glove Type + Retail Packaging4 + \"with\"/\"and\" Items Included5 + \"for\" Activity6/Sport6, Color7/Pattern7/Theme7, Size8/Boxing Glove Weight8, Count9 \"Pack\"/Piece Count9 \"Piece\"",
+        "attributes":  [
+                           "Brand",
+                           "Age Group",
+                           "Boxing Glove Type"
+                       ],
+        "body":  "\fBoxing Gloves\r\n\r\nFORMULA Brand + Sports League1 + Athlete1 + Product Line1 + Age Group2 + Features3 + Material1/Fabric Material Name1 + Boxing Glove Type + Retail Packaging4 + \"with\"/\"and\"\r\n               Items Included5 + \"for\" Activity6/Sport6, Color7/Pattern7/Theme7, Size8/Boxing Glove Weight8, Count9 \"Pack\"/Piece Count9 \"Piece\"\r\n\r\nFOOTNOTES 1. If applcable. Max of 1 value in the product name. 2. If applicable. If the value is child, list Youth or Kids in the product name 3. If applicable. Max of 2 values in the product\r\n                name. If over character limit, limit to 1. 4. If applicable. Omit if the value = Single Piece. If the item is part of a set or kit, list it here. 5. If applicable. If there are additional\r\n                items included with the main item, list \"with\" Items Included OR \"and\" Items Included. Ex: with Hand Wraps 6. If applicable, include \"for\" Activity OR \"for\" Sport. Ex: for\r\n                Sparring 7. List either Color OR Pattern OR Theme. 8. List either the Size or the Boxing Glove Weight. Ex: 16 oz 9. Only include Count \"Pack\" if Count is greater than 1. If\r\n                the item is Kit/Set use Piece Count \"Piece\" instead of Count \"Pack\".\r\n\r\nEXAMPLE 1. \"RDX Kids Boxing Gloves for Sparring\"\r\n            2. \"Venum Classic Boxing Gloves, Unisex, Black\"\r\n            3. \"Everlast Pro Style Boxing Gloves, 12 oz, Pink\"\r\n            4. \"Venum Contender 2.0 Boxing Gloves, 16 oz, Black\"\r\n            5. \"RDM MMA Gloves for Sparring and Grappling, Black/Blue\"\r\n            6. \"TITLE Memory Foam Tech Boxing Bag Gloves, Red/Black, 16 oz\"\r\n\r\nATTRIBUTES Brand  Age Group  Boxing Glove Type\r\n"
+    },
+    {
+        "name":  "Boxing Punch Mitts",
+        "formula":  "Brand/Global Brand License1 + Product Line2 + Sports League2 + Athlete2 + Age Group3 + Size Descriptor2 + Features4 + Shape2 + Material2 + Body Part2 + Sport5/Activity5 + \"Mitt\"/\"Paddle\" + Retail Packaging6 + \"with\"/\"and\" Items Included7, Color, Size2, Count8 \"Pack\"/Piece Count8 \"Piece\"",
+        "attributes":  [
+                           "Brand",
+                           "Material",
+                           "Age Group"
+                       ],
+        "body":  "\fBoxing Punch Mitts\r\n\r\nFORMULA  Brand/Global Brand License1 + Product Line2 + Sports League2 + Athlete2 + Age Group3 + Size Descriptor2 + Features4 + Shape2 + Material2 + Body Part2 +\r\n         Sport5/Activity5 + \"Mitt\"/\"Paddle\" + Retail Packaging6 + \"with\"/\"and\" Items Included7, Color, Size2, Count8 \"Pack\"/Piece Count8 \"Piece\"\r\n\r\nFOOTNOTES 1. Use Brand or Global Brand License (if there is one). These attributes can be used separately or together. 2. If applicable. Max of 1 value in the product name. 3. If\r\n                applicable, include Age Group. If the value is Child, list Kids or Childrens. If the value is Adult or Senior, it\u0027s unnecessary to list, but is ok if desired. If the value is Senior, list\r\n                Adult in the product name. 4. If applicable. Max of 2 values in the product name. 5. Use Sport OR Activity. Sport can be used in combination with Activity or on its own. At\r\n                least one of these attributes need to be used. If this is intended for other Martial Arts (and not boxing), those fall under Martial Arts Hand Targets \u0026 Focus Mitts. 6. If\r\n                applicable. Omit if the value = Single Piece. If the item is part of a set/kit/system, list it here. 7. If applicable. Only include if there is a value present for Items Included. If\r\n                someone is included with the item, list it as \"with\" Items Included or \"and\" Items Included. Ex: with Sparring Helmet 8. Only include Count \"Pack\" if Count is greater than 1. If\r\n                the item is Kit/Set use Piece Count \"Piece\" instead of Count \"Pack\". If necessary list the amount of pairs. Ex: 1 Pair. If the Count is 2, then it would be 1 Pair.\r\n\r\nEXAMPLE 1. \"RDX Focus Leather Kickboxing and Boxing Punching Mitts, Pink, 1 Pair\"\r\n            2. \"RDX Boxing Punch Mitts, Black, 1 Pair\"\r\n            3. \"Everlast Boxing Punch Mitts, Red/Black\"\r\n            4. \"TITLE Classic Charge Boxing Punch Mitts, Red/Black, 1 Pair\"\r\n            5. \"TITLE Limited Edition Leather Boxing Punch Mitts, Red/Black, 1 Pair\"\r\n            6. \"TITLE Platinum Perilous Micro Palm Boxing Punch Mitts, Blue/Black, 1 Pair\"\r\n            7. \"Jeff Mayweather \"Doom Mitts\" Boxing Punch Mitts, Navy/Gold, 1 Pair\"\r\n\r\nATTRIBUTES Brand    Material  Age Group\r\n\r\n"
+    },
+    {
+        "name":  "Boxing Rings",
+        "formula":  "Brand/Global Brand License1 + Sports League2 + Athlete2 + Product Line2 + \"Boxing Ring\"/\"Boxing Ring Rope\" + Retail Packaging3 + \"with\"/\"and\" Items Included4, Assembled Product Length5 x Assembled Product Width5 x Assembled Product Height5, Count6 \"Pack/Piece Count6 \"Piece\"",
+        "attributes":  [
+                           "Brand",
+                           "Product Net Content Uom",
+                           "Has Written Warranty"
+                       ],
+        "body":  "Boxing Rings\r\n\r\nFORMULA Brand/Global Brand License1 + Sports League2 + Athlete2 + Product Line2 + \"Boxing Ring\"/\"Boxing Ring Rope\" + Retail Packaging3 + \"with\"/\"and\" Items Included4, Assembled\r\n               Product Length5 x Assembled Product Width5 x Assembled Product Height5, Count6 \"Pack/Piece Count6 \"Piece\"\r\n\r\nFOOTNOTES 1. Use Brand or Global Brand License (if there is one). These attributes can be used separately or together. 2. If applicable. Max of 1 value in the product name. 3. If\r\n                applicable. Omit if the value = Single Piece. If the item is part of a set/kit/system, list it here. 4. If applicable. Only include if there is a value present for Items Included. If\r\n                someone is included with the item, list it as \"with\" Items Included or \"and\" Items Included. Ex: with Replacement Ropes 5. If the item is a boxing ring (not ropes), list the\r\n                dimensions here. You can list simply length x width or length x width x height. Ex: 14 ft x 14 ft 6. Only include Count \"Pack\" if Count is greater than 1. Ex: 2 Pack. If the item\r\n                is part of a kit/set/system and the items aren\u0027t identical, use Piece Count \"Piece\". Ex: 3 Piece\r\n\r\nEXAMPLE 1. \"WWE Superstar Smackdown Boxing Ring, 14 ft x 14 ft\"\r\n            2. \"Revgear Boxing Ring Rope Set, 3 Piece\"\r\n\r\nATTRIBUTES Brand    Product Net Content Uom  Has Written Warranty\r\n"
+    },
+    {
+        "name":  "Boxing Robes",
+        "formula":  "Brand/Global Brand License1 + Sports League2 + Athlete2 + Product Line2 + Gender3 + Character Group2 + Character2 + Fabric Material Name2 + Sleeve Length Style2 + Sport4 + Activity4 + \"Robe\" + Retail Packaging5 + \"with\"/\"and\" Items Included6, Color, Clothing Size, Count7 \"Pack\"/Piece Count7 \"Piece\"",
+        "attributes":  [
+                           "Brand",
+                           "Color",
+                           "Clothing Size"
+                       ],
+        "body":  "\fBoxing Robes\r\n\r\nFORMULA  Brand/Global Brand License1 + Sports League2 + Athlete2 + Product Line2 + Gender3 + Character Group2 + Character2 + Fabric Material Name2 + Sleeve Length Style2 +\r\n         Sport4 + Activity4 + \"Robe\" + Retail Packaging5 + \"with\"/\"and\" Items Included6, Color, Clothing Size, Count7 \"Pack\"/Piece Count7 \"Piece\"\r\n\r\nFOOTNOTES 1. Use Brand or Global Brand License (if there is one). These attributes can be used separately or together. 2. If applicable. Max of 1 value in the product name. 3. If\r\n                applicable, list either the Gender or Clothing Size Group. Only list Gender if Unisex is desired to be listed. Otherwise, list Clothing Size Group. If Men, list Mens. If Women, list\r\n                Womens. 4. List either Sport AND/OR Activity. Ex: Boxing 5. If applicable. Omit if the value = Single Piece. If the item is part of a set/kit/system, list it here. 6. If applicable.\r\n                Only include if there is a value present for Items Included. If something is included with the item, list it as \"with\" Items Included or \"and\" Items Included. Ex: with Hood 7.\r\n                Only include Count \"Pack\" if Count is greater than 1. Ex: 2 Pack. If the item is part of a kit/set/system and the items aren\u0027t identical, use Piece Count \"Piece\". Ex: 3 Piece\r\n\r\nEXAMPLE 1. \"Huasheng MMA Men\u0027s Hooded Long Sleeve Boxing Robe, Red/White, One Size\"\r\n            2. \"Kaesi Kids Long Sleeve Muay Thai Boxing Robe, Red/White, One Size\"\r\n            3. \"Cleto Reyes Satin Boxing Robe with Hood, Red/White, One Size\"\r\n\r\nATTRIBUTES Brand  Color      Clothing Size\r\n\r\n"
+    },
+    {
+        "name":  "Punching Bag Floor Anchors",
+        "formula":  "Brand + Product Line1 + Features2 + \"Punching Bag Floor Anchor\"/\"Heavy Bag Floor Anchor\"/\"Punching Bag Floor Anchor Strap\" + Retail Packaging3 + \"with\"/\"and\" Items Included4, Assembled Product Weight1, Count5 \"Pack\"/Piece Count5 \"Piece\"",
+        "attributes":  [
+                           "Brand",
+                           "Condition",
+                           "Multipack Quantity"
+                       ],
+        "body":  "Punching Bag Floor Anchors\r\n\r\nFORMULA Brand + Product Line1 + Features2 + \"Punching Bag Floor Anchor\"/\"Heavy Bag Floor Anchor\"/\"Punching Bag Floor Anchor Strap\" + Retail Packaging3 + \"with\"/\"and\" Items\r\n               Included4, Assembled Product Weight1, Count5 \"Pack\"/Piece Count5 \"Piece\"\r\n\r\nFOOTNOTES 1. If applicable. Max of 1 value in the product name. 2. If applicable. Max of 1 value in the product name. 3. If applicable. Omit if the value = Single Piece. If the item is part\r\n                of a set/kit/system, list it here. 4. If applicable. Only include if there is a value present for Items Included. If someone is included with the item, list it as \"with\" Items Included\r\n                or \"and\" Items Included. Ex: with Brackets 5. Only include Count \"Pack\" if Count is greater than 1. Ex: 2 Pack. If the item is part of a kit/set/system and the items aren\u0027t\r\n                identical, use Piece Count \"Piece\". Ex: 3 Piece\r\n\r\nEXAMPLE 1. \"RDX Punching Bag Floor Anchor Strap\"\r\n            2. \"Ringside ?rock Double-End Heavy Bag Floor Anchor\"\r\n            3. \"Outslayer Double-End Heavy Bag Floor Anchor\"\r\n            4. \"TITLE Wave H2O Universal Heavy Bag Floor Anchor\"\r\n\r\nATTRIBUTES Brand  Condition  Multipack Quantity\r\n"
+    },
+    {
+        "name":  "Punching Bag Hangers",
+        "formula":  "Brand + Product Line1 + Features2 + Material1 + Recommended Use3/Mount Type3 + \"Heavy Bag\"/\"Punching Bag\"4 + Punching Bag Hanger Type + Retail Packaging5 + \"with\"/\"and\" Items Included6, Maximum Weight7 \"Capacity\", Color1, Count8 \"Pack\"/Piece Count8 \"Piece\"",
+        "attributes":  [
+                           "Brand",
+                           "Punching Bag Hanger Type",
+                           "Mount Type"
+                       ],
+        "body":  "\fPunching Bag Hangers\r\n\r\nFORMULA  Brand + Product Line1 + Features2 + Material1 + Recommended Use3/Mount Type3 + \"Heavy Bag\"/\"Punching Bag\"4 + Punching Bag Hanger Type + Retail Packaging5 +\r\n         \"with\"/\"and\" Items Included6, Maximum Weight7 \"Capacity\", Color1, Count8 \"Pack\"/Piece Count8 \"Piece\"\r\n\r\nFOOTNOTES 1. If applicable. Max of 1 value in the product name. 2. If applicable. Max of 2 values in the product name. If over character count, limit to 1 or omit. 3. If applicable, use 1 of\r\n                the 2 options. 4. Use either Heavy Bag or Punching Bag in the product name. 5. If applicable. Omit if the value = Single Piece. If the item is part of a set/kit/system, list it\r\n                here. 6. If applicable. Only include if there is a value present for Items Included. If someone is included with the item, list it as \"with\" Items Included or \"and\" Items Included.\r\n                Ex: with Brackets 7. If desired, list the maximum weight the item can handle along with the word \"Capacity\". Ex: 220 lb Capacity 8. Only include Count \"Pack\" if Count is\r\n                greater than 1. Ex: 2 Pack. If the item is part of a kit/set/system and the items aren\u0027t identical, use Piece Count \"Piece\". Ex: 3 Piece\r\n\r\nEXAMPLE 1. \"Yes4All 360 Degree Rotation Wood Beam Punching Bag Hanger System\"\r\n            2. \"Eastbuy Wall Mount Punching Bag Hanger\"\r\n            3. \"Everlast Universal Heavy Bag Hanger\"\r\n            4. \"RDX Iron Ceiling Mount Punching Bag Hanger\"\r\n            5. \"Yes4All Steel Beam Heavy Bag Hanger\"\r\n            6. \"Yes4All Wall Mount Heavy Bag Hanger, Black\"\r\n            7. \"Ringside Wood Beam Swivel Punching Bag Hanger\"\r\n            8. \"Ringside Swivel Chain Heavy Bag Hanger, 220 lb Capacity\"\r\n\r\nATTRIBUTES Brand  Punching Bag Hanger Type  Mount Type\r\n"
+    },
+    {
+        "name":  "Punching Bags",
+        "formula":  "Brand/Global Brand License1 + Sports League2 + Athlete2 + Product Line2 + Age Group3 + Size Descriptor2 + Features4 + Sport2 + Shape2 + Material2 + Mount Type2 + Punching Bag Type/\"Punching Bag\" + Retail Packaging5 + \"with\"/\"and\" Items Included6, Size7/Assembled Product Height7, Assembled Product Weight8, Color9/Pattern9, Count10 \"Pack/Piece Count10 \"Piece\"",
+        "attributes":  [
+                           "Brand",
+                           "Age Group",
+                           "Punching Bag Type"
+                       ],
+        "body":  "\fPunching Bags\r\n\r\nFORMULA Brand/Global Brand License1 + Sports League2 + Athlete2 + Product Line2 + Age Group3 + Size Descriptor2 + Features4 + Sport2 + Shape2 + Material2 + Mount Type2\r\n               + Punching Bag Type/\"Punching Bag\" + Retail Packaging5 + \"with\"/\"and\" Items Included6, Size7/Assembled Product Height7, Assembled Product Weight8, Color9/Pattern9, Count10\r\n               \"Pack/Piece Count10 \"Piece\"\r\n\r\nFOOTNOTES 1. Use Brand or Global Brand License (if there is one). These attributes can be used separately or together. 2. If applicable. Max of 1 value in the product name. 3. If\r\n                applicable, include Age Group. If the value is Child, list Kids or Childrens. If the value is Adult or Senior, it\u0027s unnecessary to list, but is ok if desired. If the value is Senior, list\r\n                Adult in the product name. 4. If applicable. Max of 2 values in the product name. 5. If applicable. Omit if the value = Single Piece. If the item is part of a set/kit/system, list it\r\n                here. 6. If applicable. Only include if there is a value present for Items Included. If something is included with the item, list it as \"with\" Items Included or \"and\" Items Included.\r\n                Ex: with Hood 7. If desired, list either the Size or the Assembled Product Height. Ex: 4 ft 8. If applicable, list the Weight of the item. Strongly recommended for Heavy Bags.\r\n                Ex: 150 lb 9. List either Color OR Pattern 10. Only include Count \"Pack\" if Count is greater than 1. Ex: 2 Pack. If the item is part of a kit/set/system and the items aren\u0027t\r\n                identical, use Piece Count \"Piece\". Ex: 3 Piece\r\n\r\nEXAMPLE 1. \"Majik Youth Over-the-Door Speed Bag with Electronic Timer, Yellow/Black\"\r\n            2. \"Venum Classic Reflex Boxing Bag, Black\"\r\n            3. \"ESPN Tall Inflatable Fitness Kickboxing Punching Bag, 70\", Black\"\r\n            4. \"Ringside Soft Filled Leather Heavy Bag, 100 lb, Black\"\r\n            5. \"Pure Boxing Kids Inflatable MMA Punching Bag, Black\"\r\n            6. \"Century Martial Arts Versys VS.1 Fight Simulator Freestanding Heavy Bag, Black\"\r\n            7. \"Century Bob Body Opponent Bag, Tan\"\r\n            8. \"Ringside Hydroblast Water Heavy Bag, 153 lb, Black\"\r\n            9. \"Franklin Sports Inflatable Punching Bag Set with Gloves, Red\"\r\n            10. \"Combat Sports Tear Drop Heavy Bag, 60 lb\"\r\n            11. \"Ringside Heritage Double-End Bag, Red/Black\"\r\n            12. \"Ringside Boxing Leather Speed Bag, XS\"\r\n\r\nATTRIBUTES Brand  Age Group  Punching Bag Type\r\n"
+    },
+    {
+        "name":  "Speed Punching Bag Platforms",
+        "formula":  "Brand + Product Line1 + Size Descriptor1 + Features2 + Material1 + Mount Type1 + \"Speed Bag Platform\" + Retail Packaging3 + \"with\"/\"and\" Items Included4, Color1, Count5 \"Pack\"/Piece Count5 \"Piece\"",
+        "attributes":  [
+                           "Brand",
+                           "Mount Type",
+                           "Condition"
+                       ],
+        "body":  "\fSpeed Punching Bag Platforms\r\n\r\nFORMULA Brand + Product Line1 + Size Descriptor1 + Features2 + Material1 + Mount Type1 + \"Speed Bag Platform\" + Retail Packaging3 + \"with\"/\"and\" Items Included4, Color1, Count5\r\n               \"Pack\"/Piece Count5 \"Piece\"\r\n\r\nFOOTNOTES 1. If applicable. Max of 1 value in the product name. 2. If applicable. Max of 2 values in the product name. If over character count, limit to 1 or omit. 3. If applicable. Omit if\r\n                the value = Single Piece. If the item is part of a set/kit/system, list it here. 4. If applicable. Only include if there is a value present for Items Included. If someone is included\r\n                with the item, list it as \"with\" Items Included or \"and\" Items Included. Ex: with Brackets 5. Only include Count \"Pack\" if Count is greater than 1. Ex: 2 Pack. If the item is part\r\n                of a kit/set/system and the items aren\u0027t identical, use Piece Count \"Piece\". Ex: 3 Piece\r\n\r\nEXAMPLE 1. \"TITLE Adjustable Forged Steel Speed Bag Platform\"\r\n            2. \"Everlast Adjustable Speed Bag Platform\"\r\n            3. \"Ringside Standard Speed Bag Platform\"\r\n            4. \"Century Fold Away Speed Bag Platform\"\r\n\r\nATTRIBUTES Brand  Mount Type  Condition\r\n\r\n"
+    },
+    {
+        "name":  "Speed Punching Bag Stands",
+        "formula":  "Brand/Global Brand License1 + Sports League2 + Athlete2 + Product Line2 + Features3 + \"Speed Bag\"/\"Heavy Bag\"/\"Punching Bag\"4 + \"Stand\" + Retail Packaging5 + \"with\"/\"and\" Items Included6, Maximum Weight7 \"Capacity\", Color2, Count8 \"Pack\"/Piece Count8 \"Piece\"",
+        "attributes":  [
+                           "Brand",
+                           "Mount Type",
+                           "Color"
+                       ],
+        "body":  "Speed Punching Bag Stands\r\n\r\nFORMULA  Brand/Global Brand License1 + Sports League2 + Athlete2 + Product Line2 + Features3 + \"Speed Bag\"/\"Heavy Bag\"/\"Punching Bag\"4 + \"Stand\" + Retail Packaging5 +\r\n         \"with\"/\"and\" Items Included6, Maximum Weight7 \"Capacity\", Color2, Count8 \"Pack\"/Piece Count8 \"Piece\"\r\n\r\nFOOTNOTES 1. Use Brand or Global Brand License (if there is one). These attributes can be used separately or together. 2. If applicable. Max of 1 value in the product name. 3. If\r\n                applicable. Max of 2 values in the product name. If over character count, limit to 1 or omit. 4. List either Speed Bag OR Heavy Bag OR Punching Bag. Two of these can also\r\n                be combined if the item has multiple stations. Ex: Speed Bag and Heavy Bag 5. If applicable. Omit if the value = Single Piece. If the item is part of a set/kit/system, list it here.\r\n                 6. If applicable. Only include if there is a value present for Items Included. If someone is included with the item, list it as \"with\" Items Included or \"and\" Items Included. Ex:\r\n                with Gloves 7. If desired, list the maximum weight the item can handle along with the word \"Capacity\". Ex: 220 lb Capacity 8. Only include Count \"Pack\" if Count is greater\r\n                than 1. Ex: 2 Pack. If the item is part of a kit/set/system and the items aren\u0027t identical, use Piece Count \"Piece\". Ex: 3 Piece\r\n\r\nEXAMPLE 1. \"Titan Fitness Heavy Bag Stand, 300 lb Capacity\"\r\n            2. \"Century Heavy Bag Stand\"\r\n            3. \"Everlast Dual-Station Heavy Bag Stand, Black Steel\"\r\n            4. \"Fight Monkey Heavy Bag Stand\"\r\n            5. \"Eccomum Freestanding Speed Bag Stand, White\"\r\n            6. \"SoozierPunching Bag Stand with Fillable Base\"\r\n            7. \"TITLE Heavy Bag and Speed Bag Stand\"\r\n\r\nATTRIBUTES Brand  Mount Type  Color\r\n\fCardio Equipment\r\n\r\n"
+    },
+    {
+        "name":  "Fishing Terminal Tackle",
+        "formula":  "Brand + Product Line (if applicable) + Piece Count (if applicable) + Features (if applicable) + Fishing Terminal Tackle Type + \"with\" Accessories Included (if applicable)",
+        "attributes":  [
+                           "Brand",
+                           "Fishing Terminal Tackle Type",
+                           "Material"
+                       ],
+        "body":  "\fFishing Terminal Tackle\r\n\r\nFORMULA Brand + Product Line (if applicable) + Piece Count (if applicable) + Features (if applicable) + Fishing Terminal Tackle Type + \"with\" Accessories Included (if applicable)\r\n\r\nEXAMPLE \"Berkley Omega 50 Piece No Chip Stainless Steel Fishing Hooks with Box\"\r\n\r\nATTRIBUTES Brand     Fishing Terminal Tackle Type   Material\r\n\r\n"
+    },
+    {
+        "name":  "Fishing Weights",
+        "formula":  "Brand + Product Line (if applicable) + Count (if applicable) + Shape (if applicable) + Material (if applicable) + Fishing Weight Type + Assembled Product Weight (if applicable) + Assembled Product Weight UOM (if applicable)",
+        "attributes":  [
+                           "Brand",
+                           "Fishing Weight Type",
+                           "Material"
+                       ],
+        "body":  "Fishing Weights\r\n\r\nFORMULA  Brand + Product Line (if applicable) + Count (if applicable) + Shape (if applicable) + Material (if applicable) + Fishing Weight Type + Assembled Product Weight (if applicable) +\r\n         Assembled Product Weight UOM (if applicable)\r\n\r\nEXAMPLE \"Berkley Pro 100 Pack Oval Lead Bullet Sinkers, 2oz\"\r\n\r\nATTRIBUTES Brand     Fishing Weight Type  Material\r\n\r\n"
+    },
+    {
+        "name":  "Fly Leaders \u0026 Tippet Materials",
+        "formula":  "Brand + Product Line (if applicable) + Material (if applicable) + Features (if applicable) + Fly Leaders \u0026 Tippet Material Type + \",\" Size (if applicable) + Roll Length (if applicable) + Assembled Product Length (if applicable) + Assembled Product Weight (if applicable)",
+        "attributes":  [
+                           "Material",
+                           "Fly Leader And Tippet Material Type",
+                           "Brand"
+                       ],
+        "body":  "Fly Leaders \u0026 Tippet Materials\r\n\r\nFORMULA  Brand + Product Line (if applicable) + Material (if applicable) + Features (if applicable) + Fly Leaders \u0026 Tippet Material Type + \",\" Size (if applicable) + Roll Length (if applicable) +\r\n         Assembled Product Length (if applicable) + Assembled Product Weight (if applicable)\r\n\r\nEXAMPLE \"Berkley Omniflex Fluorocarbon Heavy Duty Trout Tippet, 6\u0027x10\u0027\"\r\n\r\nATTRIBUTES Material  Fly Leader And Tippet Material Type      Brand\r\n\r\n"
+    },
+    {
+        "name":  "Fly Tying Kits",
+        "formula":  "Brand + Product Line (if applicable) + Fly Tying Kit Type + \"with\" Accessories Included (if applicable)",
+        "attributes":  [
+                           "Fly Tying Kit Type",
+                           "Brand",
+                           "Material"
+                       ],
+        "body":  "Fly Tying Kits\r\n\r\nFORMULA Brand + Product Line (if applicable) + Fly Tying Kit Type + \"with\" Accessories Included (if applicable)\r\n\r\nEXAMPLE \"Berkley Pro Premium Fly Tying Kit with Fly Fishing Feathers, Fur, Hooks, Thread \u0026 Flash Line\"\r\n\r\nATTRIBUTES Fly Tying Kit Type  Brand      Material\r\n\r\n"
+    },
+    {
+        "name":  "Fly Tying Materials",
+        "formula":  "Brand + Product Line (if applicable) + Color Category (if applicable) + Material (if applicable) + Roll Length (if applicable) + Features (if applicable) + Fly Tying Material Type + Product Type + Count (if applicable) + Variety Pack (if applicable)",
+        "attributes":  [
+                           "Color",
+                           "Brand",
+                           "Material"
+                       ],
+        "body":  "Fly Tying Materials\r\n\r\nFORMULA  Brand + Product Line (if applicable) + Color Category (if applicable) + Material (if applicable) + Roll Length (if applicable) + Features (if applicable) + Fly Tying Material Type +\r\n         Product Type + Count (if applicable) + Variety Pack (if applicable)\r\n\r\nEXAMPLE \"Berkley Omega Silver \u0026 Gold Metal Non Chip Bead Chain Eyes Fly Tying Materials Variety Pack\"\r\n\r\nATTRIBUTES Color     Brand     Material\r\n"
+    },
+    {
+        "name":  "Ice Fishing Shelters",
+        "formula":  "Brand + Product Line (if applicable) + Model (if applicable) + Maximum Occupancy (if applicable) + Features (if applicable) + Ice Fishing Shelter Type + \"with\" Number of Doors (if applicable)",
+        "attributes":  [
+                           "Brand",
+                           "Ice Fishing Shelter Type",
+                           "Maximum Occupancy"
+                       ],
+        "body":  "\fIce Fishing Shelters\r\n\r\nFORMULA Brand + Product Line (if applicable) + Model (if applicable) + Maximum Occupancy (if applicable) + Features (if applicable) + Ice Fishing Shelter Type + \"with\" Number of Doors (if\r\n               applicable)\r\n\r\nEXAMPLE \"Berkley Pro Z35 4 Person Waterproof Wind Resistent Portable Pop Up Fold-Over Ice Fishing Shelter with 4 Doors\"\r\n\r\nATTRIBUTES Brand      Ice Fishing Shelter Type  Maximum Occupancy\r\n\r\n"
+    },
+    {
+        "name":  "Ice Fishing Spearing Equipment",
+        "formula":  "Brand + Product Line (if applicable) + Material (if applicable) + Features (if applicable) + Assembled Product Length (if applicable) + Number of Tines (if applicable) + Number of Prongs (if applicable) + Ice Fishing Spearing Equipment Type",
+        "attributes":  [
+                           "Brand",
+                           "Ice Fishing Spearing Equipment Type",
+                           "Material"
+                       ],
+        "body":  "Ice Fishing Spearing Equipment\r\n\r\nFORMULA    Brand + Product Line (if applicable) + Material (if applicable) + Features (if applicable) + Assembled Product Length (if applicable) + Number of Tines (if applicable) +\r\n           Number of Prongs (if applicable) + Ice Fishing Spearing Equipment Type\r\n\r\nEXAMPLE \"Berkley Pro Aluminum Non-Chip 6.5\" 5-Tine Frog Spear\"\r\n\r\nATTRIBUTES Brand      Ice Fishing Spearing Equipment Type  Material\r\n\r\n"
+    },
+    {
+        "name":  "Ice Fishing Tie-Ups",
+        "formula":  "Brand + Product Line (if applicable) + Model (if applicable) + Material (if applicable) + Ice Fishing Tie Up Type + \",\" Color Category (if applicable)",
+        "attributes":  [
+
+                       ],
+        "body":  "Ice Fishing Tie-Ups\r\n\r\nFORMULA Brand + Product Line (if applicable) + Model (if applicable) + Material (if applicable) + Ice Fishing Tie Up Type + \",\" Color Category (if applicable)\r\n\r\nEXAMPLE \"Berkley Pro Z35 Plastic Pro-Thermal Tip Up, Orange\"\r\n\r\nATTRIBUTES\r\n\r\n"
+    },
+    {
+        "name":  "Live Bait",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable) + Live Bait Type + \"for\" Fish Species (if applicable), Count (if assembled product weight and assembled product UOM isn\u0027t given)",
+        "attributes":  [
+                           "Live Bait Type",
+                           "Color",
+                           "Condition"
+                       ],
+        "body":  "Live Bait\r\n\r\nFORMULA Brand + Product Line (if applicable) + Features (if applicable) + Live Bait Type + \"for\" Fish Species (if applicable), Count (if assembled product weight and assembled product UOM isn\u0027t\r\n               given)\r\n\r\nEXAMPLE \"Berkley Dine-In BioDegradable Redworms for Trout, 30 Count\"\r\n\r\nATTRIBUTES Live Bait Type  Color  Condition\r\n\r\n"
+    },
+    {
+        "name":  "Live Insects",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable) + Live Insect Type + \"for\" Fish Species (if applicable), Count (if assembled product weight and assembled product UOM isn\u0027t given)",
+        "attributes":  [
+                           "Count Per Pack",
+                           "Condition",
+                           "Multipack Quantity"
+                       ],
+        "body":  "Live Insects\r\n\r\nFORMULA Brand + Product Line (if applicable) + Features (if applicable) + Live Insect Type + \"for\" Fish Species (if applicable), Count (if assembled product weight and assembled product UOM\r\n               isn\u0027t given)\r\n\r\nEXAMPLE \"Berkley Dine-In BioDegradable Grasshoppers for Trout, 30 Count\"\r\n\r\nATTRIBUTES Count Per Pack  Condition            Multipack Quantity\r\n"
+    },
+    {
+        "name":  "Live Worms",
+        "formula":  "Brand + Product Line (if applicable) + Features (if applicable) + Live Worm Type + \"for\" Fish Species (if applicable), Count (if assembled product weight and assembled product UOM isn\u0027t given)",
+        "attributes":  [
+                           "Live Worm Type",
+                           "Number Of Pieces",
+                           "Multipack Quantity"
+                       ],
+        "body":  "\fLive Worms\r\n\r\nFORMULA Brand + Product Line (if applicable) + Features (if applicable) + Live Worm Type + \"for\" Fish Species (if applicable), Count (if assembled product weight and assembled product UOM\r\n               isn\u0027t given)\r\n\r\nEXAMPLE \"Berkley Dine-In BioDegradable Mealworms for Trout, 30 Count\"\r\n\r\nATTRIBUTES Live Worm Type    Number Of Pieces  Multipack Quantity\r\n\r\n"
+    },
+    {
+        "name":  "Ice Fishing Tip-Ups",
+        "formula":  "Brand + Product Line + Product/Type + Key Feature + Size + Ice Fishing Tie Up Type + Warranty Info",
+        "attributes":  [
+                           "Ice Fishing Tie Up Type",
+                           "Warranty Information",
+                           "Material"
+                       ],
+        "body":  "Ice Fishing Tip-Ups\r\n\r\nFORMULA Brand + Product Line + Product/Type + Key Feature + Size + Ice Fishing Tie Up Type + Warranty Info\r\n\r\nEXAMPLE \"Gold\u0027s Gym Pro Series Ice Fishing Tip-Up, Insulated 12\"\"\r\n\r\nATTRIBUTES Ice Fishing Tie Up Type  Warranty Information  Material\r\n\r\n"
+    },
+    {
+        "name":  "Other Fishing Accessories",
+        "formula":  "Brand + Product Line + Product/Type + Key Feature + Size",
+        "attributes":  [
+                           "Condition",
+                           "Piece Count",
+                           "Multipack Quantity"
+                       ],
+        "body":  "Other Fishing Accessories\r\n\r\nFORMULA Brand + Product Line + Product/Type + Key Feature + Size\r\n\r\nEXAMPLE \"Spalding Pro Series Fishing Accessory, Waterproof 8\"\"\r\n\r\nATTRIBUTES Condition  Piece Count   Multipack Quantity\r\n\r\n"
+    },
+    {
+        "name":  "Fish Cleaning Tables",
+        "formula":  "Brand + Product Line1 + Features2 + Assembled Product Length + Product Type + \"with\" + Items Included3 + \",\" + Maximum Load Weight",
+        "attributes":  [
+                           "Material",
+                           "Brand",
+                           "Maximum Load Weight"
+                       ],
+        "body":  "Fish Cleaning Tables\r\n\r\nFORMULA Brand + Product Line1 + Features2 + Assembled Product Length + Product Type + \"with\" + Items Included3 + \",\" + Maximum Load Weight\r\n\r\nFOOTNOTES 1. If applicable. 2. If applicable. Only list 1 top feature. 3. If applicable. Only list up to 2 items included. Please separate with \"\u0026\" symbol.\r\n\r\nEXAMPLE \"Gymax Portable 5ft Fish Cleaning Table with Sink \u0026 Faucet, 150lb Capacity\"\r\n\r\nATTRIBUTES Material   Brand         Maximum Load Weight\r\n"
+    },
+    {
+        "name":  "Fishing Vest \u0026 Packs",
+        "formula":  "Brand + Product Line1 + Features2 + Age Group3 + Gender4 + Product Type5 + \",\" + Clothing Size1 + \",\" + Color + Pattern1",
+        "attributes":  [
+                           "Gender",
+                           "Age Group",
+                           "Material"
+                       ],
+        "body":  "\fFishing Vest \u0026 Packs\r\n\r\nFORMULA Brand + Product Line1 + Features2 + Age Group3 + Gender4 + Product Type5 + \",\" + Clothing Size1 + \",\" + Color + Pattern1\r\n\r\nFOOTNOTES 1. If applicable. 2. If applicable. Only list 1 top feature. 3. If Age Group = Child please use \"Kids\" If Age Group = Teen, Tween or Adult please use \"Adult\" 4. If Gender = Male\r\n                please use Mens If Gender = Female please use Womens If Gender = Unisex please use Unisex 5. Product Type = Fishing Vest Pack\r\n\r\nEXAMPLE \"Onyx Outdoor Adjustable Adult Unisex Fishing Vest Pack, One Size, Tan\"\r\n\r\nATTRIBUTES Gender     Age Group      Material\r\n\r\n"
+    },
+    {
+        "name":  "Fly Fishing Tools",
+        "formula":  "Brand + Product Line1 + Features2 + Items Included + Retail Packaging + \",\" + Color + \",\" + Piece Count3 + \"Piece\"3",
+        "attributes":  [
+                           "Assembled Product Length",
+                           "Items Included",
+                           "Brand"
+                       ],
+        "body":  "Fly Fishing Tools\r\n\r\nFORMULA Brand + Product Line1 + Features2 + Items Included + Retail Packaging + \",\" + Color + \",\" + Piece Count3 + \"Piece\"3\r\n\r\nFOOTNOTES 1. If applicable. 2. If applicable. Only list 1 top feature. 3. If piece count is more than 1. If not used OMIT \"Piece\" from name structure.\r\n\r\nEXAMPLE \"Dr. Slick Multi-Use Fly Fishing Tool Kit, Black, 6 Piece\"\r\n\r\nATTRIBUTES Assembled Product Length       Items Included  Brand\r\n\r\n"
+    },
+    {
+        "name":  "Ice Safety Picks",
+        "formula":  "Brand + Product Line1 + Features2 + Tip Material1 + Product Type + \",\" + Color + \",\" + Piece Count + \"Piece\"3",
+        "attributes":  [
+                           "Brand",
+                           "Piece Count",
+                           "Material"
+                       ],
+        "body":  "Ice Safety Picks\r\n\r\nFORMULA Brand + Product Line1 + Features2 + Tip Material1 + Product Type + \",\" + Color + \",\" + Piece Count + \"Piece\"3\r\n\r\nFOOTNOTES 1. If applicable. 2. If applicable. Only list 1 top feature. 3. If piece count is more than 1. If not used, please OMIT \"Piece\".\r\n\r\nEXAMPLE \"Frabill Retractable Stainless Steel Ice Saftey Picks, Yellow\"\r\n\r\nATTRIBUTES Brand      Piece Count    Material\r\n\r\n"
+    },
+    {
+        "name":  "Ice Skimmers",
+        "formula":  "Brand + Product Line1 + Features2 + Material + Edge Style3 + Product Type + \",\" + Count4 + \"Count\"4",
+        "attributes":  [
+                           "Brand",
+                           "Material",
+                           "Color"
+                       ],
+        "body":  "Ice Skimmers\r\n\r\nFORMULA Brand + Product Line1 + Features2 + Material + Edge Style3 + Product Type + \",\" + Count4 + \"Count\"4\r\n\r\nFOOTNOTES 1. If applicable. 2. If applicable. Only list 1 top feature. 3. Edge Style = Serrated Edge please use \"Serrated\" in name structure. 4. If count is more than 1. If not used, please\r\n                OMIT \"Count\" from name structure.\r\n\r\nEXAMPLE \"FireZ Wear-Resistant Metal Serrated Ice Skimmer, 2 Count\"\r\n\r\nATTRIBUTES Brand      Material     Color\r\n\fFitness Accessories \u0026 Sport Medicine\r\n\r\n"
+    },
+    {
+        "name":  "Sailboats",
+        "formula":  "Brand + Product Line (if applicable) + Sailboat Type + Model (if applicable. If Product Line and Model are the same value, please OMIT Model and use Submodel instead.)",
+        "attributes":  [
+                           "Brand",
+                           "Material",
+                           "Assembly Required"
+                       ],
+        "body":  "Sailboats\r\n\r\nFORMULA Brand + Product Line (if applicable) + Sailboat Type + Model (if applicable. If Product Line and Model are the same value, please OMIT Model and use Submodel instead.)\r\n\r\nEXAMPLE \"Tiwal 2 Inflatable Sailboat\"\r\n\r\nATTRIBUTES Brand     Material  Assembly Required\r\n\r\n"
+    },
+    {
+        "name":  "Sailing Rigging",
+        "formula":  "Brand + Product Line (if applicable) + Sailing Rigging Type",
+        "attributes":  [
+                           "Brand",
+                           "Material",
+                           "Condition"
+                       ],
+        "body":  "Sailing Rigging\r\n\r\nFORMULA Brand + Product Line (if applicable) + Sailing Rigging Type\r\n\r\nEXAMPLE \"Sunfish Sailboat Pro Running Rigging Line Kit\"\r\n\r\nATTRIBUTES Brand     Material  Condition\r\n\r\nScooters\r\n"
+    }
+]

@@ -1,0 +1,96 @@
+Source families: 90; Source product count: 3149
+MISSING FAMILY: Generated April (2026)
+  Table of Contents; Attr Formula attribute "text" Literal [,] Separator 1 Footnote Attr Key for copy
+DIFFERENCES: Badminton source=3 json=3
+  Missing: Badminton Racquets Badminton Sets Badminton Shuttlecocks
+  Extra/renamed: Badminton Sets; Badminton Shuttlecocks; Badminton Racquets
+PARSE COUNT MISMATCH Badminton 1
+MISSING FAMILY: Basketball (16)
+  Basketball Shooter Sleeves; Basketball Backboard Pads; Basketball Backboards; Basketball Court Accessories; Basketball Mounting Kits; Basketball Nets; Basketball Pole Pads; Basketball Returns; Basketball Rims; Basketball Storage; Basketballs; In Ground Basketball Systems; Mounted Basketball Systems; Poolside Basketball Systems; Portable Basketball Systems; Other Basketball Supplies
+MISSING FAMILY: Bat-and-Ball Sports (6)
+  Batting Bat Grips & Grip Tape; Batting Cages; Pitching Enclosures; Softball Bats; Softballs; Wiffle Balls
+DIFFERENCES: Billiards source=17 json=17
+  Missing: Billiard Ball Racks Billiard Balls Billiard Bridge Heads
+  Extra/renamed: Billiard Ball Racks; Billiard Balls; Billiard Bridge Heads
+PARSE COUNT MISMATCH Billiards 15
+DIFFERENCES: Boat Accessories & Trailers source=3 json=3
+  Missing: Boat Accessories Boat Trailers Buoy Balls
+  Extra/renamed: Boat Accessories; Boat Trailers; Buoy Balls
+PARSE COUNT MISMATCH Boat Accessories & Trailers 1
+MISSING FAMILY: Boat Docking & Mooring (11)
+  Boat Cleats; Boat Fenders; Boat Hooks; Boating Anchors; Dock Boxes; Dock Cleats; Dock Guards; Dock Ladders; Dock Lines & Rope; Dock Steps; Mooring Buoys
+MISSING FAMILY: Boat Electronic Accessories (3)
+  Boat Autopilots Boating EPIRBs Depth Finders
+MISSING FAMILY: Boat Motors & Accessories (6)
+  Boat Motor Flushers; Boat Motors; Boat Outboard Motor Brackets; Boat Propellers; Boating Bilge Pumps; Trolling Motors
+MISSING FAMILY: Boat Plumbing (3)
+  Boating Heads Boating Holding Tanks Boating Waste Management Products
+MISSING FAMILY: Boating (7)
+  Boat Docks; Dinghies; Inflatable Rafts; Life Rafts; Pedal Boats; Personal Watercraft; Powerboats & Motorboats
+MISSING FAMILY: Bowling (7)
+  Bowling Ball Polishers; Bowling Balls; Bowling Equipment Sets; Bowling Insert Tape; Bowling Pins; Home Bowling Alleys; Other Bowling Supplies
+MISSING FAMILY: Boxing (11)
+  Boxing & Martial Arts Strike Pads; Boxing Gloves; Boxing Punch Mitts; Boxing Rings; Boxing Robes; Punching Bag Floor Anchors; Punching Bag Hangers; Punching Bags; Speed Punching Bag Platforms; Speed Punching Bag Stands; Other Boxing Supplies
+DIFFERENCES: Curling source=2 json=2
+  Missing: Curling Brushes Curling Stones
+  Extra/renamed: Curling Brushes; Curling Stones
+PARSE COUNT MISMATCH Curling 1
+DIFFERENCES: Dancing source=3 json=3
+  Missing: Dance Barres Dance Floors Other Dancing Supplies
+  Extra/renamed: Dance Barres; Dance Floors; Other Dancing Supplies
+PARSE COUNT MISMATCH Dancing 1
+DIFFERENCES: Dogsledding source=2 json=2
+  Missing: Dogsledding Ganglines Dogsleds
+  Extra/renamed: Dogsledding Ganglines; Dogsleds
+PARSE COUNT MISMATCH Dogsledding 1
+DIFFERENCES: Fishing source=48 json=30
+  Missing: Fish Cleaning Tables; Fishing Vest & Packs; Fly Fishing Tools; Ice Safety Picks; Ice Skimmers; Fishing Terminal Tackle; Fishing Weights; Fly Leaders & Tippet Materials; Fly Tying Kits; Fly Tying Materials; Ice Fishing Shelters; Ice Fishing Spearing Equipment; Ice Fishing Tie-Ups; Live Bait; Live Insects; Live Worms; Ice Fishing Tip-Ups; Other Fishing Accessories
+  Extra/renamed: 
+MISSING FAMILY: Fitness Accessories & Sport Medicine (1)
+  Other Exercise & Fitness Accessories
+DIFFERENCES: Fitness Accessories & Sports Medicine source=39 json=40
+  Missing: 
+  Extra/renamed: Other Exercise & Fitness Accessories
+DIFFERENCES: Football source=32 json=32
+  Missing: Playbook Wristband Other Football Supplies
+  Extra/renamed: Playbook Wristbands; Other Football Supplies
+PARSE COUNT MISMATCH Football 31
+DIFFERENCES: Polo source=2 json=2
+  Missing: Polo Balls Polo Mallets
+  Extra/renamed: Polo Balls; Polo Mallets
+PARSE COUNT MISMATCH Polo 1
+DIFFERENCES: Racquet Sports source=15 json=16
+  Missing: 
+  Extra/renamed: Jai Alai Sets
+MISSING FAMILY: Raquet Sports (1)
+  Jai Alai Sets
+DIFFERENCES: Rowing source=2 json=2
+  Missing: Rowing Shell Covers Rowing Shells
+  Extra/renamed: Rowing Shell Covers; Rowing Shells
+PARSE COUNT MISMATCH Rowing 1
+MISSING FAMILY: Sailing (2)
+  Sailboats Sailing Rigging
+DIFFERENCES: Snooker source=3 json=3
+  Missing: Snooker Balls Snooker Cues Snooker Tables
+  Extra/renamed: Snooker Balls; Snooker Cues; Snooker Tables
+PARSE COUNT MISMATCH Snooker 1
+DIFFERENCES: Snowshoeing source=2 json=2
+  Missing: Snowshoeing Boots Snowshoes
+  Extra/renamed: Snowshoeing Boots; Snowshoes
+PARSE COUNT MISMATCH Snowshoeing 1
+DIFFERENCES: Water Fitness source=2 json=2
+  Missing: Water Trampoline Attachments Water Trampolines
+  Extra/renamed: Water Trampoline Attachments; Water Trampolines
+PARSE COUNT MISMATCH Water Fitness 1
+DIFFERENCES: Water Polo source=2 json=2
+  Missing: Water Polo Balls Water Polo Goals
+  Extra/renamed: Water Polo Balls; Water Polo Goals
+PARSE COUNT MISMATCH Water Polo 1
+DIFFERENCES: Water Racks & Storage source=3 json=3
+  Missing: Bicycle Mounted Surfboard Racks Kayak Covers Kayak Storage Racks
+  Extra/renamed: Bicycle Mounted Surfboard Racks; Kayak Covers; Kayak Storage Racks
+PARSE COUNT MISMATCH Water Racks & Storage 1
+DIFFERENCES: Watercraft Dry Gear source=2 json=2
+  Missing: Dry Bags Dry Boxes
+  Extra/renamed: Dry Bags; Dry Boxes
+PARSE COUNT MISMATCH Watercraft Dry Gear 1

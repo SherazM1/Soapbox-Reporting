@@ -1,6 +1,6 @@
 {
   "category": "Sports & Outdoors",
-  "status": "partial",
+  "status": "complete",
   "source": "SportsOutdoorsContentStyleGuide.pdf",
   "families": {
     "all_sport_accessories": {
@@ -1321,6 +1321,214 @@
         }
       }
     },
+    "basketball": {
+      "display_name": "Basketball",
+      "product_types": {
+        "basketball_backboard_pads": {
+          "display_name": "Basketball Backboard Pads",
+          "formula": ["Brand", "Product Line", "Features", "Basketball Backboard Size", "Basketball Pad Type"],
+          "attributes": ["Brand", "Product Net Content Uom", "Product Net Content Quantity"],
+          "aliases": ["basketball backboard pads", "backboard padding"],
+          "title_keywords": ["basketball backboard pads", "backboard padding"],
+          "context_keywords": ["weatherproof", "bolt-on padding"],
+          "negative_keywords": ["basketball backboard", "basketball pole pad"]
+        },
+        "basketball_backboards": {
+          "display_name": "Basketball Backboards",
+          "formula": ["Brand", "Product Line", "Basketball Backboard Size", "Features", "Material", "Basketball Backboard Type", "(Recommended Location)"],
+          "attributes": ["Basketball Backboard Type", "Brand", "Basketball Backboard Size"],
+          "aliases": ["basketball backboards", "backboard and rim combo"],
+          "title_keywords": ["basketball backboards", "backboard and rim combo"],
+          "context_keywords": ["acrylic backboard", "adjustable backboard"],
+          "negative_keywords": ["backboard pad", "mounting kit"]
+        },
+        "basketball_court_accessories": {
+          "display_name": "Basketball Court Accessories",
+          "formula": ["Brand", "Product Line", "Features", "Recommended Location", "Basketball Court Accessory Type"],
+          "attributes": ["Brand", "Has Written Warranty", "Basketball Court Accessory Type"],
+          "aliases": ["basketball court accessories", "basketball court accessory"],
+          "title_keywords": ["basketball court accessories", "basketball court accessory"],
+          "context_keywords": ["replacement court equipment", "outdoor court"],
+          "negative_keywords": ["court paint", "basketball shoes"]
+        },
+        "basketball_mounting_kits": {
+          "display_name": "Basketball Mounting Kits",
+          "formula": ["Brand", "Product Line", "Features", "Size", "Basketball Backboard Type", "Product Type"],
+          "attributes": ["Brand", "Basketball Backboard Type", "Condition"],
+          "aliases": ["basketball mounting kits", "basketball mounting kit"],
+          "title_keywords": ["basketball mounting kits", "basketball mounting kit"],
+          "context_keywords": ["wall-mounted", "adjustable height"],
+          "negative_keywords": ["backboard pad", "basketball net"]
+        },
+        "basketball_nets": {
+          "display_name": "Basketball Nets",
+          "formula": ["Brand", "Product Line", "Features", "Recommended Location", "Material", "Basketball Net Type", "\",\"", "Color Category", "Color", "(Piece Count + \"Pack\")"],
+          "attributes": ["Brand", "Basketball Net Type", "Condition"],
+          "aliases": ["basketball nets", "basketball net"],
+          "title_keywords": ["basketball nets", "basketball net"],
+          "context_keywords": ["nylon net", "replacement net"],
+          "negative_keywords": ["fishing net", "soccer net"]
+        },
+        "basketball_pole_pads": {
+          "display_name": "Basketball Pole Pads",
+          "formula": ["Brand", "Product Line", "Features", "Sports Team", "Thickness", "Basketball Pole Pad Type", "\",\"", "\"Fits\"", "Diameter", "\"Pole\""],
+          "attributes": ["Brand", "Thickness", "Warranty Url"],
+          "aliases": ["basketball pole pads", "basketball pole pad"],
+          "title_keywords": ["basketball pole pads", "basketball pole pad"],
+          "context_keywords": ["all-weather", "pole padding"],
+          "negative_keywords": ["backboard pad", "football pad"]
+        },
+        "basketball_returns": {
+          "display_name": "Basketball Returns",
+          "formula": ["Brand", "Product Line", "Feature", "Basketball Return Type", "\"with\"", "Items Included", "(Color Category)"],
+          "attributes": ["Brand", "Basketball Return Type", "Multipack Quantity"],
+          "aliases": ["basketball returns", "basketball shot trainer"],
+          "title_keywords": ["basketball returns", "basketball shot trainer"],
+          "context_keywords": ["return chute", "foldable arms"],
+          "negative_keywords": ["basketball rim", "basketball net"]
+        },
+        "basketball_rims": {
+          "display_name": "Basketball Rims",
+          "formula": ["Brand", "Product Line", "Feature", "Diameter", "Mount Type", "Basketball Rim Type", "(Recommended Location)"],
+          "attributes": ["Basketball Rim Type", "Brand", "Mount Type"],
+          "aliases": ["basketball rims", "basketball rim"],
+          "title_keywords": ["basketball rims", "basketball rim"],
+          "context_keywords": ["18 inch", "wall mounted"],
+          "negative_keywords": ["wheel rim", "rim cover"]
+        },
+        "basketball_storage": {
+          "display_name": "Basketball Storage",
+          "formula": ["Brand", "Product Line", "Features", "Number of Tiers", "\"Tier\"", "Recommended Location", "Basketball Storage Type", "(Holding Capacity + \"Balls\")"],
+          "attributes": ["Basketball Storage Type", "Brand", "Count Per Pack"],
+          "aliases": ["basketball storage", "basketball storage rack"],
+          "title_keywords": ["basketball storage", "basketball storage rack"],
+          "context_keywords": ["ball cart", "multi-tier rack"],
+          "negative_keywords": ["basketball bag", "storage shed"]
+        },
+        "basketballs": {
+          "display_name": "Basketballs",
+          "formula": ["Brand", "Product Line", "Features", "Basketball Type", "\"with\"", "Accessories Included", "\",\"", "Basketball Size"],
+          "attributes": ["Brand", "Basketball Size", "Age Group"],
+          "aliases": ["basketballs", "basketball"],
+          "title_keywords": ["basketballs", "basketball"],
+          "context_keywords": ["indoor outdoor", "official size"],
+          "negative_keywords": ["basketball net", "basketball rim", "basketball shoes"]
+        },
+        "in_ground_basketball_systems": {
+          "display_name": "In Ground Basketball Systems",
+          "formula": ["Brand", "Product Line", "Features", "Basketball Backboard Size", "Backboard Material", "Product Type"],
+          "attributes": ["Brand", "Basketball Backboard Size", "Minimum Height"],
+          "aliases": ["in ground basketball systems", "in-ground basketball hoop"],
+          "title_keywords": ["in ground basketball systems", "in-ground basketball hoop"],
+          "context_keywords": ["permanent installation", "backboard system"],
+          "negative_keywords": ["portable basketball system", "mounted basketball system"]
+        },
+        "mounted_basketball_systems": {
+          "display_name": "Mounted Basketball Systems",
+          "formula": ["Brand", "Product Line", "Features", "Basketball Backboard Size", "Backboard Material", "Mount Type", "Product Type", "(Recommended Location)"],
+          "attributes": ["Brand", "Age Group", "Basketball Backboard Size"],
+          "aliases": ["mounted basketball systems", "wall-mounted basketball hoop"],
+          "title_keywords": ["mounted basketball systems", "wall-mounted basketball hoop"],
+          "context_keywords": ["wall mounted", "backboard system"],
+          "negative_keywords": ["portable basketball system", "in-ground basketball system"]
+        },
+        "poolside_basketball_systems": {
+          "display_name": "Poolside Basketball Systems",
+          "formula": ["Brand", "Product Line", "Features", "Minimum Height", "\"-\"", "Maximum Height", "Adjustable Height", "Recommended Location", "Product Type", "(Age Group)"],
+          "attributes": ["Brand", "Number Of Pieces", "Age Group"],
+          "aliases": ["poolside basketball systems", "poolside basketball hoop"],
+          "title_keywords": ["poolside basketball systems", "poolside basketball hoop"],
+          "context_keywords": ["swimming pool", "adjustable height"],
+          "negative_keywords": ["portable basketball system", "pool toy"]
+        },
+        "portable_basketball_systems": {
+          "display_name": "Portable Basketball Systems",
+          "formula": ["Brand", "Product Line", "Minimum Height", "\"-\"", "Maximum Height", "Adjustable Height", "Basketball Backboard Size", "Features", "Recommended Location", "Product Type", "(Age Group)"],
+          "attributes": ["Brand", "Age Group", "Maximum Height"],
+          "aliases": ["portable basketball systems", "portable basketball hoop"],
+          "title_keywords": ["portable basketball systems", "portable basketball hoop"],
+          "context_keywords": ["wheeled base", "adjustable height"],
+          "negative_keywords": ["mounted basketball system", "in-ground basketball system"]
+        },
+        "other_basketball_supplies": {
+          "display_name": "Other Basketball Supplies",
+          "formula": ["Brand", "Condition", "Product Line", "Product/Type", "Key Feature", "Color", "Size"],
+          "attributes": ["Condition", "Model", "Multipack Quantity"],
+          "aliases": ["other basketball supplies", "basketball accessory"],
+          "title_keywords": ["other basketball supplies", "basketball accessory"],
+          "context_keywords": ["basketball equipment", "replacement component"],
+          "negative_keywords": ["basketball shoes", "basketball jersey"]
+        },
+        "basketball_shooter_sleeves": {
+          "display_name": "Basketball Shooter Sleeves",
+          "formula": ["Brand", "Product Name", "Age Group", "Features", "Product Type", "\",\"", "Color", "Pattern", "\",\"", "Clothing Size", "(Retail Packaging)"],
+          "attributes": ["Age Group", "Brand", "Multipack Quantity"],
+          "aliases": ["basketball shooter sleeves", "basketball shooting sleeve"],
+          "title_keywords": ["basketball shooter sleeves", "basketball shooting sleeve"],
+          "context_keywords": ["compression sleeve", "arm support"],
+          "negative_keywords": ["tattoo sleeve", "baseball sleeve"]
+        }
+      }
+    },
+    "bat_and_ball_sports": {
+      "display_name": "Bat-and-Ball Sports",
+      "product_types": {
+        "batting_bat_grips_grip_tape": {
+          "display_name": "Batting Bat Grips & Grip Tape",
+          "formula": ["Brand", "Model", "Model Name", "Product Line", "Feature", "Grip Material", "Grip Type", "Thickness", "Title", "Items Included", "\",\"", "Color", "\",\"", "Size", "\",\"", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Grip Type", "Thickness"],
+          "aliases": ["batting bat grips & grip tape", "bat grip tape"],
+          "title_keywords": ["batting bat grips & grip tape", "bat grip tape"],
+          "context_keywords": ["bat handle", "grip thickness"],
+          "negative_keywords": ["handlebar tape", "hockey tape"]
+        },
+        "batting_cages": {
+          "display_name": "Batting Cages",
+          "formula": ["Brand", "Model", "Model Name", "Product Line", "Feature", "Frame Material", "Batting Cage Type", "Title", "Items Included", "\",\"", "Color", "\",\"", "Size", "\",\"", "Count(Count Per Pack)", "Number of Pieces"],
+          "attributes": ["Brand", "Batting Cage Type", "Condition"],
+          "aliases": ["batting cages", "batting cage"],
+          "title_keywords": ["batting cages", "batting cage"],
+          "context_keywords": ["practice enclosure", "frame material"],
+          "negative_keywords": ["animal cage", "bird cage"]
+        },
+        "pitching_enclosures": {
+          "display_name": "Pitching Enclosures",
+          "formula": ["Brand", "Model", "Model Name", "Product Line", "Feature", "Frame Material", "Pitching Enclosure Type", "Title", "Items Included", "\",\"", "Color", "\",\"", "Size", "\",\"", "Count(Count Per Pack)", "Number of Pieces"],
+          "attributes": ["Color", "Condition", "Multipack Quantity"],
+          "aliases": ["pitching enclosures", "pitching enclosure"],
+          "title_keywords": ["pitching enclosures", "pitching enclosure"],
+          "context_keywords": ["pitching practice", "protective netting"],
+          "negative_keywords": ["batting cage", "pitching machine"]
+        },
+        "softball_bats": {
+          "display_name": "Softball Bats",
+          "formula": ["Brand", "Model", "Model Name", "Product Line", "Feature", "Material", "Barrel Diameter", "Grip Type", "Softball Bat Type", "Title", "Items Included", "\",\"", "Color", "\",\"", "Bat Drop", "\",\"", "Size", "Count(Count Per Pack)", "Condition"],
+          "attributes": ["Brand", "Size", "Bat Drop"],
+          "aliases": ["softball bats", "softball bat"],
+          "title_keywords": ["softball bats", "softball bat"],
+          "context_keywords": ["barrel diameter", "bat drop"],
+          "negative_keywords": ["baseball bat", "cricket bat"]
+        },
+        "softballs": {
+          "display_name": "Softballs",
+          "formula": ["Brand", "Model", "Model Name", "Product Line", "Skill Level", "Feature", "Material", "Softball Type", "Title", "Items Included", "\",\"", "Color", "\",\"", "Size", "Count(Count Per Pack)"],
+          "attributes": ["Brand", "Softball Type", "Expertise Level"],
+          "aliases": ["softballs", "softball"],
+          "title_keywords": ["softballs", "softball"],
+          "context_keywords": ["fastpitch", "slowpitch"],
+          "negative_keywords": ["softball bat", "softball glove"]
+        },
+        "wiffle_balls": {
+          "display_name": "Wiffle Balls",
+          "formula": ["Brand", "Model", "Model Name", "Product Line", "Skill Level", "Feature", "Material", "Wiffle Ball Type", "Title", "Items Included", "\",\"", "Color", "\",\"", "Size", "Count(Count Per Pack)"],
+          "attributes": ["Count Per Pack", "Wiffle Ball Type", "Color"],
+          "aliases": ["wiffle balls", "wiffle ball"],
+          "title_keywords": ["wiffle balls", "wiffle ball"],
+          "context_keywords": ["plastic ball", "perforated ball"],
+          "negative_keywords": ["baseball bat", "softball"]
+        }
+      }
+    },
     "billiards": {
       "display_name": "Billiards",
       "product_types": {
@@ -1816,6 +2024,473 @@
           "title_keywords": ["umpire mask", "umpire masks"],
           "context_keywords": ["titanium", "with memory foam pads", "black"],
           "negative_keywords": ["catchers masks", "fielders masks", "batters helmet face masks", "hockey mask", "football facemask", "wrestling headgear"]
+        }
+      }
+    },
+    "boat_docking_mooring": {
+      "display_name": "Boat Docking & Mooring",
+      "product_types": {
+        "boat_cleats": {
+          "display_name": "Boat Cleats",
+          "formula": ["Brand", "Product Line", "Color", "Features", "Assembled Product Length", "Material", "Dock Cleat Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Assembled Product Weight", "Dock Cleat Type", "Brand"],
+          "aliases": ["boat cleats", "boat cleat"],
+          "title_keywords": ["boat cleats", "boat cleat"],
+          "context_keywords": ["marine hardware", "mooring line"],
+          "negative_keywords": ["soccer cleat", "dock cleat"]
+        },
+        "boat_fenders": {
+          "display_name": "Boat Fenders",
+          "formula": ["Brand", "Product Line", "Color", "Features", "Diameter", "Boat Fender Type", "\"with\"", "Accessories Included", "(Count + \"Pack\")"],
+          "attributes": ["Brand", "Condition", "Material"],
+          "aliases": ["boat fenders", "boat fender"],
+          "title_keywords": ["boat fenders", "boat fender"],
+          "context_keywords": ["marine bumper", "hull protection"],
+          "negative_keywords": ["car fender", "bicycle fender"]
+        },
+        "boat_hooks": {
+          "display_name": "Boat Hooks",
+          "formula": ["Brand", "Product Line", "Material", "Features", "Assembled Product Length", "Boat Hook Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Brand", "Boat Hook Type", "Material"],
+          "aliases": ["boat hooks", "boat hook"],
+          "title_keywords": ["boat hooks", "boat hook"],
+          "context_keywords": ["telescoping pole", "docking aid"],
+          "negative_keywords": ["fishing hook", "coat hook"]
+        },
+        "boating_anchors": {
+          "display_name": "Boating Anchors",
+          "formula": ["Brand", "Product Line", "Color", "Material", "Piece Count", "Assembled Product Weight", "Boating Anchor Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Brand", "Boating Anchor Type", "Material"],
+          "aliases": ["boating anchors", "boat anchor"],
+          "title_keywords": ["boating anchors", "boat anchor"],
+          "context_keywords": ["anchor kit", "marine anchoring"],
+          "negative_keywords": ["wall anchor", "punching bag anchor"]
+        },
+        "dock_boxes": {
+          "display_name": "Dock Boxes",
+          "formula": ["Brand", "Product Line", "Color Category", "Pattern", "Size Descriptor", "Features", "Material", "Dock Box Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Brand", "Warranty Url", "Material"],
+          "aliases": ["dock boxes", "dock box"],
+          "title_keywords": ["dock boxes", "dock box"],
+          "context_keywords": ["waterfront storage", "fiberglass box"],
+          "negative_keywords": ["tool box", "tackle box"]
+        },
+        "dock_cleats": {
+          "display_name": "Dock Cleats",
+          "formula": ["Brand", "Product Line", "Color", "Features", "Assembled Product Length", "Material", "Dock Cleat Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Brand", "Dock Cleat Type", "Material"],
+          "aliases": ["dock cleats", "dock cleat"],
+          "title_keywords": ["dock cleats", "dock cleat"],
+          "context_keywords": ["mooring rope", "dock hardware"],
+          "negative_keywords": ["soccer cleat", "boat cleat"]
+        },
+        "dock_guards": {
+          "display_name": "Dock Guards",
+          "formula": ["Brand", "Product Line", "Color", "Features", "Material", "Assembled Product Length", "Dock Guard Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Brand", "Dock Guard Type", "Material"],
+          "aliases": ["dock guards", "dock guard"],
+          "title_keywords": ["dock guards", "dock guard"],
+          "context_keywords": ["dock bumper", "edge protection"],
+          "negative_keywords": ["mouth guard", "blade guard"]
+        },
+        "dock_ladders": {
+          "display_name": "Dock Ladders",
+          "formula": ["Brand", "Product Line", "Material", "Number of Steps", "\"Step\"", "Dock Ladder Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Brand", "Material", "Dock Ladder Type"],
+          "aliases": ["dock ladders", "dock ladder"],
+          "title_keywords": ["dock ladders", "dock ladder"],
+          "context_keywords": ["boarding ladder", "marine ladder"],
+          "negative_keywords": ["step ladder", "pool ladder"]
+        },
+        "dock_lines_rope": {
+          "display_name": "Dock Lines & Rope",
+          "formula": ["Brand", "Product Line", "Color", "Diameter", "\"x\"", "Assembled Product Length", "Dock Line and Rope Type", "Product Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Brand", "Diameter", "Dock Line And Rope Type"],
+          "aliases": ["dock lines & rope", "dock rope"],
+          "title_keywords": ["dock lines & rope", "dock rope"],
+          "context_keywords": ["mooring line", "braided rope"],
+          "negative_keywords": ["climbing rope", "jump rope"]
+        },
+        "dock_steps": {
+          "display_name": "Dock Steps",
+          "formula": ["Brand", "Product Line", "Material", "Features", "Number of Steps", "\"Step\"", "Dock Step Type", "Product Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Brand", "Manufacturer", "Material"],
+          "aliases": ["dock steps", "dock step"],
+          "title_keywords": ["dock steps", "dock step"],
+          "context_keywords": ["boarding steps", "marine access"],
+          "negative_keywords": ["exercise step", "step stool"]
+        },
+        "mooring_buoys": {
+          "display_name": "Mooring Buoys",
+          "formula": ["Brand", "Product Line", "Color", "Material", "Diameter", "Mooring Buoy Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Brand", "Color", "Material"],
+          "aliases": ["mooring buoys", "mooring buoy"],
+          "title_keywords": ["mooring buoys", "mooring buoy"],
+          "context_keywords": ["anchoring buoy", "marine float"],
+          "negative_keywords": ["pool float", "fishing bobber"]
+        }
+      }
+    },
+    "boat_electronic_accessories": {
+      "display_name": "Boat Electronic Accessories",
+      "product_types": {
+        "boat_autopilots": {
+          "display_name": "Boat Autopilots",
+          "formula": ["Brand", "Product Line", "Color", "Pattern", "Features", "Boat Autopilot Type", "Product Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Assembled Product Width", "Brand", "Power Type"],
+          "aliases": ["boat autopilots", "boat autopilot"],
+          "title_keywords": ["boat autopilots", "boat autopilot"],
+          "context_keywords": ["marine navigation", "heading control"],
+          "negative_keywords": ["drone autopilot", "car accessory"]
+        },
+        "boating_epirbs": {
+          "display_name": "Boating EPIRBs",
+          "formula": ["Brand", "Product Line", "Features", "Boating EPIRB Type", "Product Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Brand", "Assembled Product Weight", "Power Type"],
+          "aliases": ["boating epirbs", "epirb"],
+          "title_keywords": ["boating epirbs", "epirb"],
+          "context_keywords": ["emergency beacon", "marine distress"],
+          "negative_keywords": ["personal locator beacon", "radio antenna"]
+        },
+        "depth_finders": {
+          "display_name": "Depth Finders",
+          "formula": ["Brand", "Product Line", "Features", "Depth Finder Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Frequency", "Brand", "Material"],
+          "aliases": ["depth finders", "depth finder"],
+          "title_keywords": ["depth finders", "depth finder"],
+          "context_keywords": ["sonar", "water depth"],
+          "negative_keywords": ["stud finder", "rangefinder"]
+        }
+      }
+    },
+    "boat_motors_accessories": {
+      "display_name": "Boat Motors & Accessories",
+      "product_types": {
+        "boat_motor_flushers": {
+          "display_name": "Boat Motor Flushers",
+          "formula": ["Brand", "Product Line", "Features", "Boat Motor Flusher Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Boat Motor Flusher Type", "Brand", "Material"],
+          "aliases": ["boat motor flushers", "motor flusher"],
+          "title_keywords": ["boat motor flushers", "motor flusher"],
+          "context_keywords": ["outboard flushing", "engine rinse"],
+          "negative_keywords": ["bilge pump", "fuel pump"]
+        },
+        "boat_motors": {
+          "display_name": "Boat Motors",
+          "formula": ["Brand", "Product Line", "Color", "Pattern", "Features", "Horsepower", "Boat Motor Type", "\"with\"", "Motor Starter Type", "(Count + \"Count\")"],
+          "attributes": ["Brand", "Boat Motor Type", "Horsepower"],
+          "aliases": ["boat motors", "boat motor"],
+          "title_keywords": ["boat motors", "boat motor"],
+          "context_keywords": ["outboard engine", "horsepower"],
+          "negative_keywords": ["trolling motor", "motor bracket"]
+        },
+        "boat_outboard_motor_brackets": {
+          "display_name": "Boat Outboard Motor Brackets",
+          "formula": ["Brand", "Product Line", "Color", "Material", "Features", "Boat Outboard Motor Bracket Type", "\"with\"", "Accessories Included", "(Count + \"Count\")", "(Maximum Load Weight \"Max\" + Maximum Engine Power \"Max\")"],
+          "attributes": ["Brand", "Material", "Color"],
+          "aliases": ["boat outboard motor brackets", "outboard motor bracket"],
+          "title_keywords": ["boat outboard motor brackets", "outboard motor bracket"],
+          "context_keywords": ["engine mount", "maximum load"],
+          "negative_keywords": ["boat motor", "motor flusher"]
+        },
+        "boat_propellers": {
+          "display_name": "Boat Propellers",
+          "formula": ["Brand", "Product Line", "Color", "Material", "Diameter", "\"x\"", "Blade Pitch", "Boat Propeller Type", "Number of Blades", "\"Blades\"", "Impeller Propeller", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Brand", "Number Of Blades", "Material"],
+          "aliases": ["boat propellers", "boat propeller"],
+          "title_keywords": ["boat propellers", "boat propeller"],
+          "context_keywords": ["blade pitch", "marine propulsion"],
+          "negative_keywords": ["drone propeller", "fan blade"]
+        },
+        "boating_bilge_pumps": {
+          "display_name": "Boating Bilge Pumps",
+          "formula": ["Brand", "Product Line", "Gallons Per Hour", "\"GPH\"", "Boating Bilge Pump Type", "Product Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Brand", "Boating Bilge Pump Type", "Gallons Per Hour"],
+          "aliases": ["boating bilge pumps", "bilge pump"],
+          "title_keywords": ["boating bilge pumps", "bilge pump"],
+          "context_keywords": ["gallons per hour", "boat drainage"],
+          "negative_keywords": ["air pump", "pool pump"]
+        },
+        "trolling_motors": {
+          "display_name": "Trolling Motors",
+          "formula": ["Brand", "Product Line", "Color", "Water Type", "Steering Type", "\"Steer\"", "Shaft Length", "\"Shaft\"", "Thrust", "\"Thrust\"", "Power Type", "Boat Motor Type", "\"with\"", "Motor Starter Type", "\"and\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Brand", "Boat Motor Type", "Power Type"],
+          "aliases": ["trolling motors", "trolling motor"],
+          "title_keywords": ["trolling motors", "trolling motor"],
+          "context_keywords": ["shaft length", "thrust"],
+          "negative_keywords": ["outboard motor", "motor bracket"]
+        }
+      }
+    },
+    "boat_plumbing": {
+      "display_name": "Boat Plumbing",
+      "product_types": {
+        "boating_heads": {
+          "display_name": "Boating Heads",
+          "formula": ["Brand", "Product Line", "Color", "Pattern", "Material", "Features", "Boating Head Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Material", "Assembled Product Width", "Brand"],
+          "aliases": ["boating heads", "marine toilet"],
+          "title_keywords": ["boating heads", "marine toilet"],
+          "context_keywords": ["boat sanitation", "marine head"],
+          "negative_keywords": ["toilet brush", "shower head"]
+        },
+        "boating_holding_tanks": {
+          "display_name": "Boating Holding Tanks",
+          "formula": ["Brand", "Product Line", "Volume Capacity", "Thickness", "\"Wall\"", "Material", "Boating Holding Tank Type", "(Count + \"Count\")"],
+          "attributes": ["Manufacturer", "Volume Capacity", "Material"],
+          "aliases": ["boating holding tanks", "marine holding tank"],
+          "title_keywords": ["boating holding tanks", "marine holding tank"],
+          "context_keywords": ["waste storage", "wall thickness"],
+          "negative_keywords": ["fish tank", "fuel tank"]
+        },
+        "boating_waste_management_products": {
+          "display_name": "Boating Waste Management Products",
+          "formula": ["Brand", "Product Line", "Features", "Boating Waste Management Product Type", "\"with\"", "Accessories Included", "(Count + \"Count\")"],
+          "attributes": ["Assembled Product Weight", "Assembled Product Height", "Manufacturer"],
+          "aliases": ["boating waste management products", "marine waste management"],
+          "title_keywords": ["boating waste management products", "marine waste management"],
+          "context_keywords": ["boat sanitation", "waste treatment"],
+          "negative_keywords": ["household cleaner", "trash can"]
+        }
+      }
+    },
+    "boating": {
+      "display_name": "Boating",
+      "product_types": {
+        "boat_docks": {
+          "display_name": "Boat Docks",
+          "formula": ["Brand", "Material", "Boat Dock Type", "\",\"", "Assembled Product Height", "Assembled Product Length", "Assembled Product Width"],
+          "attributes": ["Brand", "Material", "Frame Material"],
+          "aliases": ["boat docks", "boat dock"],
+          "title_keywords": ["boat docks", "boat dock"],
+          "context_keywords": ["floating dock", "waterfront platform"],
+          "negative_keywords": ["laptop dock", "speaker dock"]
+        },
+        "dinghies": {
+          "display_name": "Dinghies",
+          "formula": ["Brand", "Model", "Submodel", "Seating Capacity", "Size", "Inflatable Raft Type", "\",\"", "Accessories Included"],
+          "attributes": ["Brand", "Material", "Seating Capacity"],
+          "aliases": ["dinghies", "dinghy"],
+          "title_keywords": ["dinghies", "dinghy"],
+          "context_keywords": ["tender boat", "seating capacity"],
+          "negative_keywords": ["toy boat", "life raft"]
+        },
+        "inflatable_rafts": {
+          "display_name": "Inflatable Rafts",
+          "formula": ["Brand", "Model", "Submodel", "Seating Capacity", "Size", "Inflatable Raft Type", "\",\"", "Accessories Included"],
+          "attributes": ["Brand", "Age Group", "Inflatable Raft Type"],
+          "aliases": ["inflatable rafts", "inflatable raft"],
+          "title_keywords": ["inflatable rafts", "inflatable raft"],
+          "context_keywords": ["seating capacity", "river rafting"],
+          "negative_keywords": ["pool float", "life raft"]
+        },
+        "life_rafts": {
+          "display_name": "Life Rafts",
+          "formula": ["Brand", "Model", "Submodel", "Seating Capacity", "Size", "Life Raft Type", "\",\"", "Accessories Included"],
+          "attributes": ["Brand", "Count Per Pack", "Condition"],
+          "aliases": ["life rafts", "life raft"],
+          "title_keywords": ["life rafts", "life raft"],
+          "context_keywords": ["emergency flotation", "survival raft"],
+          "negative_keywords": ["pool float", "inflatable kayak"]
+        },
+        "pedal_boats": {
+          "display_name": "Pedal Boats",
+          "formula": ["Brand", "Model", "Submodel", "Seating Capacity", "Size", "Pedal Boat Type", "\",\"", "Accessories Included"],
+          "attributes": ["Brand", "Material", "Seating Capacity"],
+          "aliases": ["pedal boats", "pedal boat"],
+          "title_keywords": ["pedal boats", "pedal boat"],
+          "context_keywords": ["pedal propulsion", "seating capacity"],
+          "negative_keywords": ["pedal car", "bicycle pedal"]
+        },
+        "personal_watercraft": {
+          "display_name": "Personal Watercraft",
+          "formula": ["Vehicle Year", "Brand", "Vehicle Make", "Personal Watercraft Type"],
+          "attributes": ["Brand", "Assembled Product Weight", "Power Type"],
+          "aliases": ["personal watercraft"],
+          "title_keywords": ["personal watercraft"],
+          "context_keywords": ["jet ski", "vehicle year"],
+          "negative_keywords": ["toy jet ski", "kayak"]
+        },
+        "powerboats_motorboats": {
+          "display_name": "Powerboats & Motorboats",
+          "formula": ["Brand", "Model", "Submodel", "Seating Capacity", "Size", "Motorboats & Powerboats", "\",\"", "Accessories Included"],
+          "attributes": ["Assembled Product Weight", "Seating Capacity", "Brand"],
+          "aliases": ["powerboats & motorboats", "powerboat"],
+          "title_keywords": ["powerboats & motorboats", "powerboat"],
+          "context_keywords": ["motorboat", "seating capacity"],
+          "negative_keywords": ["toy boat", "boat motor"]
+        }
+      }
+    },
+    "bowling": {
+      "display_name": "Bowling",
+      "product_types": {
+        "other_bowling_supplies": {
+          "display_name": "Other Bowling Supplies",
+          "formula": ["Brand", "Product Line", "Product/Type", "Material", "Color", "Count/Pack"],
+          "attributes": ["Condition", "Ib Retail Packaging", "Multipack Quantity"],
+          "aliases": ["other bowling supplies", "bowling accessory"],
+          "title_keywords": ["other bowling supplies", "bowling accessory"],
+          "context_keywords": ["bowling equipment", "lane supplies"],
+          "negative_keywords": ["bowling shoes", "bowling shirt"]
+        },
+        "bowling_ball_polishers": {
+          "display_name": "Bowling Ball Polishers",
+          "formula": ["Brand", "Product Line", "Character Group", "Character", "Sports Team", "Sports League", "Material", "Bowling Ball Polisher Type", "Retail Packaging", "\"w/\"", "Accessories Included", "\",\"", "Product Volume", "\",\"", "Color", "(Count Per Pack + \"Count\")", "Multipack Quantity", "\"Pack\""],
+          "attributes": ["Assembled Product Length", "Assembled Product Weight", "Brand"],
+          "aliases": ["bowling ball polishers", "bowling ball polisher"],
+          "title_keywords": ["bowling ball polishers", "bowling ball polisher"],
+          "context_keywords": ["ball care", "polishing pad"],
+          "negative_keywords": ["car polish", "floor polisher"]
+        },
+        "bowling_balls": {
+          "display_name": "Bowling Balls",
+          "formula": ["Brand", "Global Brand License", "Product Line", "Athlete", "Character Group", "Character", "Sports Team", "Sports League", "Pattern", "\"or\"", "Theme", "Skill Level", "Coverstock Type", "Bowling Ball Type", "Retail Packaging", "\"w/\"", "Accessories Included", "(Count Per Pack + \"Count\")", "Multipack Quantity", "\"Pack\""],
+          "attributes": ["Assembled Product Weight", "Expertise Level", "Brand"],
+          "aliases": ["bowling balls", "bowling ball"],
+          "title_keywords": ["bowling balls", "bowling ball"],
+          "context_keywords": ["coverstock", "hook potential"],
+          "negative_keywords": ["bowling pin", "bowling bag"]
+        },
+        "bowling_equipment_sets": {
+          "display_name": "Bowling Equipment Sets",
+          "formula": ["Brand", "Product Line", "Bowling Ball Accessory Set", "\",\"", "\"w/\"", "Accessories Included", "(Count Per Pack + \"Count\")", "Multipack Quantity", "\"Pack\""],
+          "attributes": ["Assembled Product Weight", "Brand", "Assembled Product Width"],
+          "aliases": ["bowling equipment sets", "bowling equipment set"],
+          "title_keywords": ["bowling equipment sets", "bowling equipment set"],
+          "context_keywords": ["bowling accessory set", "starter equipment"],
+          "negative_keywords": ["bowling ball only", "bowling shoes"]
+        },
+        "bowling_insert_tape": {
+          "display_name": "Bowling Insert Tape",
+          "formula": ["Brand", "Product Line", "Assembled Product Width", "\"Bowling Tape\"", "Retail Packaging", "\"w/\"", "Accessories Included", "\",\"", "Color", "(Count Per Pack + \"Count\")", "Multipack Quantity", "\"Pack\""],
+          "attributes": ["Brand", "Assembled Product Width", "Multipack Quantity"],
+          "aliases": ["bowling insert tape", "bowling tape"],
+          "title_keywords": ["bowling insert tape", "bowling tape"],
+          "context_keywords": ["finger insert", "grip adjustment"],
+          "negative_keywords": ["packing tape", "grip tape"]
+        },
+        "bowling_pins": {
+          "display_name": "Bowling Pins",
+          "formula": ["Brand", "Product Line", "Character Group", "Character", "Sports Team", "Sports League", "Core Material", "Bowling Pin Type", "Retail Packaging", "\"w/\"", "Accessories Included", "\",\"", "Color", "(Count Per Pack + \"Count\")", "Multipack Quantity", "\"Pack\""],
+          "attributes": ["Brand", "Assembled Product Weight", "Shell Material"],
+          "aliases": ["bowling pins", "bowling pin"],
+          "title_keywords": ["bowling pins", "bowling pin"],
+          "context_keywords": ["core material", "shell material"],
+          "negative_keywords": ["lapel pin", "sewing pin"]
+        },
+        "home_bowling_alleys": {
+          "display_name": "Home Bowling Alleys",
+          "formula": ["Brand", "Product Line", "Recommended Location", "\"Home Bowling Alley Mat\"", "\",\"", "Assembled Product Width", "\"x\"", "Assembled Product Length", "\",\"", "Color", "(Count Per Pack + \"Count\")", "Multipack Quantity", "\"Pack\""],
+          "attributes": ["Assembled Product Weight", "Condition", "Ib Retail Packaging"],
+          "aliases": ["home bowling alleys", "home bowling alley"],
+          "title_keywords": ["home bowling alleys", "home bowling alley"],
+          "context_keywords": ["bowling alley mat", "indoor bowling"],
+          "negative_keywords": ["bowling shoes", "bowling shirt"]
+        }
+      }
+    },
+    "boxing": {
+      "display_name": "Boxing",
+      "product_types": {
+        "other_boxing_supplies": {
+          "display_name": "Other Boxing Supplies",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Material", "Color", "Size", "Count/Pack", "Net Content UOM"],
+          "attributes": ["Product Net Content Quantity", "Product Net Content Uom", "Condition"],
+          "aliases": ["other boxing supplies", "boxing accessory"],
+          "title_keywords": ["other boxing supplies", "boxing accessory"],
+          "context_keywords": ["boxing equipment", "training gear"],
+          "negative_keywords": ["boxing gloves", "boxing robe"]
+        },
+        "boxing_martial_arts_strike_pads": {
+          "display_name": "Boxing & Martial Arts Strike Pads",
+          "formula": ["Brand/Global Brand License", "Sports League", "Athlete", "Product Line", "Age Group", "Size Descriptor", "Features", "Shape", "Material", "Sport/Activity/Body Part", "\"Pad\"/\"Guard\"", "Retail Packaging", "\"with\"/\"and\"", "Items Included", "\",\"", "Color", "\",\"", "Size", "\",\"", "Count \"Pack\"/Piece Count \"Piece\""],
+          "attributes": ["Brand", "Material", "Age Group"],
+          "aliases": ["boxing & martial arts strike pads", "martial arts strike pad"],
+          "title_keywords": ["boxing & martial arts strike pads", "martial arts strike pad"],
+          "context_keywords": ["kick shield", "striking practice"],
+          "negative_keywords": ["knee pad", "boxing glove"]
+        },
+        "boxing_gloves": {
+          "display_name": "Boxing Gloves",
+          "formula": ["Brand", "Sports League", "Athlete", "Product Line", "Age Group", "Features", "Material/Fabric Material Name", "Boxing Glove Type", "Retail Packaging", "\"with\"/\"and\"", "Items Included", "\"for\"", "Activity/Sport", "\",\"", "Color/Pattern/Theme", "\",\"", "Size/Boxing Glove Weight", "\",\"", "Count \"Pack\"/Piece Count \"Piece\""],
+          "attributes": ["Brand", "Age Group", "Boxing Glove Type"],
+          "aliases": ["boxing gloves", "boxing glove"],
+          "title_keywords": ["boxing gloves", "boxing glove"],
+          "context_keywords": ["sparring", "boxing glove weight"],
+          "negative_keywords": ["work glove", "boxing mitt"]
+        },
+        "boxing_punch_mitts": {
+          "display_name": "Boxing Punch Mitts",
+          "formula": ["Brand/Global Brand License", "Product Line", "Sports League", "Athlete", "Age Group", "Size Descriptor", "Features", "Shape", "Material", "Body Part", "Sport/Activity", "\"Mitt\"/\"Paddle\"", "Retail Packaging", "\"with\"/\"and\"", "Items Included", "\",\"", "Color", "\",\"", "Size", "\",\"", "Count \"Pack\"/Piece Count \"Piece\""],
+          "attributes": ["Brand", "Material", "Age Group"],
+          "aliases": ["boxing punch mitts", "boxing focus mitt"],
+          "title_keywords": ["boxing punch mitts", "boxing focus mitt"],
+          "context_keywords": ["punch mitt", "target paddle"],
+          "negative_keywords": ["oven mitt", "boxing glove"]
+        },
+        "boxing_rings": {
+          "display_name": "Boxing Rings",
+          "formula": ["Brand/Global Brand License", "Sports League", "Athlete", "Product Line", "\"Boxing Ring\"/\"Boxing Ring Rope\"", "Retail Packaging", "\"with\"/\"and\"", "Items Included", "\",\"", "Assembled Product Length x Assembled Product Width x Assembled Product Height", "\",\"", "Count \"Pack\"/Piece Count \"Piece\""],
+          "attributes": ["Brand", "Product Net Content Uom", "Has Written Warranty"],
+          "aliases": ["boxing rings", "boxing ring"],
+          "title_keywords": ["boxing rings", "boxing ring"],
+          "context_keywords": ["ring rope", "training ring"],
+          "negative_keywords": ["jewelry ring", "basketball ring"]
+        },
+        "boxing_robes": {
+          "display_name": "Boxing Robes",
+          "formula": ["Brand/Global Brand License", "Sports League", "Athlete", "Product Line", "Gender", "Character Group", "Character", "Fabric Material Name", "Sleeve Length Style", "Sport", "Activity", "\"Robe\"", "Retail Packaging", "\"with\"/\"and\"", "Items Included", "\",\"", "Color", "\",\"", "Clothing Size", "\",\"", "Count \"Pack\"/Piece Count \"Piece\""],
+          "attributes": ["Brand", "Color", "Clothing Size"],
+          "aliases": ["boxing robes", "boxing robe"],
+          "title_keywords": ["boxing robes", "boxing robe"],
+          "context_keywords": ["ring entrance", "satin robe"],
+          "negative_keywords": ["bathrobe", "graduation robe"]
+        },
+        "punching_bag_floor_anchors": {
+          "display_name": "Punching Bag Floor Anchors",
+          "formula": ["Brand", "Product Line", "Features", "\"Punching Bag Floor Anchor\"/\"Heavy Bag Floor Anchor\"/\"Punching Bag Floor Anchor Strap\"", "Retail Packaging", "\"with\"/\"and\"", "Items Included", "\",\"", "Assembled Product Weight", "\",\"", "Count \"Pack\"/Piece Count \"Piece\""],
+          "attributes": ["Brand", "Condition", "Multipack Quantity"],
+          "aliases": ["punching bag floor anchors", "heavy bag floor anchor"],
+          "title_keywords": ["punching bag floor anchors", "heavy bag floor anchor"],
+          "context_keywords": ["anchor strap", "bag stabilization"],
+          "negative_keywords": ["boat anchor", "wall anchor"]
+        },
+        "punching_bag_hangers": {
+          "display_name": "Punching Bag Hangers",
+          "formula": ["Brand", "Product Line", "Features", "Material", "Recommended Use/Mount Type", "\"Heavy Bag\"/\"Punching Bag\"", "Punching Bag Hanger Type", "Retail Packaging", "\"with\"/\"and\"", "Items Included", "\",\"", "Maximum Weight", "\"Capacity\"", "\",\"", "Color", "\",\"", "Count \"Pack\"/Piece Count \"Piece\""],
+          "attributes": ["Brand", "Punching Bag Hanger Type", "Mount Type"],
+          "aliases": ["punching bag hangers", "heavy bag hanger"],
+          "title_keywords": ["punching bag hangers", "heavy bag hanger"],
+          "context_keywords": ["ceiling mount", "maximum weight"],
+          "negative_keywords": ["clothes hanger", "punching bag stand"]
+        },
+        "punching_bags": {
+          "display_name": "Punching Bags",
+          "formula": ["Brand/Global Brand License", "Sports League", "Athlete", "Product Line", "Age Group", "Size Descriptor", "Features", "Sport", "Shape", "Material", "Mount Type", "Punching Bag Type/\"Punching Bag\"", "Retail Packaging", "\"with\"/\"and\"", "Items Included", "\",\"", "Size/Assembled Product Height", "\",\"", "Assembled Product Weight", "\",\"", "Color/Pattern", "\",\"", "Count \"Pack\"/Piece Count \"Piece\""],
+          "attributes": ["Brand", "Age Group", "Punching Bag Type"],
+          "aliases": ["punching bags", "heavy bag"],
+          "title_keywords": ["punching bags", "heavy bag"],
+          "context_keywords": ["boxing training", "filled bag"],
+          "negative_keywords": ["punching bag hanger", "punching bag stand", "punching bag floor anchor"]
+        },
+        "speed_punching_bag_platforms": {
+          "display_name": "Speed Punching Bag Platforms",
+          "formula": ["Brand", "Product Line", "Size Descriptor", "Features", "Material", "Mount Type", "\"Speed Bag Platform\"", "Retail Packaging", "\"with\"/\"and\"", "Items Included", "\",\"", "Color", "\",\"", "Count \"Pack\"/Piece Count \"Piece\""],
+          "attributes": ["Brand", "Mount Type", "Condition"],
+          "aliases": ["speed punching bag platforms", "speed bag platform"],
+          "title_keywords": ["speed punching bag platforms", "speed bag platform"],
+          "context_keywords": ["wall mount", "swivel platform"],
+          "negative_keywords": ["speed bag stand", "punching bag hanger"]
+        },
+        "speed_punching_bag_stands": {
+          "display_name": "Speed Punching Bag Stands",
+          "formula": ["Brand/Global Brand License", "Sports League", "Athlete", "Product Line", "Features", "\"Speed Bag\"/\"Heavy Bag\"/\"Punching Bag\"", "\"Stand\"", "Retail Packaging", "\"with\"/\"and\"", "Items Included", "\",\"", "Maximum Weight", "\"Capacity\"", "\",\"", "Color", "\",\"", "Count \"Pack\"/Piece Count \"Piece\""],
+          "attributes": ["Brand", "Mount Type", "Color"],
+          "aliases": ["speed punching bag stands", "heavy bag stand"],
+          "title_keywords": ["speed punching bag stands", "heavy bag stand"],
+          "context_keywords": ["freestanding frame", "maximum weight"],
+          "negative_keywords": ["speed bag platform", "punching bag hanger"]
         }
       }
     },
@@ -4115,6 +4790,168 @@
           "title_keywords": ["fishing tackle box", "bait storage", "tackle box"],
           "context_keywords": ["waterproof", "2-level", "with 2 trays", "36 compartments"],
           "negative_keywords": ["fishing tackle wraps", "tool box", "camera storage", "craft organizer", "storage tote", "lunch box"]
+        },
+        "fishing_terminal_tackle": {
+          "display_name": "Fishing Terminal Tackle",
+          "formula": ["Brand", "Product Line", "Piece Count", "Features", "Fishing Terminal Tackle Type", "\"with\"", "Accessories Included"],
+          "attributes": ["Brand", "Fishing Terminal Tackle Type", "Material"],
+          "aliases": ["fishing terminal tackle", "terminal tackle"],
+          "title_keywords": ["fishing terminal tackle", "terminal tackle"],
+          "context_keywords": ["swivels", "snaps"],
+          "negative_keywords": ["tackle box", "fishing rod"]
+        },
+        "fishing_weights": {
+          "display_name": "Fishing Weights",
+          "formula": ["Brand", "Product Line", "Count", "Shape", "Material", "Fishing Weight Type", "Assembled Product Weight", "Assembled Product Weight UOM"],
+          "attributes": ["Brand", "Fishing Weight Type", "Material"],
+          "aliases": ["fishing weights", "fishing sinker"],
+          "title_keywords": ["fishing weights", "fishing sinker"],
+          "context_keywords": ["split shot", "tungsten weight"],
+          "negative_keywords": ["dumbbell", "exercise weight"]
+        },
+        "fly_leaders_tippet_materials": {
+          "display_name": "Fly Leaders & Tippet Materials",
+          "formula": ["Brand", "Product Line", "Material", "Features", "Fly Leaders & Tippet Material Type", "\",\"", "Size", "Roll Length", "Assembled Product Length", "Assembled Product Weight"],
+          "attributes": ["Material", "Fly Leader And Tippet Material Type", "Brand"],
+          "aliases": ["fly leaders & tippet materials", "fly fishing leader"],
+          "title_keywords": ["fly leaders & tippet materials", "fly fishing leader"],
+          "context_keywords": ["tippet spool", "tapered leader"],
+          "negative_keywords": ["fishing rod", "fly tying kit"]
+        },
+        "fly_tying_kits": {
+          "display_name": "Fly Tying Kits",
+          "formula": ["Brand", "Product Line", "Fly Tying Kit Type", "\"with\"", "Accessories Included"],
+          "attributes": ["Fly Tying Kit Type", "Brand", "Material"],
+          "aliases": ["fly tying kits", "fly tying kit"],
+          "title_keywords": ["fly tying kits", "fly tying kit"],
+          "context_keywords": ["fly tying tools", "starter materials"],
+          "negative_keywords": ["fishing rod", "fly box"]
+        },
+        "fly_tying_materials": {
+          "display_name": "Fly Tying Materials",
+          "formula": ["Brand", "Product Line", "Color Category", "Material", "Roll Length", "Features", "Fly Tying Material Type", "Product Type", "Count", "Variety Pack"],
+          "attributes": ["Color", "Brand", "Material"],
+          "aliases": ["fly tying materials", "fly tying material"],
+          "title_keywords": ["fly tying materials", "fly tying material"],
+          "context_keywords": ["dubbing", "hackle"],
+          "negative_keywords": ["sewing thread", "craft feather"]
+        },
+        "ice_fishing_shelters": {
+          "display_name": "Ice Fishing Shelters",
+          "formula": ["Brand", "Product Line", "Model", "Maximum Occupancy", "Features", "Ice Fishing Shelter Type", "\"with\"", "Number of Doors"],
+          "attributes": ["Brand", "Ice Fishing Shelter Type", "Maximum Occupancy"],
+          "aliases": ["ice fishing shelters", "ice fishing shelter"],
+          "title_keywords": ["ice fishing shelters", "ice fishing shelter"],
+          "context_keywords": ["portable shanty", "insulated hub"],
+          "negative_keywords": ["camping tent", "beach tent"]
+        },
+        "ice_fishing_spearing_equipment": {
+          "display_name": "Ice Fishing Spearing Equipment",
+          "formula": ["Brand", "Product Line", "Material", "Features", "Assembled Product Length", "Number of Tines", "Number of Prongs", "Ice Fishing Spearing Equipment Type"],
+          "attributes": ["Brand", "Ice Fishing Spearing Equipment Type", "Material"],
+          "aliases": ["ice fishing spearing equipment", "ice fishing spear"],
+          "title_keywords": ["ice fishing spearing equipment", "ice fishing spear"],
+          "context_keywords": ["tines", "prongs"],
+          "negative_keywords": ["garden fork", "archery arrow"]
+        },
+        "ice_fishing_tie_ups": {
+          "display_name": "Ice Fishing Tie-Ups",
+          "formula": ["Brand", "Product Line", "Model", "Material", "Ice Fishing Tie Up Type", "\",\"", "Color Category"],
+          "attributes": [],
+          "aliases": ["ice fishing tie-ups", "ice fishing tie-up"],
+          "title_keywords": ["ice fishing tie-ups", "ice fishing tie-up"],
+          "context_keywords": ["ice fishing line", "ice fishing rig"],
+          "negative_keywords": ["boat tie-down", "cable tie"]
+        },
+        "live_bait": {
+          "display_name": "Live Bait",
+          "formula": ["Brand", "Product Line", "Features", "Live Bait Type", "\"for\"", "Fish Species", "\",\"", "Count"],
+          "attributes": ["Live Bait Type", "Color", "Condition"],
+          "aliases": ["live bait", "live fishing bait"],
+          "title_keywords": ["live bait", "live fishing bait"],
+          "context_keywords": ["fish species", "bait count"],
+          "negative_keywords": ["artificial lure", "fishing rod"]
+        },
+        "live_insects": {
+          "display_name": "Live Insects",
+          "formula": ["Brand", "Product Line", "Features", "Live Insect Type", "\"for\"", "Fish Species", "\",\"", "Count"],
+          "attributes": ["Count Per Pack", "Condition", "Multipack Quantity"],
+          "aliases": ["live insects", "live feeder insect"],
+          "title_keywords": ["live insects", "live feeder insect"],
+          "context_keywords": ["fishing bait", "insect count"],
+          "negative_keywords": ["insect killer", "artificial lure"]
+        },
+        "live_worms": {
+          "display_name": "Live Worms",
+          "formula": ["Brand", "Product Line", "Features", "Live Worm Type", "\"for\"", "Fish Species", "\",\"", "Count"],
+          "attributes": ["Live Worm Type", "Number Of Pieces", "Multipack Quantity"],
+          "aliases": ["live worms", "live fishing worm"],
+          "title_keywords": ["live worms", "live fishing worm"],
+          "context_keywords": ["nightcrawler", "bait count"],
+          "negative_keywords": ["plastic worm", "artificial lure"]
+        },
+        "ice_fishing_tip_ups": {
+          "display_name": "Ice Fishing Tip-Ups",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Size", "Ice Fishing Tie Up Type", "Warranty Info"],
+          "attributes": ["Ice Fishing Tie Up Type", "Warranty Information", "Material"],
+          "aliases": ["ice fishing tip-ups", "ice fishing tip-up"],
+          "title_keywords": ["ice fishing tip-ups", "ice fishing tip-up"],
+          "context_keywords": ["strike indicator", "ice fishing rig"],
+          "negative_keywords": ["boat tie-down", "cable tie"]
+        },
+        "other_fishing_accessories": {
+          "display_name": "Other Fishing Accessories",
+          "formula": ["Brand", "Product Line", "Product/Type", "Key Feature", "Size"],
+          "attributes": ["Condition", "Piece Count", "Multipack Quantity"],
+          "aliases": ["other fishing accessories", "fishing accessory"],
+          "title_keywords": ["other fishing accessories", "fishing accessory"],
+          "context_keywords": ["fishing equipment", "replacement component"],
+          "negative_keywords": ["fishing shirt", "fishing jacket"]
+        },
+        "fish_cleaning_tables": {
+          "display_name": "Fish Cleaning Tables",
+          "formula": ["Brand", "Product Line", "Features", "Assembled Product Length", "Product Type", "\"with\"", "Items Included", "\",\"", "Maximum Load Weight"],
+          "attributes": ["Material", "Brand", "Maximum Load Weight"],
+          "aliases": ["fish cleaning tables", "fish cleaning table"],
+          "title_keywords": ["fish cleaning tables", "fish cleaning table"],
+          "context_keywords": ["fillet station", "maximum load"],
+          "negative_keywords": ["dining table", "camping table"]
+        },
+        "fishing_vest_packs": {
+          "display_name": "Fishing Vest & Packs",
+          "formula": ["Brand", "Product Line", "Features", "Age Group", "Gender", "Product Type", "\",\"", "Clothing Size", "\",\"", "Color", "Pattern"],
+          "attributes": ["Gender", "Age Group", "Material"],
+          "aliases": ["fishing vest & packs", "fishing vest"],
+          "title_keywords": ["fishing vest & packs", "fishing vest"],
+          "context_keywords": ["tackle pockets", "fly fishing pack"],
+          "negative_keywords": ["life vest", "reflective vest"]
+        },
+        "fly_fishing_tools": {
+          "display_name": "Fly Fishing Tools",
+          "formula": ["Brand", "Product Line", "Features", "Items Included", "Retail Packaging", "\",\"", "Color", "\",\"", "Piece Count", "\"Piece\""],
+          "attributes": ["Assembled Product Length", "Items Included", "Brand"],
+          "aliases": ["fly fishing tools", "fly fishing tool"],
+          "title_keywords": ["fly fishing tools", "fly fishing tool"],
+          "context_keywords": ["forceps", "nippers"],
+          "negative_keywords": ["fly tying kit", "fishing rod"]
+        },
+        "ice_safety_picks": {
+          "display_name": "Ice Safety Picks",
+          "formula": ["Brand", "Product Line", "Features", "Tip Material", "Product Type", "\",\"", "Color", "\",\"", "Piece Count", "\"Piece\""],
+          "attributes": ["Brand", "Piece Count", "Material"],
+          "aliases": ["ice safety picks", "ice pick safety spikes"],
+          "title_keywords": ["ice safety picks", "ice pick safety spikes"],
+          "context_keywords": ["self rescue", "retractable picks"],
+          "negative_keywords": ["kitchen ice pick", "climbing axe"]
+        },
+        "ice_skimmers": {
+          "display_name": "Ice Skimmers",
+          "formula": ["Brand", "Product Line", "Features", "Material", "Edge Style", "Product Type", "\",\"", "Count", "\"Count\""],
+          "attributes": ["Brand", "Material", "Color"],
+          "aliases": ["ice skimmers", "ice fishing skimmer"],
+          "title_keywords": ["ice skimmers", "ice fishing skimmer"],
+          "context_keywords": ["slush scoop", "ice hole"],
+          "negative_keywords": ["pool skimmer", "protein skimmer"]
         },
         "fishing_tackle_wraps": {
           "display_name": "Fishing Tackle Wraps",
@@ -7026,6 +7863,29 @@
       }
     }
   }, 
+  "sailing": {
+    "display_name": "Sailing",
+    "product_types": {
+      "sailboats": {
+        "display_name": "Sailboats",
+        "formula": ["Brand", "Product Line", "Sailboat Type", "Model"],
+        "attributes": ["Brand", "Material", "Assembly Required"],
+        "aliases": ["sailboats", "sailboat"],
+        "title_keywords": ["sailboats", "sailboat"],
+        "context_keywords": ["sailing vessel", "boat model"],
+        "negative_keywords": ["toy sailboat", "boat motor"]
+      },
+      "sailing_rigging": {
+        "display_name": "Sailing Rigging",
+        "formula": ["Brand", "Product Line", "Sailing Rigging Type"],
+        "attributes": ["Brand", "Material", "Condition"],
+        "aliases": ["sailing rigging", "sailboat rigging"],
+        "title_keywords": ["sailing rigging", "sailboat rigging"],
+        "context_keywords": ["sailing hardware", "standing rigging"],
+        "negative_keywords": ["climbing rope", "fishing rig"]
+      }
+    }
+  },
   "scooters": {
     "display_name": "Scooters",
     "product_types": {
