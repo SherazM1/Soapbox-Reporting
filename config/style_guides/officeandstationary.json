@@ -1,0 +1,131 @@
+{
+  "category": "Office & Stationary",
+  "status": "Partial",
+  "source": "pn-guide-office-stationary.pdf",
+  "families": {
+    "banking_money_handling_supplies":{
+      "display_name": "Banking & Money Handling Supplies",
+      "product types":{
+        "safes":{
+          "display_name":"Safes",
+          "formula": ["Brand", "Product Line", "is Fire-Resistant", "Lock Type", "Safe Type", "Retial Packaging", "Accessories Included", "Exterior Color", "Total Count", "MulitPack Quantty"],
+          "attributes": ["Safe Type", "Brand", "Lock Type"],
+          "aliases": ["safe", "safes", "lock box", "bank safe", "bank safes"],
+          "title_keywords": ["safe", "security safe", "home safe", "fireproof safe", "fire resistant safe"],
+          "context_keywords": ["secure storage", "security", "valuables", "cash storage", "document storage"],
+          "negative_keywords": ["safe deposit box rental", "bank safe deposit box", "gun cabinet", "gun rack", "locker"]
+        },
+        "bill_counters":{
+          "display_name":"Bill Counters",
+          "formula": ["Brand", "Product Line", "Counterfeit Detection Method", "Bill Counter Type", "Retail Packaging", "Accessories Included", "Color", "Total Count", "MultiPack Quantity" ],
+          "attributes": ["Bill Counter Type", "Brand", "Power Type"],
+          "aliases": ["money counter", "money counters", "cash counter", "cash counters", "current counter"],
+          "title_keywords": ["bill counter", "note counter", "cash counter", "currency counter", "banknote counter"],
+          "context_keywords": ["cash handling", "currency handling", "cash management", "money handling", "banknote processing"],
+          "negative_keywords": ["bill validator", "coin tray", "counterfeit detector", "currency scale", "manual counter"]
+        },
+        "cash_boxes":{
+          "display_name":"Cash Boxes",
+          "formula": ["Brand", "Product Line", "Case Material", "Lock Type", "Retail Packaging", "Accessories Included", "Color", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Lock Type", "Brand", "Case Material"],
+          "aliases": ["cash box", "cash boxes", "money box", "money boxes", "cash lock box"],
+          "title_keywords": ["cash box", "cash boxes", "money box", "money boxes", "cash lock box"],
+          "context_keywords": ["cash storage", "money storage", "petty cash", "locking storage", "cash handling"],
+          "negative_keywords": ["cash drawer", "cash register", "safe", "coin counter", "replacement key"]
+        },
+        "cash_registers_drawers_trays":{
+          "display_name":"Cash Register Drawers & Trays",
+          "formula": ["Brand", "Product Line", "Is Lockable", "Tray Material", "Retail Packaging", "Accessories Included", "Color", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Assembled Product Width", "Number Of Coin Bins"],
+          "aliases": ["cash drawer", "cash drawers", "register drawer", "register drawers", "money drawers"],
+          "title_keywords": ["cash drawer", "cash drawers", "register drawer", "register drawers", "cash register drawers"],
+          "context_keywords": ["cash handling", "point of sale", "POS", "checkout", "retail"],
+          "negative_keywords": ["cash box", "money box", "safe", "coin counter", "bill counter"]
+        },
+        "cash_registers":{
+          "display_name":"Cash Registers",
+          "formula": ["Brand", "Product Line", "Retail Packaging", "Accessories Included", "Color", "Total Count", "MultiPack Quantity"],
+          "attributes": ["Brand", "Condition", "Number Of Bill Compartments"],
+          "aliases": ["cash registers", "cash registers", "electronic cash register", "electronic cash registers", "digital cash register"],
+          "title_keywords": ["sales register", "sales registers", "cash till", "cash tills", "point of sale registers"],
+          "context_keywords": ["point of sale", "POS system", "retail checkout", "cash handling", "sales transactions"],
+          "negative_keywords": ["cash drawer", "cash box", "receipt printer", "barcode scanner", "replacement parts"]
+        },
+        "check_writers":{
+          "display_name":"Check Writers",
+          "formula": ["Brand", "Product Line"],
+          "attributes": [],
+          "aliases": [],
+          "title_keywords": [],
+          "context_keywords": [],
+          "negative_keywords": []
+        },
+        "coin_counters_sorters_changers":{
+          "display_name":"",
+          "formula": [],
+          "attributes": [],
+          "aliases": [],
+          "title_keywords": [],
+          "context_keywords": [],
+          "negative_keywords": []
+        },
+        "coin_roll_wrappers":{
+          "display_name":"",
+          "formula": [],
+          "attributes": [],
+          "aliases": [],
+          "title_keywords": [],
+          "context_keywords": [],
+          "negative_keywords": []
+        },
+        "couterfeit_bill_detector_pens":{
+          "display_name":"",
+          "formula": [],
+          "attributes": [],
+          "aliases": [],
+          "title_keywords": [],
+          "context_keywords": [],
+          "negative_keywords": []
+        },
+        "counterfeit_bill_detectors":{
+          "display_name":"",
+          "formula": [],
+          "attributes": [],
+          "aliases": [],
+          "title_keywords": [],
+          "context_keywords": [],
+          "negative_keywords": []
+        },
+        "currency_bands_straps":{
+          "display_name":"",
+          "formula": [],
+          "attributes": [],
+          "aliases": [],
+          "title_keywords": [],
+          "context_keywords": [],
+          "negative_keywords": []
+        },
+        "money_deposit_bags":{
+          "display_name":"",
+          "formula": [],
+          "attributes": [],
+          "aliases": [],
+          "title_keywords": [],
+          "context_keywords": [],
+          "negative_keywords": []
+        },
+        "record_books_ledgers"{
+          "display_name":"",
+          "formula": [],
+          "attributes": [],
+          "aliases": [],
+          "title_keywords": [],
+          "context_keywords": [],
+          "negative_keywords": []
+      }
+
+    }
+  },
+
+
+}
