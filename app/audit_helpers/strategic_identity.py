@@ -16,6 +16,9 @@ from app.audit_helpers.image_guides import (
 
 
 STYLE_GUIDE_FILES: dict[str, str] = {
+    "garden_patio": "gardenandpatio.json",
+    "everything_else": "everythingelse.json",
+    "business_industrial": "businessandindustrial.json",
     "food_beverage": "food_beverage.json",
     "beauty": "beauty.json",
     "health_personal_care": "healthpersonal.json",
@@ -24,6 +27,9 @@ STYLE_GUIDE_FILES: dict[str, str] = {
 }
 
 IMAGE_GUIDE_FILES: dict[str, str] = {
+    "garden_patio": "gardenandpatioimg.json",
+    "everything_else": "everythingelseimg.json",
+    "business_industrial": "businessandindustrialimg.json",
     "food_beverage": "food_beverageimg.json",
     "beauty": "beautyimg.json",
     "health_personal_care": "healthpersonalimg.json",

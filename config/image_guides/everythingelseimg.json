@@ -1,0 +1,323 @@
+{
+  "category": "Everything Else",
+  "category_key": "everything_else",
+  "guide_key": "everythingelseimg",
+  "source": "FY27_Category_StyleGuide_EverythingElse.pdf",
+  "last_updated": "Sept 15, 2026",
+  "status": "complete",
+  "global_guidance": {
+    "rules": [
+      "imagery should have high appetite appeal",
+      "silo images should be photographed consistently according to packaging or product type",
+      "minimize reflections on plastic, foil, and shiny packaging, especially when covering important product information",
+      "remove unnecessary stickers not part of package design, such as special promotion stickers or legal declarations",
+      "packaging and labels should be presented straight, not angled or crooked",
+      "photograph each unique and meaningful side of the product package",
+      "for round or irregular shapes, present sides so printed information and graphics are centered and legible",
+      "front view is the side with predominant brand and labeling, format, variant, and size/quantity",
+      "products should be evenly lit from side to side and top to bottom",
+      "exposure and color should correctly represent the item",
+      "maintain separation between product and background",
+      "clip products onto pure white background, RGB 255/255/255",
+      "retouch dirt, dust, fingerprints, damage, blemishes, expiration dates, lot numbers, and sample-only information",
+      "lifestyle images should be realistic, professionally lit, and styled appropriately to the item and brand",
+      "product being sold should remain the hero of the lifestyle image",
+      "packaging should be incorporated into lifestyle images when practical to connect lifestyle images to silo shots",
+      "items must display all indicated required images and conditionally required images and meet the minimum image count listed on each page",
+      "maintain details in product whites and avoid flare or spill from the background",
+      "when possible, photograph the item without packaging and digitally apply artwork or labels for a clean, legible final image",
+      "use sharp focus on the featured product; softer background or foreground focus and white space may simplify the image",
+      "when the product and its packaging appear together, both must be in focus so packaging can be identified and read",
+      "maintain a consistent visual approach and consistent angles across the assortment for a unified PDP and shelf presentation",
+      "individual brand guidelines should take precedence"
+    ]
+  },
+  "slot_definitions": {
+    "main_image": {
+      "label": "Main Image",
+      "description": "Primary carousel image/hero image for the PDP.",
+      "detection_hints": [
+        "main",
+        "hero",
+        "primary",
+        "front",
+        "image 1",
+        "carousel 1"
+      ]
+    },
+    "silo_front": {
+      "label": "Silo, Front",
+      "guidance": "Show the product straight-on on a pure white background. Follow the product section for packaging and label requirements.",
+      "recommendation": "Add a straight-on front image on pure white following the product section guidance.",
+      "detection_hints": [
+        "front",
+        "silo",
+        "main",
+        "hero",
+        "white background"
+      ]
+    },
+    "lifestyle_in_use": {
+      "label": "Lifestyle, In-Use",
+      "guidance": "Show the product in a lifestyle setting that aligns with the brand.",
+      "recommendation": "Add a lifestyle image showing the product in use in a setting that aligns with the brand.",
+      "detection_hints": [
+        "lifestyle",
+        "in-use",
+        "in use",
+        "setting",
+        "application"
+      ]
+    },
+    "feature_graphic": {
+      "label": "Feature Graphic",
+      "guidance": "Highlight a product feature or benefit using supporting text and graphics.",
+      "recommendation": "Add a feature graphic highlighting a product feature or benefit with supporting text and graphics.",
+      "detection_hints": [
+        "feature",
+        "benefit",
+        "callout",
+        "graphic",
+        "supporting text"
+      ]
+    },
+    "silo_detail": {
+      "label": "Silo, Detail",
+      "guidance": "Show the product out of packaging or in a close-up of key details such as filters, tips, or accessories in a clean, factual style.",
+      "recommendation": "Add an out-of-pack or close-up detail image in a clean, factual style.",
+      "detection_hints": [
+        "detail",
+        "close-up",
+        "close up",
+        "filters",
+        "tips",
+        "accessories",
+        "out of packaging"
+      ]
+    },
+    "dimensions": {
+      "label": "Dimensions",
+      "guidance": "Show product dimensions in a graphic. For collectibles, use a scale avatar or apply product dimensions to the front-of-pack image.",
+      "recommendation": "Add a product dimensions graphic or the scale reference specified for the product section.",
+      "detection_hints": [
+        "dimensions",
+        "scale avatar",
+        "height",
+        "width",
+        "depth",
+        "measurements",
+        "size"
+      ]
+    },
+    "silo_front_in_pack": {
+      "label": "Silo, Front, In Pack",
+      "guidance": "Show the front of the retail packaging straight-on on a pure white background when applicable.",
+      "recommendation": "Add a straight-on front retail packaging image on pure white when applicable.",
+      "detection_hints": [
+        "front in pack",
+        "retail packaging",
+        "package front",
+        "in pack"
+      ]
+    },
+    "silo_back_in_pack": {
+      "label": "Silo, Back, In Pack",
+      "guidance": "Show the back of product packaging straight-on on a pure white background with all label details legible.",
+      "recommendation": "Add a straight-on back packaging image on pure white with all label details legible.",
+      "detection_hints": [
+        "back in pack",
+        "package back",
+        "back packaging",
+        "rear packaging",
+        "label details"
+      ]
+    },
+    "silo_assortment": {
+      "label": "Silo, Assortment",
+      "guidance": "Show all included pieces on white in a clean, organized arrangement.",
+      "recommendation": "Add an assortment image showing all included pieces arranged clearly on white.",
+      "detection_hints": [
+        "assortment",
+        "included pieces",
+        "organized arrangement",
+        "all pieces"
+      ]
+    }
+  },
+  "pages": {
+    "collectibles_memorabilia": {
+      "display_name": "Collectibles & Memorabilia",
+      "format": "General",
+      "product_types": [
+        "Autographed Collectibles",
+        "Coins",
+        "Collectible Buildings",
+        "Collectible Ephemera",
+        "Photo Mints",
+        "Precious Metals",
+        "Trading Card Sleeves & Holders",
+        "Trading Cards"
+      ],
+      "required_slots": [
+        "silo_front",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "silo_assortment",
+        "silo_back_in_pack",
+        "dimensions"
+      ],
+      "additional_recommendations": [],
+      "notes": [
+        "Source PDF page 3. Preserve the six-image carousel order shown on the source page.",
+        "The image guide does not enumerate product types for this section. Product mappings are inferred from the collectibles_memorabilia family in config/style_guides/everythingelse.json.",
+        "Shoot the front image straight on in package on a pure white background.",
+        "Lifestyle should show the product in a setting that aligns with the brand.",
+        "Highlight a product feature or benefit using supporting text and graphics.",
+        "Use a scale avatar or apply product dimensions to the front-of-pack image.",
+        "Maintain a consistent visual approach and consistent angles across the assortment.",
+        "Individual brand guidelines should take precedence."
+      ]
+    },
+    "tobacco_products_smoking_supplies": {
+      "display_name": "Tobacco Products & Smoking Supplies",
+      "format": "General",
+      "product_types": [
+        "Cigarettes",
+        "Herbal Cigarettes",
+        "Loose Tobacco",
+        "Chewing Tobacco",
+        "Rolling Papers",
+        "Cigarette Tubes",
+        "Cigarette Rolling Machines & Injectors",
+        "Cigarette Filters",
+        "Cigarette Holders",
+        "Cigarette Cases",
+        "Cigars",
+        "Cigar Cases",
+        "Cigar Cutters",
+        "Cigar Humidors",
+        "Cigar Humidor Accessories",
+        "Electronic Cigar Humidifiers",
+        "Tobacco Pipes",
+        "Tobacco Pipe Cleaners",
+        "Tobacco Pipe Tools",
+        "Tobacco Pipe Stands & Racks",
+        "Tobacco & Pipe Pouches & Jars",
+        "Ashtrays",
+        "Lighters",
+        "Rosin Presses"
+      ],
+      "required_slots": [
+        "silo_front",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "feature_graphic",
+        "silo_detail",
+        "silo_front_in_pack",
+        "dimensions"
+      ],
+      "additional_recommendations": [
+        "Flavor / Strength Chart: Display available flavors or nicotine strengths in a clean labeled lineup. Do not make comparative health claims.",
+        "Compatibility Graphic: Show compatible devices, pods, or accessories. For tobacco accessories, show compatible products.",
+        "Compliance Callout: Include any required age-restriction or regulatory compliance visual element.",
+        "Collection Image: Show the full product family or variant range in an organized group arrangement.",
+        "Specification Chart: Display key product specifications, dimensions, capacity, and material in a clean chart format."
+      ],
+      "notes": [
+        "Source PDF page 4. Preserve the seven-image carousel order shown on the source page, including Dimensions on the second row.",
+        "Preserve repeated feature_graphic because the source page shows two separate feature graphics.",
+        "The first feature graphic displays product specifications using concise callout graphics without promotional claims.",
+        "The second feature graphic shows available flavors or variants in a clean lineup without comparative claims.",
+        "Show the front product image straight-on on pure white with no promotional claims and all required regulatory text legible.",
+        "Lifestyle should show the product in a realistic, natural everyday setting with the product as the focal point and minimal distraction.",
+        "The front retail packaging image applies when applicable.",
+        "Maintain a consistent visual approach and consistent angles across the assortment.",
+        "Individual brand guidelines should take precedence."
+      ]
+    },
+    "vaping_hookah_alternatives": {
+      "display_name": "Vaping, Hookah & Alternatives",
+      "format": "General",
+      "product_types": [
+        "Electronic Cigarettes",
+        "Electronic Cigarette Starter Kits",
+        "Electronic Cigarette Batteries",
+        "Electronic Cigarette Cartridges",
+        "Skins for Vape Pens",
+        "Hookahs",
+        "Hookah Hoses",
+        "Hookah Charcoal"
+      ],
+      "required_slots": [
+        "silo_front",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "feature_graphic",
+        "silo_front_in_pack",
+        "feature_graphic",
+        "dimensions"
+      ],
+      "additional_recommendations": [
+        "Flavor / Strength Chart: Display available flavors or nicotine strengths in a clean labeled lineup. Do not make comparative health claims.",
+        "Compatibility Graphic: Show compatible devices, pods, or accessories. For tobacco accessories, show compatible products.",
+        "Compliance Callout: Include any required age-restriction or regulatory compliance visual element.",
+        "Collection Image: Show the full product family or variant range in an organized group arrangement.",
+        "Specification Chart: Display key product specifications, dimensions, capacity, and material in a clean chart format."
+      ],
+      "notes": [
+        "Source PDF page 5. Preserve the seven-image carousel order shown on the source page, including Dimensions on the second row.",
+        "Preserve repeated feature_graphic because the source page shows three separate feature graphics.",
+        "The first feature graphic displays device specifications such as capacity, count, or features using concise callout graphics without promotional claims.",
+        "The second feature graphic displays product specifications such as capacity, count, strength, or features using concise callouts.",
+        "The third feature graphic shows a close-up of the product in active use, focusing on user interaction and cropping tightly to highlight texture, scale, or tactile quality.",
+        "Show the front product image straight-on on pure white with no promotional claims and all required regulatory text legible.",
+        "Lifestyle should show the product in a realistic, natural everyday setting with the product as the focal point and minimal distraction.",
+        "The front retail packaging image applies when applicable.",
+        "Maintain a consistent visual approach and consistent angles across the assortment.",
+        "Individual brand guidelines should take precedence."
+      ]
+    }
+  },
+  "product_type_index": {
+    "Autographed Collectibles": "collectibles_memorabilia",
+    "Coins": "collectibles_memorabilia",
+    "Collectible Buildings": "collectibles_memorabilia",
+    "Collectible Ephemera": "collectibles_memorabilia",
+    "Photo Mints": "collectibles_memorabilia",
+    "Precious Metals": "collectibles_memorabilia",
+    "Trading Card Sleeves & Holders": "collectibles_memorabilia",
+    "Trading Cards": "collectibles_memorabilia",
+    "Cigarettes": "tobacco_products_smoking_supplies",
+    "Herbal Cigarettes": "tobacco_products_smoking_supplies",
+    "Loose Tobacco": "tobacco_products_smoking_supplies",
+    "Chewing Tobacco": "tobacco_products_smoking_supplies",
+    "Rolling Papers": "tobacco_products_smoking_supplies",
+    "Cigarette Tubes": "tobacco_products_smoking_supplies",
+    "Cigarette Rolling Machines & Injectors": "tobacco_products_smoking_supplies",
+    "Cigarette Filters": "tobacco_products_smoking_supplies",
+    "Cigarette Holders": "tobacco_products_smoking_supplies",
+    "Cigarette Cases": "tobacco_products_smoking_supplies",
+    "Cigars": "tobacco_products_smoking_supplies",
+    "Cigar Cases": "tobacco_products_smoking_supplies",
+    "Cigar Cutters": "tobacco_products_smoking_supplies",
+    "Cigar Humidors": "tobacco_products_smoking_supplies",
+    "Cigar Humidor Accessories": "tobacco_products_smoking_supplies",
+    "Electronic Cigar Humidifiers": "tobacco_products_smoking_supplies",
+    "Tobacco Pipes": "tobacco_products_smoking_supplies",
+    "Tobacco Pipe Cleaners": "tobacco_products_smoking_supplies",
+    "Tobacco Pipe Tools": "tobacco_products_smoking_supplies",
+    "Tobacco Pipe Stands & Racks": "tobacco_products_smoking_supplies",
+    "Tobacco & Pipe Pouches & Jars": "tobacco_products_smoking_supplies",
+    "Ashtrays": "tobacco_products_smoking_supplies",
+    "Lighters": "tobacco_products_smoking_supplies",
+    "Rosin Presses": "tobacco_products_smoking_supplies",
+    "Electronic Cigarettes": "vaping_hookah_alternatives",
+    "Electronic Cigarette Starter Kits": "vaping_hookah_alternatives",
+    "Electronic Cigarette Batteries": "vaping_hookah_alternatives",
+    "Electronic Cigarette Cartridges": "vaping_hookah_alternatives",
+    "Skins for Vape Pens": "vaping_hookah_alternatives",
+    "Hookahs": "vaping_hookah_alternatives",
+    "Hookah Hoses": "vaping_hookah_alternatives",
+    "Hookah Charcoal": "vaping_hookah_alternatives"
+  }
+}

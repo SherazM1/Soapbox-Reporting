@@ -1,0 +1,232 @@
+{
+  "category": "Home",
+  "category_key": "home",
+  "guide_key": "homeimg",
+  "source": "FY27_Category_StyleGuide_Home.pdf",
+  "last_updated": "sept 21, 2026",
+  "status": "partial",
+  "global_guidance": {
+    "rules": [
+        "imagery should have a high appetite appeal", 
+        "silo images should be photographed consistently according to the packaging or product type",
+        "minimize reflections on plastic, foil, and shiny packaging, especially when it covers important product information",
+        "remove unnecessary stickers which are not part of the product package design (i.e. special promotion sticker, legal declarations)",
+        "all packaging and labels should be presented straight; not at an angle or crooked"
+    ]
+},
+"slot_definitions": {
+    "main_image": {
+      "label": "Main Image",
+      "description": "Primary carousel image/hero image for the PDP.",
+      "detection_hints": [
+        "main",
+        "hero",
+        "primary",
+        "front",
+        "image 1",
+        "carousel 1"
+      ]
+    },
+    "silo_front": {
+      "label": "Silo, Front",
+      "guidance": "Show the product straight-on or top down (when applicable) on a pure white background.",
+      "recommendation": "Add a straight-on front image on pure white following the product section guidance.",
+      "detection_hints": [
+        "front",
+        "silo",
+        "main",
+        "hero",
+        "white background"
+        ]
+
+    },
+    "silo_detail": {
+      "label": "Silo, Detail",
+      "guidance": "Show a close-up of print quality, finish, or detail.",
+      "recommendation": "Add a close-up detail image showing print quality, finish, texture, or physical detail.",
+      "detection_hints": [
+        "detail",
+        "close-up",
+        "closeup",
+        "print quality",
+        "finish",
+        "texture",
+        "paper",
+        "detail"
+      ]
+    },
+    "silo_front_in_pack": {
+      "label": "Silo, Front, In Pack",
+      "guidance": "Show the front of retail-ready packaging on a pure white background when it differs from the product.",
+      "recommendation": "Add a straight-on retail packaging image when packaging differs from the product.",
+      "detection_hints": [
+        "front in pack",
+        "in pack",
+        "retail-ready",
+        "retail packaging",
+        "package front",
+        "packaging",
+        "boxed"
+      ]
+    },
+    "lifestyle_in_use": {
+      "label": "Lifestyle, In-Use",
+      "guidance": "Show product interaction or media in use.",
+      "recommendation": "Add a lifestyle image showing product interaction or media in use.",
+      "detection_hints": [
+        "lifestyle",
+        "in-use",
+        "in use",
+        "interaction",
+        "reading",
+        "coloring",
+        "watching",
+        "listening",
+        "media in use"
+      ]
+    },
+    "dimensions": {
+      "label": "Dimensions",
+      "guidance": "Graphic showing product dimensions.",
+      "recommendation": "Add a dimensions or physical format graphic when applicable.",
+      "detection_hints": [
+        "dimensions",
+        "height",
+        "width",
+        "depth",
+        "size",
+        "format",
+        "physical format",
+        "inches",
+        "in."
+      ]
+    },
+    "feature_graphic": {
+      "label": "Feature Graphic",
+      "guidance": "Detail an interactive feature, primary detail, additional capability, or value using clean graphic treatment.",
+      "recommendation": "Add a feature graphic highlighting an interactive feature, primary detail, or additional capability.",
+      "detection_hints": [
+        "feature",
+        "interactive",
+        "primary detail",
+        "capability",
+        "value",
+        "callout",
+        "benefit"
+      ]
+    },
+    "interior_view": {
+      "label": "Interior View",
+      "guidance": "Show the product open with interior components visible.",
+      "recommendation": "Add an interior view showing the product open with interior pages, components, or contents visible.",
+      "detection_hints": [
+        "interior",
+        "open",
+        "inside",
+        "pages",
+        "components",
+        "contents",
+        "interior view"
+      ]
+    },
+    "contents_view": {
+      "label": "Contents View",
+      "guidance": "Show all included contents together for box sets, collector editions, or multi-piece items.",
+      "recommendation": "Add a contents view showing included contents for box sets, collector editions, or multi-piece items.",
+      "detection_hints": [
+        "contents",
+        "box set",
+        "collector edition",
+        "multi-piece",
+        "included",
+        "components",
+        "what's included"
+      ]
+    },
+    "spine_view": {
+      "label": "Spine View",
+      "guidance": "Show a side view to display the spine or edge of the item.",
+      "recommendation": "Add a spine or side view showing the spine or edge clearly.",
+      "detection_hints": [
+        "spine",
+        "side view",
+        "edge",
+        "book spine",
+        "dvd spine",
+        "case spine"
+      ]
+    },
+    "graphic_whats_included": {
+      "label": "What's Included",
+      "guidance": "Show all included components in a clean flat-lay when multiple pieces are included.",
+      "recommendation": "Add a what's-included flat-lay when multiple pieces are included.",
+      "detection_hints": [
+        "what's included",
+        "whats included",
+        "included",
+        "components",
+        "flat-lay",
+        "flat lay",
+        "contents"
+      ]
+    }
+  },
+  "pages": {
+    "books_print_physical_media": {
+      "display_name": "Books, Print & Physical Media",
+      "format": "General",
+      "product_types": [
+        "Books",
+        "Catalogs",
+        "Coloring Books",
+        "Comics",
+        "Magazines",
+        "Manuals & Guides",
+        "Newspapers",
+        "Movies",
+        "TV Shows",
+        "Music",
+        "Stock Photographs"
+      ],
+      "required_slots": [
+        "silo_front",
+        "silo_detail",
+        "silo_front_in_pack",
+        "lifestyle_in_use",
+        "dimensions",
+        "feature_graphic",
+        "interior_view",
+        "feature_graphic"
+      ],
+      "additional_recommendations": [
+        "Contents View: Show all included contents together for box sets, collector editions, or multi-piece items.",
+        "Spine View: Show a side view to display the spine or edge of the item.",
+        "What's Included: Show all included components in a clean flat-lay when multiple pieces are included.",
+        "Packaging: Show the front of retail-ready packaging on a pure white background when it differs from the product.",
+        "Format / Size Detail: Display product dimensions or physical format using a clean graphic when applicable."
+      ],
+      "notes": [
+        "Preserve repeated feature_graphic because the source page shows two separate feature graphics.",
+        "Silo Front should show the front cover or packaging straight-on on pure white.",
+        "Silo Detail should show print quality, finish, or detail.",
+        "Lifestyle should show product interaction or media in use.",
+        "Interior View should show the product open with interior components visible.",
+        "One feature graphic should detail an interactive feature or primary detail.",
+        "Another feature graphic should highlight an additional capability to reinforce value."
+      ]
+    }
+  },
+  "product_type_index": {
+    "Books": "books_print_physical_media",
+    "Catalogs": "books_print_physical_media",
+    "Coloring Books": "books_print_physical_media",
+    "Comics": "books_print_physical_media",
+    "Magazines": "books_print_physical_media",
+    "Manuals & Guides": "books_print_physical_media",
+    "Newspapers": "books_print_physical_media",
+    "Movies": "books_print_physical_media",
+    "TV Shows": "books_print_physical_media",
+    "Music": "books_print_physical_media",
+    "Stock Photographs": "books_print_physical_media"
+  }
+}

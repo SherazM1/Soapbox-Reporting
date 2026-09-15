@@ -82,6 +82,31 @@ _ANIMALS_ALIASES = {
     "animalsimg",
 }
 
+_BUSINESS_INDUSTRIAL_ALIASES = {
+    "business_industrial",
+    "business industrial",
+    "business_and_industrial",
+    "business and industrial",
+    "businessandindustrial",
+    "businessandindustrialimg",
+}
+
+_EVERYTHING_ELSE_ALIASES = {
+    "everything_else",
+    "everything else",
+    "everythingelse",
+    "everythingelseimg",
+}
+
+_GARDEN_PATIO_ALIASES = {
+    "garden_patio",
+    "garden patio",
+    "garden_and_patio",
+    "garden and patio",
+    "gardenandpatio",
+    "gardenandpatioimg",
+}
+
 _ELECTRONICS_ALIASES = {
     "electronics",
     "photography",
@@ -776,6 +801,16 @@ def resolve_image_guide_category(category_key: str) -> str:
         candidates.extend(part for part in re.split(r"[_/\\]+", normalized) if part)
 
     candidate_set = set(candidates)
+    if candidate_set & _GARDEN_PATIO_ALIASES or re.match(
+        r"^garden(?:_and)?_patio(?:_|$)", normalized
+    ):
+        return "garden_patio"
+    if candidate_set & _EVERYTHING_ELSE_ALIASES or normalized.startswith("everything_else_"):
+        return "everything_else"
+    if candidate_set & _BUSINESS_INDUSTRIAL_ALIASES or re.match(
+        r"^business(?:_and)?_industrial(?:_|$)", normalized
+    ):
+        return "business_industrial"
     if candidate_set & (_FOOD_BEVERAGE_ALIASES | {"food", "grocery", "pantry", "beverage", "beverages"}):
         return "food_beverage"
     if candidate_set & (_BEAUTY_ALIASES | {"beauty"}):
@@ -808,6 +843,12 @@ def resolve_image_guide_category(category_key: str) -> str:
 def _guide_path_for_category(category_key: str) -> Path | None:
     normalized = resolve_image_guide_category(category_key)
     alias = normalized.replace("_", " ")
+    if normalized in _BUSINESS_INDUSTRIAL_ALIASES or alias in _BUSINESS_INDUSTRIAL_ALIASES:
+        return _repo_root() / "config" / "image_guides" / "businessandindustrialimg.json"
+    if normalized in _EVERYTHING_ELSE_ALIASES or alias in _EVERYTHING_ELSE_ALIASES:
+        return _repo_root() / "config" / "image_guides" / "everythingelseimg.json"
+    if normalized in _GARDEN_PATIO_ALIASES or alias in _GARDEN_PATIO_ALIASES:
+        return _repo_root() / "config" / "image_guides" / "gardenandpatioimg.json"
     if normalized in _FOOD_BEVERAGE_ALIASES or alias in _FOOD_BEVERAGE_ALIASES:
         return _repo_root() / "config" / "image_guides" / "food_beverageimg.json"
     if normalized in _BEAUTY_ALIASES or alias in _BEAUTY_ALIASES:
