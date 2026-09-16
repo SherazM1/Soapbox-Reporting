@@ -1,0 +1,304 @@
+{
+  "category": "Safety & Emergency",
+  "category_key": "safety_emergency",
+  "guide_key": "safetyemergencyimg",
+  "source": "FY27_Category_StyleGuide_Safety-Emergency.pdf",
+  "last_updated": "Apr 21, 2026",
+  "status": "complete",
+  "global_guidance": {
+    "rules": [
+      "imagery should have high appetite appeal",
+      "silo images should be photographed consistently according to packaging or product type",
+      "minimize reflections on plastic, foil, and shiny packaging, especially when covering important product information",
+      "remove unnecessary stickers not part of package design, such as special promotion stickers or legal declarations",
+      "packaging and labels should be presented straight, not angled or crooked",
+      "photograph each unique and meaningful side of the product package",
+      "for round or irregular shapes, present sides so printed information and graphics are centered and legible",
+      "front view is the side with predominant brand and labeling, format, variant, and size/quantity",
+      "products should be evenly lit from side to side and top to bottom",
+      "exposure and color should correctly represent the item",
+      "maintain separation between product and background",
+      "clip products onto pure white background, RGB 255/255/255",
+      "retouch dirt, dust, fingerprints, damage, blemishes, expiration dates, lot numbers, and sample-only information",
+      "lifestyle images should be realistic, professionally lit, and styled appropriately to the item and brand",
+      "product being sold should remain the hero of the lifestyle image",
+      "packaging should be incorporated into lifestyle images when practical to connect lifestyle images to silo shots",
+      "items must display all indicated required images and conditionally required images and meet the minimum image count listed on each page",
+      "use selective focus to keep the featured product sharp and simplify the surrounding scene",
+      "when the product and its packaging appear together, keep both in focus so packaging can be identified and read",
+      "when possible, photograph the item without packaging and digitally apply artwork or labels for a clean, legible image"
+    ]
+  },
+  "slot_definitions": {
+    "main_image": {
+      "label": "Main Image",
+      "description": "Primary carousel image/hero image for the PDP.",
+      "detection_hints": [
+        "main",
+        "hero",
+        "primary",
+        "front",
+        "image 1",
+        "carousel 1"
+      ]
+    },
+    "silo_front": {
+      "label": "Silo, Front",
+      "guidance": "Show the entire product on a pure white background, following the product section guidance for angle, out-of-package presentation, and included major accessories.",
+      "recommendation": "Add a silo, front image following the product section guidance.",
+      "detection_hints": [
+        "silo front",
+        "silo",
+        "front",
+        "main",
+        "hero",
+        "white background",
+        "out of package",
+        "accessories"
+      ]
+    },
+    "lifestyle_in_use": {
+      "label": "Lifestyle, In-Use",
+      "guidance": "Show the product in a lifestyle setting that aligns with the brand.",
+      "recommendation": "Add a lifestyle, in-use image following the product section guidance.",
+      "detection_hints": [
+        "lifestyle in use",
+        "lifestyle",
+        "in-use",
+        "in use",
+        "lifestyle setting"
+      ]
+    },
+    "feature_graphic": {
+      "label": "Feature Graphic",
+      "guidance": "Highlight a product feature or benefit using supporting text and graphics.",
+      "recommendation": "Add a feature graphic image following the product section guidance.",
+      "detection_hints": [
+        "feature graphic",
+        "callout",
+        "benefit",
+        "feature",
+        "graphics"
+      ]
+    },
+    "dimensions": {
+      "label": "Dimensions",
+      "guidance": "Use a scale avatar or apply product dimensions to the front-of-pack image.",
+      "recommendation": "Add a dimensions image following the product section guidance.",
+      "detection_hints": [
+        "dimensions",
+        "height",
+        "width",
+        "depth",
+        "size",
+        "scale",
+        "avatar"
+      ]
+    },
+    "silo_detail": {
+      "label": "Silo, Detail",
+      "guidance": "Show a close-up of a key design detail to highlight quality.",
+      "recommendation": "Add a silo, detail image following the product section guidance.",
+      "detection_hints": [
+        "silo detail",
+        "silo",
+        "detail",
+        "close-up",
+        "closeup",
+        "quality",
+        "design detail"
+      ]
+    },
+    "silo_alt_in_pack": {
+      "label": "Silo, Alt, In Pack",
+      "guidance": "Photograph the side or back of the product to clearly capture all label information. Shoot straight on, no plunge shots.",
+      "recommendation": "Add a silo, alt, in pack image following the product section guidance.",
+      "detection_hints": [
+        "silo alt in pack",
+        "silo",
+        "alt",
+        "in pack",
+        "packaging",
+        "side",
+        "back",
+        "label information"
+      ]
+    },
+    "silo_out_of_pack_whats_included": {
+      "label": "Silo, Out of Pack, What's Included",
+      "guidance": "Show all kit components in a clean flat-lay on a white background with every item visible.",
+      "recommendation": "Add a silo, out of pack, what's included image following the product section guidance.",
+      "detection_hints": [
+        "silo out of pack whats included",
+        "silo",
+        "out of pack",
+        "what's included",
+        "kit",
+        "components",
+        "flat-lay",
+        "white background"
+      ]
+    }
+  },
+  "pages": {
+    "ppe_workwear_fall_protection": {
+      "display_name": "PPE, Workwear & Fall Protection",
+      "format": "General",
+      "product_types": [
+        "Fall-Arrest Kits",
+        "Safety Harnesses",
+        "Safety Vests",
+        "Workwear Knee Pads",
+        "Workwear Safety Gloves",
+        "Back Support Belts",
+        "Controlled Environment Disposable Apparel",
+        "Hazmat Suits",
+        "Protective Sleeves",
+        "Protective Boot & Shoe Covers",
+        "Protective Hardhats & Helmets",
+        "Protective Eyewear",
+        "Protective Ear Muffs",
+        "Respirators",
+        "Dust & Pollen Masks",
+        "Lab Face Masks & Shields"
+      ],
+      "required_slots": [
+        "silo_front",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "feature_graphic",
+        "feature_graphic",
+        "dimensions"
+      ],
+      "additional_recommendations": [],
+      "notes": [
+        "Source page: 3.",
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation.",
+        "Individual brand guidelines should take precedence.",
+        "Image 1 (Silo, Front): Shoot straight on out of package with all major accessories on a pure white background.",
+        "Image 2 (Lifestyle, In-Use): Show the product in a lifestyle setting that aligns with the brand.",
+        "Image 3 (Feature Graphic): Highlight a product feature or benefit using supporting text and graphics.",
+        "Image 4 (Feature Graphic): Highlight a product feature or benefit using supporting text and graphics.",
+        "Image 5 (Feature Graphic): Highlight a product feature or benefit using supporting text and graphics.",
+        "Image 6 (Dimensions): Use a scale avatar or apply product dimensions to the front-of-pack image.",
+        "Preserve repeated slots because the source page shows separate images: feature_graphic."
+      ]
+    },
+    "emergency_preparedness_fire_safety": {
+      "display_name": "Emergency Preparedness & Fire Safety",
+      "format": "General",
+      "product_types": [
+        "Emergency Preparedness Kits",
+        "Emergency Shelters",
+        "Sandbags & Flood Guards",
+        "Fire Blankets",
+        "Fire Extinguishers",
+        "Fire Hoses",
+        "Fire Retardants",
+        "Fire Sprinklers"
+      ],
+      "required_slots": [
+        "silo_front",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "silo_detail",
+        "silo_alt_in_pack",
+        "dimensions"
+      ],
+      "additional_recommendations": [],
+      "notes": [
+        "Source page: 4.",
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation.",
+        "Individual brand guidelines should take precedence.",
+        "Image 1 (Silo, Front): Shoot straight on out of package on a pure white background.",
+        "Image 2 (Lifestyle, In-Use): Show the product in a lifestyle setting that aligns with the brand.",
+        "Image 3 (Feature Graphic): Highlight a product feature or benefit using supporting text and graphics.",
+        "Image 4 (Silo, Detail): Show a close-up of a key design detail to highlight quality.",
+        "Image 5 (Silo, Alt, In Pack): Photograph the side or back of the product to clearly capture all label information. Shoot straight on, no plunge shots.",
+        "Image 6 (Dimensions): Use a scale avatar or apply product dimensions to the front-of-pack image."
+      ]
+    },
+    "hazardous_materials_spill_control_lockout_tagout": {
+      "display_name": "Hazardous Materials, Spill Control & Lockout/Tagout",
+      "format": "General",
+      "product_types": [
+        "Hazardous Waste Storage Containers",
+        "Lab Spill Control & Response Supplies",
+        "Sorbents",
+        "Lockout & Tagout Devices",
+        "Safety & Caution Tape",
+        "Safety Barriers",
+        "Safety Cones & Triangles",
+        "Safety Floor Markers",
+        "Other Indoor & Outdoor Safety",
+        "Warning Alarms & Sirens",
+        "Warning Lights & Beacons",
+        "Eye Wash Units",
+        "Other Occupational Health"
+      ],
+      "required_slots": [
+        "silo_front",
+        "lifestyle_in_use",
+        "feature_graphic",
+        "feature_graphic",
+        "silo_out_of_pack_whats_included",
+        "dimensions"
+      ],
+      "additional_recommendations": [],
+      "notes": [
+        "Source page: 5.",
+        "Product photography should follow a consistent visual approach to ensure cohesion across the assortment.",
+        "Consistency in angle is critical to maintain a unified PDP and shelf presentation.",
+        "Individual brand guidelines should take precedence.",
+        "Image 1 (Silo, Front): Shoot straight on or at an angle to show the entire item on a pure white background.",
+        "Image 2 (Lifestyle, In-Use): Show the product in a lifestyle setting that aligns with the brand.",
+        "Image 3 (Feature Graphic): Highlight a product feature or benefit using supporting text and graphics.",
+        "Image 4 (Feature Graphic): Highlight a product feature or benefit using supporting text and graphics.",
+        "Image 5 (Silo, Out of Pack, What's Included): Show all kit components in a clean flat-lay on a white background with every item visible.",
+        "Image 6 (Dimensions): Use a scale avatar or apply product dimensions to the front-of-pack image.",
+        "Preserve repeated slots because the source page shows separate images: feature_graphic."
+      ]
+    }
+  },
+  "product_type_index": {
+    "Fall-Arrest Kits": "ppe_workwear_fall_protection",
+    "Safety Harnesses": "ppe_workwear_fall_protection",
+    "Safety Vests": "ppe_workwear_fall_protection",
+    "Workwear Knee Pads": "ppe_workwear_fall_protection",
+    "Workwear Safety Gloves": "ppe_workwear_fall_protection",
+    "Back Support Belts": "ppe_workwear_fall_protection",
+    "Controlled Environment Disposable Apparel": "ppe_workwear_fall_protection",
+    "Hazmat Suits": "ppe_workwear_fall_protection",
+    "Protective Sleeves": "ppe_workwear_fall_protection",
+    "Protective Boot & Shoe Covers": "ppe_workwear_fall_protection",
+    "Protective Hardhats & Helmets": "ppe_workwear_fall_protection",
+    "Protective Eyewear": "ppe_workwear_fall_protection",
+    "Protective Ear Muffs": "ppe_workwear_fall_protection",
+    "Respirators": "ppe_workwear_fall_protection",
+    "Dust & Pollen Masks": "ppe_workwear_fall_protection",
+    "Lab Face Masks & Shields": "ppe_workwear_fall_protection",
+    "Emergency Preparedness Kits": "emergency_preparedness_fire_safety",
+    "Emergency Shelters": "emergency_preparedness_fire_safety",
+    "Sandbags & Flood Guards": "emergency_preparedness_fire_safety",
+    "Fire Blankets": "emergency_preparedness_fire_safety",
+    "Fire Extinguishers": "emergency_preparedness_fire_safety",
+    "Fire Hoses": "emergency_preparedness_fire_safety",
+    "Fire Retardants": "emergency_preparedness_fire_safety",
+    "Fire Sprinklers": "emergency_preparedness_fire_safety",
+    "Hazardous Waste Storage Containers": "hazardous_materials_spill_control_lockout_tagout",
+    "Lab Spill Control & Response Supplies": "hazardous_materials_spill_control_lockout_tagout",
+    "Sorbents": "hazardous_materials_spill_control_lockout_tagout",
+    "Lockout & Tagout Devices": "hazardous_materials_spill_control_lockout_tagout",
+    "Safety & Caution Tape": "hazardous_materials_spill_control_lockout_tagout",
+    "Safety Barriers": "hazardous_materials_spill_control_lockout_tagout",
+    "Safety Cones & Triangles": "hazardous_materials_spill_control_lockout_tagout",
+    "Safety Floor Markers": "hazardous_materials_spill_control_lockout_tagout",
+    "Other Indoor & Outdoor Safety": "hazardous_materials_spill_control_lockout_tagout",
+    "Warning Alarms & Sirens": "hazardous_materials_spill_control_lockout_tagout",
+    "Warning Lights & Beacons": "hazardous_materials_spill_control_lockout_tagout",
+    "Eye Wash Units": "hazardous_materials_spill_control_lockout_tagout",
+    "Other Occupational Health": "hazardous_materials_spill_control_lockout_tagout"
+  }
+}
