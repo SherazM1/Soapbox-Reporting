@@ -60,7 +60,7 @@
     "lifestyle_in_use": {
       "label": "Lifestyle, In-Use",
       "guidance": "Show the product in a lifestyle setting that aligns with the brand.",
-      "recommendation": "Add a lifestyle, in-use image following the product section guidance.",
+      "recommendation": "Show the product being used correctly in a realistic home, workplace, or preparedness setting, helping shoppers picture how it fits into their own safety routine. Keep the product clearly visible and demonstrate its intended use without staging dangerous situations.",
       "detection_hints": [
         "lifestyle in use",
         "lifestyle",

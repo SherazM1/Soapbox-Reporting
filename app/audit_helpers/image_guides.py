@@ -109,11 +109,18 @@ _GARDEN_PATIO_ALIASES = {
 
 _ELECTRONICS_ALIASES = {
     "electronics",
-    "photography",
     "electronics_photography",
     "electronics photography",
     "electronics and photography",
     "electronicsimg",
+}
+
+_PHOTOGRAPHY_ALIASES = {
+    "photography",
+    "photographyimg",
+    "photography_img",
+    "photgraphy img",
+    "photography image",
 }
 
 _MEDIA_ALIASES = {
@@ -142,6 +149,55 @@ _SPORTS_OUTDOORS_ALIASES = {
     "sports_recreation_outdoors",
     "sportsoutdoorsimg",
 }
+
+_HOME_IMPROVEMENT_ALIASES = {
+    "home_improvement",
+    "home improvement",
+    "homeimprovement",
+    "homeimprovementimg",
+    "home improvementimg",
+}
+
+_HOME_ALIASES = {
+    "home",
+    "homeimg",
+    "home_img",
+    "home img",
+    "home image guide",
+}
+
+_MUSICAL_INSTRUMENTS_ALIASES = {
+    "musical_instruments",
+    "musical instruments",
+    "musicalinstruments",
+    "musicalinstrumentsimg",
+    "musical instrumentsimg",
+}
+
+_OFFICE_STATIONERY_ALIASES = {
+    "office_stationery",
+    "office stationery",
+    "office and stationery",
+    "officestationery",
+    "officestationeryimg",
+}
+_SAFETY_EMERGENCY_ALIASES = {
+     "safety_emergency",
+    "safety emergency",
+    "safety and emergency",
+    "safetyemergency",
+    "safetyemergencyimg",
+}
+_VEHICLE_ALIASES = {
+    "vehicle",
+    "vehicles",
+    "vehicleimg",
+    "vehicle_img",
+    "vehicle img",
+}
+
+
+
 
 _SLOT_RULES: list[tuple[str, float, list[str]]] = [
     (
@@ -831,12 +887,26 @@ def resolve_image_guide_category(category_key: str) -> str:
         return "animals"
     if candidate_set & (_ELECTRONICS_ALIASES | {"electronics"}):
         return "electronics"
+    if candidate_set & (_PHOTOGRAPHY_ALIASES | {"photography"}):
+        return "photography"
     if candidate_set & (_MEDIA_ALIASES | {"media"}):
         return "media"
     if candidate_set & (_SEASONAL_ALIASES | {"seasonal"}):
         return "seasonal"
     if candidate_set & (_SPORTS_OUTDOORS_ALIASES | {"sports", "outdoors"}):
         return "sports_outdoors"
+    if candidate_set & (_HOME_IMPROVEMENT_ALIASES | {"improvement"}):
+        return "home_improvement"
+    if candidate_set & (_HOME_ALIASES | {"home", "house", "homes"}):
+        return "home"
+    if candidate_set & (_MUSICAL_INSTRUMENTS_ALIASES | {"musical", "instruments"}):
+        return "musical_instruments"
+    if candidate_set & (_OFFICE_STATIONERY_ALIASES | {"office", "stationery"}):
+        return "office_stationery"
+    if candidate_set & (_SAFETY_EMERGENCY_ALIASES | {"safety", "emergency"}):
+        return "safety_emergency"
+    if candidate_set & (_VEHICLE_ALIASES | {"vehicle"}):
+        return "vehicle"
     return normalized
 
 
@@ -848,7 +918,7 @@ def _guide_path_for_category(category_key: str) -> Path | None:
     if normalized in _EVERYTHING_ELSE_ALIASES or alias in _EVERYTHING_ELSE_ALIASES:
         return _repo_root() / "config" / "image_guides" / "everythingelseimg.json"
     if normalized in _GARDEN_PATIO_ALIASES or alias in _GARDEN_PATIO_ALIASES:
-        return _repo_root() / "config" / "image_guides" / "gardenandpatioimg.json"
+        return _repo_root() / "config" / "image_guides" / "gardenpatioimg.json"
     if normalized in _FOOD_BEVERAGE_ALIASES or alias in _FOOD_BEVERAGE_ALIASES:
         return _repo_root() / "config" / "image_guides" / "food_beverageimg.json"
     if normalized in _BEAUTY_ALIASES or alias in _BEAUTY_ALIASES:
@@ -869,12 +939,26 @@ def _guide_path_for_category(category_key: str) -> Path | None:
         return _repo_root() / "config" / "image_guides" / "animalsimg.json"
     if normalized in _ELECTRONICS_ALIASES or alias in _ELECTRONICS_ALIASES:
         return _repo_root() / "config" / "image_guides" / "electronicsimg.json"
+    if normalized in _PHOTOGRAPHY_ALIASES or alias in _PHOTOGRAPHY_ALIASES:
+        return _repo_root() / "config" / "image_guides" / "photographyimg.json"
     if normalized in _MEDIA_ALIASES or alias in _MEDIA_ALIASES:
         return _repo_root() / "config" / "image_guides" / "mediaimg.json"
     if normalized in _SEASONAL_ALIASES or alias in _SEASONAL_ALIASES:
         return _repo_root() / "config" / "image_guides" / "seasonalimg.json"
     if normalized in _SPORTS_OUTDOORS_ALIASES or alias in _SPORTS_OUTDOORS_ALIASES:
         return _repo_root() / "config" / "image_guides" / "sportsoutdoorsimg.json"
+    if normalized in _HOME_IMPROVEMENT_ALIASES or alias in _HOME_IMPROVEMENT_ALIASES:
+        return _repo_root() / "config" / "image_guides" / "homeimprovementimg.json"
+    if normalized in _HOME_ALIASES or alias in _HOME_ALIASES:
+        return _repo_root() / "config" / "image_guides" / "homeimg.json" 
+    if normalized in _MUSICAL_INSTRUMENTS_ALIASES or alias in _MUSICAL_INSTRUMENTS_ALIASES:
+        return _repo_root() / "config" / "image_guides" / "musicalinstrumentsimg.json"
+    if normalized in _OFFICE_STATIONERY_ALIASES or alias in _OFFICE_STATIONERY_ALIASES:
+        return _repo_root() / "config" / "image_guides" / "officestationeryimg.json"
+    if normalized in _SAFETY_EMERGENCY_ALIASES or alias in _SAFETY_EMERGENCY_ALIASES:
+        return _repo_root() / "config" / "image_guides" / "safetyemergencyimg.json"
+    if normalized in _VEHICLE_ALIASES or alias in _VEHICLE_ALIASES:
+        return _repo_root() / "config" / "image_guides" / "vehicleimg.json"
     return None
 
 

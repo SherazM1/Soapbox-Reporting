@@ -105,7 +105,7 @@
     "lifestyle_in_use": {
       "label": "Lifestyle, In-Use",
       "guidance": "Show the product in a realistic, natural setting that reflects everyday use with the product as the focal point and minimal distraction.",
-      "recommendation": "Add a lifestyle image showing the product in realistic everyday use with minimal distraction.",
+      "recommendation": "Show the product as part of an everyday moment with a baby and caregiver, helping parents picture it in their own family's routine. Keep the product clearly visible and demonstrate safe, age-appropriate use.",
       "detection_hints": [
         "lifestyle",
         "in-use",

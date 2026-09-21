@@ -116,7 +116,7 @@
     "lifestyle_in_use": {
       "label": "Lifestyle, In-Use",
       "guidance": "Show the product in an active creative setting and include a finished project made with the product or show the product in use.",
-      "recommendation": "Add a lifestyle image showing the product in use in an active creative setting with a finished project where relevant.",
+      "recommendation": "Show someone enjoying a creative project with the product in a welcoming craft space, helping shoppers picture what they could make themselves. Keep the product and how it’s being used clearly visible.",
       "detection_hints": [
         "lifestyle",
         "in-use",
