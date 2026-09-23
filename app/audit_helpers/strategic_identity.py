@@ -24,6 +24,23 @@ STYLE_GUIDE_FILES: dict[str, str] = {
     "health_personal_care": "healthpersonal.json",
     "animals": "animals.json",
     "electronics": "electronics.json",
+    "photography": "photography.json",
+    "media": "media.json",
+    "seasonal": "seasonal.json",
+    "sports_outdoors": "sportsoutdoors.json",
+    "home_improvement": "homeimprovement.json",
+    "home": "home.json",
+    "musical_instruments": "musicalinstruments.json",
+    "office_stationery": "officeandstationery.json",
+    "safety_emergency": "safetyemergency.json",
+    "vehicle": "vehiclespartsandaccessories.json",
+    "arts_crafts": "artsandcrafts.json",
+    "baby": "baby.json",
+    "fashion": "fashion.json",
+    "furniture": "furniture.json",
+    "health_general": "healthgeneral.json",
+    "household_clean": "householdclean.json",
+    "toys": "toys.json"
 }
 
 IMAGE_GUIDE_FILES: dict[str, str] = {
@@ -35,9 +52,186 @@ IMAGE_GUIDE_FILES: dict[str, str] = {
     "health_personal_care": "healthpersonalimg.json",
     "animals": "animalsimg.json",
     "electronics": "electronicsimg.json",
+    "photography": "photographyimg.json",
+    "media": "mediaimg.json",
+    "seasonal": "seasonalimg.json",
+    "sports_outdoors": "sportsoutdoorsimg.json",
+    "home_improvement": "homeimprovementimg.json",
+    "home": "homeimg.json",
+    "musical_instruments": "musicalinstrumentsimg.json",
+    "office_stationery": "officeandstationeryimg.json",
+    "safety_emergency": "safetyemergencyimg.json",
+    "vehicle": "vehiclespartsandaccessoriesimg.json",
+    "arts_crafts": "artsandcraftsimg.json",
+    "baby": "babyimg.json",
+    "fashion": "fashionimg.json",
+    "furniture": "furnitureimg.json",
+    "health_general": "healthgeneralimg.json",
+    "household_clean": "householdcleanimg.json",
+    "toys": "toysimg.json"
 }
 
 CATEGORY_VOCABULARY: dict[str, dict[str, str]] = {
+    "garden_patio": {
+        "benefit": "outdoor comfort and garden care benefits",
+        "ingredient": "outdoor materials and weather resistance",
+        "usage": "gardening and patio gathering guidance",
+        "education": "plant care and outdoor maintenance education",
+        "visual": "inviting gardens and outdoor living spaces",
+        "navigation": "outdoor space and gardening task navigation",
+    },
+    "everything_else": {
+        "benefit": "practical value and distinctive product benefits",
+        "ingredient": "product composition and included contents",
+        "usage": "everyday purpose and occasion guidance",
+        "education": "product selection and ownership essentials",
+        "visual": "clear product context and identifying details",
+        "navigation": "product purpose and shopper need navigation",
+    },
+    "business_industrial": {
+        "benefit": "workplace productivity and operational benefits",
+        "ingredient": "industrial materials and equipment specifications",
+        "usage": "professional tasks and workflow guidance",
+        "education": "equipment capacity and operating requirements",
+        "visual": "real workplace applications and equipment detail",
+        "navigation": "trade, application, and capacity navigation",
+    },
+    "photography": {
+        "benefit": "creative control and image capture benefits",
+        "ingredient": "optical specifications and camera compatibility",
+        "usage": "shooting situations and creative setup guidance",
+        "education": "lens selection and imaging system education",
+        "visual": "photography setups and equipment handling detail",
+        "navigation": "camera system and shooting style navigation",
+    },
+    "media": {
+        "benefit": "entertainment and discovery value",
+        "ingredient": "content, edition, and format details",
+        "usage": "reading, viewing, and listening occasions",
+        "education": "edition differences and playback requirements",
+        "visual": "recognizable cover art and edition presentation",
+        "navigation": "genre, creator, and media format navigation",
+    },
+    "seasonal": {
+        "benefit": "celebration and seasonal atmosphere benefits",
+        "ingredient": "decorative materials and seasonal design details",
+        "usage": "holiday traditions and event styling guidance",
+        "education": "seasonal setup, storage, and reuse education",
+        "visual": "festive scenes with coordinated seasonal themes",
+        "navigation": "holiday, occasion, and decorating theme navigation",
+    },
+    "sports_outdoors": {
+        "benefit": "activity performance and outdoor readiness benefits",
+        "ingredient": "sporting materials and equipment construction",
+        "usage": "training, recreation, and adventure guidance",
+        "education": "equipment fit and activity suitability education",
+        "visual": "active demonstrations in relevant outdoor settings",
+        "navigation": "sport, terrain, and experience level navigation",
+    },
+    "home_improvement": {
+        "benefit": "repair results and project efficiency benefits",
+        "ingredient": "building materials and tool specifications",
+        "usage": "installation, repair, and renovation guidance",
+        "education": "measurement, surface compatibility, and setup education",
+        "visual": "project steps and finished installation detail",
+        "navigation": "project, trade, and material navigation",
+    },
+    "home": {
+        "benefit": "everyday home comfort and convenience benefits",
+        "ingredient": "household materials, textures, and finishes",
+        "usage": "household routines and room styling guidance",
+        "education": "home product sizing and care education",
+        "visual": "welcoming rooms and everyday living details",
+        "navigation": "room, household function, and decor style navigation",
+    },
+    "musical_instruments": {
+        "benefit": "musical expression and playability benefits",
+        "ingredient": "instrument materials and sound production details",
+        "usage": "practice, rehearsal, and performance guidance",
+        "education": "instrument selection, tuning, and care education",
+        "visual": "musician interaction and instrument craftsmanship",
+        "navigation": "instrument family and playing experience navigation",
+    },
+    "office_stationery": {
+        "benefit": "organization and daily work efficiency benefits",
+        "ingredient": "paper, ink, and office supply specifications",
+        "usage": "writing, planning, and desk organization guidance",
+        "education": "paper sizing and supply compatibility education",
+        "visual": "organized workspaces and legible stationery details",
+        "navigation": "office task, supply format, and pack size navigation",
+    },
+    "safety_emergency": {
+        "benefit": "hazard awareness and preparedness benefits",
+        "ingredient": "protective materials and verified rating details",
+        "usage": "safe operation and emergency readiness guidance",
+        "education": "intended protection, limitations, and inspection education",
+        "visual": "clear safety demonstrations and readable instructions",
+        "navigation": "hazard, protection type, and emergency need navigation",
+    },
+    "vehicle": {
+        "benefit": "vehicle upkeep and driving convenience benefits",
+        "ingredient": "part specifications and vehicle fitment details",
+        "usage": "vehicle maintenance and accessory installation guidance",
+        "education": "make, model, year, and part compatibility education",
+        "visual": "installed parts and vehicle placement detail",
+        "navigation": "vehicle fitment and automotive system navigation",
+    },
+    "arts_crafts": {
+        "benefit": "creative possibilities and project outcome benefits",
+        "ingredient": "craft materials, colors, and supply contents",
+        "usage": "creative techniques and project inspiration",
+        "education": "material selection and crafting skill education",
+        "visual": "hands creating and achievable finished projects",
+        "navigation": "craft technique, medium, and skill level navigation",
+    },
+    "baby": {
+        "benefit": "caregiver convenience and baby comfort benefits",
+        "ingredient": "baby product materials and care requirements",
+        "usage": "feeding, changing, and caregiving routine guidance",
+        "education": "age suitability and safe product use education",
+        "visual": "natural caregiver moments and appropriate product use",
+        "navigation": "baby stage and caregiving task navigation",
+    },
+    "fashion": {
+        "benefit": "personal style and wearing comfort benefits",
+        "ingredient": "fabric composition and garment construction",
+        "usage": "outfit coordination and dressing occasion guidance",
+        "education": "sizing, fit, and garment care education",
+        "visual": "authentic outfit styling and fabric detail",
+        "navigation": "apparel type, size, and personal style navigation",
+    },
+    "furniture": {
+        "benefit": "seating comfort and living space functionality",
+        "ingredient": "frame materials, upholstery, and furniture finishes",
+        "usage": "room layout and furniture placement guidance",
+        "education": "dimensions, assembly, and furniture care education",
+        "visual": "furnished room context and construction close-ups",
+        "navigation": "furniture type, room size, and finish navigation",
+    },
+    "health_general": {
+        "benefit": "daily health management and support benefits",
+        "ingredient": "health product components and specifications",
+        "usage": "home health monitoring and care task guidance",
+        "education": "intended use and health product limitations",
+        "visual": "readable controls and clear care demonstrations",
+        "navigation": "health support need and product function navigation",
+    },
+    "household_clean": {
+        "benefit": "cleaning effectiveness and household order benefits",
+        "ingredient": "cleaning formulas and surface compatibility",
+        "usage": "cleaning tasks and storage routine guidance",
+        "education": "dilution, handling, and surface care education",
+        "visual": "clear cleaning demonstrations and organized storage",
+        "navigation": "surface, cleaning task, and storage need navigation",
+    },
+    "toys": {
+        "benefit": "play enjoyment and discovery benefits",
+        "ingredient": "toy materials and included play pieces",
+        "usage": "imaginative, shared, and independent play guidance",
+        "education": "age suitability, play features, and setup education",
+        "visual": "engaging play moments with visible toy interaction",
+        "navigation": "age range, play interest, and toy type navigation",
+    },
     "food_beverage": {
         "benefit": "benefit communication",
         "ingredient": "ingredient communication",
@@ -77,7 +271,9 @@ CATEGORY_VOCABULARY: dict[str, dict[str, str]] = {
         "education": "device shopper education",
         "visual": "technical visual clarity",
         "navigation": "device-use navigation",
-    },
+    }
+    
+    
 }
 
 
@@ -155,22 +351,201 @@ def _image_path(category_key: str) -> Path | None:
 
 
 def resolve_category_key(value: str) -> str:
-    """Resolve guide aliases and common evidence strings to supported keys."""
+    """Resolve explicit categories, then scan category keywords in order."""
     blob = _norm(value)
-    image_key = resolve_image_guide_category(value or "")
-    if image_key in STYLE_GUIDE_FILES:
-        return image_key
-    if any(term in blob for term in ("food", "beverage", "pantry", "spread", "snack", "nutrition", "breakfast")):
-        return "food_beverage"
-    if any(term in blob for term in ("skin care", "hair care", "beauty", "makeup", "cosmetic")):
-        return "beauty"
-    if any(term in blob for term in ("pet", "dog", "cat", "animal", "feeding")):
+    if not blob:
+        return ""
+    # Exact aliases must not route free text using a single broad category word.
+    compact = blob.replace(" ", "")
+    if compact.endswith("json"):
+        compact = compact[:-4]
+    aliases = {
+        "gardenandpatio": "garden_patio",
+        "gardenpatio": "garden_patio",
+        "gardenandpatioimg": "garden_patio",
+        "gardenpatioimg": "garden_patio",
+        "everythingelse": "everything_else",
+        "everythingelseimg": "everything_else",
+        "miscellaneous": "everything_else",
+        "uncategorized": "everything_else",
+        "businessandindustrial": "business_industrial",
+        "businessindustrial": "business_industrial",
+        "businessandindustrialimg": "business_industrial",
+        "businessindustrialsupplies": "business_industrial",
+        "foodandbeverage": "food_beverage",
+        "foodbeverage": "food_beverage",
+        "foodbeverageimg": "food_beverage",
+        "foodandbeverages": "food_beverage",
+        "grocery": "food_beverage",
+        "groceries": "food_beverage",
+        "beauty": "beauty",
+        "beautyimg": "beauty",
+        "beautypersonalcare": "beauty",
+        "healthandpersonalcare": "health_personal_care",
+        "healthpersonalcare": "health_personal_care",
+        "healthpersonal": "health_personal_care",
+        "healthpersonalimg": "health_personal_care",
+        "healthandwellness": "health_personal_care",
+        "animals": "animals",
+        "animalsimg": "animals",
+        "pet": "animals",
+        "pets": "animals",
+        "petsupplies": "animals",
+        "electronics": "electronics",
+        "electronicsandphotography": "electronics",
+        "electronicsphotography": "electronics",
+        "electronicsimg": "electronics",
+        "photgraphyimg": "photography",
+        "photography": "photography",
+        "photographyimage": "photography",
+        "photographyimg": "photography",
+        "photographyimageguide": "photography",
+        "photographicequipment": "photography",
+        "media": "media",
+        "mediaimg": "media",
+        "booksandmedia": "media",
+        "seasonal": "seasonal",
+        "seasonalandoccasion": "seasonal",
+        "seasonaloccasion": "seasonal",
+        "seasonalimg": "seasonal",
+        "seasonalandoccasions": "seasonal",
+        "seasonaloccasions": "seasonal",
+        "sportsandoutdoors": "sports_outdoors",
+        "sportsoutdoors": "sports_outdoors",
+        "sportsrecreationandoutdoor": "sports_outdoors",
+        "sportsrecreationoutdoor": "sports_outdoors",
+        "sportsrecreationoutdoors": "sports_outdoors",
+        "sportsoutdoorsjson": "sports_outdoors",
+        "sportsoutdoorsimg": "sports_outdoors",
+        "sportsrecreationandoutdoors": "sports_outdoors",
+        "homeimprovement": "home_improvement",
+        "homeimprovementimg": "home_improvement",
+        "homeimprovementsupplies": "home_improvement",
+        "home": "home",
+        "homeimageguide": "home",
+        "homeimg": "home",
+        "homegoods": "home",
+        "musicalinstruments": "musical_instruments",
+        "musicalinstrumentsimg": "musical_instruments",
+        "musicalinstrument": "musical_instruments",
+        "officeandstationery": "office_stationery",
+        "officestationery": "office_stationery",
+        "officestationeryimg": "office_stationery",
+        "officestationary": "office_stationery",
+        "officeandstationary": "office_stationery",
+        "officeandstationaryimg": "office_stationery",
+        "safetyandemergency": "safety_emergency",
+        "safetyemergency": "safety_emergency",
+        "safetyemergencyimg": "safety_emergency",
+        "safetyandemergencysupplies": "safety_emergency",
+        "vehicle": "vehicle",
+        "vehicleimg": "vehicle",
+        "vehicles": "vehicle",
+        "vehiclepartsandaccessories": "vehicle",
+        "vehiclespartsandaccessories": "vehicle",
+        "vehiclespartsandaccessoriesimg": "vehicle",
+        "artandcrafts": "arts_crafts",
+        "artcrafts": "arts_crafts",
+        "artsandcrafts": "arts_crafts",
+        "artscrafts": "arts_crafts",
+        "artscraftsimg": "arts_crafts",
+        "artsandcraftsimg": "arts_crafts",
+        "baby": "baby",
+        "babyimg": "baby",
+        "babyproducts": "baby",
+        "babycare": "baby",
+        "clothingandaccessories": "fashion",
+        "apparelandaccessories": "fashion",
+        "fashion": "fashion",
+        "furniture": "furniture",
+        "furnitureimg": "furniture",
+        "homefurniture": "furniture",
+        "generalhealth": "health_general",
+        "healthgeneral": "health_general",
+        "healthgeneralimg": "health_general",
+        "householdcleaning": "household_clean",
+        "householdindustrialcleaningandstorage": "household_clean",
+        "householdindustrialcleaningstorage": "household_clean",
+        "householdclean": "household_clean",
+        "householdcleanimg": "household_clean",
+        "householdcleaningandstorage": "household_clean",
+        "toys": "toys",
+        "toysimg": "toys",
+        "toy": "toys",
+        "toysandgames": "toys",
+    }
+    for key, filename in STYLE_GUIDE_FILES.items():
+        for label in (key, Path(filename).stem, IMAGE_GUIDE_FILES.get(key, "")):
+            normalized = _norm(Path(label).stem).replace(" ", "")
+            if normalized:
+                aliases[normalized] = key
+                aliases[normalized.replace("and", "")] = key
+        aliases[key.replace("_", "") + "img"] = key
+    if compact in aliases:
+        return aliases[compact]
+
+    # Whole phrases keep the original membership checks from matching word fragments.
+    words = blob.split()
+    phrases = {
+        " ".join(words[start:end])
+        for start in range(len(words))
+        for end in range(start + 1, min(len(words), start + 6) + 1)
+    }
+    blob = phrases | {phrase[:-1] for phrase in phrases if phrase.endswith("s")} | {
+        phrase[:-2] for phrase in phrases if phrase.endswith("es")
+    }
+    # First matching category wins; keep specific categories before broad ones.
+    if any(term in blob for term in ("baby", "infant", "diaper", "stroller", "pacifier", "baby bottle", "baby monitor", "baby food", "car seat", "crib", "bassinet", "teether", "changing pad", "nursing pillow", "baby carrier")):
+        return "baby"
+    if any(term in blob for term in ("pet", "dog", "cat", "animal", "pet food", "dog food", "cat litter", "dog toy", "pet carrier", "aquarium", "bird feeder", "pet grooming", "dog leash", "cat scratcher")):
         return "animals"
-    if any(term in blob for term in ("electronics", "device", "compatibility", "laptop", "phone", "audio", "camera")):
-        return "electronics"
-    if any(term in blob for term in ("health", "wellness", "personal care", "vitamin", "supplement", "symptom")):
+    if any(term in blob for term in ("safety", "emergency", "fire extinguisher", "smoke detector", "protective equipment", "first aid kit", "carbon monoxide detector", "fire blanket", "respirator", "emergency kit", "safety goggles", "hearing protection", "reflective vest", "escape ladder", "emergency radio")):
+        return "safety_emergency"
+    if any(term in blob for term in ("medical equipment", "mobility aid", "blood pressure monitor", "thermometer", "patient care", "wheelchair", "walker", "medical supplies", "pulse oximeter", "hospital bed", "crutches", "walking cane", "shower chair", "transfer bench", "medical bed")):
+        return "health_general"
+    if any(term in blob for term in ("health", "wellness", "personal care", "vitamin", "supplement", "symptom", "toothpaste", "toothbrush", "deodorant", "dental floss", "personal hygiene", "mouthwash", "sunscreen", "hand sanitizer", "shaving cream", "contact lens solution")):
         return "health_personal_care"
-    return image_key if image_key in STYLE_GUIDE_FILES else ""
+    if any(term in blob for term in ("photography", "camera", "lens", "tripod", "darkroom", "camera bag", "camera lens", "lens filter", "camera tripod", "photography lighting", "camera flash", "light meter", "camera strap", "photographic film", "camera battery grip")):
+        return "photography"
+    if any(term in blob for term in ("seasonal", "holiday", "christmas", "halloween", "party decoration", "christmas tree", "holiday lights", "halloween costume", "party decorations", "seasonal decor", "easter", "thanksgiving", "valentine", "ornament", "advent calendar")):
+        return "seasonal"
+    if any(term in blob for term in ("garden", "patio", "planter", "trellis", "greenhouse", "outdoor furniture", "patio furniture", "lawn mower", "garden hose", "potting soil", "raised garden bed", "watering can", "garden tools", "patio umbrella", "plant stand")):
+        return "garden_patio"
+    if any(term in blob for term in ("sport", "camping", "hiking", "fitness", "fishing", "camping tent", "sleeping bag", "yoga mat", "hiking boots", "fishing rod", "basketball", "soccer", "tennis", "backpack", "treadmill")):
+        return "sports_outdoors"
+    if any(term in blob for term in ("industrial", "commercial equipment", "manufacturing", "warehouse", "material handling", "pallet jack", "conveyor", "industrial equipment", "commercial machinery", "warehouse supplies", "forklift", "packaging machine", "workbench", "industrial pump", "shipping supplies")):
+        return "business_industrial"
+    if any(term in blob for term in ("craft", "yarn", "scrapbooking", "embroidery", "painting supplies", "craft kit", "sewing supplies", "knitting needles", "crochet hooks", "acrylic paint", "watercolor", "beading", "craft paper", "fabric paint", "pottery clay")):
+        return "arts_crafts"
+    if any(term in blob for term in ("toy", "doll", "puzzle", "playset", "board game", "building blocks", "action figure", "toy car", "doll house", "plush toy", "teddy bear", "remote control car", "play kitchen", "fidget toy", "toy train")):
+        return "toys"
+    if any(term in blob for term in ("renovation", "plumbing", "drill", "hardware", "power tool", "power tools", "paint roller", "door hardware", "plumbing supplies", "screwdriver", "wrench", "sander", "caulk", "wall anchor", "circuit breaker")):
+        return "home_improvement"
+    if any(term in blob for term in ("guitar", "piano", "violin", "drum", "instrument", "musical keyboard", "acoustic guitar", "drum kit", "trumpet", "saxophone", "ukulele", "clarinet", "cello", "trombone", "harmonica")):
+        return "musical_instruments"
+    if any(term in blob for term in ("stationery", "notebook", "binder", "stapler", "envelope", "office supplies", "printer paper", "ballpoint pen", "file folder", "office stationery", "highlighter", "index card", "sticky notes", "paper clip", "document organizer")):
+        return "office_stationery"
+    if any(term in blob for term in ("vehicle", "automotive", "car part", "motorcycle", "tire", "vehicle parts", "car accessories", "brake pads", "engine oil", "windshield wiper", "spark plug", "car battery", "vehicle floor mat", "steering wheel", "car cover")):
+        return "vehicle"
+    if any(term in blob for term in ("furniture", "sofa", "chair", "desk", "bookcase", "dining table", "office chair", "bed frame", "coffee table", "dresser", "nightstand", "ottoman", "recliner", "loveseat", "sideboard")):
+        return "furniture"
+    if any(term in blob for term in ("fashion", "apparel", "clothing", "footwear", "jewelry", "dress", "shirt", "sneaker", "handbag", "jacket", "trousers", "leggings", "sandal", "scarf", "blouse")):
+        return "fashion"
+    if any(term in blob for term in ("detergent", "disinfectant", "mop", "broom", "cleaning supplies", "laundry detergent", "dish soap", "surface cleaner", "trash bag", "cleaning wipes", "dishwasher tablets", "fabric softener", "scrub brush", "dustpan", "stain remover")):
+        return "household_clean"
+    if any(term in blob for term in ("bedding", "curtain", "kitchenware", "bath towel", "home decor", "cookware", "dinnerware", "bed sheets", "throw pillow", "window curtains", "bakeware", "cutlery", "tablecloth", "bath mat", "duvet")):
+        return "home"
+    if any(term in blob for term in ("book", "dvd", "blu ray", "audiobook", "vinyl record", "novel", "textbook", "comic book", "music album", "movie disc", "paperback", "hardcover", "manga", "music cd", "film collection")):
+        return "media"
+    if any(term in blob for term in ("food", "beverage", "pantry", "spread", "snack", "nutrition", "breakfast", "coffee", "tea", "cereal", "juice", "pasta", "granola", "chocolate", "rice", "soup", "sauce")):
+        return "food_beverage"
+    if any(term in blob for term in ("skin care", "hair care", "beauty", "makeup", "cosmetic", "shampoo", "conditioner", "lipstick", "moisturizer", "skin serum", "mascara", "eyeliner", "nail polish", "perfume", "face cleanser")):
+        return "beauty"
+    if any(term in blob for term in ("electronics", "device", "laptop", "phone", "audio", "smartphone", "tablet", "headphones", "computer monitor", "computer keyboard", "router", "television", "smartwatch", "printer", "usb hub")):
+        return "electronics"
+    if any(term in blob for term in ("everything else", "miscellaneous", "uncategorized", "novelty", "collectible", "memorabilia", "souvenir", "collectibles", "miscellaneous goods", "uncategorised", "keepsake", "commemorative item", "souvenir magnet", "collector item", "novelty gift")):
+        return "everything_else"
+    return ""
 
 
 def load_style_title_guide(category_key: str) -> dict[str, Any]:

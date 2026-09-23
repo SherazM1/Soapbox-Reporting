@@ -167,7 +167,7 @@
     "lifestyle_in_use": {
       "label": "Lifestyle, In-Use",
       "guidance": "Show the product in its intended occasion context and keep the setting festive, aspirational, and achievable for the everyday shopper.",
-      "recommendation": "Add a lifestyle image showing the product in its intended occasion context with a festive, aspirational, achievable setting.",
+      "recommendation": "Add a lifestyle image showing the product in its intended occasion context with a festive, aspirational, achievable setting. Use natural interactions and thoughtful decorations while keeping the product clearly visible and the focus of the scene.",
       "detection_hints": [
         "lifestyle",
         "in-use",
