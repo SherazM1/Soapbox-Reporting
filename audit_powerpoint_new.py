@@ -6,6 +6,7 @@ import math
 import re
 import ssl
 from collections import Counter
+from copy import deepcopy
 from typing import Any
 from urllib.request import Request, urlopen
 
@@ -637,6 +638,9 @@ SLIDE4_SCOPE_TERMS: dict[str, tuple[str, ...]] = {
     "food": (
         "food",
         "beverage",
+        "soda",
+        "cola",
+        "soft drink",
         "pantry",
         "snack",
         "breakfast",
@@ -758,6 +762,18 @@ def _slide4_product_fallback(facts: dict[str, Any], family: str, *, prefer_gener
 def _slide4_scope_safe_phrase(phrase: str, facts: dict[str, Any], *, prefer_generic: bool = False) -> str:
     family = _slide4_scope_family(facts)
     normalized = re.sub(r"\s+", " ", _safe_text(phrase).lower().replace("&", "and")).strip(" .;")
+    # Use the drink category instead of the broader food fallback. Limit the
+    # evidence to product identity so a serving suggestion cannot relabel food.
+    identity_text = " ".join(
+        _safe_text(facts.get(key)) for key in ("category", "product_type", "title")
+    ).lower()
+    if not prefer_generic and family in {"food", "generic"}:
+        if normalized in {"beverage", "beverages"}:
+            return "beverage"
+        if re.search(r"\b(?:soda(?: pop)?|cola|coca[ -]cola|coke|soft drinks?|carbonated (?:drinks?|beverages?))\b", identity_text):
+            return "soft drink"
+        if normalized in {"food", "food product", "beverage item", "beverage product"} and re.search(r"\bbeverages?\b", identity_text):
+            return "beverage"
     if normalized.endswith("s") and not normalized.endswith(("ss", "ics")):
         singular = normalized[:-1]
     else:
@@ -838,13 +854,13 @@ def _slide4_theme_terms(facts: dict[str, Any]) -> dict[str, str]:
         product = _slide4_product_phrase(facts)
         terms = {
             "theme": product,
-            "positioning": f"Benefit-forward {product} PDP positioning",
-            "benefit": f"Clear {product} benefit communication",
-            "detail": f"Clear {product} pack and spec detail",
-            "story": f"Balanced {product} usage storytelling",
+            "positioning": f"Product page explains what {product if product.startswith('the ') else 'the ' + product} offers",
+            "benefit": "Product benefits are clearly explained",
+            "detail": "Pack details are easy to understand",
+            "story": "Content explains how to use the product",
         }
     terms["visual"] = (
-        f"{image_count}-image carousel supports visual education"
+        f"{image_count} images help explain the product"
         if image_count >= 6
         else "Cohesive PDP visual education"
     )
@@ -1081,6 +1097,12 @@ def _slide4_build_candidate_pool(
     rejected: list[dict[str, str]] = []
 
     def add(**kwargs: Any) -> None:
+        # The client keeps the specific term; competitor copy uses the broader
+        # drink category so adjacent columns do not repeat "soft drink".
+        if not is_client and product_phrase == "soft drink":
+            kwargs["text"] = re.sub(r"\bsoft drink\b", "beverage", kwargs["text"], flags=re.I)
+            if kwargs.get("dimension") == "title_product_type_identification":
+                kwargs["text"] = f"{brand}: {kwargs['text'][0].lower()}{kwargs['text'][1:]}"
         _slide4_add_candidate(
             candidates,
             rejected,
@@ -1114,7 +1136,7 @@ def _slide4_build_candidate_pool(
         )
     elif _slide4_title_has_product(facts, identity, product_phrase):
         add(
-            text=f"{product_phrase.title()} title clarifies product role",
+            text=f"Title clearly identifies {product_phrase if product_phrase.startswith('the ') else 'the ' + product_phrase}",
             family="positioning_title",
             evidence_source="title_formula",
             score=90,
@@ -1125,7 +1147,7 @@ def _slide4_build_candidate_pool(
         )
     else:
         add(
-            text=f"Title can name {product_phrase} more directly",
+            text=f"Title could identify {product_phrase if product_phrase.startswith('the ') else 'the ' + product_phrase} more clearly",
             family="positioning_title",
             evidence_source="title_formula",
             score=82,
@@ -1160,9 +1182,9 @@ def _slide4_build_candidate_pool(
         )
     elif category_context == "beauty":
         detail_text = (
-            f"Formula and skin-benefit details support {product_phrase} comparison"
+            "Formula details help shoppers compare skin benefits"
             if _has_any(blob, "hydrating", "sensitive", "fragrance", "ingredient", "formula")
-            else f"{product_phrase.title()} detail can clarify skin-benefit fit"
+            else "Formula detail can clarify skin-benefit fit"
         )
         add(
             text=detail_text,
@@ -1176,7 +1198,7 @@ def _slide4_build_candidate_pool(
         )
     elif category_context == "electronics":
         add(
-            text=f"Spec detail helps shoppers compare {product_phrase}",
+            text="Specification detail helps shoppers compare options",
             family="detail_compliance",
             evidence_source="pdp_detail_compliance",
             score=86,
@@ -1187,7 +1209,7 @@ def _slide4_build_candidate_pool(
         )
     elif description or key_features:
         add(
-            text=f"Feature detail supports {product_phrase} comparison",
+            text="Product details make comparisons easier",
             family="detail_compliance",
             evidence_source="pdp_detail_compliance",
             score=84,
@@ -1198,7 +1220,7 @@ def _slide4_build_candidate_pool(
         )
     else:
         add(
-            text=f"Description detail can make {product_phrase} easier to compare",
+            text="Description detail can make options easier to compare",
             family="detail_compliance",
             evidence_source="pdp_detail_compliance",
             score=76,
@@ -1210,7 +1232,7 @@ def _slide4_build_candidate_pool(
 
     if category_context == "food" and _has_any(blob, "breakfast", "snack", "recipe", "toast", "pantry"):
         add(
-            text=f"{product_phrase.title()} cues connect PDP content to breakfast",
+            text="Usage cues connect PDP content to breakfast occasions",
             family="education_storytelling",
             evidence_source="pdp_storytelling",
             score=88,
@@ -1221,7 +1243,7 @@ def _slide4_build_candidate_pool(
         )
     elif category_context == "beauty" and _has_any(blob, "daily", "routine", "use", "sensitive", "hydrating"):
         add(
-            text=f"{product_phrase.title()} usage cues clarify routine fit",
+            text="Directions show how it fits a daily routine",
             family="education_storytelling",
             evidence_source="pdp_storytelling",
             score=88,
@@ -1232,7 +1254,7 @@ def _slide4_build_candidate_pool(
         )
     elif image_facts["has_usage"] or image_facts["has_lifestyle"]:
         add(
-            text=f"Image stack extends {product_phrase} usage education",
+            text="Image stack shows how the product is used",
             family="education_storytelling",
             evidence_source="image_support",
             score=83,
@@ -1243,7 +1265,7 @@ def _slide4_build_candidate_pool(
         )
     else:
         add(
-            text=f"Usage storytelling can make {product_phrase} occasions clearer",
+            text="Explain when and how to use the product",
             family="education_storytelling",
             evidence_source="pdp_storytelling",
             score=77,
@@ -1256,9 +1278,9 @@ def _slide4_build_candidate_pool(
     if facts["review_count"] >= 100:
         add(
             text=(
-                f"{brand} review volume raises comparison confidence"
+                f"Customer reviews help shoppers trust {brand}"
                 if not is_client
-                else f"Review depth supports {product_phrase} confidence"
+                else "Customer reviews help shoppers feel confident"
             ),
             family="trust_visual",
             evidence_source="review_trust",
@@ -1271,9 +1293,9 @@ def _slide4_build_candidate_pool(
     if facts["image_count"] >= 6 or image_facts["analyzed_image_count"] >= 3:
         add(
             text=(
-                f"{facts['image_count']}-image carousel supports visual education"
+                f"{facts['image_count']} images help explain the product"
                 if is_client
-                else f"{brand} carousel supports visual education"
+                else "Competitor images help explain the product"
             ),
             family="trust_visual",
             evidence_source="image_guide_support",
@@ -1285,7 +1307,7 @@ def _slide4_build_candidate_pool(
         )
     if facts["sold_by_walmart"] or facts["shipped_by_walmart"] or facts["ebc_present"] or image_facts["has_trust"]:
         add(
-            text=f"Trust cues strengthen {product_phrase} purchase confidence",
+            text="Trust signals help shoppers feel confident buying",
             family="trust_visual",
             evidence_source="review_trust",
             score=82,
@@ -1624,7 +1646,7 @@ def _build_slide4_evidence_bullets(
             bullets,
             debug,
             text=(
-                f"{product_phrase.title()} cues connect PDP content to breakfast"
+                "Usage cues connect PDP content to breakfast occasions"
                 if is_client
                 else f"{brand} ties {product_phrase} discovery to pantry occasions"
             ),
@@ -2039,6 +2061,12 @@ def _slide4_bullet_shapes(slide: Any) -> list[Any]:
 
 
 def _copy_basic_paragraph_style(source: Any, target: Any) -> None:
+    # Bullet markers and hanging indents live in pPr, not in the run font.
+    # Preserve them when extending a template list to four paragraphs.
+    if source._p.pPr is not None:
+        if target._p.pPr is not None:
+            target._p.remove(target._p.pPr)
+        target._p.insert(0, deepcopy(source._p.pPr))
     target.level = getattr(source, "level", 0)
     target.alignment = getattr(source, "alignment", None)
     target.space_before = getattr(source, "space_before", None)
@@ -3061,6 +3089,7 @@ def _apply_slide2_summary(slide: Any, payload: dict[str, Any]) -> None:
             base_font_size=12,
             fallback_font_size=11,
             ensure_paragraph_count=True,
+            allow_drop=False,
         )
 
 

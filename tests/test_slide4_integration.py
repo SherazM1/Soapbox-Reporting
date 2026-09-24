@@ -286,7 +286,7 @@ class Slide4IntegrationTest(unittest.TestCase):
                     if getattr(shape, "has_text_frame", False)
                     and any(
                         phrase in (shape.text or "").lower()
-                        for phrase in ("positioning", "carousel supports", "pack and nutrition")
+                        for phrase in ("positioning", "carousel supports", "pack and nutrition", "images help explain")
                     )
                 ),
                 key=lambda shape: shape.left,
@@ -648,7 +648,7 @@ class Slide4IntegrationTest(unittest.TestCase):
                 plan, competitor_records=[competitor_1]
             )
             self.assertTrue(any("peanut" in bullet.lower() or "nutrition" in bullet.lower() for bullet in payload["columns"][0]["bullets"]))
-            self.assertTrue(any("carousel" in bullet.lower() or "visual" in bullet.lower() for bullet in payload["columns"][1]["bullets"]))
+            self.assertTrue(any(any(term in bullet.lower() for term in ("carousel", "visual", "images")) for bullet in payload["columns"][1]["bullets"]))
             self.assertTrue(any("benefit" in bullet.lower() or "recipe" in bullet.lower() or "education" in bullet.lower() for bullet in payload["columns"][1]["bullets"]))
 
             deck_bytes = generate_new_audit_powerpoint_from_template(

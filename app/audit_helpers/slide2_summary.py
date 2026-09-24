@@ -79,6 +79,8 @@ FALLBACK_BULLET_IDS: dict[str, tuple[str, ...]] = {
 }
 
 SLIDE2_MAX_BULLET_CHARS = 64
+SLIDE2_MIN_BULLETS = 2
+SLIDE2_MAX_BULLETS = 5
 MIN_SECTION_BANK_BULLETS = 2
 MAX_CUE_SWAPS_PER_SECTION = 2
 
@@ -95,8 +97,27 @@ SECTION_CUE_RULES: dict[str, dict[str, Any]] = {
             "foundation",
             "positioning",
             "demand",
+            "consideration",
+            "interest",
+            "proof",
+            "shopper",
+            "needs",
+            "validation",
         },
-        "blocked_terms": {"opportunity", "competitor", "benchmark", "pressure", "gap"},
+        "blocked_terms": {
+            "opportunity", 
+            "competitor",
+            "benchmark", 
+            "pressure", 
+            "gap",
+            "pdp",
+            "conversion",
+            "purchase friction",
+            "comparison",
+            "guidance",
+            "discoverability",
+            "shelf",
+                          },
     },
     "walmart_opportunity": {
         "allowed_cues": {
@@ -159,23 +180,37 @@ SYNTHETIC_FILLER_PATTERNS = (
 )
 
 SECTION_LAST_RESORT_BULLETS: dict[str, tuple[str, ...]] = {
+    # Keep more than four section-native options here. If cross-section dedupe
+    # removes several candidates, the final pass can still guarantee 4 bullets
     "consumer_demand": (
         "Reviews give shoppers a clearer reason to trust",
         "Relevant benefits help shoppers choose with confidence",
         "Shopper confidence grows from stronger proof points",
         "Trust cues keep demand grounded in evidence",
+        "Product fit reinforces shopper relevance",
+        "Review depth helps validate shopper demand",
+        "Recognizable needs support shopper interest",
+        "Clear positioning strengthens demand signals",
     ),
     "walmart_opportunity": (
         "Walmart PDP guidance can make choice easier",
         "Sharper shelf content can reduce purchase friction",
         "Clearer PDP proof points can support conversion",
         "Assortment cues can help shoppers compare faster",
+        "Better PDP content can strengthen shopper guidance",
+        "Clearer shelf messaging can improve discoverability",
+        "Stringer PDP education can reduce shopper friction",
+        "Better asortment cues can support conversion",
     ),
     "competitive_benchmark": (
         "Benchmark PDPs create clearer comparison pressure",
         "Competitor content raises shelf expectations",
         "Category leaders make benefits easier to compare",
         "Competitive examples show stronger shopper guidance",
+        "Benchmark pages provide clearer proof points",
+        "Competitors set a higher bar for PDP clarity",
+        "Competitive sheles make differentiation more important",
+        "Benchmark content created stronger comparison cues",
     ),
 }
 
@@ -250,7 +285,7 @@ def _slide2_refill_debug_item(section_key: str, text: str, reason: str) -> dict[
         "template_id": "final_count_guardrail",
         "section": section_key,
         "source_tag": "final_count_guardrail",
-        "signals": ["final_4_4_4_enforcement"],
+        "signals": ["final_min_max_enforcement"],
         "supporting_count": 0,
         "analyzed_count": 0,
         "reason": reason,
@@ -275,45 +310,60 @@ def _dedupe_and_fit_slide2_sections(
     for section_key, section in sections.items():
         if not isinstance(section, dict):
             continue
+
         deduped[section_key] = []
         shortened[section_key] = []
         final[section_key] = []
         dropped[section_key] = []
+
+        # Keep as many valid, unique evidence-backed bullets as are available,
+        # capped at SLIDE2_MAX_BULLETS.
         for bullet in section.get("bullets", []) or []:
             clean = _safe_text(bullet)
             if not clean:
                 continue
-            normalized = normalize_bullet_text(clean)
-            allowed, allow_reason = _slide2_final_bullet_allowed(section_key, clean, phrases)
+
+            shortened_text = _shorten_slide2_bullet(clean)
+            normalized = normalize_bullet_text(shortened_text)
+            allowed, allow_reason = _slide2_final_bullet_allowed(
+                section_key, shortened_text, phrases
+            )
             if not allowed:
                 dropped[section_key].append(f"{clean} ({allow_reason})")
                 continue
+
             if normalized in used or any(
                 normalized and (normalized in existing or existing in normalized)
                 for existing in used
             ):
                 dropped[section_key].append(clean)
                 continue
+
+            if len(final[section_key]) >= SLIDE2_MAX_BULLETS:
+                dropped[section_key].append(clean)
+                continue
+
             used.add(normalized)
             deduped[section_key].append(clean)
-            shortened_text = _shorten_slide2_bullet(clean)
             shortened[section_key].append(shortened_text)
-            if len(final[section_key]) < 4:
-                final[section_key].append(shortened_text)
-            else:
-                dropped[section_key].append(clean)
+            final[section_key].append(shortened_text)
 
+        # Only refill when the section fell below the minimum.
         for template_id in FALLBACK_BULLET_IDS.get(section_key, ()):
-            if len(final[section_key]) >= 4:
+            if len(final[section_key]) >= SLIDE2_MIN_BULLETS:
                 break
+
             fallback = _shorten_slide2_bullet(
                 BULLET_BANK[section_key][template_id].format(**phrases)
             )
             normalized = normalize_bullet_text(fallback)
-            allowed, allow_reason = _slide2_final_bullet_allowed(section_key, fallback, phrases)
+            allowed, allow_reason = _slide2_final_bullet_allowed(
+                section_key, fallback, phrases
+            )
             if not allowed:
                 dropped[section_key].append(f"{fallback} ({allow_reason})")
                 continue
+
             if normalized and normalized not in used:
                 used.add(normalized)
                 final[section_key].append(fallback)
@@ -327,20 +377,36 @@ def _dedupe_and_fit_slide2_sections(
                         "signals": ["dedupe_refill_controlled_bullet"],
                         "supporting_count": 0,
                         "analyzed_count": 0,
-                        "reason": "Controlled refill added after cross-section dedupe to preserve four bullets.",
+                        "reason": (
+                            "Controlled refill added after cross-section dedupe "
+                            f"to preserve the {SLIDE2_MIN_BULLETS}-bullet minimum."
+                        ),
                     }
                 )
 
+        # Final guardrail: guarantee the minimum. Cross-section uniqueness is
+        # preferred, but at this last stage section-local uniqueness takes
+        # precedence so a section can never render with fewer than 2 bullets.
+        local_used = {
+            normalize_bullet_text(value)
+            for value in final[section_key]
+            if _safe_text(value)
+        }
         for fallback in SECTION_LAST_RESORT_BULLETS.get(section_key, ()):
-            if len(final[section_key]) >= 4:
+            if len(final[section_key]) >= SLIDE2_MIN_BULLETS:
                 break
+
             fallback = _shorten_slide2_bullet(fallback)
             normalized = normalize_bullet_text(fallback)
-            allowed, allow_reason = _slide2_final_bullet_allowed(section_key, fallback, phrases)
+            allowed, allow_reason = _slide2_final_bullet_allowed(
+                section_key, fallback, phrases
+            )
             if not allowed:
                 dropped[section_key].append(f"{fallback} ({allow_reason})")
                 continue
-            if normalized and normalized not in used:
+
+            if normalized and normalized not in local_used:
+                local_used.add(normalized)
                 used.add(normalized)
                 final[section_key].append(fallback)
                 shortened[section_key].append(fallback)
@@ -348,26 +414,50 @@ def _dedupe_and_fit_slide2_sections(
                     _slide2_refill_debug_item(
                         section_key,
                         fallback,
-                        "Natural section-specific refill added as the final 4/4/4 guardrail.",
+                        (
+                            "Natural section-specific refill added as the final "
+                            f"{SLIDE2_MIN_BULLETS}-{SLIDE2_MAX_BULLETS} guardrail."
+                        ),
                     )
                 )
 
+        if not (
+            SLIDE2_MIN_BULLETS
+            <= len(final[section_key])
+            <= SLIDE2_MAX_BULLETS
+        ):
+            raise ValueError(
+                f"Slide 2 section {section_key!r} requires between "
+                f"{SLIDE2_MIN_BULLETS} and {SLIDE2_MAX_BULLETS} bullets; "
+                f"resolved {len(final[section_key])}."
+            )
+
         section["bullets"] = final[section_key]
+
         selected_debug = []
-        final_norms = [normalize_bullet_text(value) for value in final[section_key]]
+        final_norms = [
+            normalize_bullet_text(value)
+            for value in final[section_key]
+        ]
         for normalized in final_norms:
             match = next(
                 (
                     item
                     for item in section.get("bullet_debug", []) or []
-                    if normalize_bullet_text(_shorten_slide2_bullet(item.get("text", ""))) == normalized
+                    if normalize_bullet_text(
+                        _shorten_slide2_bullet(item.get("text", ""))
+                    )
+                    == normalized
                 ),
                 None,
             )
             if match:
                 copied = dict(match)
-                copied["text"] = _shorten_slide2_bullet(copied.get("text", ""))
+                copied["text"] = _shorten_slide2_bullet(
+                    copied.get("text", "")
+                )
                 selected_debug.append(copied)
+
         section["bullet_debug"] = selected_debug
         section["bullet_fit_debug"] = {
             "original_candidates": original.get(section_key, []),
@@ -376,21 +466,45 @@ def _dedupe_and_fit_slide2_sections(
             "dropped_bullets": dropped[section_key],
             "final_rendered_bullets": final[section_key],
             "final_bullet_count": len(final[section_key]),
-            "render_target_bullet_count": 4,
+            "render_min_bullet_count": SLIDE2_MIN_BULLETS,
+            "render_max_bullet_count": SLIDE2_MAX_BULLETS,
             "render_safe_bullet_count": len(final[section_key]),
-            "dedupe_result": "passed" if len(final[section_key]) == len(set(final_norms)) else "duplicates_remaining",
-            "fit_result": "passed" if all(len(value) <= SLIDE2_MAX_BULLET_CHARS for value in final[section_key]) else "over_limit",
+            "dedupe_result": (
+                "passed"
+                if len(final[section_key]) == len(set(final_norms))
+                else "duplicates_remaining"
+            ),
+            "fit_result": (
+                "passed"
+                if all(
+                    len(value) <= SLIDE2_MAX_BULLET_CHARS
+                    for value in final[section_key]
+                )
+                else "over_limit"
+            ),
         }
         section["final_validation"] = {
             "final_bullet_count": len(final[section_key]),
-            "render_target_bullet_count": 4,
+            "render_min_bullet_count": SLIDE2_MIN_BULLETS,
+            "render_max_bullet_count": SLIDE2_MAX_BULLETS,
             "render_safe_bullet_count": len(final[section_key]),
             "dedupe_result": section["bullet_fit_debug"]["dedupe_result"],
             "fit_result": section["bullet_fit_debug"]["fit_result"],
             "final_rating": section.get("rating"),
-            "final_rating_valid": section.get("rating") in RATING_SCALES[section_key]["allowed"],
-            "required_count_met": len(final[section_key]) == 4,
-            "render_target_count_met": len(final[section_key]) == 4,
+            "final_rating_valid": (
+                section.get("rating")
+                in RATING_SCALES[section_key]["allowed"]
+            ),
+            "required_count_met": (
+                SLIDE2_MIN_BULLETS
+                <= len(final[section_key])
+                <= SLIDE2_MAX_BULLETS
+            ),
+            "render_target_count_met": (
+                SLIDE2_MIN_BULLETS
+                <= len(final[section_key])
+                <= SLIDE2_MAX_BULLETS
+            ),
         }
 
     return sections, {
@@ -949,8 +1063,10 @@ def _ensure_minimum_bullets(
     phrases: dict[str, str],
     warnings: list[str],
 ) -> list[dict[str, Any]]:
+    # Keep all evidence-backed bullets up to the maximum. Only use controlled
+    # fallbacks when the section has fewer than the minimum.
     for template_id in FALLBACK_BULLET_IDS[section]:
-        if len(bullets) >= 4:
+        if len(bullets) >= SLIDE2_MIN_BULLETS:
             break
         _append_unique_bullet(
             bullets,
@@ -959,13 +1075,18 @@ def _ensure_minimum_bullets(
                 template_id,
                 phrases,
                 signals=["fallback_controlled_bullet"],
-                reason="Selected as a safe controlled fallback because fewer than four evidence-backed bullets were available.",
+                reason=(
+                    f"Selected as a safe controlled fallback because fewer than "
+                    f"{SLIDE2_MIN_BULLETS} evidence-backed bullets were available."
+                ),
                 source_tag="section_bank_fallback",
             ),
         )
-    if len(bullets) < 4:
-        warnings.append(f"{section} had fewer than four unique controlled fallback bullets.")
-    return bullets[:4]
+    if len(bullets) < SLIDE2_MIN_BULLETS:
+        warnings.append(
+            f"{section} had fewer than {SLIDE2_MIN_BULLETS} unique controlled fallback bullets."
+        )
+    return bullets[:SLIDE2_MAX_BULLETS]
 
 
 def _consumer_bullets(
@@ -1404,7 +1525,7 @@ def _apply_cue_bullets_to_slide2_sections(
         bullets, debug = translate_cues(
             cue_context,
             slide_key="slide2",
-            count=4,
+            count=SLIDE2_MAX_BULLETS,
             preferred_order=preferred_order,
             side=section_key,
         )
@@ -1472,7 +1593,7 @@ def _apply_cue_bullets_to_slide2_sections(
                     "reason": decision["reason"],
                 }
             )
-        section["bullet_debug"] = current_debug[:4]
+        section["bullet_debug"] = current_debug[:SLIDE2_MAX_BULLETS]
         section["bullets"] = [item.get("text", "") for item in section["bullet_debug"]]
         refinement_debug["final_bullets_before_fit"] = list(section["bullets"])
         refinement_debug["swap_count"] = swap_count

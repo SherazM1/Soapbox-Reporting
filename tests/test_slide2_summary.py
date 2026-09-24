@@ -385,6 +385,20 @@ class Slide2SummaryTest(unittest.TestCase):
             self.assertEqual(len(section["bullets"]), 4)
             for bullet in section["bullets"]:
                 self.assertIn(bullet, all_text)
+            bullet_shape = next(
+                shape for shape in _walk_shapes(slide2.shapes)
+                if getattr(shape, "has_text_frame", False)
+                and section["bullets"][0] in shape.text
+            )
+            paragraphs = [p for p in bullet_shape.text_frame.paragraphs if p.text.strip()]
+            self.assertEqual(len(paragraphs), 4)
+            first_style = paragraphs[0]._p.pPr
+            for paragraph in paragraphs:
+                style = paragraph._p.pPr
+                self.assertIsNotNone(style)
+                self.assertEqual(len(style.findall("{http://schemas.openxmlformats.org/drawingml/2006/main}buChar")), 1)
+                self.assertEqual(style.get("marL"), first_style.get("marL"))
+                self.assertEqual(style.get("indent"), first_style.get("indent"))
         render_fit = plan["slide2_summary"]["debug"]["render_fit"]
         self.assertEqual(
             set(render_fit),

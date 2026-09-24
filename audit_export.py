@@ -7,7 +7,6 @@ from app.audit_helpers.slide2_summary import build_slide2_summary_payload
 from app.audit_helpers.slide3_search_benchmark import build_slide3_search_benchmark
 from app.audit_helpers.slide4_findings import build_slide4_group_findings
 from app.audit_helpers.slide5_brand_shop import build_slide5_brand_shop
-from app.audit_helpers.slide6_visibility import build_slide6_visibility
 from app.audit_helpers.strategic_cue_engine import aggregate_strategic_cues, cue_debug_payload
 from app.audit_helpers.strategic_identity import identity_debug_payload, resolve_strategic_identity
 
@@ -565,16 +564,10 @@ def build_audit_export_plan(
         slide4_findings=slide4_findings,
         audit_metadata=audit_metadata,
     )
-    slide6_visibility = build_slide6_visibility(
-        primary_records=primary_records_for_summary,
-        competitor_records=competitor_records,
-        slide4_findings=slide4_findings,
-        audit_metadata=audit_metadata,
-    )
+    
     slide3_search_benchmark = build_slide3_search_benchmark(
         search_evidence or {"current": [], "benchmark": [], "all": []},
         client_name=audit_metadata.get("client_company_name") or audit_metadata.get("client_name") or "",
-        slide6_visibility=slide6_visibility,
     )
     brand_shop_payload = brand_shop_evidence or {
         "client": [],
@@ -607,7 +600,6 @@ def build_audit_export_plan(
         "slide3_search_benchmark": slide3_search_benchmark,
         "slide4_findings": slide4_findings,
         "slide5_brand_shop": slide5_brand_shop,
-        "slide6_visibility": slide6_visibility,
         "strategic_identity_debug": strategic_identity_debug,
         "strategic_cue_debug": strategic_cue_debug,
         "search_evidence": search_evidence or {"current": [], "benchmark": [], "all": []},

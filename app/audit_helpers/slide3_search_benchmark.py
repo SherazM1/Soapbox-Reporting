@@ -11,85 +11,85 @@ from app.audit_helpers.strategic_cues import search_cue_context
 
 CURRENT_BULLET_BANK = {
     "brand_presence": {
-        "Strong": "Brand visibility anchors {shopping_context}",
-        "Moderate": "Client items hold a visible shelf position",
-        "Missing": "Client presence is limited in leading results",
-        "Unknown": "Client visibility is not clear in this shelf",
+        "Strong": "The brand is easy to find in search",
+        "Moderate": "The brand appears in search results",
+        "Missing": "Few brand products appear in top results",
+        "Unknown": "The brand is difficult to identify in results",
     },
     "top_result_visibility": {
-        "Strong": "Top results reinforce {shelf_navigation}",
-        "Moderate": "Visibility is present across leading results",
-        "Limited": "Top-of-page visibility is still constrained",
-        "Missing": "Client presence sits lower in the search shelf",
+        "Strong": "Products appear near the top of search results",
+        "Moderate": "Products appear in leading search results",
+        "Limited": "Few products appear near the top",
+        "Missing": "Brand products appear farther down the results",
     },
     "sponsored_competition": {
-        "Strong": "Sponsored pressure shapes the search shelf",
-        "Moderate": "Paid placements influence discovery",
-        "Unknown": "Sponsored pressure is not fully visible",
-        "Missing": "Sponsored status could not be fully verified",
+        "Strong": "Paid ads compete for shopper attention",
+        "Moderate": "Paid ads help products get noticed",
+        "Unknown": "The impact of paid ads is unclear",
+        "Missing": "Paid ad placements could not be confirmed",
     },
     "keyword_alignment": {
-        "Strong": "Titles align with {product_type} search language",
-        "Moderate": "Mixed alignment with shopper search language",
-        "Limited": "Limited benefit-led keyword differentiation",
-        "Missing": "Query-relevant title language can work harder",
+        "Strong": "Titles match {product_type} search terms",
+        "Moderate": "Some titles match search terms better than others",
+        "Limited": "Few titles highlight benefits that stand out",
+        "Missing": "Titles could match shopper searches more closely",
     },
     "assortment_range": {
-        "Strong": "Assortment supports wider shopper comparison",
-        "Moderate": "Focused assortment supports core discovery",
-        "Limited": "Assortment representation is narrow",
-        "Missing": "Competitors show wider product-type coverage",
+        "Strong": "More product options help shoppers compare",
+        "Moderate": "A small product range appears in main searches",
+        "Limited": "Only a small product range appears",
+        "Missing": "Competitors offer more product types",
     },
     "benefit_intent_alignment": {
-        "Strong": "Clear benefit-led product positioning",
-        "Moderate": "Limited benefit differentiation",
-        "Limited": "Reduced need-state messaging",
-        "Missing": "Opportunity to strengthen intent-based positioning",
+        "Strong": "Product benefits are clearly explained",
+        "Moderate": "Product benefits do little to stand out",
+        "Limited": "Few messages explain which shopper needs are met",
+        "Missing": "Explain how products meet shopper needs",
     },
     "review_authority": {
-        "Strong": "Strong review authority supports visibility",
-        "Moderate": "Review strength aligns with leading competitors",
-        "Limited": "Competitors demonstrate stronger review authority",
-        "Missing": "Limited reviews make shelf trust harder to build",
+        "Strong": "Many customer reviews help products stand out",
+        "Moderate": "Customer reviews are comparable to leading competitors",
+        "Limited": "Competitors have stronger customer review support",
+        "Missing": "Few reviews make it harder to build trust",
     },
     "badge_promotional_visibility": {
-        "Strong": "Strong promotional shelf visibility",
-        "Moderate": "Visible retail badges support differentiation",
-        "Limited": "Limited promotional badge visibility",
-        "Missing": "Competitors use stronger retail callouts",
+        "Strong": "Promotions are easy to notice in results",
+        "Moderate": "Retail badges help products stand out",
+        "Limited": "Few promotional badges are visible",
+        "Missing": "Competitors use more noticeable retail badges",
     },
 }
 
 BENCHMARK_BULLET_BANK = {
     "keyword_alignment": {
-        "Strong": "Titles match core {product_type} query intent",
-        "Moderate": "Mixed alignment with shopper search language",
-        "Limited": "Limited benefit-led keyword differentiation",
+        "Strong": "Titles match common {product_type} searches",
+        "Moderate": "Some titles match search terms better than others",
+        "Limited": "Few titles highlight benefits that stand out",
     },
     "benefit_intent_alignment": {
-        "Strong": "Benefit-forward product positioning",
-        "Moderate": "Wider intent-based discoverability",
-        "Limited": "Benefit and use-case language expands relevance",
+        "Strong": "Product benefits are easy to understand",
+        "Moderate": "Products appear for more shopper needs",
+        "Limited": "Benefits and uses connect to more shopper needs",
     },
     "assortment_range": {
-        "Strong": "Assortment range expands {discovery_context}",
-        "Moderate": "Expanded need-state assortment",
-        "Limited": "Multiple brands compete across core search terms",
+        "Strong": "A wider product range gives shoppers more choices",
+        "Moderate": "Product options address more shopper needs",
+        "Limited": "Several brands appear for main search terms",
     },
     "review_authority": {
-        "Strong": "Established review authority",
-        "Moderate": "High-review products reinforce shopper confidence",
-        "Limited": "Review strength varies across leading competitors",
+        "Strong": "Customer reviews provide a strong trust signal",
+        "Moderate": "Products with many reviews help reassure shoppers",
+        "Limited": "Customer review support varies among leading competitors",
     },
     "badge_promotional_visibility": {
-        "Strong": "Strong promotional shelf visibility",
-        "Moderate": "Retail badges strengthen product differentiation",
-        "Limited": "Promotional shelf signals remain uneven",
+        "Strong": "Promotions are easy to notice in results",
+        "Moderate": "Retail badges help distinguish competing products",
+        "Limited": "Some products show more promotions than others",
     },
     "sponsored_competition": {
-        "Strong": "Heavy sponsored competition shapes the search shelf",
-        "Moderate": "Sponsored placements influence the search shelf",
-        "Unknown": "Sponsored visibility may be shaping the search shelf",
+        "Strong": "Many paid ads compete for shopper attention",
+        "Moderate": "Paid ads influence which products shoppers notice",
+        "Unknown": "Paid ads may influence which products get noticed",
     },
 }
 
@@ -483,9 +483,9 @@ def _search_phrase_context(search_term: str) -> dict[str, str]:
     return {
         "product_type": product_type,
         "shopping_context": f"{category} search and discovery",
-        "shelf_navigation": f"{product_type} shelf navigation",
-        "discovery_context": f"{category} discovery and comparison",
-        "shopping_journey": f"{product_type} shopping journey",
+        "shelf_navigation": "digital shelf navigation",
+        "discovery_context": "discovery and comparison",
+        "shopping_journey": "shopper journey",
     }
 
 
@@ -751,23 +751,23 @@ def _fallback_search_bullet(side: str, dimension: str, product_type: str) -> str
     product = product_type if product_type and product_type != "category" else "category"
     if dimension in {"shared_search_query_alignment", "keyword_alignment"}:
         return (
-            f"Visibility is strongest in core {product} queries"
+            f"Products are most visible in {product} searches"
             if side == "current"
-            else f"Benchmark products align more consistently to core {product} queries"
+            else f"Competitors match common {product} searches more consistently"
         )
     if dimension in {"shared_search_breadth", "assortment_range"}:
         return (
-            "Client coverage is narrower across adjacent searches"
+            "The brand appears in fewer related searches"
             if side == "current"
-            else "Benchmark products appear across more adjacent searches"
+            else "Competitors appear in more related searches"
         )
     if dimension in {"review_authority", "current_review_context", "benchmark_review_context"}:
-        return "Review depth strengthens shelf trust"
+        return "Customer reviews help build trust"
     if dimension in {"client_brand_presence", "top_result_visibility"}:
-        return "Client presence is harder to find in leading results"
+        return "The brand is difficult to find in top results"
     if dimension in {"competitive_pressure", "visibility_drivers", "sponsored_competition"}:
-        return "Shelf competition is stronger in core category terms"
-    return "Search shelf cues point to clearer shopper comparison"
+        return "Main search terms show more competing products"
+    return "Search results help shoppers compare products"
 
 
 def _search_language_allowed(text: str) -> tuple[bool, str]:
@@ -783,12 +783,12 @@ def _search_language_allowed(text: str) -> tuple[bool, str]:
     title_tokens = [token for token in re.split(r"[^a-z0-9]+", normalized) if len(token) > 3]
     if len(title_tokens) >= 7 and not any(
         term in normalized
-        for term in ("query", "queries", "shelf", "review", "trust", "visibility", "comparison", "discovery")
+        for term in ("query", "queries", "shelf", "review", "trust", "visibility", "comparison", "discovery", "search", "results", "compare", "paid ads", "competitor", "titles")
     ):
         return False, "raw_product_title_like"
     if "breadth" in normalized:
         return False, "blocked_range_language"
-    if not any(term in normalized for term in ("query", "queries", "shelf", "review", "brand", "coverage", "presence", "badge", "sponsored", "authority", "alignment", "range", "variety", "assortment", "comparison", "adjacent", "trust", "discovery", "visibility", "results", "pressure", "relevance", "intent", "selection")):
+    if not any(term in normalized for term in ("search", "compare", "paid ads", "competitor", "titles", "product benefits", "product formats", "query", "queries", "shelf", "review", "brand", "coverage", "presence", "badge", "sponsored", "authority", "alignment", "range", "variety", "assortment", "comparison", "adjacent", "trust", "discovery", "visibility", "results", "pressure", "relevance", "intent", "selection")):
         return False, "not_search_native"
     return True, "allowed"
 
@@ -891,23 +891,23 @@ def _framework_query_alignment_insight(side: str, summary: dict[str, Any], produ
     strongest = terms[0] if terms else product_type
     if summary.get("strong_path_count", 0) >= 2:
         if side == "benchmark":
-            return f"Competitors track core {strongest} queries"
-        return f"Core {strongest} queries carry the search story"
+            return f"Competitors appear for common {strongest} searches"
+        return f"Products are easiest to find through {strongest} searches"
     if summary.get("meaningful_path_count", 0) >= 2:
-        return f"Core {strongest} searches show clearer visibility"
+        return f"Products appear more often in {strongest} searches"
     if side == "benchmark":
-        return f"Competitor presence is thin across {product_type} searches"
-    return f"Client visibility is thin across {product_type} searches"
+        return f"Few competitors appear in {product_type} searches"
+    return f"The brand rarely appears in {product_type} searches"
 
 
 def _framework_range_insight(side: str, summary: dict[str, Any], product_type: str) -> str:
     if summary.get("strong_path_count", 0) >= 3:
-        return f"Coverage extends across related {product_type} paths"
+        return "Products appear across related searches"
     if summary.get("meaningful_path_count", 0) >= 3:
-        return f"Coverage is strongest in core {product_type} paths"
+        return "Products appear most often for main search terms"
     if side == "benchmark":
-        return "Benchmark visibility is focused on fewer search paths"
-    return f"Discovery range is narrower across related {product_type} searches"
+        return "Competitors appear in fewer types of searches"
+    return "Products appear in fewer related searches"
 
 
 def _framework_differentiator_insight(side: str, summary: dict[str, Any], product_type: str) -> str:
@@ -915,61 +915,61 @@ def _framework_differentiator_insight(side: str, summary: dict[str, Any], produc
     top_term = top_terms[0] if top_terms else product_type
     if side == "benchmark":
         if summary.get("strong_path_count", 0) >= 2:
-            return f"{top_term} adds clear competitive pressure"
-        return f"{top_term} is the clearest benchmark search lane"
+            return f"Competitors are easy to find through {top_term} searches"
+        return f"Competitors are most visible in {top_term} searches"
     if summary.get("strong_path_count", 0) >= 2:
-        return f"{top_term} is the clearest client search lane"
-    return f"{top_term} needs stronger client shelf support"
+        return f"The brand is most visible in {top_term} searches"
+    return f"The brand needs better visibility in {top_term} searches"
 
 
 def _client_presence_insight(client_display: str, client_positions: list[int], product_type: str) -> str:
     if not client_positions:
-        return f"{client_display} is missing from leading {product_type} results"
+        return f"{client_display} is missing from leading search results"
     first_position = min(client_positions)
     if first_position <= 4:
-        return f"{client_display} has strong top-shelf presence"
+        return f"{client_display} appears near the top of search results"
     if first_position <= 12:
-        return f"{client_display} has visible mid-shelf presence"
-    return f"{client_display} sits deeper in the search shelf"
+        return f"{client_display} appears midway through search results"
+    return f"{client_display} appears farther down search results"
 
 
 def _shelf_range_insight(side: str, brand_count: int, product_type: str) -> str:
     if side == "current":
         if brand_count >= 3:
-            return "Brand variety gives shoppers a wider comparison set"
+            return "More brands give shoppers more choices"
         if brand_count >= 2:
-            return "Shelf variety supports basic shopper comparison"
-        return f"Discovery range is narrower across related {product_type} searches"
+            return "Shoppers can compare a few different options"
+        return "Products appear in fewer related searches"
     if brand_count >= 3:
-        return "Competing brands create a wider comparison set"
+        return "Competing brands give shoppers more choices"
     if brand_count >= 2:
-        return "Benchmark results show moderate brand variety"
-    return "Benchmark visibility is focused on fewer search paths"
+        return "Results include a few competing brands"
+    return "Competitors appear in fewer types of searches"
 
 
 def _review_depth_insight(side: str, review_counts: list[int]) -> str:
     if not review_counts:
-        return "Review depth is limited on this shelf"
+        return "Few customer reviews are visible"
     review_peak = max(review_counts)
     review_midpoint = median(review_counts)
     if side == "benchmark":
         if review_peak >= 500 or review_midpoint >= 100:
-            return "Review depth creates stronger shelf trust"
-        return "Review strength is uneven across benchmark results"
+            return "Many customer reviews help shoppers trust competitors"
+        return "Some competitors have more reviews than others"
     if review_midpoint >= 100:
-        return "Review strength helps support shelf credibility"
+        return "Customer reviews help shoppers trust the brand"
     if review_midpoint >= 25:
-        return "Review depth gives shoppers some trust context"
-    return "Limited reviews make shelf trust harder to build"
+        return "Some customer reviews help shoppers judge the products"
+    return "Few reviews make it harder to build trust"
 
 
 def _query_alignment_insight(side: str, keyword_score: str, product_type: str) -> str:
     if side == "benchmark":
         if keyword_score in {"Strong", "Moderate"}:
-            return f"Titles match core {product_type} query intent"
+            return f"Titles match common {product_type} searches"
         return f"Leading titles vary across {product_type} searches"
     if keyword_score in {"Strong", "Moderate"}:
-        return f"Titles connect clearly to {product_type} queries"
+        return f"Titles match {product_type} search terms"
     return f"Titles need clearer {product_type} search language"
 
 
@@ -988,15 +988,15 @@ def _presence_from_shelf(side: str, shelf: dict[str, Any], client_display: str, 
     match_count = int(shelf.get("brand_match_count_visible", 0) or 0)
     if side == "current":
         if shelf.get("brand_in_top_3") or first_rank <= 3 and first_rank > 0:
-            return f"{client_display} anchors top search presence"
+            return f"{client_display} appears near the top of search results"
         if shelf.get("brand_in_top_10") or match_count:
-            return f"{client_display} remains visible but not shelf-leading"
-        return f"{client_display} is harder to find on shelf"
+            return f"{client_display} appears below the top search results"
+        return f"{client_display} is difficult to find in search results"
     if shelf.get("brand_in_top_3") or first_rank <= 3 and first_rank > 0:
-        return "Benchmark brands hold stronger top-shelf presence"
+        return "Competitors appear near the top of search results"
     if shelf.get("brand_in_top_10") or match_count:
-        return "Benchmark brands remain visible across leading results"
-    return f"Benchmark presence is lighter across {product_type} results"
+        return "Competitors appear in the leading search results"
+    return "Few competitors appear in the leading results"
 
 
 def _intent_from_shelf(side: str, shelf: dict[str, Any], product_type: str, keyword_score: str) -> str:
@@ -1006,13 +1006,13 @@ def _intent_from_shelf(side: str, shelf: dict[str, Any], product_type: str, keyw
     )
     if side == "benchmark":
         if keyword_score in {"Strong", "Moderate"} or intent != product_type:
-            return f"Competitive products map clearly to {intent} query intent"
-        return f"Search relevance varies across {product_type} queries"
+            return f"Competitor titles match {intent} searches"
+        return f"Some titles match {product_type} searches better than others"
     if keyword_score in {"Strong", "Moderate"} and intent != product_type:
-        return f"Query language connects to {intent} needs"
+        return f"Titles reflect shoppers' {intent} needs"
     if keyword_score in {"Strong", "Moderate"}:
-        return f"Query language connects to core {product_type} intent"
-    return "Title and benefit language can work harder"
+        return f"Titles match common {product_type} searches"
+    return "Titles could explain product benefits more clearly"
 
 
 def _trust_from_shelf(side: str, shelf: dict[str, Any], review_counts: list[int]) -> str:
@@ -1021,15 +1021,15 @@ def _trust_from_shelf(side: str, shelf: dict[str, Any], review_counts: list[int]
     review_peak = max(review_counts or [0])
     if side == "benchmark":
         if avg_reviews >= 500 or review_peak >= 500:
-            return "Review depth strengthens shelf trust"
+            return "Customer reviews help build trust"
         if avg_reviews >= 100 or review_peak >= 100 or avg_rating >= 4.5:
-            return "Shelf trust reinforces benchmark credibility"
-        return "Shelf trust varies across benchmark results"
+            return "Reviews and ratings help shoppers trust competitors"
+        return "Competitors vary in review counts and ratings"
     if avg_reviews >= 250 or review_peak >= 250:
-        return "Review depth provides solid trust support"
+        return "Many customer reviews help build trust"
     if avg_reviews >= 50 or review_peak >= 50 or avg_rating >= 4.5:
-        return "Review depth provides modest trust support"
-    return "Limited review depth makes trust harder to build"
+        return "Reviews and ratings provide some reassurance"
+    return "Few reviews make it harder to build trust"
 
 
 def _pressure_from_shelf(side: str, shelf: dict[str, Any]) -> str:
@@ -1038,17 +1038,17 @@ def _pressure_from_shelf(side: str, shelf: dict[str, Any]) -> str:
     dominant = _short_join(shelf.get("dominant_brand_names", []), "competitor")
     if side == "benchmark":
         if sponsored:
-            return "Sponsored visibility adds benchmark pressure"
+            return "Paid ads help competitors stand out"
         if badges:
-            return "Competitive callouts sharpen shelf differentiation"
-        return f"{dominant} brands shape the benchmark comparison set"
+            return "Retail badges help competitors stand out"
+        return f"Shoppers can compare brands such as {dominant}"
     if sponsored and badges:
-        return "Sponsored and retail callouts increase competitive pressure"
+        return "Paid ads and retail badges help competitors stand out"
     if sponsored:
-        return "Sponsored placements increase competitive pressure"
+        return "Paid ads make competitors more noticeable"
     if badges:
-        return "Retail callouts make the shelf harder to break through"
-    return f"{dominant} keeps comparison pressure visible"
+        return "Retail badges draw attention to competing products"
+    return f"Shoppers can also compare {dominant}"
 
 
 def _range_from_shelf(side: str, shelf: dict[str, Any], brand_count: int, product_type: str) -> str:
@@ -1056,17 +1056,17 @@ def _range_from_shelf(side: str, shelf: dict[str, Any], brand_count: int, produc
     solutions = _short_join(shelf.get("solution_terms", []), "")
     if side == "benchmark":
         if forms:
-            return "Benchmark products span more shelf formats"
+            return "Competitors offer more product formats"
         if solutions:
-            return "Competitive coverage extends across more shopper needs"
+            return "Competitors offer options for more shopper needs"
         if brand_count >= 3:
-            return "Benchmark brands create a wider comparison set"
-        return f"Benchmark shelf selection is focused in {product_type}"
+            return "More competing brands give shoppers more choices"
+        return "Competitor options cluster around the main search terms"
     if forms:
-        return "Client coverage is clearer in core shelf formats"
+        return "The brand appears mainly in its core product formats"
     if brand_count >= 2:
-        return "Shelf variety supports basic shopper comparison"
-    return f"Client coverage is narrower across {product_type} searches"
+        return "Shoppers can compare a few different options"
+    return "The brand appears in fewer related searches"
 
 
 def _candidate_overlap_key(text: str) -> set[str]:
@@ -1274,7 +1274,7 @@ def _build_side_candidates(
         )
         if badges:
             add(
-                text=f"{badges[0]} badge helps draw shelf attention",
+                text=f"{badges[0]} badge helps catch shoppers' attention",
                 family="side_specific",
                 dimension="badge_promotional_visibility",
                 score=scores.get("badge_promotional_visibility", "Limited"),
@@ -1284,7 +1284,7 @@ def _build_side_candidates(
             )
         if sponsored_score in {"Strong", "Moderate"}:
             add(
-                text="Sponsored placements add pressure on the shelf",
+                text="Paid ads make competing products easier to notice",
                 family="side_specific",
                 dimension="sponsored_competition",
                 score=sponsored_score,
@@ -1293,7 +1293,7 @@ def _build_side_candidates(
                 reason="Current side identified paid placement pressure in captured results.",
             )
         add(
-            text="Benefit-led coverage is still limited on the shelf",
+            text="Few results clearly explain product benefits",
             family="side_specific",
             dimension="benefit_intent_alignment",
             score=scores.get("benefit_intent_alignment", "Limited"),
@@ -1340,7 +1340,7 @@ def _build_side_candidates(
         )
         if sponsored_score in {"Strong", "Moderate", "Unknown"}:
             add(
-                text="Sponsored visibility adds competitive pressure",
+                text="Paid ads help competing products stand out",
                 family="side_specific",
                 dimension="sponsored_competition",
                 score=sponsored_score,
@@ -1350,7 +1350,7 @@ def _build_side_candidates(
             )
         if badges:
             add(
-                text="Retail badges help sharpen shelf choice",
+                text="Retail badges help shoppers compare options",
                 family="side_specific",
                 dimension="badge_promotional_visibility",
                 score=scores.get("badge_promotional_visibility", "Limited"),
@@ -1359,7 +1359,7 @@ def _build_side_candidates(
                 reason="Benchmark side used retail badge evidence for shelf differentiation.",
             )
         add(
-            text="Benefit-led coverage broadens search relevance",
+            text="Product benefits connect to more shopper searches",
             family="side_specific",
             dimension="benefit_intent_alignment",
             score=scores.get("benefit_intent_alignment", "Limited"),
@@ -1758,7 +1758,7 @@ def _select_bullets(
         fallback_text = (
             f"Clarify benefit cues across {phrase_context['shopping_journey']}"
             if side == "current"
-            else f"Wider {phrase_context['product_type']} cues support discovery"
+            else "Broader search cues support discovery"
         )
         add(
             fallback_text,
