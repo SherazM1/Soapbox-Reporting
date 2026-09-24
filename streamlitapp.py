@@ -6,7 +6,7 @@ import base64
 from datetime import date
 import io
 from typing import Any
-
+import hmac
 import pandas as pd
 import streamlit as st
 
@@ -67,6 +67,32 @@ try:
     from main import generate_3p_report
 except Exception:
     from main import generate_full_report_3p as generate_3p_report
+
+def require_access_code() -> None:
+    expected_code = st.secrets.get("APP_ACCESS_CODE")
+
+    if not expected_code:
+        st.error("Access has not been configured. Contact the app owner.")
+        st.stop()
+
+    if st.session_state.get("access_granted"):
+        return
+
+    st.title("Soapbox eCommerce and Content Hub")
+    st.write("Enter the access code to continue.")
+
+    with st.form("access_code_form"):
+        entered_code = st.text_input("Access code", type="password")
+        submitted = st.form_submit_button("Continue")
+
+    if submitted:
+        if hmac.compare_digest(entered_code, str(expected_code)):
+            st.session_state["access_granted"] = True
+            st.rerun()
+        st.error("Incorrect access code.")
+
+    st.stop()
+
 
 
 def fmt_mdy(d: date) -> str:
@@ -3935,6 +3961,7 @@ def render_content_reporting() -> None:
 
 def main() -> None:
     st.set_page_config(page_title="Soapbox eCommerce and Content Hub", layout="wide")
+    require_access_code()
     init_db()
     render_branding()
 
