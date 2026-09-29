@@ -22,7 +22,7 @@ from app.audit_helpers.image_guides import (
 )
 from app.audit_helpers.bullet_uniqueness import normalize_bullet_text
 from app.audit_helpers.slide4_findings import build_slide4_group_findings
-from app.audit_helpers.audit_language_resolver import strategic_bullet_text
+from app.audit_helpers.audit_language_resolver import INVALID_LANGUAGE_GUARDS, strategic_bullet_text
 from app.audit_helpers.strategic_cue_engine import aggregate_strategic_cues
 from app.audit_helpers.strategic_identity import resolve_strategic_identity
 from audit_powerpoint import _format_cover_date
@@ -132,7 +132,53 @@ def _replace_text_in_paragraph(paragraph: Any, replacements: dict[str, str]) -> 
     _replace_paragraph_text_preserve_style(paragraph, new_text)
     return counts
 
-
+def _resize_title_shape_to_text(shape, text: str) -> None:
+    """
+    Makes a Slide 4 title/tab shape grow horizontally to fit its text.
+    Keeps the existing shape styling, fill, border, font, and height.
+    """
+    if shape is None or not getattr(shape, "has_text_frame", False):
+        return
+    
+    text = _safe_text(text)
+    
+    # Preserve existing title styling
+    _replace_shape_text_preserve_style(shape, text)
+    
+    tf = shape.text_frame
+    tf.word_wrap = False
+    tf.auto_size = None
+    
+    # Keep orginal height
+    original_height = shape.height
+    
+    # Estimate width needed for title.
+    # ~0.13 inches per character works well for the current Slide 4 font.
+    padding = 0.35
+    width_per_character = 0.13
+    
+    desired_width_inches = (
+        len(text) * width_per_character
+        + padding
+    )
+    
+    # keep short titles from making tiny tabs
+    min_width_inches = 1.6
+    
+    # Prevent title from taking over the whole column
+    
+    max_width_inches = 4.5
+    
+    desired_width_inches = max(
+        min_width_inches,
+        min(desired_width_inches, max_width_inches),
+        
+    )
+    
+    shape.width = Inches(desired_width_inches)
+    shape.height = original_height
+    
+    
 def _merge_counts(total: dict[str, int], increment: dict[str, int]) -> None:
     for target, count in increment.items():
         total[target] = total.get(target, 0) + int(count or 0)
@@ -600,6 +646,82 @@ SLIDE4_SCOPE_FALLBACKS: dict[str, dict[str, tuple[str, ...]]] = {
         "product": ("phone charger", "wireless earbuds", "bluetooth speaker", "tech accessory"),
         "family": ("electronics product", "tech product", "device accessory"),
     },
+    "artsandcrafts": {
+        "product": ("paint brush", "craft kit", "yarn",),
+        "family": ("craft supply",),
+    },
+    "baby": {
+        "product": ("baby bottle", "diaper", "stroller",),
+        "family": ("baby product",),
+    },
+    "businessandindustrial": {
+        "product": ("pallet jack", "commercial equipment", "industrial tool",),
+        "family": ("industrial supply",),
+    },
+    "everythingelse": {
+        "product": ("general merchandise",),
+        "family": ("the product",),
+    },
+    "fashion": {
+        "product": ("shirt", "shoe", "jewelry", "clothing", "apparel",),
+        "family": ("fashion item",),
+    },
+    "furniture": {
+        "product": ("sofa", "desk", "chair",),
+        "family": ("furniture item",),
+    },
+    "gardenandpatio": {
+        "product": ("garden hose", "patio umbrella", "outdoor grill",),
+        "family": ("garden and patio product",),
+    },
+    "home": {
+        "product": ("air fryer", "coffee maker", "cookware", "bedding", "kitchen appliance",),
+        "family": ("home product",),
+    },
+    "homeimprovement": {
+        "product": ("power drill", "light fixture", "faucet",),
+        "family": ("home improvement product",),
+    },
+    "householdclean": {
+        "product": ("laundry detergent", "surface cleaner", "storage bin",),
+        "family": ("household care product",),
+    },
+    "media": {
+        "product": ("book", "movie", "music album",),
+        "family": ("media product",),
+    },
+    "musicalinstruments": {
+        "product": ("guitar", "digital piano", "drum kit",),
+        "family": ("musical instrument",),
+    },
+    "officeandstationary": {
+        "product": ("notebook", "printer paper", "ballpoint pen",),
+        "family": ("office supply",),
+    },
+    "photography": {
+        "product": ("camera lens", "camera", "tripod",),
+        "family": ("photography product",),
+    },
+    "safetyemergency": {
+        "product": ("fire extinguisher", "smoke alarm", "emergency kit",),
+        "family": ("safety product",),
+    },
+    "seasonal": {
+        "product": ("holiday decoration", "party supply", "gift wrap",),
+        "family": ("seasonal product",),
+    },
+    "sportsoutdoors": {
+        "product": ("yoga mat", "tent", "basketball",),
+        "family": ("sports and outdoor product",),
+    },
+    "toys": {
+        "product": ("action figure", "board game", "building block",),
+        "family": ("toy",),
+    },
+    "vehiclespartsandaccessories": {
+        "product": ("car part", "motor oil", "tire",),
+        "family": ("automotive product",),
+    },
     "generic": {
         "product": ("the product",),
         "family": ("the product",),
@@ -608,6 +730,345 @@ SLIDE4_SCOPE_FALLBACKS: dict[str, dict[str, tuple[str, ...]]] = {
 
 
 SLIDE4_SCOPE_TERMS: dict[str, tuple[str, ...]] = {
+    "artsandcrafts": (
+        "artsandcrafts",
+        "arts and crafts",
+        "craft supply",
+        "paint brush",
+        "craft kit",
+        "yarn",
+        "craft",
+        "crafting",
+        "sewing",
+        "knitting",
+        "crochet",
+        "embroidery",
+        "scrapbook",
+        "art supply",
+        "paintbrush",
+        "bead",
+    ),
+    "baby": (
+        "baby",
+        "baby product",
+        "baby bottle",
+        "diaper",
+        "stroller",
+        "infant",
+        "newborn",
+        "toddler",
+        "pacifier",
+        "baby wipe",
+        "baby monitor",
+        "baby carrier",
+        "crib",
+        "car seat",
+    ),
+    "businessandindustrial": (
+        "businessandindustrial",
+        "business and industrial",
+        "industrial supply",
+        "pallet jack",
+        "commercial equipment",
+        "industrial tool",
+        "industrial",
+        "commercial supply",
+        "material handling",
+        "warehouse equipment",
+        "manufacturing",
+        "packaging supply",
+    ),
+    "everythingelse": (
+        "everythingelse",
+        "everything else",
+        "the product",
+        "general merchandise",
+        "miscellaneous product",
+        "general purpose product",
+    ),
+    "fashion": (
+        "fashion",
+        "fashion item",
+        "shirt",
+        "shoe",
+        "jewelry",
+        "clothing",
+        "apparel",
+        "footwear",
+        "sneaker",
+        "boot",
+        "sandal",
+        "dress",
+        "pants",
+        "jeans",
+        "jacket",
+        "sweater",
+        "sock",
+        "handbag",
+        "necklace",
+        "earring",
+        "watch",
+    ),
+    "furniture": (
+        "furniture",
+        "furniture item",
+        "sofa",
+        "desk",
+        "chair",
+        "couch",
+        "armchair",
+        "recliner",
+        "bookcase",
+        "dresser",
+        "nightstand",
+        "dining table",
+        "bed frame",
+        "mattress",
+        "ottoman",
+    ),
+    "gardenandpatio": (
+        "gardenandpatio",
+        "garden and patio",
+        "garden and patio product",
+        "garden hose",
+        "patio umbrella",
+        "outdoor grill",
+        "garden",
+        "patio",
+        "gardening",
+        "lawn",
+        "planter",
+        "greenhouse",
+        "grill",
+        "grilling",
+        "outdoor furniture",
+        "lawn mower",
+        "fertilizer",
+    ),
+    "home": (
+        "home",
+        "home product",
+        "air fryer",
+        "coffee maker",
+        "cookware",
+        "bedding",
+        "kitchen appliance",
+        "kitchen",
+        "appliance",
+        "toaster",
+        "toaster oven",
+        "oven",
+        "blender",
+        "mixer",
+        "microwave",
+        "pressure cooker",
+        "slow cooker",
+        "vacuum",
+        "pillow",
+        "towel",
+        "curtain",
+        "rug",
+        "dinnerware",
+        "bakeware",
+        "home decor",
+    ),
+    "homeimprovement": (
+        "homeimprovement",
+        "home improvement",
+        "home improvement product",
+        "power drill",
+        "light fixture",
+        "faucet",
+        "hardware",
+        "power tool",
+        "hand tool",
+        "plumbing",
+        "electrical",
+        "flooring",
+        "building material",
+        "door lock",
+        "ceiling fan",
+        "paint roller",
+    ),
+    "householdclean": (
+        "householdclean",
+        "household industrial cleaning storage",
+        "household care product",
+        "laundry detergent",
+        "surface cleaner",
+        "storage bin",
+        "household",
+        "cleaning",
+        "detergent",
+        "disinfectant",
+        "dish soap",
+        "dishwashing",
+        "laundry",
+        "mop",
+        "broom",
+        "trash bag",
+        "paper towel",
+        "toilet paper",
+        "storage container",
+    ),
+    "media": (
+        "media",
+        "media product",
+        "book",
+        "movie",
+        "music album",
+        "novel",
+        "textbook",
+        "audiobook",
+        "ebook",
+        "dvd",
+        "blu-ray",
+        "vinyl record",
+        "magazine",
+    ),
+    "musicalinstruments": (
+        "musicalinstruments",
+        "musical instruments",
+        "musical instrument",
+        "guitar",
+        "digital piano",
+        "drum kit",
+        "musical",
+        "piano",
+        "violin",
+        "ukulele",
+        "trumpet",
+        "flute",
+        "saxophone",
+        "guitar string",
+        "guitar amplifier",
+        "percussion",
+    ),
+    "officeandstationary": (
+        "officeandstationary",
+        "office and stationery",
+        "office supply",
+        "notebook",
+        "printer paper",
+        "ballpoint pen",
+        "office",
+        "stationery",
+        "stationary",
+        "pencil",
+        "marker",
+        "highlighter",
+        "stapler",
+        "binder",
+        "envelope",
+        "file folder",
+        "desk organizer",
+    ),
+    "photography": (
+        "photography",
+        "photography product",
+        "camera lens",
+        "camera",
+        "tripod",
+        "photographic",
+        "dslr",
+        "mirrorless",
+        "camcorder",
+        "camera flash",
+        "camera bag",
+        "photography lighting",
+        "lens filter",
+    ),
+    "safetyemergency": (
+        "safetyemergency",
+        "safety and emergency",
+        "safety product",
+        "fire extinguisher",
+        "smoke alarm",
+        "emergency kit",
+        "safety",
+        "emergency",
+        "carbon monoxide alarm",
+        "protective equipment",
+        "safety glasses",
+        "work glove",
+        "respirator",
+        "first aid kit",
+    ),
+    "seasonal": (
+        "seasonal",
+        "occasion and seasonal",
+        "seasonal product",
+        "holiday decoration",
+        "party supply",
+        "gift wrap",
+        "holiday",
+        "christmas",
+        "halloween",
+        "easter",
+        "valentine",
+        "party decoration",
+        "ornament",
+        "christmas tree",
+        "gift bag",
+    ),
+    "sportsoutdoors": (
+        "sportsoutdoors",
+        "sports and outdoors",
+        "sports and outdoor product",
+        "yoga mat",
+        "tent",
+        "basketball",
+        "sports",
+        "sporting",
+        "outdoors",
+        "camping",
+        "hiking",
+        "fishing",
+        "fitness",
+        "exercise",
+        "athletic",
+        "dumbbell",
+        "sleeping bag",
+        "bicycle",
+        "soccer",
+        "football",
+        "tennis",
+    ),
+    "toys": (
+        "toys",
+        "toy",
+        "action figure",
+        "board game",
+        "building block",
+        "playset",
+        "doll",
+        "puzzle",
+        "plush",
+        "stuffed animal",
+        "building set",
+        "toy vehicle",
+        "pretend play",
+        "remote control toy",
+    ),
+    "vehiclespartsandaccessories": (
+        "vehiclespartsandaccessories",
+        "vehicles parts and accessories",
+        "automotive product",
+        "car part",
+        "motor oil",
+        "tire",
+        "vehicle",
+        "automotive",
+        "car accessory",
+        "truck",
+        "motorcycle",
+        "windshield wiper",
+        "brake pad",
+        "car battery",
+        "engine oil",
+        "car care",
+    ),
+
     "beauty": (
         "beauty",
         "skin",
@@ -619,6 +1080,17 @@ SLIDE4_SCOPE_TERMS: dict[str, tuple[str, ...]] = {
         "gentle",
         "cosmetic",
         "fragrance",
+        "makeup",
+        "lipstick",
+        "mascara",
+        "foundation",
+        "moisturizer",
+        "serum",
+        "shampoo",
+        "conditioner",
+        "hair care",
+        "nail polish",
+        "perfume",
     ),
     "health": (
         "health",
@@ -634,6 +1106,18 @@ SLIDE4_SCOPE_TERMS: dict[str, tuple[str, ...]] = {
         "pharmacy",
         "tablet",
         "capsule",
+        "personal care",
+        "oral care",
+        "toothpaste",
+        "toothbrush",
+        "mouthwash",
+        "vitamin",
+        "supplement",
+        "pain relief",
+        "allergy",
+        "first aid",
+        "thermometer",
+        "deodorant",
     ),
     "food": (
         "food",
@@ -653,8 +1137,39 @@ SLIDE4_SCOPE_TERMS: dict[str, tuple[str, ...]] = {
         "protein shake",
         "seasoning",
         "spice",
+        "grocery",
+        "drink",
+        "juice",
+        "coffee",
+        "tea",
+        "cereal",
+        "pasta",
+        "rice",
+        "sauce",
+        "soup",
+        "candy",
+        "chocolate",
+        "cookie",
+        "cracker",
     ),
-    "pet": ("pet", "dog", "cat", "flea", "treat", "animal"),
+    "pet": (
+        "pet",
+        "dog",
+        "cat",
+        "flea",
+        "treat",
+        "animal",
+        "pet care",
+        "pet food",
+        "dog food",
+        "cat food",
+        "cat litter",
+        "aquarium",
+        "bird feed",
+        "leash",
+        "pet collar",
+        "pet toy",
+    ),
     "electronics": (
         "electronics",
         "device",
@@ -665,11 +1180,119 @@ SLIDE4_SCOPE_TERMS: dict[str, tuple[str, ...]] = {
         "speaker",
         "bluetooth",
         "tech",
+        "computer",
+        "laptop",
+        "smartphone",
+        "smartwatch",
+        "television",
+        "monitor",
+        "router",
+        "usb",
+        "power bank",
+        "gaming console",
     ),
 }
 
 
 SLIDE4_PRODUCT_FALLBACK_SIGNALS: dict[str, tuple[tuple[tuple[str, ...], str], ...]] = {
+    "artsandcrafts": (
+        (("paint brush",), "paint brush"),
+        (("craft kit",), "craft kit"),
+        (("yarn",), "yarn"),
+    ),
+    "baby": (
+        (("baby bottle",), "baby bottle"),
+        (("diaper",), "diaper"),
+        (("stroller",), "stroller"),
+    ),
+    "businessandindustrial": (
+        (("pallet jack",), "pallet jack"),
+        (("commercial equipment",), "commercial equipment"),
+        (("industrial tool",), "industrial tool"),
+    ),
+    "everythingelse": (
+        (("general merchandise",), "general merchandise"),
+    ),
+    "fashion": (
+        (("shirt",), "shirt"),
+        (("shoe",), "shoe"),
+        (("jewelry",), "jewelry"),
+        (("clothing",), "clothing"),
+        (("apparel",), "apparel"),
+    ),
+    "furniture": (
+        (("sofa",), "sofa"),
+        (("desk",), "desk"),
+        (("chair",), "chair"),
+    ),
+    "gardenandpatio": (
+        (("garden hose",), "garden hose"),
+        (("patio umbrella",), "patio umbrella"),
+        (("outdoor grill",), "outdoor grill"),
+    ),
+    "home": (
+        (("air fryer",), "air fryer"),
+        (("coffee maker",), "coffee maker"),
+        (("cookware",), "cookware"),
+        (("bedding",), "bedding"),
+        (("kitchen appliance",), "kitchen appliance"),
+    ),
+    "homeimprovement": (
+        (("power drill",), "power drill"),
+        (("light fixture",), "light fixture"),
+        (("faucet",), "faucet"),
+    ),
+    "householdclean": (
+        (("laundry detergent",), "laundry detergent"),
+        (("surface cleaner",), "surface cleaner"),
+        (("storage bin",), "storage bin"),
+    ),
+    "media": (
+        (("book",), "book"),
+        (("movie",), "movie"),
+        (("music album",), "music album"),
+    ),
+    "musicalinstruments": (
+        (("guitar",), "guitar"),
+        (("digital piano",), "digital piano"),
+        (("drum kit",), "drum kit"),
+    ),
+    "officeandstationary": (
+        (("notebook",), "notebook"),
+        (("printer paper",), "printer paper"),
+        (("ballpoint pen",), "ballpoint pen"),
+    ),
+    "photography": (
+        (("camera lens",), "camera lens"),
+        (("camera",), "camera"),
+        (("tripod",), "tripod"),
+    ),
+    "safetyemergency": (
+        (("fire extinguisher",), "fire extinguisher"),
+        (("smoke alarm",), "smoke alarm"),
+        (("emergency kit",), "emergency kit"),
+    ),
+    "seasonal": (
+        (("holiday decoration",), "holiday decoration"),
+        (("party supply",), "party supply"),
+        (("gift wrap",), "gift wrap"),
+    ),
+    "sportsoutdoors": (
+        (("yoga mat",), "yoga mat"),
+        (("tent",), "tent"),
+        (("basketball",), "basketball"),
+    ),
+    "toys": (
+        (("action figure",), "action figure"),
+        (("board game",), "board game"),
+        (("building block",), "building block"),
+    ),
+    "vehiclespartsandaccessories": (
+        (("car part",), "car part"),
+        (("motor oil",), "motor oil"),
+        (("tire",), "tire"),
+    ),
+
     "beauty": (
         (("face wash",), "face wash"),
         (("hydrating", "cleanser"), "hydrating cleanser"),
@@ -710,22 +1333,46 @@ SLIDE4_SCOPE_NOISE_RE = re.compile(
 SLIDE4_SCOPE_METADATA_RE = re.compile(r"\b[\w.-]+\.(?:jpg|jpeg|png|webp)\b|\b\d{3,5}\s*x\s*\d{3,5}\b", re.I)
 
 
-def _slide4_scope_family(facts: dict[str, Any]) -> str:
-    category_blob = " ".join(
-        _safe_text(value).lower()
-        for value in (facts.get("category"), facts.get("product_type"), facts.get("title"))
-        if _safe_text(value)
+SLIDE4_CATEGORY_ALIASES = {
+    "animals": "pet",
+    "food_beverage": "food",
+    "healthgeneral": "health",
+    "healthpersonal": "health",
+    "householdindustrialcleaningstorage": "householdclean",
+}
+
+
+def _slide4_is_cooking_appliance(facts: dict[str, Any]) -> bool:
+    identity = " ".join(
+        _safe_text(facts.get(key)).lower() for key in ("product_type", "title")
     )
-    if any(term in category_blob for term in SLIDE4_SCOPE_TERMS["beauty"]):
-        return "beauty"
-    if any(term in category_blob for term in SLIDE4_SCOPE_TERMS["health"]):
-        return "health"
-    if any(term in category_blob for term in SLIDE4_SCOPE_TERMS["food"]):
-        return "food"
-    if any(term in category_blob for term in SLIDE4_SCOPE_TERMS["pet"]):
-        return "pet"
-    if any(term in category_blob for term in SLIDE4_SCOPE_TERMS["electronics"]):
-        return "electronics"
+    return bool(re.search(
+        r"\b(?:air[ -]?fryers?|(?:toaster|countertop|convection|microwave) ovens?|ovens?)\b",
+        identity,
+    )) and not bool(re.search(r"\b(?:liners?|replacement parts?|oven mitts?)\b", identity))
+
+
+def _slide4_scope_family(facts: dict[str, Any]) -> str:
+    # Cooking appliances often carry food-related retailer category labels.
+    if _slide4_is_cooking_appliance(facts):
+        return "home"
+    # Prefer explicit taxonomy over incidental words in a product title.
+    for field in ("category", "product_type", "title"):
+        value = _safe_text(facts.get(field)).lower().replace("&", "and")
+        compact = re.sub(r"[^a-z0-9]", "", value)
+        for category, family in SLIDE4_CATEGORY_ALIASES.items():
+            if compact == re.sub(r"[^a-z0-9]", "", category):
+                return family
+        if compact in SLIDE4_SCOPE_FALLBACKS:
+            return compact
+        matches = [
+            (len(term), family)
+            for family, terms in SLIDE4_SCOPE_TERMS.items()
+            for term in terms
+            if re.search(r"(?<!\w)" + re.escape(term) + r"s?(?!\w)", value)
+        ]
+        if matches:
+            return max(matches, key=lambda match: match[0])[1]
     return "generic"
 
 
@@ -784,6 +1431,10 @@ def _slide4_scope_safe_phrase(phrase: str, facts: dict[str, Any], *, prefer_gene
 
 
 def _slide4_product_phrase(facts: dict[str, Any]) -> str:
+    if _slide4_is_cooking_appliance(facts):
+        identity = " ".join(_safe_text(facts.get(key)) for key in ("product_type", "title"))
+        match = re.search(r"\b(air[ -]?fryer|(?:toaster|countertop|convection|microwave) oven|oven)s?\b", identity, re.I)
+        return match.group(1).lower()
     content_blob = _slide4_content_blob(facts)
     if _has_any(content_blob, "hazelnut", "cocoa", "nutella"):
         return "hazelnut-and-cocoa spread"
@@ -813,6 +1464,8 @@ def _slide4_content_phrases(facts: dict[str, Any]) -> dict[str, str]:
 
 
 def _slide4_evidence_theme(facts: dict[str, Any]) -> str:
+    if _slide4_scope_family(facts) != "food":
+        return "product"
     blob = _slide4_content_blob(facts)
     if _has_any(blob, "hazelnut", "cocoa", "nutella"):
         return "hazelnut_cocoa"
@@ -869,7 +1522,9 @@ def _slide4_theme_terms(facts: dict[str, Any]) -> dict[str, str]:
 
 def _slide4_theme_bullet(cue_key: str, classification: str, facts: dict[str, Any], identity: dict[str, Any]) -> str:
     if cue_key == "pack_or_spec_detail":
-        return "Clear pack and nutrition detail"
+        if _slide4_category_context(facts, identity) == "food":
+            return "Clear pack and nutrition detail"
+        return "Product specifications make comparisons easier"
     if cue_key == "review_or_trust_signals":
         review_count = int(facts.get("review_count", 0) or 0)
         if review_count >= 25:
@@ -883,7 +1538,10 @@ def _slide4_theme_bullet(cue_key: str, classification: str, facts: dict[str, Any
     )
 
 
-def _slide4_product_phrase_for_identity(facts: dict[str, Any], identity: dict[str, Any]) -> str:
+def _slide4_product_phrase_for_identity(facts: dict[str, Any],
+                                        identity: dict[str, Any]
+)-> str:
+    
     product = _safe_text(identity.get("product_type_display") or "").lower().replace("&", "and")
     if product and product not in {"category", "product"}:
         if product.endswith("s") and not product.endswith("ss"):
@@ -895,36 +1553,46 @@ def _slide4_product_phrase_for_identity(facts: dict[str, Any], identity: dict[st
 
 
 def _slide4_category_context(facts: dict[str, Any], identity: dict[str, Any]) -> str:
-    blob = " ".join(
-        [
-            _safe_text(identity.get("category_key")),
-            _safe_text(identity.get("category_display")),
-            _safe_text(facts.get("category")),
-            _safe_text(facts.get("product_type")),
-            _safe_text(facts.get("title")),
-        ]
-    ).lower()
-    if any(term in blob for term in ("beauty", "skin", "facial", "cleanser", "cosmetic")):
-        return "beauty"
-    if any(term in blob for term in ("health", "otc", "over the counter", "over-the-counter", "medicine", "antacid", "heartburn", "acid reducer", "stomach relief", "pharmacy")):
-        return "health"
-    if any(term in blob for term in ("food", "pantry", "snack", "beverage", "spread", "butter", "jam", "jell")):
-        return "food"
-    if any(term in blob for term in ("pet", "dog", "cat", "flea", "animal")):
-        return "pet"
-    if any(term in blob for term in ("electronics", "device", "charger", "battery", "headphone", "speaker")):
-        return "electronics"
-    return "general"
+    if _slide4_is_cooking_appliance(facts):
+        return "home"
+    identity_category = _safe_text(identity.get("category_key") or identity.get("category_display"))
+    family = _slide4_scope_family({"category": identity_category})
+    if family == "generic":
+        family = _slide4_scope_family(facts)
+    return family if family != "generic" else "general"
+
+
+SLIDE4_LANGUAGE_GUARD_CATEGORIES = {
+    "food": "food_beverage",
+    "health": "health_personal_care",
+    "pet": "animals",
+    "artsandcrafts": "arts_crafts",
+    "businessandindustrial": "business_industrial",
+    "everythingelse": "everything_else",
+    "gardenandpatio": "garden_patio",
+    "homeimprovement": "home_improvement",
+    "householdclean": "household_clean",
+    "musicalinstruments": "musical_instruments",
+    "officeandstationary": "office_stationery",
+    "safetyemergency": "safety_emergency",
+    "sportsoutdoors": "sports_outdoors",
+    "vehiclespartsandaccessories": "vehicle",
+}
 
 
 def _slide4_language_allowed(text: str, category_context: str) -> tuple[bool, str]:
     normalized = _safe_text(text).lower()
+    shared_category = SLIDE4_LANGUAGE_GUARD_CATEGORIES.get(category_context, category_context)
+    for term, _ in INVALID_LANGUAGE_GUARDS.get(shared_category, ()):
+        if re.search(r"(?<!\w)" + re.escape(term) + r"(?!\w)", normalized):
+            return False, f"blocked_wrong_category_term:{term}"
     invalid_by_context = {
         "beauty": ("nutrition", "protein", "breakfast", "snack", "recipe", "serving", "pantry"),
         "health": ("breakfast", "snack", "recipe", "serving", "pantry", "spice", "spices", "seasoning", "vaccaria", "pet treat", "charger", "speaker"),
         "food": ("regimen", "skin-care", "skin care", "dermatologist", "clinical routine", "device setup"),
         "pet": ("breakfast", "pantry", "skin care", "antacid", "heartburn", "charger", "speaker"),
         "electronics": ("ingredient", "ingredients", "formula", "nutrition", "regimen", "skin"),
+        "home": ("nutrition", "protein", "pantry relevance", "breakfast occasions", "ingredient", "formula", "regimen", "skin benefits"),
     }
     for term in invalid_by_context.get(category_context, ()):
         if term in normalized:
@@ -962,11 +1630,11 @@ def _slide4_safe_bullet_replacement(
     scoped_phrase = _slide4_family_phrase_for_context(category_context, product_context)
     dimension_blob = f"{dimension} {family} {bullet_type}".lower()
     if any(term in dimension_blob for term in ("title", "positioning", "product_positioning")):
-        if category_context in {"beauty", "health", "food", "pet", "electronics"} and scoped_phrase != "the product":
+        if category_context in SLIDE4_SCOPE_FALLBACKS and scoped_phrase != "the product":
             return f"Title can name the {scoped_phrase} more directly"
         return "Title clarity makes the product role easier to understand"
     if any(term in dimension_blob for term in ("detail", "pack", "spec", "feature", "formula", "comparison")):
-        if category_context in {"beauty", "health", "food", "pet", "electronics"} and scoped_phrase != "the product":
+        if category_context in SLIDE4_SCOPE_FALLBACKS and scoped_phrase != "the product":
             return f"Feature detail supports {scoped_phrase} comparison"
         return "Feature detail makes comparison easier"
     if any(term in dimension_blob for term in ("usage", "storytelling", "education", "visual", "image")):
@@ -1054,16 +1722,39 @@ def _slide4_image_analysis_facts(record: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _slide4_title_has_product(facts: dict[str, Any], identity: dict[str, Any], product_phrase: str) -> bool:
+def _slide4_title_has_product(facts: dict[str, Any], 
+                              identity: dict[str, Any],
+                              product_phrase: str,
+) -> bool:
     title = _safe_text(facts.get("title")).lower()
+    
     product_terms = [
         product_phrase,
         _safe_text(identity.get("product_type_display")).lower(),
-        *_as_text_list((identity.get("style_product_type") or {}).get("aliases") if isinstance(identity.get("style_product_type"), dict) else []),
-        *_as_text_list((identity.get("style_product_type") or {}).get("title_keywords") if isinstance(identity.get("style_product_type"), dict) else []),
+        *_as_text_list(
+            (identity.get("style_product_type") or {}).get("aliases")
+            if isinstance(identity.get("style_product_type"), dict)
+            else[]
+        ),
+        *_as_text_list(
+            (identity.get("style_product_type") or {}).get("title_keywords")
+            if isinstance(identity.get("style_product_type"), dict)
+            else []
+        ),
     ]
-    return any(_safe_text(term).lower() and _safe_text(term).lower() in title for term in product_terms)
-
+    
+    for term in product_terms:
+        term = _safe_text(term).lower()
+        if not term:
+            continue
+        
+        #match complere word/phrases only.
+        pattern = r"(?<!\w)" + re.escape(term) + r"(?!\w)"
+        
+        if re.search(pattern, title, flags=re.I):
+            return True
+        
+    return False
 
 def _slide4_build_candidate_pool(
     record: dict[str, Any],
@@ -1112,7 +1803,7 @@ def _slide4_build_candidate_pool(
             **kwargs,
         )
 
-    if _has_any(blob, "hazelnut", "cocoa", "nutella"):
+    if category_context == "food" and _has_any(blob, "hazelnut", "cocoa", "nutella"):
         add(
             text="Hazelnut-cocoa positioning supports breakfast occasions",
             family="positioning_title",
@@ -1123,7 +1814,7 @@ def _slide4_build_candidate_pool(
             signals=["hazelnut", "cocoa", "title"],
             reason="Title or PDP copy identifies hazelnut/cocoa spread positioning.",
         )
-    elif _has_any(blob, "peanut butter", "peanut", "protein", "jif", "fresh roasted", "fresh-roasted"):
+    elif category_context == "food" and _has_any(blob, "peanut butter", "peanut", "protein", "jif", "fresh roasted", "fresh-roasted"):
         add(
             text="Peanut butter positioning reinforces pantry relevance",
             family="positioning_title",
@@ -1490,9 +2181,9 @@ def _translate_slide4_strategic_cues(
             break
     fallback_candidates = [
         "Benefit-forward product positioning",
-        "Clear pack and nutrition detail",
+        _slide4_theme_bullet("pack_or_spec_detail", "context", facts, context.get("identity", {})),
         "Structured shopper education",
-        "Opportunity to deepen serving guidance",
+        "Opportunity to explain product use more clearly",
         "Review and trust cues support conversion confidence",
         "Visual sequencing can clarify shopper priorities",
     ]
@@ -2418,8 +3109,8 @@ def _apply_slide3_search_benchmark(prs: Any, slide: Any, payload: dict[str, Any]
             max_lines=4,
             drop_threshold=260,
             font_threshold=235,
-            base_font_size=12,
-            fallback_font_size=11,
+            base_font_size=13,
+            fallback_font_size=12,
         )
 
 
@@ -2689,8 +3380,9 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
             bounds["bullet"] if bounds else bullet_bounds[target_index]
         )
         bullets[target_index].top = shared_bullet_top
-        _replace_shape_text_preserve_style(labels[target_index], column.get("label", ""))
-        _fit_slide4_label(labels[target_index])
+        
+        _resize_title_shape_to_text(labels[target_index], column.get("label", ""))
+        
         slide4_bullet_render_items.append(
             (
                 str(target_index),
@@ -2712,8 +3404,8 @@ def _apply_slide4_content(prs: Any, slide: Any, payload: dict[str, Any]) -> None
             max_lines=6,
             drop_threshold=520,
             font_threshold=470,
-            base_font_size=11,
-            fallback_font_size=10,
+            base_font_size=12,
+            fallback_font_size=11,
             ensure_paragraph_count=True,
             line_spacing=0.9,
             space_after=2,
@@ -2898,8 +3590,8 @@ def _apply_slide5_no_brand_shop(
         fallback_font_size=14,
         ensure_paragraph_count=True,
         font_name="Raleway",
-        line_spacing=0.9,
-        space_after=1,
+        line_spacing=1,
+        space_after=3,
     )
 
 
@@ -2907,6 +3599,69 @@ def _apply_slide5_brand_shop(prs: Any, slide: Any, payload: dict[str, Any]) -> N
     if not payload:
         return
     shapes = _slide5_side_shapes(prs, slide)
+    
+    # Keep slide 5 bullet boxes completely above the bottom takeaway bar
+    footer_shape = next(
+        (
+            shape
+            for shape in _walk_shapes(slide.shapes)
+            if getattr(shape, "has_text_frame", False)
+            and "competitors are leveraging walmart brand shops"
+            in _shape_text(shape).lower()
+        ),
+        None,
+    )
+    
+    if footer_shape is not None:
+        footer_top = int(footer_shape.top)
+        bottom_gap = int(Inches(0.08))
+        
+        for side in ("client", "competitor"):
+            bullet_shape = shapes[side].get("bullets")
+            
+            if bullet_shape is None:
+                continue
+            
+            available_height = (
+                footer_top
+                - int(bullet_shape.top)
+                - bottom_gap
+            )
+            
+            if available_height > 0:
+                bullet_shape.height = available_height
+                
+                
+    # Make the cliet/current-structure bullet formatting match
+    # the competitive Benchmark bullet formatting.
+    client_bullet_shape = shapes["client"].get("bullets")
+    competitor_bullet_shape = shapes["competitor"].get("bullets")
+    
+    if client_bullet_shape is not None and competitor_bullet_shape is not None:
+        source_tf = competitor_bullet_shape.text_frame
+        target_tf = client_bullet_shape.text_frame
+        
+        #Make sure the client box has at least as many paragraphs.
+        while len(target_tf.paragraphs) < len(source_tf.paragraphs):
+            target_tf.add_paragraph()
+            
+        # Copy paragraph/bullet formatting from the right side.
+        source_paragraphs = list(source_tf.paragraphs)
+        
+        for index, target_para in enumerate(target_tf.paragraphs):
+            source_para = source_paragraphs[
+                min(index, len(source_paragraphs) -1)
+            ]
+            _copy_basic_paragraph_style(source_para, target_para)
+            
+        # Also match text-frame margins.
+        target_tf.margin_left = source_tf.margin_left
+        target_tf.margin_right = source_tf.margin_right
+        target_tf.margin_top = source_tf.margin_top
+        target_tf.margin_bottom = source_tf.margin_bottom
+        target_tf.word_wrap = source_tf.word_wrap
+        
+        
     if payload.get("mode") == "no_brand_shop":
         _apply_slide5_no_brand_shop(prs, slide, payload, shapes)
         return
@@ -2972,15 +3727,18 @@ def _apply_slide5_brand_shop(prs: Any, slide: Any, payload: dict[str, Any]) -> N
             bullet_render_items,
             max_lines=7,
             drop_threshold=640,
-            font_threshold=590,
-            base_font_size=14,
-            fallback_font_size=14,
+            font_threshold=360,
+            base_font_size=13.5,
+            fallback_font_size=12.5,
             ensure_paragraph_count=True,
             font_name="Raleway",
-            line_spacing=0.9,
-            space_after=1,
+            line_spacing=0.85,
+            space_after=2,
+            margin_bottom=0,
+            margin_top=0,
+            margin_left=0,
+            margin_right=0,
         )
-
 
 def _slide2_text_shapes(slide: Any) -> list[Any]:
     return [

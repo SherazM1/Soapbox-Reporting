@@ -169,6 +169,226 @@ CATEGORY_CUE_GUARDRAILS: dict[str, dict[str, Any]] = {
             "shopper_education": ("nutrition", "usage", "serving"),
         },
     },
+    "health_personal_care": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("symptom relief", "personal comfort",),
+            "ingredient_or_formula_communication": ("active ingredient", "labeled strength", "dosage",),
+            "pack_or_spec_detail": ("active ingredient", "labeled strength", "dosage",),
+            "shopper_education": ("label directions", "intended use", "contraindication",),
+            "usage_storytelling": ("hygiene", "care routine",),
+        },
+    },
+    "animals": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility",),
+        "cue_boosts": {
+            "benefit_communication": ("nutrition", "coat care",),
+            "ingredient_or_formula_communication": ("ingredient", "feeding amount", "life stage",),
+            "pack_or_spec_detail": ("ingredient", "feeding amount", "life stage",),
+            "shopper_education": ("feeding guide", "species", "care instructions",),
+            "usage_storytelling": ("feeding", "grooming", "pet care",),
+        },
+    },
+    "garden_patio": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "nutrition detail", "nutritional detail", "protein content", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("weather resistance", "growth", "outdoor comfort",),
+            "ingredient_or_formula_communication": ("material", "weather resistance", "coverage",),
+            "pack_or_spec_detail": ("material", "weather resistance", "coverage",),
+            "shopper_education": ("plant care", "assembly", "maintenance",),
+            "usage_storytelling": ("gardening", "patio", "outdoor entertaining",),
+        },
+    },
+    "everything_else": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility",),
+        "cue_boosts": {
+            "benefit_communication": ("practical value", "product benefit",),
+            "ingredient_or_formula_communication": ("contents", "material", "dimensions",),
+            "pack_or_spec_detail": ("contents", "material", "dimensions",),
+            "shopper_education": ("instructions", "intended use", "product care",),
+            "usage_storytelling": ("occasion", "everyday use",),
+        },
+    },
+    "business_industrial": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "nutrition detail", "nutritional detail", "protein content", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("productivity", "durability",),
+            "ingredient_or_formula_communication": ("capacity", "voltage", "material",),
+            "pack_or_spec_detail": ("capacity", "voltage", "material",),
+            "shopper_education": ("operating requirements", "installation", "maintenance",),
+            "usage_storytelling": ("workflow", "material handling", "workplace",),
+        },
+    },
+    "photography": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "nutrition detail", "nutritional detail", "protein content", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("image quality", "stabilization",),
+            "ingredient_or_formula_communication": ("focal length", "aperture", "mount",),
+            "pack_or_spec_detail": ("focal length", "aperture", "mount",),
+            "shopper_education": ("camera compatibility", "lens selection", "setup",),
+            "usage_storytelling": ("portrait", "landscape", "shooting",),
+        },
+    },
+    "media": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "nutrition detail", "nutritional detail", "protein content", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("entertainment", "story",),
+            "ingredient_or_formula_communication": ("edition", "format", "runtime",),
+            "pack_or_spec_detail": ("edition", "format", "runtime",),
+            "shopper_education": ("playback requirements", "edition differences",),
+            "usage_storytelling": ("reading", "viewing", "listening",),
+        },
+    },
+    "seasonal": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "nutrition detail", "nutritional detail", "protein content", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("seasonal design", "event styling",),
+            "ingredient_or_formula_communication": ("dimensions", "material", "quantity",),
+            "pack_or_spec_detail": ("dimensions", "material", "quantity",),
+            "shopper_education": ("setup", "storage", "reuse",),
+            "usage_storytelling": ("holiday", "celebration", "decorating",),
+        },
+    },
+    "sports_outdoors": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("performance", "comfort", "durability",),
+            "ingredient_or_formula_communication": ("size", "weight", "material",),
+            "pack_or_spec_detail": ("size", "weight", "material",),
+            "shopper_education": ("equipment fit", "activity suitability", "instructions",),
+            "usage_storytelling": ("training", "camping", "hiking",),
+        },
+    },
+    "home_improvement": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "nutrition detail", "nutritional detail", "protein content", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("durability", "efficiency",),
+            "ingredient_or_formula_communication": ("dimensions", "material", "voltage",),
+            "pack_or_spec_detail": ("dimensions", "material", "voltage",),
+            "shopper_education": ("installation", "surface compatibility", "measurement",),
+            "usage_storytelling": ("repair", "renovation", "installation",),
+        },
+    },
+    "home": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "nutrition detail", "nutritional detail", "protein content", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("convenience", "cooking performance",),
+            "ingredient_or_formula_communication": ("capacity", "wattage", "dimensions", "temperature",),
+            "pack_or_spec_detail": ("capacity", "wattage", "dimensions", "temperature",),
+            "shopper_education": ("controls", "cleaning", "instructions",),
+            "usage_storytelling": ("cooking", "recipe", "household use",),
+        },
+    },
+    "musical_instruments": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "nutrition detail", "nutritional detail", "protein content", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("sound quality", "playability",),
+            "ingredient_or_formula_communication": ("material", "tuning", "scale length",),
+            "pack_or_spec_detail": ("material", "tuning", "scale length",),
+            "shopper_education": ("tuning", "setup", "instrument care",),
+            "usage_storytelling": ("practice", "rehearsal", "performance",),
+        },
+    },
+    "office_stationery": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "nutrition detail", "nutritional detail", "protein content", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("organization", "efficiency",),
+            "ingredient_or_formula_communication": ("paper size", "ink", "quantity",),
+            "pack_or_spec_detail": ("paper size", "ink", "quantity",),
+            "shopper_education": ("paper sizing", "printer compatibility", "refill",),
+            "usage_storytelling": ("writing", "planning", "organization",),
+        },
+    },
+    "safety_emergency": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "nutrition detail", "nutritional detail", "protein content", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("protection", "preparedness",),
+            "ingredient_or_formula_communication": ("rating", "material", "protection type",),
+            "pack_or_spec_detail": ("rating", "material", "protection type",),
+            "shopper_education": ("limitations", "inspection", "instructions",),
+            "usage_storytelling": ("emergency readiness", "safe operation",),
+        },
+    },
+    "vehicle": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "nutrition detail", "nutritional detail", "protein content", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("reliability", "driving comfort",),
+            "ingredient_or_formula_communication": ("fitment", "make", "model", "year",),
+            "pack_or_spec_detail": ("fitment", "make", "model", "year",),
+            "shopper_education": ("installation", "compatibility", "maintenance",),
+            "usage_storytelling": ("driving", "vehicle maintenance",),
+        },
+    },
+    "arts_crafts": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "nutrition detail", "nutritional detail", "protein content", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("creative possibilities", "project outcome",),
+            "ingredient_or_formula_communication": ("material", "color", "contents",),
+            "pack_or_spec_detail": ("material", "color", "contents",),
+            "shopper_education": ("technique", "material selection", "instructions",),
+            "usage_storytelling": ("crafting", "sewing", "painting",),
+        },
+    },
+    "baby": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("baby comfort", "caregiver convenience",),
+            "ingredient_or_formula_communication": ("age range", "material", "capacity",),
+            "pack_or_spec_detail": ("age range", "material", "capacity",),
+            "shopper_education": ("age suitability", "care instructions", "setup",),
+            "usage_storytelling": ("feeding", "changing", "caregiving",),
+        },
+    },
+    "fashion": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "nutrition detail", "nutritional detail", "protein content", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("comfort", "style",),
+            "ingredient_or_formula_communication": ("fabric", "size", "fit",),
+            "pack_or_spec_detail": ("fabric", "size", "fit",),
+            "shopper_education": ("size chart", "garment care", "measurements",),
+            "usage_storytelling": ("outfit", "occasion", "wearing",),
+        },
+    },
+    "furniture": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "nutrition detail", "nutritional detail", "protein content", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("comfort", "storage", "durability",),
+            "ingredient_or_formula_communication": ("dimensions", "frame", "upholstery",),
+            "pack_or_spec_detail": ("dimensions", "frame", "upholstery",),
+            "shopper_education": ("assembly", "care instructions", "space planning",),
+            "usage_storytelling": ("room layout", "seating", "placement",),
+        },
+    },
+    "health_general": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("support", "daily health management",),
+            "ingredient_or_formula_communication": ("components", "specifications", "capacity",),
+            "pack_or_spec_detail": ("components", "specifications", "capacity",),
+            "shopper_education": ("intended use", "limitations", "instructions",),
+            "usage_storytelling": ("monitoring", "home care",),
+        },
+    },
+    "household_clean": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "nutrition detail", "nutritional detail", "protein content", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("cleaning effectiveness", "organization",),
+            "ingredient_or_formula_communication": ("ingredients", "dilution", "surface compatibility",),
+            "pack_or_spec_detail": ("ingredients", "dilution", "surface compatibility",),
+            "shopper_education": ("handling", "dilution", "instructions",),
+            "usage_storytelling": ("cleaning", "storage", "laundry",),
+        },
+    },
+    "toys": {
+        "penalized_terms": ("shade matching", "skin concern navigation", "carrier compatibility", "nutrition detail", "nutritional detail", "protein content", "breed size segmentation", "pet feeding guidance",),
+        "cue_boosts": {
+            "benefit_communication": ("discovery", "play enjoyment",),
+            "ingredient_or_formula_communication": ("age range", "material", "contents",),
+            "pack_or_spec_detail": ("age range", "material", "contents",),
+            "shopper_education": ("age suitability", "instructions", "setup",),
+            "usage_storytelling": ("play", "imagination", "shared play",),
+        },
+    },
 }
 
 
