@@ -99,10 +99,34 @@ CATEGORY_WORDS: dict[str, dict[str, str]] = {
         "trust": "shopper confidence",
     },
     "baby_care": {
-        "product": "routine clarity",
-        "benefit": "gentle-care benefits",
-        "usage": "routine and application guidance",
-        "trust": "parent reassurance",
+        "product": "age and care-purpose clarity",
+        "benefit": "care and comfort benefits",
+        "usage": "age-appropriate use and care guidance",
+        "trust": "parent and caregiver reassurance",
+    },
+    "animals": {
+        "product": "species and life-stage clarity",
+        "benefit": "pet care benefits",
+        "usage": "feeding, use, and care guidance",
+        "trust": "pet owner reassurance",
+    },
+    "home": {
+        "product": "household purpose and size clarity",
+        "benefit": "comfort and convenience benefits",
+        "usage": "room fit and everyday use guidance",
+        "trust": "material and care transparency",
+    },
+    "home_improvement": {
+        "product": "project and compatibility clarity",
+        "benefit": "repair and installation benefits",
+        "usage": "measurement, setup, and installation guidance",
+        "trust": "specification and suitability reassurance",
+    },
+    "toys": {
+        "product": "age range and play-feature clarity",
+        "benefit": "creative and shared play benefits",
+        "usage": "setup and age-appropriate play guidance",
+        "trust": "age suitability and contents transparency",
     },
     "health_personal_care": {
         "product": "clearer product story",
@@ -172,6 +196,20 @@ def _first_common(records: list[dict[str, Any]], *keys: str) -> str:
 
 def _category_family(category: str, product_type: str, title: str) -> str:
     blob = _lower_blob(category, product_type, title)
+    category_aliases = (
+        ("animals", ("animals", "animal", "pets", "pet", "dog", "cat", "aquarium")),
+        ("baby_care", ("baby", "infant", "toddler")),
+        ("home_improvement", ("home improvement", "hardware", "power tools", "plumbing", "building materials")),
+        ("toys", ("toys", "toy", "board games", "building blocks", "dolls", "playsets")),
+        ("home", ("home", "housewares", "kitchen", "bedding", "cookware", "furniture")),
+    )
+    # Explicit departments outrank incidental title words (e.g. bath towels).
+    # Check Home Improvement before the broader Home match.
+    for source in (category, _lower_blob(product_type, title)):
+        normalized = re.sub(r"[^a-z0-9]+", " ", source.lower())
+        for family, aliases in category_aliases:
+            if any(re.search(r"\b" + re.escape(alias) + r"(?:s|es)?\b", normalized) for alias in aliases):
+                return family
     if any(term in blob for term in ("baby", "infant", "toddler")):
         return "baby_care"
     if any(term in blob for term in ("health", "personal care", "clinical", "dermatolog", "skin", "body", "bath")):
@@ -436,11 +474,78 @@ TEXT_BY_FAMILY: dict[str, dict[str, str]] = {
     },
     "baby_care": {
         "routine_or_regimen_education": "Routine guidance helps parents understand daily use",
-        "usage_or_recipe_storytelling": "Usage cues help connect the PDP to routine fit",
-        "lifestyle_or_contextual_storytelling": "Family-care imagery adds parent reassurance",
-        "benefit_forward_graphics": "Gentle-care benefits are easier to evaluate",
-        "missing_lifestyle_storytelling": "More parent reassurance could help build confidence",
+        "ingredient_or_flavor_storytelling": "Composition details help caregivers evaluate product fit",
+        "nutrition_or_detail_support": "Size and product details help caregivers compare options",
+        "usage_or_recipe_storytelling": "Use guidance helps caregivers understand routine fit",
+        "lifestyle_or_contextual_storytelling": "Caregiving scenes help parents picture everyday use",
+        "benefit_forward_graphics": "Care and comfort benefits are easier to evaluate",
+        "trust_or_certification_support": "Supporting product evidence helps reassure caregivers",
+        "missing_lifestyle_storytelling": "More caregiving context could clarify everyday use",
         "missing_usage_or_recipe_storytelling": "Clearer routine guidance could reduce uncertainty",
+        "missing_benefit_graphics": "Clearer care benefits could help caregivers compare",
+        "missing_nutrition_or_ingredient_detail": "More composition and size detail could clarify suitability",
+        "missing_trust_or_certification_support": "Stronger product evidence could reassure caregivers",
+        "limited_conversion_guidance": "Clearer suitability guidance could help caregivers choose",
+    },
+    "animals": {
+        "ingredient_or_flavor_storytelling": "Composition details help pet owners evaluate product fit",
+        "nutrition_or_detail_support": "Product and pack details make pet care options easier to compare",
+        "usage_or_recipe_storytelling": "Use and care guidance helps owners understand suitability",
+        "lifestyle_or_contextual_storytelling": "Pet care scenes help owners picture everyday use",
+        "benefit_forward_graphics": "Pet care benefits are easier to evaluate",
+        "routine_or_regimen_education": "Care routines help owners understand regular use",
+        "trust_or_certification_support": "Supporting product evidence helps reassure pet owners",
+        "missing_lifestyle_storytelling": "More pet care context could clarify everyday use",
+        "missing_usage_or_recipe_storytelling": "Clearer use and care guidance could reduce uncertainty",
+        "missing_benefit_graphics": "Clearer pet care benefits could make comparison easier",
+        "missing_nutrition_or_ingredient_detail": "More composition and product detail could clarify pet suitability",
+        "missing_trust_or_certification_support": "Stronger product evidence could reassure pet owners",
+        "limited_conversion_guidance": "Clearer pet suitability guidance could help owners choose",
+    },
+    "home": {
+        "ingredient_or_flavor_storytelling": "Material details help explain household product quality",
+        "nutrition_or_detail_support": "Dimensions and capacity details make home products easier to compare",
+        "usage_or_recipe_storytelling": "Use guidance helps shoppers understand household fit",
+        "lifestyle_or_contextual_storytelling": "Room scenes help shoppers picture products in their home",
+        "benefit_forward_graphics": "Household comfort and convenience benefits are easier to evaluate",
+        "routine_or_regimen_education": "Care guidance helps shoppers understand routine upkeep",
+        "trust_or_certification_support": "Supporting product evidence builds household purchase confidence",
+        "missing_lifestyle_storytelling": "More room context could clarify household fit",
+        "missing_usage_or_recipe_storytelling": "Clearer everyday use guidance could reduce uncertainty",
+        "missing_benefit_graphics": "Clearer household benefits could make comparison easier",
+        "missing_nutrition_or_ingredient_detail": "More material and size detail could clarify room fit",
+        "missing_trust_or_certification_support": "Stronger product evidence could support household purchases",
+        "limited_conversion_guidance": "Clearer size and household use guidance could help shoppers choose",
+    },
+    "home_improvement": {
+        "ingredient_or_flavor_storytelling": "Material details help shoppers assess project suitability",
+        "nutrition_or_detail_support": "Dimensions and specifications make project products easier to compare",
+        "usage_or_recipe_storytelling": "Installation guidance helps shoppers understand project requirements",
+        "lifestyle_or_contextual_storytelling": "Project scenes help shoppers picture repair and installation uses",
+        "benefit_forward_graphics": "Repair and installation benefits are easier to evaluate",
+        "routine_or_regimen_education": "Maintenance guidance helps shoppers understand ongoing care",
+        "trust_or_certification_support": "Supporting product evidence builds project purchase confidence",
+        "missing_lifestyle_storytelling": "More project context could clarify intended applications",
+        "missing_usage_or_recipe_storytelling": "Clearer installation guidance could reduce project uncertainty",
+        "missing_benefit_graphics": "Clearer project benefits could make comparison easier",
+        "missing_nutrition_or_ingredient_detail": "More material and specification detail could clarify compatibility",
+        "missing_trust_or_certification_support": "Stronger product evidence could support project selection",
+        "limited_conversion_guidance": "Clearer compatibility guidance could help shoppers choose",
+    },
+    "toys": {
+        "ingredient_or_flavor_storytelling": "Material details help shoppers understand toy construction",
+        "nutrition_or_detail_support": "Size and included contents make toys easier to compare",
+        "usage_or_recipe_storytelling": "Play guidance helps shoppers understand activities and setup",
+        "lifestyle_or_contextual_storytelling": "Play scenes help shoppers picture how the toy is used",
+        "benefit_forward_graphics": "Creative and shared play benefits are easier to evaluate",
+        "routine_or_regimen_education": "Setup and play guidance helps families get started",
+        "trust_or_certification_support": "Supporting product evidence helps reassure toy shoppers",
+        "missing_lifestyle_storytelling": "More play context could clarify activity fit",
+        "missing_usage_or_recipe_storytelling": "Clearer setup and play guidance could reduce uncertainty",
+        "missing_benefit_graphics": "Clearer play benefits could make toy comparison easier",
+        "missing_nutrition_or_ingredient_detail": "More material and contents detail could clarify toy selection",
+        "missing_trust_or_certification_support": "Stronger product evidence could reassure families",
+        "limited_conversion_guidance": "Clearer age and play-interest guidance could help shoppers choose",
     },
     "health_personal_care": {
         "trust_or_certification_support": "Trust cues help reduce hesitation at purchase",

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from statistics import mean
 from typing import Any
 
@@ -659,6 +660,59 @@ def resolve_slide2_phrases(primary_records: list[dict[str, Any]]) -> dict[str, s
     category = _first_value(records, "category")
     product_type = _first_value(records, "product_type", "subcategory")
 
+    # Match category/product names as whole words so "pens" cannot match
+    # "dispensers", and specific departments take precedence over Home.
+    product_context = re.sub(r"[^a-z0-9]+", " ", f"{category} {product_type}".lower())
+
+    def matches(*terms: str) -> bool:
+        return any(re.search(r"\b" + re.escape(term) + r"\b", product_context) for term in terms)
+
+    if matches("animals", "animal", "pets", "pet", "pet supplies", "dog", "dogs", "cat", "cats", "aquarium"):
+        return _phrase_set(
+            category_phrase="pet care",
+            category=category or "pet care",
+            product_type=product_type or "pet care products",
+            benefit_phrase="everyday pet care",
+            visual_phrase="feeding and care guidance",
+            shopper_phrase="pet owners",
+        )
+    if matches("office", "stationery", "stationary", "pens", "pencils", "notebooks", "writing supplies"):
+        return _phrase_set(
+            category_phrase="office and stationery",
+            category=category or "office and stationery",
+            product_type=product_type or "office supplies",
+            benefit_phrase="writing and organization",
+            visual_phrase="work and study examples",
+            shopper_phrase="work and school shoppers",
+        )
+    if matches("business and industrial", "business industrial", "industrial", "commercial equipment", "material handling"):
+        return _phrase_set(
+            category_phrase="business and industrial supplies",
+            category=category or "business and industrial",
+            product_type=product_type or "professional equipment",
+            benefit_phrase="workplace efficiency",
+            visual_phrase="equipment use guidance",
+            shopper_phrase="business and trade buyers",
+        )
+    if matches("home improvement", "hardware", "tools", "plumbing", "building materials"):
+        return _phrase_set(
+            category_phrase="home improvement",
+            category=category or "home improvement",
+            product_type=product_type or "home improvement products",
+            benefit_phrase="repair and installation",
+            visual_phrase="project and setup guidance",
+            shopper_phrase="DIY and trade shoppers",
+        )
+    if matches("toys", "toy", "board games", "building blocks", "playsets", "dolls", "action figures"):
+        return _phrase_set(
+            category_phrase="toys and play",
+            category=category or "toys",
+            product_type=product_type or "toys",
+            benefit_phrase="creative and shared play",
+            visual_phrase="age-appropriate play ideas",
+            shopper_phrase="families and gift buyers",
+        )
+
     if any(term in blob for term in ("baby wash", "baby care", "infant", "toddler", "baby")):
         return _phrase_set(
             category_phrase="baby care",
@@ -703,6 +757,16 @@ def resolve_slide2_phrases(primary_records: list[dict[str, Any]]) -> dict[str, s
             benefit_phrase="efficacy-led",
             visual_phrase="usage and surface-specific education",
             shopper_phrase="solution-seeking household shoppers",
+        )
+
+    if matches("home", "housewares", "kitchen", "bedding", "cookware", "home decor", "bath towels"):
+        return _phrase_set(
+            category_phrase="home living",
+            category=category or "home",
+            product_type=product_type or "household products",
+            benefit_phrase="household comfort and convenience",
+            visual_phrase="room and routine examples",
+            shopper_phrase="household shoppers",
         )
 
     fallback = product_type or category or "the category"
@@ -1542,7 +1606,9 @@ def _apply_cue_bullets_to_slide2_sections(
         current_debug = [dict(item) for item in original_debug]
         for index, translated in enumerate(bullets):
             cue_item = debug[index] if index < len(debug) else {}
-            candidate_text = _shorten_slide2_bullet(translated)
+            # Let the fit guard reject oversized cues before they replace a
+            # complete section bullet. Trimming can remove the entire predicate.
+            candidate_text = " ".join(_safe_text(translated).split())
             decision = _cue_swap_decision(
                 section_key=section_key,
                 candidate_text=candidate_text,

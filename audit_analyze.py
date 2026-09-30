@@ -104,6 +104,75 @@ WALMART_TOP_CATEGORY_ALIASES: dict[str, tuple[str, ...]] = {
 }
 
 PRIORITY_CATEGORY_USE_CASE_TERMS: dict[str, tuple[str, ...]] = {
+    "Animals": (
+        "feed", "walk", "train", "groom", "pet care", "feeding time", "litter care",
+        "chew", "fetch", "crate training", "aquarium care", "habitat maintenance", "pet travel",
+    ),
+    "Arts & Crafts": (
+        "create", "paint", "craft", "draw", "sketch", "sew", "knit", "crochet",
+        "scrapbooking", "jewelry making", "model making", "card making", "diy projects",
+    ),
+    "Baby": (
+        "daily use", "feeding", "comfort", "diaper changes", "bottle feeding", "nursing",
+        "burping", "bath time", "tummy time", "teething", "potty training", "stroller walks", "baby travel",
+    ),
+    "Business & Industrial": (
+        "worksite", "operate", "maintain", "material handling", "equipment maintenance",
+        "assembly line", "inventory management", "shipping and receiving", "warehouse storage",
+        "commercial use", "food service", "facility maintenance", "packaging orders",
+    ),
+    "Everything Else": (
+        "everyday use", "practical", "convenient", "personal projects", "special occasions",
+        "gift giving", "collecting", "display", "replacement", "customization", "on the go",
+    ),
+    "Fashion": (
+        "wear", "style", "daily wear", "layering", "casual wear", "workwear", "formal occasions",
+        "workout", "lounging", "commuting", "cold weather", "rainy days", "accessorize",
+    ),
+    "Garden & Patio": (
+        "outdoor use", "plant", "maintain", "gardening", "watering", "pruning", "weeding",
+        "lawn care", "seed starting", "repotting", "composting", "outdoor dining", "grilling", "patio entertaining",
+    ),
+    "Health & Personal Care": (
+        "daily use", "apply", "wellness", "oral care", "brushing", "flossing", "shaving",
+        "personal hygiene", "first aid", "wound care", "health monitoring", "mobility support",
+        "medication organization", "label-directed use",
+    ),
+    "Home Improvement": (
+        "install", "repair", "upgrade", "renovate", "drilling", "sanding", "fastening",
+        "measuring", "wall mounting", "painting", "sealing", "plumbing repairs", "weatherproofing",
+    ),
+    "Household, Industrial Cleaning & Storage": (
+        "clean", "organize", "store", "laundry", "dishwashing", "mopping", "dusting",
+        "scrubbing", "stain removal", "degreasing", "spill cleanup", "odor control",
+        "closet organization", "waste disposal",
+    ),
+    "Media": (
+        "read", "watch", "listen", "movie night", "bedtime reading", "book club",
+        "study", "reference", "audiobook", "family viewing", "music listening", "collecting editions",
+    ),
+    "Musical Instruments": (
+        "practice", "play", "perform", "rehearsal", "recording", "songwriting", "music lessons",
+        "stage performance", "home studio", "tuning", "instrument care", "live sound", "band practice",
+    ),
+    "Office & Stationery": (
+        "write", "organize", "workspace", "note taking", "notetaking", "planning", "filing",
+        "labeling", "printing", "mailing", "journaling", "presentations", "schoolwork", "desk organization",
+    ),
+    "Safety & Emergency": (
+        "protect", "prepare", "emergency use", "emergency preparedness", "evacuation",
+        "power outage", "first aid", "hazard marking", "worksite safety", "visibility",
+        "hearing protection", "eye protection", "fire detection", "roadside emergency",
+    ),
+    "Seasonal & Occasion": (
+        "celebrate", "decorate", "gift", "holiday decorating", "party planning", "gift wrapping",
+        "birthday party", "wedding", "graduation", "trick or treat", "trick-or-treat",
+        "table setting", "seasonal display", "hosting guests",
+    ),
+    "Sports, Recreation & Outdoor": (
+        "train", "outdoor use", "play", "workout", "running", "cycling", "hiking", "camping",
+        "fishing", "swimming", "team practice", "strength training", "yoga", "backpacking", "picnic",
+    ),
     "Food & Beverage": (
         "serve", "spread on", "pair with", "top with", "enjoy", "snack", "breakfast",
         "dessert", "meal", "recipe", "glaze", "toast", "waffles",
@@ -138,6 +207,7 @@ LIGHT_CATEGORY_USE_CASE_HINTS: dict[str, tuple[str, ...]] = {
     "Garden & Patio": ("outdoor use", "plant", "maintain"),
     "Health & Personal Care": ("daily use", "apply", "wellness"),
     "Home Improvement": ("install", "repair", "upgrade"),
+    "Home": ("meal prep", "room organization", "everyday living"),
     "Household, Industrial Cleaning & Storage": ("clean", "organize", "store"),
     "Media": ("read", "watch", "listen"),
     "Musical Instruments": ("practice", "play", "perform"),
@@ -145,10 +215,13 @@ LIGHT_CATEGORY_USE_CASE_HINTS: dict[str, tuple[str, ...]] = {
     "Safety & Emergency": ("protect", "prepare", "emergency use"),
     "Seasonal & Occasion": ("celebrate", "decorate", "gift"),
     "Sports, Recreation & Outdoor": ("train", "outdoor use", "play"),
+    "Toys": ("pretend play", "creative play", "family game night"),
 }
 INTERNAL_CATEGORY_BUCKETS = (
+    "Animals",
     "Food & Beverage",
     "Home",
+    "Home Improvement",
     "Beauty / Personal Care",
     "Baby / Kids",
     "Pets",
@@ -156,6 +229,7 @@ INTERNAL_CATEGORY_BUCKETS = (
     "Health / Wellness",
     "Electronics / Accessories",
     "General Merchandise / Fallback",
+    "Toys",
 )
 WALMART_TOP_TO_INTERNAL_BUCKET: dict[str, str] = {
     "Food & Beverage": "Food & Beverage",
@@ -744,6 +818,11 @@ def _resolve_walmart_top_level_category(record: dict[str, Any]) -> str | None:
     subcategory = _lower(str(record.get("subcategory", "")))
     product_type = _lower(str(record.get("product_type", "")))
     title = _lower(str(record.get("current_title") or record.get("product_title") or ""))
+
+    # An explicit top-level category outranks overlapping aliases such as Home.
+    for top_category in WALMART_TOP_CATEGORY_ALIASES:
+        if category == _lower(top_category):
+            return top_category
 
     weighted_sources = (
         (category, 3),

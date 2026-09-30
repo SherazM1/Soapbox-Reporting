@@ -777,7 +777,9 @@ def _polish_final_bullet(
         }.get(slide_key, f"Clear {product} positioning")
 
     words = text.split()
-    if len(words) > 9:
+    # Slide 2 reviews complete candidates against its fit limit. Cutting here
+    # hides oversized sentences from that guard and can remove their meaning.
+    if slide_key != "slide2" and len(words) > 9:
         text = " ".join(words[:9]).rstrip(" ,;-")
     return text[:1].upper() + text[1:]
 

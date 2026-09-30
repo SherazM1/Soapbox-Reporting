@@ -11,6 +11,91 @@ from app.audit_helpers.audit_language_resolver import (
 
 
 class AuditLanguageResolverTests(unittest.TestCase):
+    def test_slide2_polishing_preserves_sentence_for_fit_review(self) -> None:
+        from app.audit_helpers.strategic_cues import _polish_final_bullet
+
+        text = (
+            "Accurate Dimensions and Seasonal Customer Reviews Signals "
+            "support conversion confidence"
+        )
+        polished = _polish_final_bullet(
+            text, slide_key="slide2", identity={"category_key": "seasonal"},
+            starter_counts={},
+        )
+        self.assertTrue(polished.endswith("support conversion confidence"))
+        self.assertGreater(len(polished), 64)
+
+    def test_slide2_trust_bullet_keeps_its_complete_message(self) -> None:
+        from app.audit_helpers.slide2_summary import _shorten_slide2_bullet
+
+        for category in ("seasonal", "office_stationery", "furniture"):
+            with self.subTest(category=category):
+                text = strategic_bullet_text(
+                    {"cue_key": "review_or_trust_signals"},
+                    {"category_key": category, "product_type_display": "Pens"},
+                    slide_key="slide2",
+                )
+                self.assertIn("support purchase confidence", text)
+                self.assertEqual(_shorten_slide2_bullet(text), text)
+
+    def test_slide2_rejects_long_cue_without_replacing_complete_bullets(self) -> None:
+        from unittest.mock import patch
+        from app.audit_helpers.slide2_summary import _apply_cue_bullets_to_slide2_sections
+
+        original = ["Customer reviews support shopper trust"] * 4
+        sections = {"consumer_demand": {
+            "bullets": original[:],
+            "bullet_debug": [{"text": text} for text in original],
+        }}
+        oversized = (
+            "Accurate Dimensions and Seasonal Customer Reviews Signals "
+            "support conversion confidence"
+        )
+        with patch("app.audit_helpers.slide2_summary.translate_cues", return_value=(
+            [oversized], [{"cue": "review_or_trust_signals", "classification": "context"}],
+        )):
+            _apply_cue_bullets_to_slide2_sections(sections, {})
+        section = sections["consumer_demand"]
+        self.assertEqual(section["bullets"], original)
+        rejected = section["cue_refinement_debug"]["rejected_candidates"][0]
+        self.assertIn("fit limit", rejected["reason"])
+        self.assertEqual(rejected["replacement_bullet"], oversized)
+
+    def test_product_matching_is_specific_across_expanded_categories(self) -> None:
+        cases = (
+            ("furniture", "Office Chairs", "Beds", "desk seating shelf"),
+            ("fashion", "Sweatshirts", "Pants", "sweaters and sweatshirts shelf"),
+            ("household_clean", "Trash Bags", "Air Fresheners", "trash bags shelf"),
+            ("toys", "Board Games", "Building Blocks", "tabletop games shelf"),
+        )
+        for category, product, family, context in cases:
+            with self.subTest(category=category):
+                for product_fields in (
+                    {"product_type_display": product},
+                    {"product_type_key": product.lower().replace(" ", "_")},
+                ):
+                    profile = language_profile({
+                        "category_key": category,
+                        "family_display": family,
+                        **product_fields,
+                    })
+                    self.assertEqual(profile["product_context"], context)
+                    for key in ("navigation", "discovery", "search_intent", "trust"):
+                        self.assertIn(context.removesuffix(" shelf"), profile[key])
+
+    def test_overlay_matching_rejects_substrings_and_preserves_fallback(self) -> None:
+        from app.audit_helpers.audit_language_resolver import _overlay_values
+
+        self.assertEqual(_overlay_values({
+            "category_key": "furniture", "product_type_display": "Flowerbed",
+        }), {})
+        self.assertEqual(language_profile({
+            "category_key": "furniture", "family_display": "Office Chairs",
+        })["product_context"], "desk seating shelf")
+        self.assertEqual(_overlay_values({
+            "category_key": "unknown", "product_type_display": "Office Chairs",
+        }), {})
+
     def test_health_groups_and_specific_product_matching(self) -> None:
         from app.audit_helpers.audit_language_resolver import PRODUCT_LANGUAGE_OVERLAYS, _overlay_values
 
