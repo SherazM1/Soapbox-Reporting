@@ -871,6 +871,11 @@ SLIDE4_SCOPE_TERMS: dict[str, tuple[str, ...]] = {
         "dinnerware",
         "bakeware",
         "home decor",
+        "decor",
+        "decorative accents",
+        "decorative box",
+        "decorative boxes",
+        "keepsake box",
     ),
     "homeimprovement": (
         "homeimprovement",
@@ -1232,6 +1237,9 @@ SLIDE4_PRODUCT_FALLBACK_SIGNALS: dict[str, tuple[tuple[tuple[str, ...], str], ..
     ),
     "home": (
         (("air fryer",), "air fryer"),
+        (("decorative box",), "decorative box"),
+        (("decorative", "box"), "decorative box"),
+        (("keepsake box",), "keepsake box"),
         (("coffee maker",), "coffee maker"),
         (("cookware",), "cookware"),
         (("bedding",), "bedding"),
@@ -1369,6 +1377,9 @@ def _slide4_scope_family(facts: dict[str, Any]) -> str:
             (len(term), family)
             for family, terms in SLIDE4_SCOPE_TERMS.items()
             for term in terms
+            # These words describe shapes and devices too. A title alone
+            # cannot establish medicine without a more specific health term.
+            if not (field == "title" and family == "health" and term in {"capsule", "tablet"})
             if re.search(r"(?<!\w)" + re.escape(term) + r"s?(?!\w)", value)
         ]
         if matches:
@@ -3008,6 +3019,17 @@ def _slide3_side_shapes(prs: Any, slide: Any) -> dict[str, dict[str, Any]]:
 def _apply_slide3_search_benchmark(prs: Any, slide: Any, payload: dict[str, Any]) -> None:
     if not payload:
         return
+    # Validate saved plans too: final export can reuse an earlier session plan.
+    from app.audit_helpers.slide3_search_benchmark import validate_search_comparison, validate_search_relevance
+
+    validate_search_comparison(
+        [_safe_text((payload.get("current") or {}).get("search_term"))],
+        [_safe_text((payload.get("benchmark") or {}).get("search_term"))],
+    )
+    validate_search_relevance(
+        [_safe_text((payload.get("current") or {}).get("search_term"))],
+        [_safe_text((payload.get("benchmark") or {}).get("search_term"))],
+    )
     current = payload.get("current")
     benchmark = payload.get("benchmark")
     if not isinstance(current, dict) and not isinstance(benchmark, dict):

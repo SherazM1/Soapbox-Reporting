@@ -15,6 +15,26 @@ from audit_powerpoint_new import (
 
 
 class Slide4ScopeFallbackTest(unittest.TestCase):
+    def test_decorative_capsule_box_is_not_medicine(self):
+        facts = {
+            "category": "Decor/Decorative Accents/Decorative Boxes",
+            "product_type": "Decorative Boxes",
+            "title": "Mainstays Wooden Decorative Tabletop Capsule Box with Gold Knob",
+        }
+        self.assertEqual(_slide4_scope_family(facts), "home")
+        self.assertEqual(_slide4_product_fallback(facts, "home"), "decorative box")
+        candidates, _, _ = _slide4_build_candidate_pool({
+            "category": facts["category"], "product_type": facts["product_type"],
+            "product_title": facts["title"],
+        }, side="client", existing_texts=set())
+        self.assertNotIn("over-the-counter medicine", " ".join(c["text"] for c in candidates))
+
+    def test_ambiguous_title_words_do_not_establish_medicine(self):
+        for title in ("Capsule Box", "Tablet Stand"):
+            with self.subTest(title=title):
+                self.assertNotEqual(_slide4_scope_family({"title": title}), "health")
+        self.assertEqual(_slide4_scope_family({"category": "Health", "title": "Capsules"}), "health")
+
     def test_cooking_appliances_do_not_generate_food_bullets(self):
         for product in ("Air Fryer", "Toaster Oven", "Convection Oven"):
             with self.subTest(product=product):

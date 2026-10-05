@@ -1892,6 +1892,40 @@ def _build_side_payload(
     }
 
 
+def validate_search_comparison(current_terms: list[str], benchmark_terms: list[str]) -> None:
+    """Check term presence only; related searches need not use identical words."""
+    for side, terms in (("Current", current_terms), ("Benchmark", benchmark_terms)):
+        normalized = [" ".join(unquote_plus(_safe_text(term)).casefold().split()) for term in terms]
+        if not normalized or any(term in {"", "category search"} for term in normalized):
+            raise ValueError(f"Slide 3 {side} evidence needs a search term. Capture the search and upload it again.")
+
+
+def validate_search_relevance(current_terms: list[str], benchmark_terms: list[str]) -> None:
+    """Block recognized unrelated subjects, leaving unknown/adjacent queries alone.
+
+    These are explicit conflicts, not a rule that different categories cannot be
+    compared. Extend only with subjects known to be unrelated.
+    """
+    nutrition = ("baby food", "baby formula", "infant formula", "toddler formula",
+                 "infant nutrition", "toddler nutrition", "infant food")
+    facial_care = ("face wash", "facial wash", "face cleanser", "facial cleanser",
+                   "facial cleansers", "face cleansers", "skin cleanser")
+
+    def contains(term: str, phrases: tuple[str, ...]) -> bool:
+        normalized = re.sub(r"[^a-z0-9]+", " ", unquote_plus(term).casefold())
+        return any(re.search(r"\b" + re.escape(phrase) + r"\b", normalized) for phrase in phrases)
+
+    for current in current_terms:
+        for benchmark in benchmark_terms:
+            if ((contains(current, nutrition) and contains(benchmark, facial_care))
+                    or (contains(benchmark, nutrition) and contains(current, facial_care))):
+                raise ValueError(
+                    f"Slide 3 unrelated search evidence: Current '{current}' and Benchmark '{benchmark}' "
+                    "compare infant nutrition with facial cleansing. Capture a relevant benchmark "
+                    "and upload the corrected HTML. Related searches may use different queries."
+                )
+
+
 def build_slide3_search_benchmark(
     search_evidence: Any,
     client_name: str = "",
@@ -1906,6 +1940,14 @@ def build_slide3_search_benchmark(
 
     current_record, current_valid_records, current_warnings = _select_earliest_valid(current_records, "Current")
     benchmark_record, benchmark_valid_records, benchmark_warnings = _select_earliest_valid(benchmark_records, "Benchmark")
+    validate_search_comparison(
+        [_resolve_search_term(record) for record in current_valid_records],
+        [_resolve_search_term(record) for record in benchmark_valid_records],
+    )
+    validate_search_relevance(
+        [_resolve_search_term(record) for record in current_valid_records],
+        [_resolve_search_term(record) for record in benchmark_valid_records],
+    )
     search_framework = _search_framework_from_slide6(slide6_visibility)
 
     client_label = _safe_text(client_name or "")
