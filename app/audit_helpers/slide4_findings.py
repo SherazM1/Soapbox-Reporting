@@ -4,6 +4,8 @@ import re
 from collections import Counter
 from typing import Any
 
+from app.audit_helpers.strategic_identity import resolve_category_key
+
 
 SHOPPER_BUCKETS = (
     "opening_clarity",
@@ -79,7 +81,116 @@ CONFLICTING_CONTENT_OPPORTUNITIES: dict[str, tuple[str, ...]] = {
     "missing_trust_or_certification_support": ("trust_or_certification_support",),
 }
 
+# Fix note: Cover every supported guide category while retaining specialized food and baby families.
 CATEGORY_WORDS: dict[str, dict[str, str]] = {
+    "garden_patio": {
+        "product": "outdoor purpose and space requirements",
+        "benefit": "outdoor materials and practical features",
+        "usage": "outdoor setup and care guidance",
+        "trust": "materials and care transparency",
+    },
+    "everything_else": {
+        "product": "product purpose and contents",
+        "benefit": "practical product features",
+        "usage": "setup and everyday use guidance",
+        "trust": "specification and contents transparency",
+    },
+    "business_industrial": {
+        "product": "equipment purpose and compatibility",
+        "benefit": "capacity and operational features",
+        "usage": "equipment setup and operation guidance",
+        "trust": "specifications and suitability transparency",
+    },
+    "beauty": {
+        "product": "product purpose and formulation",
+        "benefit": "formula and care features",
+        "usage": "application and routine guidance",
+        "trust": "ingredient and usage transparency",
+    },
+    "electronics": {
+        "product": "device purpose and compatibility",
+        "benefit": "technical features and connectivity",
+        "usage": "setup and device-use guidance",
+        "trust": "specification and compatibility reassurance",
+    },
+    "photography": {
+        "product": "camera purpose and compatibility",
+        "benefit": "imaging features and controls",
+        "usage": "camera setup and shooting guidance",
+        "trust": "specification and accessory transparency",
+    },
+    "media": {
+        "product": "format and content clarity",
+        "benefit": "content and edition details",
+        "usage": "format and playback guidance",
+        "trust": "edition and compatibility transparency",
+    },
+    "seasonal": {
+        "product": "occasion and product-purpose clarity",
+        "benefit": "seasonal features and included contents",
+        "usage": "display and occasion-use guidance",
+        "trust": "size and contents transparency",
+    },
+    "sports_outdoors": {
+        "product": "activity and equipment-purpose clarity",
+        "benefit": "equipment features and suitability",
+        "usage": "activity, setup, and equipment-care guidance",
+        "trust": "size and specification transparency",
+    },
+    "musical_instruments": {
+        "product": "instrument type and skill-level clarity",
+        "benefit": "sound and construction features",
+        "usage": "setup and playing guidance",
+        "trust": "specification and included-accessory transparency",
+    },
+    "office_stationery": {
+        "product": "work or study purpose and format",
+        "benefit": "writing and organization features",
+        "usage": "work and study use guidance",
+        "trust": "size and quantity transparency",
+    },
+    "safety_emergency": {
+        "product": "intended purpose and specification clarity",
+        "benefit": "safety features and supplied specifications",
+        "usage": "setup and emergency-use instructions",
+        "trust": "instructions and suitability transparency",
+    },
+    "vehicle": {
+        "product": "vehicle fit and part-purpose clarity",
+        "benefit": "part features and specifications",
+        "usage": "fitment and installation guidance",
+        "trust": "vehicle compatibility reassurance",
+    },
+    "arts_crafts": {
+        "product": "craft purpose and material clarity",
+        "benefit": "creative features and included supplies",
+        "usage": "project and technique guidance",
+        "trust": "contents and material transparency",
+    },
+    "fashion": {
+        "product": "size, style, and garment-purpose clarity",
+        "benefit": "fabric and construction features",
+        "usage": "sizing, styling, and care guidance",
+        "trust": "size and material transparency",
+    },
+    "furniture": {
+        "product": "furniture purpose and dimension clarity",
+        "benefit": "materials and construction features",
+        "usage": "space fit, assembly, and care guidance",
+        "trust": "dimensions and material transparency",
+    },
+    "health_general": {
+        "product": "intended use and product-form clarity",
+        "benefit": "stated features and label details",
+        "usage": "label directions and use guidance",
+        "trust": "label and warning transparency",
+    },
+    "household_clean": {
+        "product": "cleaning purpose and surface suitability",
+        "benefit": "cleaning features and label details",
+        "usage": "surface-specific directions and use guidance",
+        "trust": "directions and warning transparency",
+    },
     "jam_preserves": {
         "product": "flavor and product cues",
         "benefit": "visible flavor and ingredient cues",
@@ -143,6 +254,10 @@ CATEGORY_WORDS: dict[str, dict[str, str]] = {
 }
 
 
+# Canonical guide keys share the established food and baby wording.
+CATEGORY_WORDS["food_beverage"] = dict(CATEGORY_WORDS["food_generic"])
+CATEGORY_WORDS["baby"] = dict(CATEGORY_WORDS["baby_care"])
+
 def _safe_text(value: Any) -> str:
     return str(value or "").strip()
 
@@ -196,6 +311,19 @@ def _first_common(records: list[dict[str, Any]], *keys: str) -> str:
 
 def _category_family(category: str, product_type: str, title: str) -> str:
     blob = _lower_blob(category, product_type, title)
+    # Fix note: Route known departments to their wording instead of silently using generic copy.
+    canonical = resolve_category_key(category) or resolve_category_key(_lower_blob(product_type, title))
+    if canonical == "food_beverage":
+        product_blob = _lower_blob(product_type, title)
+        if any(term in product_blob for term in ("nut butter", "peanut butter", "almond butter")):
+            return "nut_butter_spreads"
+        if any(term in product_blob for term in ("jam", "jelly", "preserves", "fruit spread")):
+            return "jam_preserves"
+        return "food_generic"
+    if canonical == "baby":
+        return "baby_care"
+    if canonical in CATEGORY_WORDS:
+        return canonical
     category_aliases = (
         ("animals", ("animals", "animal", "pets", "pet", "dog", "cat", "aquarium")),
         ("baby_care", ("baby", "infant", "toddler")),

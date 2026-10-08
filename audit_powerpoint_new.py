@@ -1409,9 +1409,9 @@ def _slide4_phrase_allowed_for_family(phrase: str, family: str) -> bool:
 def _slide4_product_fallback(facts: dict[str, Any], family: str, *, prefer_generic: bool = False) -> str:
     if prefer_generic or family == "generic":
         return "the product"
-    blob = _slide4_content_blob(facts)
+    blob = _slide4_identity_blob(facts)
     for required_terms, fallback in SLIDE4_PRODUCT_FALLBACK_SIGNALS.get(family, ()):
-        if all(term in blob for term in required_terms):
+        if all(re.search(r"(?<!\w)" + re.escape(term) + r"s?(?!\w)", blob) for term in required_terms):
             return fallback
     family_fallbacks = SLIDE4_SCOPE_FALLBACKS.get(family, SLIDE4_SCOPE_FALLBACKS["generic"])
     return family_fallbacks["family"][0]
@@ -1446,12 +1446,12 @@ def _slide4_product_phrase(facts: dict[str, Any]) -> str:
         identity = " ".join(_safe_text(facts.get(key)) for key in ("product_type", "title"))
         match = re.search(r"\b(air[ -]?fryer|(?:toaster|countertop|convection|microwave) oven|oven)s?\b", identity, re.I)
         return match.group(1).lower()
-    content_blob = _slide4_content_blob(facts)
-    if _has_any(content_blob, "hazelnut", "cocoa", "nutella"):
+    theme = _slide4_evidence_theme(facts)
+    if theme == "hazelnut_cocoa":
         return "hazelnut-and-cocoa spread"
-    if _has_any(content_blob, "peanut butter", "jif", "fresh roasted", "fresh-roasted"):
+    if theme == "peanut_protein":
         return "peanut butter"
-    if _has_any(content_blob, "almond butter"):
+    if theme == "almond":
         return "almond butter"
     product_type = _safe_text(facts.get("product_type")).lower()
     if product_type:
@@ -1474,15 +1474,28 @@ def _slide4_content_phrases(facts: dict[str, Any]) -> dict[str, str]:
     }
 
 
+def _slide4_identity_blob(facts: dict[str, Any]) -> str:
+    """Keep ingredients, recipes, image OCR, and benefits out of identity checks."""
+    return normalize_bullet_text(" ".join(_safe_text(facts.get(key)) for key in ("title", "product_type")))
+
+
+# Fix note: Require explicit spread identity so protein-rich seafood cannot become peanut butter.
 def _slide4_evidence_theme(facts: dict[str, Any]) -> str:
     if _slide4_scope_family(facts) != "food":
         return "product"
-    blob = _slide4_content_blob(facts)
-    if _has_any(blob, "hazelnut", "cocoa", "nutella"):
+    product_type = normalize_bullet_text(facts.get("product_type"))
+    broad_types = {"", "food", "food beverage", "food and beverage", "food product",
+                   "unclassified", "unknown", "other", "category", "spread", "spreads"}
+    if product_type not in broad_types and not re.search(
+        r"\b(?:nut butters?|peanut butter|almond butter|hazelnut spread|hazelnut butter)\b", product_type
+    ):
+        return "product"
+    blob = _slide4_identity_blob(facts)
+    if re.search(r"\b(?:nutella|hazelnut (?:and cocoa )?(?:spread|butter))\b", blob):
         return "hazelnut_cocoa"
-    if _has_any(blob, "peanut butter", "peanut", "protein", "jif", "fresh roasted", "fresh-roasted"):
+    if re.search(r"\bpeanut butter\b", blob):
         return "peanut_protein"
-    if _has_any(blob, "almond butter", "almond"):
+    if re.search(r"\balmond butter\b", blob):
         return "almond"
     return "product"
 
@@ -1549,16 +1562,13 @@ def _slide4_theme_bullet(cue_key: str, classification: str, facts: dict[str, Any
     )
 
 
-def _slide4_product_phrase_for_identity(facts: dict[str, Any],
-                                        identity: dict[str, Any]
-)-> str:
-    
+def _slide4_product_phrase_for_identity(
+    facts: dict[str, Any], identity: dict[str, Any],
+) -> str:
+    if _slide4_evidence_theme(facts) != "product":
+        return _slide4_product_phrase(facts)
     product = _safe_text(identity.get("product_type_display") or "").lower().replace("&", "and")
     if product and product not in {"category", "product"}:
-        if product.endswith("s") and not product.endswith("ss"):
-            product = product[:-1]
-        if product == "facial cleanser":
-            return "facial cleanser"
         return _slide4_scope_safe_phrase(product, facts)
     return _slide4_product_phrase(facts)
 
@@ -1655,6 +1665,49 @@ def _slide4_safe_bullet_replacement(
     return "Benefit communication is clearer across the PDP"
 
 
+# Fix note: Reject unrelated product names before selecting Slide 4 bullets.
+def _slide4_product_language_guard(identity: dict[str, Any], facts: dict[str, Any]) -> dict[str, Any]:
+    """Reject another guide product's name even within the same category."""
+    primary = _slide4_identity_blob(facts)
+    selected = identity.get("style_product_type") or {}
+    allowed = [normalize_bullet_text(term) for term in [
+        identity.get("product_type_display", ""),
+        *selected.get("aliases", []), *selected.get("title_keywords", []),
+    ]]
+    unsupported: set[str] = set()
+    style = (identity.get("normalized_guides") or {}).get("style") or {}
+    for family in (style.get("families") or {}).values():
+        for product in (family.get("product_types") or {}).values():
+            for value in [product.get("product_type_display", ""), *product.get("aliases", [])]:
+                term = normalize_bullet_text(value)
+                # Multiword names identify products more reliably than common
+                # words such as "orange", "cream", or "water".
+                if len(term.split()) < 2:
+                    continue
+                if term in allowed or any(term in item for item in allowed):
+                    continue
+                if f" {term} " in f" {primary} ":
+                    continue
+                unsupported.add(term)
+    # Fix note: Reject stale gardening cues for furniture even when they came from cached analysis.
+    furniture_context = " ".join([
+        primary, normalize_bullet_text(identity.get("product_type_display", "")),
+        normalize_bullet_text(identity.get("family_display", "")),
+    ])
+    if re.search(r"\b(?:furniture|chairs?|sofas?|tables?|seating|conversation sets?|dining sets?|benches|sectionals?)\b", furniture_context):
+        unsupported.update({"plant care", "garden maintenance", "gardening maintenance",
+                            "outdoor maintenance", "garden care", "gardening guidance"})
+    return {"unsupported_product_terms": sorted(unsupported)}
+
+
+def _slide4_product_language_allowed(text: str, guide_context: dict[str, Any]) -> tuple[bool, str]:
+    normalized = f" {normalize_bullet_text(text)} "
+    for term in guide_context.get("unsupported_product_terms", []):
+        if f" {term} " in normalized:
+            return False, f"unsupported_product_identity: {term}"
+    return True, ""
+
+
 def _slide4_add_candidate(
     candidates: list[dict[str, Any]],
     rejected: list[dict[str, str]],
@@ -1675,6 +1728,8 @@ def _slide4_add_candidate(
     if not clean:
         return
     allowed, guard_reason = _slide4_language_allowed(clean, category_context)
+    if allowed:
+        allowed, guard_reason = _slide4_product_language_allowed(clean, guide_context)
     if not allowed:
         rejected.append({"text": clean, "reason": guard_reason})
         clean = _slide4_safe_bullet_replacement(
@@ -1685,6 +1740,8 @@ def _slide4_add_candidate(
             product_context=product_context,
         )
         allowed, guard_reason = _slide4_language_allowed(clean, category_context)
+        if allowed:
+            allowed, guard_reason = _slide4_product_language_allowed(clean, guide_context)
         if not allowed:
             rejected.append({"text": clean, "reason": guard_reason})
             return
@@ -1794,6 +1851,7 @@ def _slide4_build_candidate_pool(
         "title_priorities": list(identity.get("recommended_title_priorities") or [])[:4],
         "visual_priorities": list(identity.get("recommended_visual_priorities") or [])[:4],
         "image_required_slots": list(guide_match.get("required_slot_labels") or [])[:4],
+        **_slide4_product_language_guard(identity, facts),
     }
     candidates: list[dict[str, Any]] = []
     rejected: list[dict[str, str]] = []
@@ -1814,7 +1872,8 @@ def _slide4_build_candidate_pool(
             **kwargs,
         )
 
-    if category_context == "food" and _has_any(blob, "hazelnut", "cocoa", "nutella"):
+    theme = _slide4_evidence_theme(facts)
+    if theme == "hazelnut_cocoa":
         add(
             text="Hazelnut-cocoa positioning supports breakfast occasions",
             family="positioning_title",
@@ -1825,7 +1884,7 @@ def _slide4_build_candidate_pool(
             signals=["hazelnut", "cocoa", "title"],
             reason="Title or PDP copy identifies hazelnut/cocoa spread positioning.",
         )
-    elif category_context == "food" and _has_any(blob, "peanut butter", "peanut", "protein", "jif", "fresh roasted", "fresh-roasted"):
+    elif theme == "peanut_protein":
         add(
             text="Peanut butter positioning reinforces pantry relevance",
             family="positioning_title",
@@ -1863,7 +1922,7 @@ def _slide4_build_candidate_pool(
     description = _safe_text(facts.get("description"))
     if _has_any(blob, "protein", "nutrition", "calories", "ingredients") and category_context == "food":
         add(
-            text="Protein cues strengthen snack and pantry relevance",
+            text="Nutrition details help shoppers compare options",
             family="detail_compliance",
             evidence_source="pdp_detail_compliance",
             score=91,
@@ -1934,7 +1993,9 @@ def _slide4_build_candidate_pool(
 
     if category_context == "food" and _has_any(blob, "breakfast", "snack", "recipe", "toast", "pantry"):
         add(
-            text="Usage cues connect PDP content to breakfast occasions",
+            text=("Usage cues connect PDP content to breakfast occasions"
+                  if _has_any(blob, "breakfast")
+                  else "Serving suggestions show how it fits into meals"),
             family="education_storytelling",
             evidence_source="pdp_storytelling",
             score=88,
@@ -2065,6 +2126,29 @@ def _slide4_build_candidate_pool(
     }
 
 
+# Fix note: Mention the product label once per column and vary repeated references.
+def _slide4_vary_product_reference(candidate: dict[str, Any], selected: list[dict[str, Any]]) -> dict[str, Any]:
+    """Name the product once per column, then focus on the finding."""
+    product = _safe_text(candidate.get("product_context"))
+    if not product or product in {"product", "the product"}:
+        return candidate
+    pattern = r"(?<!\w)(?:the\s+)?" + re.escape(product) + r"(?!\w)"
+    if not any(re.search(pattern, _safe_text(item.get("text")), re.I) for item in selected):
+        return candidate
+    text = _safe_text(candidate.get("text"))
+    if not re.search(pattern, text, re.I):
+        return candidate
+    dimension = _safe_text(candidate.get("dimension"))
+    if dimension == "product_positioning":
+        replacement = ("Product page explains the main features"
+                       if candidate.get("type") == "strength"
+                       else "Product positioning could be clearer")
+    else:
+        replacement = re.sub(pattern, "the product", text, flags=re.I)
+    return {**candidate, "text": replacement, "original_text": text,
+            "wording_adjustment": "Repeated product name replaced with the finding focus."}
+
+
 def _select_slide4_balanced_candidates(
     candidates: list[dict[str, Any]],
     *,
@@ -2077,6 +2161,7 @@ def _select_slide4_balanced_candidates(
     rejected: list[dict[str, str]] = []
 
     def try_add(candidate: dict[str, Any], *, allow_second_family: bool) -> bool:
+        candidate = _slide4_vary_product_reference(candidate, selected)
         text = _safe_text(candidate.get("text"))
         key = normalize_bullet_text(text)
         family = _safe_text(candidate.get("family"))
@@ -2235,7 +2320,36 @@ def _build_slide4_evidence_bullets(
         candidates,
         existing_texts=existing_texts,
     )
-    if len(selected_candidates) == 6:
+    if len(selected_candidates) < 6:
+        # Sparse evidence follows the same guards and balanced selection as
+        # rich evidence. Do not fall back to legacy food-specific templates.
+        neutral_options = (
+            ("positioning_title", "title_clarity", "Make the product type easier to identify in the title"),
+            ("positioning_title", "benefit_clarity", "Explain the main product benefit more clearly"),
+            ("detail_compliance", "comparison_detail", "Clarify the details shoppers need to compare options"),
+            ("detail_compliance", "included_contents", "Make package contents easier to understand"),
+            ("education_storytelling", "usage_guidance", "Add clear guidance on how to use the product"),
+            ("education_storytelling", "selection_guidance", "Explain which shopper needs this option serves"),
+            ("trust_visual", "visual_sequence", "Arrange images to answer common shopper questions"),
+            ("trust_visual", "readable_details", "Keep important details easy to read in product images"),
+        )
+        for family, dimension, text in neutral_options:
+            if side != "client":
+                text = f"{facts['brand'] or side.title()}: {text[0].lower()}{text[1:]}"
+            _slide4_add_candidate(
+                candidates, rejected_language, text=text, family=family,
+                evidence_source="controlled_fallback", score=30,
+                bullet_type="opportunity", dimension=dimension,
+                signals=["limited_evidence"],
+                reason="Neutral recommendation used because specific PDP evidence was limited.",
+                product_context=evidence_context["product_context"],
+                category_context=evidence_context["category_context"],
+                guide_context=candidates[0]["guide_context"] if candidates else {},
+            )
+        selected_candidates, selection_debug = _select_slide4_balanced_candidates(
+            candidates, existing_texts=existing_texts,
+        )
+    if selected_candidates:
         for candidate in selected_candidates:
             existing_texts.add(normalize_bullet_text(candidate["text"]))
         return (
@@ -2253,9 +2367,12 @@ def _build_slide4_evidence_bullets(
                         "Chosen by Slide 4 balanced PDP selection using supported evidence, "
                         "family diversity, product-type fit, and cross-column uniqueness."
                     ),
+                    "original_text": candidate.get("original_text", candidate["text"]),
+                    "wording_adjustment": candidate.get("wording_adjustment", ""),
                     "product_type_context": candidate.get("product_context", ""),
                     "category_context": candidate.get("category_context", ""),
-                    "guide_context": candidate.get("guide_context", {}),
+                    "guide_context": {key: value for key, value in candidate.get("guide_context", {}).items()
+                                      if key != "unsupported_product_terms"},
                     "selection_debug": selection_debug,
                     "evidence_context": evidence_context,
                     "rejected_language": rejected_language,
@@ -2264,256 +2381,7 @@ def _build_slide4_evidence_bullets(
             ],
             [],
         )
-    blob = _slide4_content_blob(facts)
-    image_blob = facts["image_text"]
-    bullets: list[str] = []
-    debug: list[dict[str, Any]] = []
-    warnings: list[str] = []
-    used = existing_texts
-    product_phrase = _slide4_product_phrase(facts)
-    phrases = _slide4_content_phrases(facts)
-    brand = facts["brand"] or side.replace("_", " ").title()
-    is_client = side == "client"
-    cue_bullets, cue_debug, _cue_context_debug = _translate_slide4_strategic_cues(
-        record,
-        facts,
-        side=side,
-        existing_texts=used,
-    )
-    if len(cue_bullets) == 6:
-        return cue_bullets, cue_debug[:6], warnings
-
-    if _has_any(blob, "hazelnut", "cocoa", "nutella"):
-        _append_unique_bullet(
-            bullets,
-            debug,
-            text=(
-                "Client hazelnut-cocoa positioning supports breakfast relevance"
-                if is_client
-                else f"{brand} sets a hazelnut-cocoa comparison benchmark"
-            ),
-            bullet_type="strength",
-            dimension="ingredient_positioning",
-            signals=["hazelnut", "cocoa"],
-            reason="Product title or PDP text references hazelnut/cocoa spread positioning.",
-            used=used,
-        )
-    if _has_any(blob, "peanut", "protein", "fresh roasted", "fresh-roasted", "jif"):
-        _append_unique_bullet(
-            bullets,
-            debug,
-            text=(
-                "Client peanut-butter PDP content reinforces pantry cues"
-                if is_client
-                else f"{brand} frames peanut-butter protein cues for comparison"
-            ),
-            bullet_type="strength",
-            dimension="ingredient_positioning",
-            signals=["peanut", "protein"],
-            reason="Product title, description, or features reference peanut butter/protein cues.",
-            used=used,
-        )
-    if facts["image_count"] >= 6:
-        _append_unique_bullet(
-            bullets,
-            debug,
-            text=(
-                f"{facts['image_count']}-image carousel sequences client shopper education"
-                if is_client
-                else f"{brand} gives shoppers {facts['image_count']} visual comparison points"
-            ),
-            bullet_type="opportunity",
-            dimension="image_sequence",
-            signals=[f"{facts['image_count']}_images"],
-            reason="Image count indicates enough carousel depth to sequence shopper education.",
-            used=used,
-        )
-    if _has_any(blob, "nutrition", "calories", "protein", "ingredients") or _has_any(image_blob, "nutrition", "ingredient"):
-        _append_unique_bullet(
-            bullets,
-            debug,
-            text=(
-                f"Pack and nutrition cues sharpen {phrases['education']}"
-                if is_client
-                else f"{brand} uses pack and nutrition as proof points"
-            ),
-            bullet_type="strength",
-            dimension="nutrition_detail",
-            signals=["nutrition", "ingredients"],
-            reason="Nutrition, ingredient, or pack-detail terms were detected in PDP evidence.",
-            used=used,
-        )
-    if _has_any(blob, "breakfast", "snack", "recipe", "toast", "pantry"):
-        _append_unique_bullet(
-            bullets,
-            debug,
-            text=(
-                "Usage cues connect PDP content to breakfast occasions"
-                if is_client
-                else f"{brand} ties {product_phrase} discovery to pantry occasions"
-            ),
-            bullet_type="strength",
-            dimension="usage_occasions",
-            signals=["breakfast/snack/pantry"],
-            reason="Usage occasion language was present in title, description, or features.",
-            used=used,
-        )
-    else:
-        _append_unique_bullet(
-            bullets,
-            debug,
-            text=(
-                f"Client {phrases['content']} can clarify usage occasions"
-                if is_client
-                else f"{brand} can make {product_phrase} occasions clearer"
-            ),
-            bullet_type="opportunity",
-            dimension="usage_occasions",
-            signals=["limited_usage_language"],
-            reason="No clear breakfast, snack, recipe, or pantry use-case language was detected.",
-            used=used,
-        )
-    if facts["review_count"] >= 100:
-        _append_unique_bullet(
-            bullets,
-            debug,
-            text=(
-                f"Client review volume supports {phrases['product']} confidence"
-                if is_client
-                else f"{brand} review volume raises comparison expectations"
-            ),
-            bullet_type="strength",
-            dimension="review_authority",
-            signals=[f"{facts['review_count']}_reviews"],
-            reason="Review count evidence was available and materially high.",
-            used=used,
-        )
-    if facts["ebc_present"]:
-        _append_unique_bullet(
-            bullets,
-            debug,
-            text=(
-                f"Enhanced content deepens client {phrases['education']}"
-                if is_client
-                else f"{brand} enhanced content strengthens shopper education"
-            ),
-            bullet_type="strength",
-            dimension="enhanced_content",
-            signals=["enhanced_brand_content"],
-            reason="Enhanced Brand Content is marked present in the PDP evidence.",
-            used=used,
-        )
-    if facts["sold_by_walmart"] or facts["shipped_by_walmart"]:
-        _append_unique_bullet(
-            bullets,
-            debug,
-            text=(
-                f"Walmart fulfillment cues support {phrases['product']} trust"
-                if is_client
-                else f"{brand} fulfillment cues support purchase confidence"
-            ),
-            bullet_type="strength",
-            dimension="retail_trust",
-            signals=["sold_by_walmart" if facts["sold_by_walmart"] else "", "shipped_by_walmart" if facts["shipped_by_walmart"] else ""],
-            reason="Sold/shipped by Walmart signals were present in PDP evidence.",
-            used=used,
-        )
-    if not _has_any(image_blob, "recipe", "serving", "lifestyle", "breakfast", "snack"):
-        _append_unique_bullet(
-            bullets,
-            debug,
-            text=(
-                f"Client recipe imagery can strengthen {phrases['positioning']}"
-                if is_client
-                else f"{brand} can add recipe context to {product_phrase} discovery"
-            ),
-            bullet_type="opportunity",
-            dimension="visual_storytelling",
-            signals=["limited_recipe_lifestyle_image_hints"],
-            reason="Image metadata did not show recipe, serving, or lifestyle cues.",
-            used=used,
-        )
-    if not facts["ebc_present"]:
-        _append_unique_bullet(
-            bullets,
-            debug,
-            text=(
-                f"Enhanced storytelling can add client {phrases['education']}"
-                if is_client
-                else f"{brand} can add richer shopper education"
-            ),
-            bullet_type="opportunity",
-            dimension="enhanced_content",
-            signals=["ebc_not_present"],
-            reason="Enhanced Brand Content was not marked present.",
-            used=used,
-        )
-
-    fallback_candidates = [
-        (
-            f"{brand} keeps {phrases['positioning']} visible",
-            "strength",
-            "brand_specificity",
-            ["brand", product_phrase],
-            "Fallback used brand/product-type evidence to avoid generic duplicate wording.",
-        ),
-        (
-            "Opening image sequence can clarify shopper priorities",
-            "opportunity",
-            "opening_sequence",
-            ["opening_sequence"],
-            "Controlled fallback opportunity used when richer evidence was limited.",
-        ),
-        (
-            f"Carousel education can strengthen {phrases['content']}",
-            "opportunity",
-            "shopper_education",
-            ["carousel_education"],
-            "Controlled fallback opportunity used to preserve template bullet count.",
-        ),
-        (
-            f"{facts['brand'] or side.title()} can broaden variant storytelling",
-            "opportunity",
-            "variant_storytelling",
-            ["variant_occasion_storytelling"],
-            "Brand-specific fallback used after duplicate bullets were removed.",
-        ),
-        (
-            f"{facts['brand'] or side.title()} can make shopper education more distinctive",
-            "opportunity",
-            "distinctive_education",
-            ["distinctive_shopper_education"],
-            "Brand-specific fallback used after duplicate bullets were removed.",
-        ),
-    ]
-    for text, bullet_type, dimension, signals, reason in fallback_candidates:
-        if len(bullets) >= 6:
-            break
-        _append_unique_bullet(
-            bullets,
-            debug,
-            text=text,
-            bullet_type=bullet_type,
-            dimension=dimension,
-            signals=signals,
-            reason=reason,
-            used=used,
-        )
-    if len(bullets) < 6:
-        for index in range(len(bullets), 6):
-            _append_unique_bullet(
-                bullets,
-                debug,
-                text=f"{facts['brand'] or side.title()} PDP evidence supports focused content cleanup {index + 1}",
-                bullet_type="opportunity",
-                dimension=f"controlled_fallback_{index + 1}",
-                signals=["controlled_fallback"],
-                reason="Last-resort side-specific fallback used to fill the existing template bullet structure without duplicates.",
-                used=used,
-            )
-    if len(bullets) < 6:
-        warnings.append("Slide 4 used restrained fallback bullets because PDP evidence was sparse.")
-    return bullets[:6], debug[:6], warnings
+    return [], [], ["Slide 4 could not produce six distinct supported bullets."]
 
 
 def _build_slide4_bullets(images: list[dict[str, Any]], guide_match: dict[str, Any]) -> list[str]:
@@ -2577,15 +2445,8 @@ def _build_slide4_column(
         side=side,
         existing_texts=existing_bullet_texts,
     )
-    if not evidence_bullets:
-        finding_bullets = [
-            _safe_text(bullet)
-            for bullet in (findings.get("slide4_bullets", []) if isinstance(findings, dict) else [])
-            if _safe_text(bullet) and _safe_text(bullet).lower() not in existing_bullet_texts
-        ]
-        for bullet in finding_bullets:
-            existing_bullet_texts.add(bullet.lower())
-        evidence_bullets = finding_bullets[:6] or _build_slide4_bullets(images, guide_match)
+    if len(evidence_bullets) < 6:
+        warnings.append("Limited distinct supported evidence for Slide 4. Unsupported findings were omitted.")
     return {
         "label": _safe_text(_first_value(record, "brand", "Brand", "brandName")) or fallback_label,
         "brand": _safe_text(_first_value(record, "brand", "Brand", "brandName")),
@@ -3533,12 +3394,72 @@ def _slide5_side_shapes(prs: Any, slide: Any) -> dict[str, dict[str, Any]]:
     }
 
 
+# Fix note: Render missing-shop benefits with an optional competitor screenshot or a full-width text layout.
+def _apply_slide5_brand_shop_opportunity(
+    prs: Any, slide: Any, payload: dict[str, Any], shapes: dict[str, dict[str, Any]],
+) -> None:
+    opportunity = payload.get("opportunity") or {}
+    bullets = [_safe_text(text) for text in opportunity.get("bullets", []) if _safe_text(text)]
+    bullet_shape = shapes["competitor"].get("bullets")
+    header = shapes["competitor"].get("header")
+    divider = shapes["competitor"].get("divider")
+    if not bullets or any(shape is None for shape in (bullet_shape, header, divider)):
+        payload.setdefault("warnings", []).append("Brand Shop opportunity content or template targets were unavailable.")
+        return
+    competitor = payload.get("competitor") or {}
+    image_bytes = _decode_data_image(competitor.get("screenshot"))
+    inserted = None
+    if image_bytes:
+        inserted = _add_contained_picture(
+            slide, left=Inches(1.4), top=Inches(2.88), width=Inches(7.4),
+            height=Inches(3.77), image_bytes=image_bytes,
+        )
+    for key in ("header", "divider", "picture", "bullets"):
+        shape = shapes["client"].get(key)
+        if shape is not None:
+            _remove_shape(shape)
+    original_picture = shapes["competitor"].get("picture")
+    if original_picture is not None:
+        _remove_shape(original_picture)
+    _replace_shape_text_preserve_style(header, opportunity.get("heading") or "Brand Shop Opportunity")
+    header.left = Inches(2.75) if inserted is not None else Inches(4.65)
+    header.width = Inches(4.7)
+    divider.left = Inches(1.4)
+    divider.width = Inches(11.2)
+    if inserted is None:
+        bullet_shape.left = Inches(1.4)
+        bullet_shape.top = Inches(2.88)
+        bullet_shape.width = Inches(11.2)
+        bullet_shape.height = Inches(3.77)
+    intro = "The client has no Walmart Brand Shop. A dedicated destination could help shoppers explore products and make informed choices."
+    if inserted is not None:
+        brand = _safe_text(competitor.get("brand_name")) or "Competitor"
+        intro += f" Competitor reference: {brand}."
+    for shape in _walk_shapes(slide.shapes):
+        text = _shape_text(shape).lower()
+        if "leading walmart brands are evolving brand shops" in text:
+            _replace_shape_text_preserve_style(shape, intro)
+        elif "competitors are leveraging walmart brand shops" in text:
+            _replace_shape_text_preserve_style(shape, "A Brand Shop could connect product discovery with shopper education.")
+    font_size = 14 if inserted is not None else 20
+    payload.setdefault("debug", {})["render_fit"] = _fit_bullet_shape_group(
+        [("opportunity", bullet_shape, bullets)], max_lines=7,
+        drop_threshold=1000, font_threshold=1000, base_font_size=font_size,
+        fallback_font_size=font_size, ensure_paragraph_count=True,
+        font_name="Raleway", line_spacing=0.9, space_after=3,
+    )
+    payload["debug"]["opportunity_layout"] = "competitor_reference" if inserted is not None else "benefits_only"
+
+
 def _apply_slide5_no_brand_shop(
     prs: Any,
     slide: Any,
     payload: dict[str, Any],
     shapes: dict[str, dict[str, Any]],
 ) -> None:
+    if isinstance(payload.get("opportunity"), dict):
+        _apply_slide5_brand_shop_opportunity(prs, slide, payload, shapes)
+        return
     competitor = payload.get("competitor")
     if not isinstance(competitor, dict):
         print(

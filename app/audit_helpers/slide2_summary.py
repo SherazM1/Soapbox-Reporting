@@ -4,6 +4,7 @@ import re
 from statistics import mean
 from typing import Any
 
+from app.audit_helpers.strategic_identity import resolve_strategic_identity
 from app.audit_helpers.bullet_uniqueness import normalize_bullet_text
 from app.audit_helpers.strategic_cues import aggregate_pdp_cues, translate_cues
 
@@ -48,12 +49,13 @@ BULLET_BANK: dict[str, dict[str, str]] = {
         "assortment_segmentation": "Clearer comparison cues help shoppers evaluate faster",
         "shopper_guidance": "Clearer shopper guidance can support conversion",
     },
+    # Fix note: Vary benchmark openings without claiming unsupported competitor superiority.
     "competitive_benchmark": {
-        "competitive_clarity": "Competitive pages set higher expectations for clarity",
-        "stronger_visual_storytelling": "Benchmark PDPs provide clearer shopper guidance",
-        "benefit_comparison": "Competitors make benefits easier to compare",
-        "benefit_education": "Category leaders use clearer proof points",
-        "search_visibility": "Search and trust cues raise competitive pressure",
+        "competitive_clarity": "PDP clarity is a useful competitor benchmark",
+        "stronger_visual_storytelling": "Product-use imagery offers a benchmark for shopper guidance",
+        "benefit_comparison": "Benefit explanations help frame competitor comparisons",
+        "benefit_education": "Proof points are another focus for competitor benchmarking",
+        "search_visibility": "Assess competitor search visibility and trust cues",
         "limited_competitor_evidence": "Limited competitor evidence available for benchmarking",
     },
 }
@@ -654,11 +656,16 @@ def _phrase_set(
     }
 
 
+# Fix note: Resolve Slide 2 wording from client identity, excluding recipe and description category drift.
 def resolve_slide2_phrases(primary_records: list[dict[str, Any]]) -> dict[str, str]:
     records = [record for record in (primary_records or []) if isinstance(record, dict)]
-    blob = _blob(records)
+    identity = resolve_strategic_identity(records)
     category = _first_value(records, "category")
-    product_type = _first_value(records, "product_type", "subcategory")
+    product_type = (_safe_text(identity.get("product_type_display")) or _first_value(records, "product_type", "subcategory")) if records else ""
+    if product_type == "category" and not category and not _first_value(records, "product_type", "subcategory"):
+        product_type = ""
+    # Descriptions, recipe suggestions, and competitor copy cannot establish category.
+    blob = f"{category} {product_type}".lower()
 
     # Match category/product names as whole words so "pens" cannot match
     # "dispensers", and specific departments take precedence over Home.
@@ -904,19 +911,29 @@ def _validate_rating(section_key: str, rating: str, warnings: list[str]) -> str:
     return fallback
 
 
+# Fix note: Pair ratings with each product’s review count and weight feedback by review volume.
 def _consumer_demand_rating(records: list[dict[str, Any]], evidence: dict[str, Any] | None = None) -> tuple[str, list[str], list[str]]:
     evidence = evidence or _pdp_evidence_summary(records)
-    ratings = _ratings(records)
-    rating_counts = _rating_counts(records)
+    # Keep counts paired with their product rating; unrelated counts cannot establish demand.
+    pairs = []
+    for record in records:
+        values = _ratings([record])
+        counts = _rating_counts([record])
+        if values and 0 < values[0] <= 5:
+            pairs.append((values[0], max(0, counts[0]) if counts else 0))
+    ratings = [value for value, _ in pairs]
+    total_reviews = sum(count for _, count in pairs)
     warnings: list[str] = []
     signals: list[str] = []
     if ratings:
-        avg_rating = mean(ratings)
+        avg_rating = (
+            sum(value * count for value, count in pairs) / total_reviews
+            if total_reviews else mean(ratings)
+        )
         signals.append(f"avg_rating={avg_rating:.2f}")
     else:
         avg_rating = 0.0
         signals.append("no_rating_evidence")
-    total_reviews = sum(rating_counts)
     signals.append(f"rating_count={total_reviews}")
     signals.extend(
         [
@@ -928,7 +945,7 @@ def _consumer_demand_rating(records: list[dict[str, Any]], evidence: dict[str, A
 
     if not records:
         warnings.append("No primary records available; Consumer Demand used default fallback logic.")
-        return "Emerging", signals, warnings
+        return "Limited", signals, warnings
     if not ratings:
         if evidence.get("benefit_term_count", 0) + evidence.get("fit_term_count", 0) + evidence.get("proof_term_count", 0) >= 4:
             warnings.append("No review/rating evidence available; Consumer Demand used PDP relevance evidence.")
@@ -996,6 +1013,7 @@ def _walmart_opportunity_rating(
     return "Selective", signals, warnings
 
 
+# Fix note: Keep absent or shallow competitor evidence Limited instead of assuming benchmark strength.
 def _competitive_rating(
     primary_records: list[dict[str, Any]],
     competitor_records: list[dict[str, Any]],
@@ -1007,8 +1025,8 @@ def _competitive_rating(
     primary_evidence = primary_evidence or _pdp_evidence_summary(primary_records)
     competitor_evidence = competitor_evidence or _pdp_evidence_summary(competitor_records)
     if not competitor_records:
-        warnings.append("No competitor records available; Competitive Benchmark used default fallback logic.")
-        return "Evolving", ["no_competitor_records"], warnings
+        warnings.append("No competitor records available; Competitive Benchmark evidence is limited.")
+        return "Limited", ["no_competitor_records"], warnings
 
     client_findings = ((slide4_findings or {}).get("client", {}) or {})
     competitor_findings = [
@@ -1043,10 +1061,10 @@ def _competitive_rating(
         return "Competitive", signals, warnings
     if competitor_advantage >= 4 and competitor_records:
         return "Competitive", signals, warnings
-    if analyzed_competitors or len(competitor_records) >= 2:
+    if analyzed_competitors or competitor_advantage or competitor_evidence.get("description_count", 0) or competitor_evidence.get("key_feature_count", 0):
         return "Evolving", signals, warnings
-    warnings.append("Competitor records exist but lack analysis depth; Competitive Benchmark used default fallback logic.")
-    return "Evolving", signals, warnings
+    warnings.append("Competitor records exist but lack analysis depth; Competitive Benchmark evidence is limited.")
+    return "Limited", signals, warnings
 
 
 def _slide4_support(
@@ -1153,6 +1171,91 @@ def _ensure_minimum_bullets(
     return bullets[:SLIDE2_MAX_BULLETS]
 
 
+# Fix note: Use supported client benefits and natural apparel or footwear guidance instead of generic benefit-led copy.
+def _product_benefit_bullet(records: list[dict[str, Any]]) -> dict[str, Any]:
+    """Use client identity and shared, explicitly supplied benefits; never competitor copy."""
+    identities = [resolve_strategic_identity([record]) for record in records]
+    labels = list(dict.fromkeys(
+        _safe_text(identity.get("product_type_display")).lower() for identity in identities
+        if _safe_text(identity.get("product_type_display"))
+    ))
+    label = labels[0] if len(labels) == 1 else "the product range"
+    if not label or len(label.split()) > 7:
+        label = "these products"
+    benefit_sets = []
+    for record, identity in zip(records, identities):
+        terms = _field_list(record, "benefitTerms", "benefits", "content_signals.benefitTerms")
+        # Listing text can contain benefits even when extraction supplied no benefitTerms.
+        listing = _field_text(
+            record, "product_title", "title", "descriptionBody", "description",
+            "keyFeaturesText", "key_features", "features", "descriptionBullets",
+        ).lower()
+        feature_patterns = {
+            "cushioning": r"\bcushion(?:ed|ing)?\b",
+            "breathability": r"\bbreathable\b",
+            "lightweight design": r"\blightweight\b",
+            "water resistance": r"\bwater[- ]resistant\b",
+            "waterproofing": r"\bwaterproof\b",
+            "slip resistance": r"\b(?:slip[- ]resistant|non[- ]slip)\b",
+            "arch support": r"\barch support\b",
+            "comfort": r"\bcomfort(?:able)?\b",
+            "portability": r"\bportable\b",
+            "reusability": r"\breusable\b",
+            "easy cleaning": r"\beasy to clean\b",
+            "zero sugar": r"\b(?:zero sugar|sugar[- ]free)\b",
+        }
+        if not terms:
+            for feature, pattern in feature_patterns.items():
+                matches = list(re.finditer(pattern, listing))
+                if matches and all(not re.search(
+                    r"\b(?:not|no|without|lacks?|lacking)\b", listing[max(0, m.start() - 35):m.start()]
+                ) for m in matches):
+                    terms.append(feature)
+        benefit_sets.append({
+            re.sub(r"\s+", " ", term).strip().lower() for term in terms
+            if re.fullmatch(r"[\w ,&'/-]+", term) and 1 <= len(term.split()) <= 4
+        })
+    shared = set.intersection(*benefit_sets) if benefit_sets else set()
+    # Stable ordering keeps repeat exports consistent; recommendations avoid asserting claims.
+    benefit = next(iter(sorted(shared)), "")
+    text = (
+        f"{benefit.capitalize()} details help shoppers choose {label}"
+        if benefit else f"{label.capitalize()} details help shoppers choose confidently"
+    )
+    # Fix note: Keep patio seating benefits complete within the slide's text limit.
+    seating = bool(identities) and all(
+        re.search(r"\b(?:conversation sets?|chairs?|sofas?|seating|couches?|benches|sectionals?)\b",
+                  _safe_text(identity.get("product_type_display")), re.I)
+        for identity in identities
+    )
+    if seating:
+        text = (
+            "Cushioning helps shoppers choose comfortable patio seating"
+            if benefit == "cushioning" else
+            f"{benefit.capitalize()} details help shoppers assess seating fit"
+            if benefit else "Seating size and layout help shoppers assess space fit"
+        )
+    footwear = bool(identities) and all(
+        re.search(r"\b(?:shoes?|footwear|boots?|sandals?|slippers?|cleats?|sneakers?)\b",
+                  _safe_text(identity.get("product_type_display")), re.I)
+        for identity in identities
+    )
+    apparel = bool(identities) and all(
+        re.search(r"\b(?:t[- ]?shirts?|shirts?|apparel|clothing|pants|jeans|dresses|jackets?|tops?)\b",
+                  _safe_text(identity.get("product_type_display")), re.I)
+        for identity in identities
+    )
+    if apparel and not benefit:
+        text = f"Sizing and fabric details help shoppers choose {label}"
+    if footwear and not benefit:
+        text = f"{label.capitalize()}: explain sizing and use for shopper fit"
+    return _custom_bullet(
+        "consumer_demand", "product_specific_benefits", text,
+        signals=[f"client_product_type={label}", *([f"client_benefit={benefit}"] if benefit else [])],
+        reason="Tailored to client identity; specific benefits require explicit client evidence shared across audited products.",
+    )
+
+
 def _consumer_bullets(
     rating: str,
     phrases: dict[str, str],
@@ -1163,6 +1266,8 @@ def _consumer_bullets(
     evidence = evidence or {}
     bullets: list[dict[str, Any]] = []
     rating_signal = f"consumer_rating={rating}"
+    if evidence.get("product_benefit_bullet"):
+        _append_unique_bullet(bullets, evidence["product_benefit_bullet"])
     if evidence.get("proof_term_count", 0) or evidence.get("claim_count", 0):
         _append_unique_bullet(
             bullets,
@@ -1299,6 +1404,12 @@ def _consumer_bullets(
             reason="Selected as controlled category relevance support for the demand section.",
         ),
     )
+    if evidence.get("product_benefit_bullet"):
+        generic_benefits = {
+            "benefit_relevance_reason_to_choose", "strong_benefit_positioning",
+            "benefit_clarity_opportunity",
+        }
+        bullets = [item for item in bullets if item.get("template_id") not in generic_benefits]
     return _ensure_minimum_bullets("consumer_demand", bullets, phrases, warnings)
 
 
@@ -1448,7 +1559,7 @@ def _competitive_bullets(
                 _custom_bullet(
                     "competitive_benchmark",
                     "benchmark_benefit_comparison",
-                    "Benchmark PDPs make benefits easier to compare",
+                    "Competitor PDPs include benefit language for comparison",
                     signals=[rating_signal, f"competitor_benefit_terms={competitor_evidence.get('benefit_term_count', 0)}"],
                     reason="Selected because competitor PDP evidence includes benefit communication.",
                 ),
@@ -1459,7 +1570,7 @@ def _competitive_bullets(
                 _custom_bullet(
                     "competitive_benchmark",
                     "benchmark_proof_points",
-                    "Category leaders use stronger proof points",
+                    "Competitor PDPs include claims or ingredient details",
                     signals=[rating_signal, f"competitor_proof_terms={competitor_evidence.get('proof_term_count', 0)}"],
                     reason="Selected because competitor PDP evidence includes claims, ingredients, or proof points.",
                 ),
@@ -1715,7 +1826,7 @@ def _cue_swap_decision(
     replace_index = -1
     replace_score = 999
     for index, item in enumerate(current_debug):
-        if item.get("source_tag") == "cue_refined_swap":
+        if item.get("source_tag") == "cue_refined_swap" or item.get("template_id") == "product_specific_benefits":
             continue
         score = _section_specificity_score(section_key, _safe_text(item.get("text")), item)
         if score < replace_score:
@@ -1767,6 +1878,7 @@ def build_slide2_summary_payload(
     )
 
     primary_evidence = _pdp_evidence_summary(primary_records)
+    primary_evidence["product_benefit_bullet"] = _product_benefit_bullet(primary_records)
     competitor_evidence = _pdp_evidence_summary(competitor_records)
     consumer_rating, consumer_signals, consumer_warnings = _consumer_demand_rating(primary_records, primary_evidence)
     opportunity_rating, opportunity_signals, opportunity_warnings = _walmart_opportunity_rating(
@@ -1780,10 +1892,18 @@ def build_slide2_summary_payload(
     opportunity_rating = _validate_rating("walmart_opportunity", opportunity_rating, opportunity_warnings)
     competitive_rating = _validate_rating("competitive_benchmark", competitive_rating, competitive_warnings)
 
+    # Fix note: Match the introduction to demand evidence instead of always claiming established trust.
+    demand_read = (
+        "Review evidence supports shopper confidence"
+        if consumer_rating == "Strong" else
+        "Available evidence provides an emerging read on shopper relevance"
+        if consumer_rating == "Emerging" else
+        "Available evidence is insufficient to establish strong consumer demand"
+    )
     intro_copy = (
-        f"{client_name} has established shopper relevance in {phrases['category_context_phrase']}, "
-        "with the strongest Walmart opportunity centered on clearer PDP guidance, stronger proof points, "
-        "and easier product comparison."
+        f"{client_name} competes in {phrases['category_context_phrase']}. "
+        f"{demand_read}. Walmart recommendations and competitor comparisons "
+        "reflect the available product-page evidence."
     )
     sections = {
         "consumer_demand": _section_payload(

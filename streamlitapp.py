@@ -1696,48 +1696,16 @@ def _render_slide5_brand_shop_preview_v2(plan: dict[str, Any]) -> None:
         for warning in payload.get("warnings", []) or []:
             st.warning(warning)
         if mode == "no_brand_shop":
-            competitor = payload.get("competitor")
-            if not isinstance(competitor, dict):
-                st.warning(
-                    "No valid Competitor Brand Shop evidence is available; Slide 5 will remain unchanged."
-                )
-                return
-            st.markdown("##### Competitor-led Opportunity Layout")
-            st.caption(
-                f"Selected Competitor source row: {competitor.get('source_row')} | "
-                f"Brand: {competitor.get('brand_name') or '-'} | "
-                f"Screenshot available: {'Yes' if competitor.get('screenshot') else 'No'} | "
-                f"Decoded image status: {_screenshot_status(competitor.get('screenshot'))} | "
-                "Placement: centered No Brand Shop competitor image area"
-            )
-            dimension_rows = []
-            for dimension, score in (competitor.get("dimension_scores", {}) or {}).items():
-                debug = (competitor.get("dimension_debug", {}) or {}).get(dimension, {}) or {}
-                dimension_rows.append(
-                    {
-                        "Dimension": dimension.replace("_", " ").title(),
-                        "Score": score,
-                        "Supporting Signals": ", ".join(debug.get("signals", []) or []),
-                        "Reason": debug.get("reason", ""),
-                    }
-                )
-            st.dataframe(pd.DataFrame(dimension_rows), hide_index=True, use_container_width=True)
-            st.dataframe(
-                pd.DataFrame(
-                    [
-                        {
-                            "Bullet": item.get("text", ""),
-                            "Type": item.get("type", ""),
-                            "Dimension": item.get("dimension", ""),
-                            "Template ID": item.get("template_id", ""),
-                            "Reason": item.get("reason", ""),
-                        }
-                        for item in competitor.get("bullet_debug", []) or []
-                    ]
-                ),
-                hide_index=True,
-                use_container_width=True,
-            )
+            opportunity = payload.get("opportunity") or {}
+            st.markdown("##### Brand Shop Opportunity")
+            st.caption("A dedicated Brand Shop could offer these benefits to the client.")
+            for text in opportunity.get("bullets", []):
+                st.markdown(f"- {text}")
+            competitor = payload.get("competitor") or {}
+            if competitor.get("screenshot"):
+                st.caption(f"Competitor reference: {competitor.get('brand_name') or 'Competitor'}")
+            else:
+                st.caption("Slide 5 will show these benefits without a competitor screenshot.")
             return
         for side_key, side_label in (
             ("client", "Client"),

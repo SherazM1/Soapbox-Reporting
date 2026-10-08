@@ -329,6 +329,9 @@ def _legacy_resolve_strategic_identity(
 
 
 def _category_vocab(identity: dict[str, Any]) -> dict[str, str]:
+    # Fix note: Use furniture-specific vocabulary so patio cues cannot fall back to plant care.
+    if identity.get("category_key") == "garden_patio" and identity.get("category_vocabulary"):
+        return identity["category_vocabulary"]
     return CATEGORY_VOCABULARY.get(identity.get("category_key"), {})
 
 

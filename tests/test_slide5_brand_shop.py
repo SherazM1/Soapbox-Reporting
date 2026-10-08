@@ -170,6 +170,36 @@ class Slide5BrandShopTests(unittest.TestCase):
         self.assertEqual(len(strength_dimensions), len(set(strength_dimensions)))
         self.assertEqual(len({item["text"].lower() for item in bullets}), 7)
 
+    def test_no_brand_shop_benefits_use_client_products_not_competitor_category(self):
+        payload = build_slide5_brand_shop([], [_rich_capture("Competitor", 8, "Beauty Brand", (140, 60, 20))],
+            client_has_brand_shop=False, primary_records=[{
+                "product_title": "Canned Salmon", "product_type": "Canned & Jarred Seafood", "category": "Food & Beverage",
+            }])
+        opportunity = payload["opportunity"]
+        self.assertEqual(opportunity["category_key"], "food_beverage")
+        self.assertEqual(len(opportunity["bullets"]), 7)
+        self.assertEqual(len(set(opportunity["bullets"])), 7)
+        text = " ".join(opportunity["bullets"]).lower()
+        self.assertIn("ingredients", text)
+        self.assertIn("serving ideas", text)
+        for forbidden in ("peanut", "skin", "hydrating", "breakfast"):
+            self.assertNotIn(forbidden, text)
+        self.assertTrue(all(item["type"] == "client_opportunity" for item in opportunity["bullet_debug"]))
+
+    def test_mixed_product_categories_use_generic_benefits(self):
+        payload = build_slide5_brand_shop([], [], client_has_brand_shop=False, primary_records=[
+            {"category": "Toys", "product_title": "Squishy Toy"},
+            {"category": "Beauty", "product_title": "Face Cleanser"},
+        ])
+        self.assertEqual(payload["opportunity"]["category_key"], "generic")
+        self.assertEqual(len(payload["opportunity"]["bullets"]), 7)
+        self.assertIsNone(payload["competitor"])
+
+    def test_missing_capture_does_not_imply_client_has_no_shop(self):
+        payload = build_slide5_brand_shop([], [])
+        self.assertEqual(payload["mode"], "standard")
+        self.assertIsNone(payload["opportunity"])
+
     def test_role_mapping_and_earliest_valid_source_row(self) -> None:
         clients = [
             _rich_capture("Client", 11, "Later Client", (20, 80, 140)),
@@ -594,13 +624,9 @@ class Slide5BrandShopTests(unittest.TestCase):
         generated = Presentation(io.BytesIO(deck_bytes))
         slide = _slide5(generated)
         texts = _slide_texts(slide)
-        for constant in (
-            CONSTANT_TEXT[0],
-            CONSTANT_TEXT[1],
-            CONSTANT_TEXT[3],
-            CONSTANT_TEXT[4],
-        ):
-            self.assertIn(constant, texts)
+        self.assertIn(CONSTANT_TEXT[0], texts)
+        self.assertIn("Brand Shop Opportunity", texts)
+        self.assertIn("Competitor reference: Palmer's.", " ".join(texts))
         self.assertNotIn("Current Structure", texts)
         self.assertFalse(any(sample in "\n".join(texts) for sample in CLIENT_SAMPLE_BULLETS))
         self.assertEqual(len(slide.shapes), 7)
@@ -608,10 +634,10 @@ class Slide5BrandShopTests(unittest.TestCase):
             shape
             for shape in slide.shapes
             if getattr(shape, "has_text_frame", False)
-            and shape.text == "Competitive Benchmark"
+            and shape.text == "Brand Shop Opportunity"
         )
-        self.assertEqual(header.left, Inches(3.45))
-        self.assertEqual(header.width, Inches(3.2))
+        self.assertEqual(header.left, Inches(2.75))
+        self.assertEqual(header.width, Inches(4.7))
         divider = next(
             shape
             for shape in slide.shapes
@@ -637,7 +663,7 @@ class Slide5BrandShopTests(unittest.TestCase):
             for paragraph in bullet_box.text_frame.paragraphs
             if paragraph.text.strip()
         ]
-        self.assertEqual(bullet_text, payload["competitor"]["bullets"])
+        self.assertEqual(bullet_text, payload["opportunity"]["bullets"])
         self.assertEqual(
             {paragraph.line_spacing for paragraph in bullet_box.text_frame.paragraphs if paragraph.text.strip()},
             {0.9},
@@ -666,14 +692,12 @@ class Slide5BrandShopTests(unittest.TestCase):
         self.assertEqual(text_box_count, 1)
 
     @unittest.skipUnless(NEW_TEMPLATE.exists(), "New strategic template is unavailable")
-    def test_no_brand_shop_missing_competitor_leaves_slide5_unchanged(self) -> None:
+    def test_no_brand_shop_missing_competitor_renders_benefits(self) -> None:
         payload = build_slide5_brand_shop(
             [],
             [],
             client_has_brand_shop=False,
         )
-        source = Presentation(str(NEW_TEMPLATE))
-        source_slide = _slide5(source)
         generated = Presentation(
             io.BytesIO(
                 generate_new_audit_powerpoint_from_template(
@@ -689,7 +713,18 @@ class Slide5BrandShopTests(unittest.TestCase):
                 )
             )
         )
-        self.assertEqual(source_slide.element.xml, _slide5(generated).element.xml)
+        slide = _slide5(generated)
+        text = " ".join(_slide_texts(slide))
+        self.assertIn("Brand Shop Opportunity", text)
+        self.assertNotIn("Current Structure", text)
+        self.assertFalse(any(sample in text for sample in CLIENT_SAMPLE_BULLETS + COMPETITOR_SAMPLE_BULLETS))
+        self.assertFalse(any(hasattr(shape, "image") for shape in slide.shapes))
+        bullet_box = next(shape for shape in slide.shapes if getattr(shape, "has_text_frame", False)
+                          and len(shape.text_frame.paragraphs) >= 7)
+        self.assertEqual(bullet_box.left, Inches(1.4))
+        self.assertEqual(bullet_box.width, Inches(11.2))
+        self.assertEqual([p.text for p in bullet_box.text_frame.paragraphs if p.text.strip()], payload["opportunity"]["bullets"])
+        self.assertEqual(payload["debug"]["opportunity_layout"], "benefits_only")
 
     @unittest.skipUnless(NEW_TEMPLATE.exists(), "New strategic template is unavailable")
     def test_tactical_slide_is_removed_from_new_strategic_exports(self) -> None:

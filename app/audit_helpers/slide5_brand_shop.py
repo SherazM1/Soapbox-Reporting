@@ -6,6 +6,7 @@ from typing import Any
 from app.audit_helpers.bullet_uniqueness import dedupe_bullet_debug, normalize_bullet_text
 from app.audit_helpers.audit_language_resolver import strategic_bullet_text
 from app.audit_helpers.strategic_cue_engine import aggregate_strategic_cues
+from app.audit_helpers.strategic_identity import resolve_strategic_identity
 
 
 DIMENSION_PRIORITY = (
@@ -1546,12 +1547,75 @@ def _build_side(record: dict[str, Any], side: str, role_path: str) -> dict[str, 
     }
 
 
+# Fix note: Build client-specific potential Brand Shop benefits when the user confirms there is no shop.
+def _brand_shop_opportunity(primary_records: list[dict[str, Any]] | None) -> dict[str, Any]:
+    """Describe prospective client benefits without inventing shop evidence."""
+    category_keys = {
+        resolve_strategic_identity([record]).get("category_key", "") or "generic"
+        for record in primary_records or [] if isinstance(record, dict)
+    }
+    category = next(iter(category_keys)) if len(category_keys) == 1 else "generic"
+    category_copy = {
+        "food_beverage": (
+            "Group products by type and pack size for easier comparison",
+            "Explain ingredients and serving ideas to help shoppers choose",
+            "Show serving ideas to make everyday product use clearer",
+        ),
+        "beauty": (
+            "Group products by care need to simplify product selection",
+            "Explain formulas and usage guidance to help shoppers choose",
+            "Show routines to help shoppers understand how products fit together",
+        ),
+        "electronics": (
+            "Group products by function to make options easier to compare",
+            "Explain key specifications and compatibility to help shoppers choose",
+            "Show product demonstrations to clarify features and setup",
+        ),
+        "toys": (
+            "Group toys by play interest to make discovery easier",
+            "Explain play features and age guidance to support suitable choices",
+            "Show play examples to help shoppers understand each toy",
+        ),
+        "animals": (
+            "Group products by pet care need to simplify selection",
+            "Explain intended use and suitability to guide product choices",
+            "Show care examples to make product use easier to understand",
+        ),
+    }
+    grouping, education, usage = category_copy.get(category, (
+        "Group products by shopper need to make comparison easier",
+        "Explain key features to help shoppers choose suitable products",
+        "Show products in use to make their purpose clearer",
+    ))
+    texts = (
+        "Give shoppers one destination to explore the brand's products",
+        grouping, education, usage,
+        "Make related products easier to discover across the range",
+        "Use consistent imagery to help shoppers recognize the brand",
+        "Answer common questions to support more confident product choices",
+    )
+    dimensions = ("product_discovery", "category_segmentation", "educational_storytelling",
+                  "lifestyle_merchandising", "cross_category_navigation", "brand_presentation",
+                  "purchase_guidance")
+    debug = [
+        {"text": text, "side": "client", "type": "client_opportunity", "dimension": dimension,
+         "score": "Missing", "template_id": f"no_shop_benefit_{dimension}",
+         "signals": ["client_has_no_brand_shop"], "supporting_count": 0,
+         "reason": "Prospective Brand Shop benefit for a client confirmed to have no shop.",
+         "category_key": category}
+        for text, dimension in zip(texts, dimensions)
+    ]
+    return {"heading": "Brand Shop Opportunity", "bullets": list(texts),
+            "bullet_debug": debug, "category_key": category, "context_source": "client_products"}
+
+
 def build_slide5_brand_shop(
     client_evidence: list[dict[str, Any]] | None,
     competitor_evidence: list[dict[str, Any]] | None,
     *,
     client_has_brand_shop: bool = True,
     client_name: str = "",
+    primary_records: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     role_debug: list[dict[str, Any]] = []
     classified = {"client": [], "competitor": []}
@@ -1603,7 +1667,7 @@ def build_slide5_brand_shop(
         )
     if client_has_brand_shop and not clients:
         warnings.append("No valid Client Brand Shop evidence was available; the Client side will remain unchanged.")
-    if not competitors:
+    if not competitors and client_has_brand_shop:
         warnings.append("No valid Competitor Brand Shop evidence was available; the Competitor side will remain unchanged.")
     if not client_has_brand_shop and clients:
         warnings.append(
@@ -1627,7 +1691,9 @@ def build_slide5_brand_shop(
         )
         competitor_side["bullets"] = [item["text"] for item in no_brand_debug]
         competitor_side["bullet_debug"] = no_brand_debug
+    opportunity = _brand_shop_opportunity(primary_records) if not client_has_brand_shop else None
     return {
+        "opportunity": opportunity,
         "mode": "standard" if client_has_brand_shop else "no_brand_shop",
         "client_has_brand_shop": bool(client_has_brand_shop),
         "client": client_side,
@@ -1655,6 +1721,8 @@ def build_slide5_brand_shop(
                 "client": (client_side or {}).get("bullets"),
                 "competitor": (competitor_side or {}).get("bullets"),
             },
+            "opportunity_bullets": (opportunity or {}).get("bullets", []),
+            "opportunity_bullet_count": len((opportunity or {}).get("bullets", [])),
             "render_targets": {
                 "target_bullet_count": SLIDE5_TARGET_BULLET_COUNT,
                 "final_bullet_counts": {

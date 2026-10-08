@@ -1729,7 +1729,50 @@
     "novelty_toys": {
       "display_name": "Novelty Toys",
       "product_types": {
-        "battling_tops": {
+        "squishy_toys": {
+        "display_name": "Squishy Toys",
+        "formula": [
+          "Brand",
+          "Product Line",
+          "Squishy Toy Type",
+          "Material",
+          "Count/Pack"
+        ],
+        "attributes": [
+          "Brand",
+          "Age Group",
+          "Material"
+        ],
+        "aliases": [
+          "squishy toy",
+          "squishy toys",
+          "squishy",
+          "squishies",
+          "squeeze toy",
+          "squeeze toys"
+        ],
+        "title_keywords": [
+          "squishy toy",
+          "squishy toys",
+          "squishy",
+          "squishies",
+          "squeeze toy",
+          "squeeze toys"
+        ],
+        "context_keywords": [
+          "squeeze",
+          "soft",
+          "texture",
+          "slow rising",
+          "sensory play"
+        ],
+        "negative_keywords": [
+          "building blocks",
+          "construction set",
+          "toy tool set"
+        ]
+      },
+      "battling_tops": {
           "display_name": "Battling Tops",
           "formula": [
             "Brand",

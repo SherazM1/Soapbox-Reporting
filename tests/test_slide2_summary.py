@@ -138,7 +138,7 @@ class Slide2SummaryTest(unittest.TestCase):
 
     def test_competitive_benchmark_rating_from_client_vs_competitor_evidence(self) -> None:
         limited = build_slide2_summary_payload([_record()], competitor_records=[], audit_metadata={"client_name": "test"})
-        evolving = build_slide2_summary_payload([_record()], competitor_records=[_record(), _record()], audit_metadata={"client_name": "test"})
+        evolving = build_slide2_summary_payload([_record()], competitor_records=[{**_record(), "description": "Product details"}, _record()], audit_metadata={"client_name": "test"})
         competitive = build_slide2_summary_payload(
             [_record()],
             competitor_records=[_record()],
@@ -148,7 +148,7 @@ class Slide2SummaryTest(unittest.TestCase):
             },
             audit_metadata={"client_name": "test"},
         )
-        self.assertEqual(limited["sections"]["competitive_benchmark"]["rating"], "Evolving")
+        self.assertEqual(limited["sections"]["competitive_benchmark"]["rating"], "Limited")
         self.assertEqual(evolving["sections"]["competitive_benchmark"]["rating"], "Evolving")
         self.assertEqual(competitive["sections"]["competitive_benchmark"]["rating"], "Competitive")
 
@@ -319,9 +319,9 @@ class Slide2SummaryTest(unittest.TestCase):
 
     def test_missing_data_returns_defaults_bullets_and_warnings(self) -> None:
         payload = build_slide2_summary_payload([], competitor_records=[], audit_metadata={"client_name": "test"})
-        self.assertEqual(payload["sections"]["consumer_demand"]["rating"], "Emerging")
+        self.assertEqual(payload["sections"]["consumer_demand"]["rating"], "Limited")
         self.assertEqual(payload["sections"]["walmart_opportunity"]["rating"], "Meaningful")
-        self.assertEqual(payload["sections"]["competitive_benchmark"]["rating"], "Evolving")
+        self.assertEqual(payload["sections"]["competitive_benchmark"]["rating"], "Limited")
         for section in payload["sections"].values():
             self.assertEqual(len(section["bullets"]), 4)
             self.assertTrue(section["debug_warnings"])

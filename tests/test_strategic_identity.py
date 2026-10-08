@@ -71,6 +71,28 @@ class StrategicIdentityTests(unittest.TestCase):
         self.assertIn("recommended_visual_priorities", debug)
         self.assertNotIn("normalized_guides", debug)
 
+    def test_toy_identity_requires_specific_evidence(self) -> None:
+        cases = (
+            ("Soft Squishy Toys Set, 12 Pieces", "Squishy Toys"),
+            ("Slow Rising Squishies", "Squishy Toys"),
+            ("Squeeze Toy", "Squishy Toys"),
+            ("Colorful Toys Set for Play, 12 Pieces", "Toys"),
+            ("Construction Set Toys", "Construction Set Toys"),
+            ("Toy Tool Set", "Play Construction Toys & Tools"),
+            ("Interlocking Block Building Set", "Interlocking Block Building Sets"),
+            ("Sunset Toys", "Toys"),
+        )
+        for title, expected in cases:
+            with self.subTest(title=title):
+                identity = resolve_strategic_identity([{
+                    "category": "Toys", "product_type": "Toys",
+                    "product_title": title,
+                }])
+                self.assertEqual(identity["product_type_display"], expected)
+                if expected == "Toys":
+                    self.assertEqual(identity["style_product_type_score"], 0)
+                    self.assertEqual(identity["family_key"], "")
+
     def test_category_aliases_and_phrase_builder_are_stable(self) -> None:
         self.assertEqual(resolve_category_key("Health & Wellness vitamins"), "health_personal_care")
         phrases = build_identity_phrases(

@@ -584,6 +584,7 @@ def build_audit_export_plan(
         client_brand_shops,
         competitor_brand_shops,
         client_has_brand_shop=audit_metadata["client_has_brand_shop"],
+        primary_records=primary_records_for_summary,
         client_name=audit_metadata.get("client_company_name") or audit_metadata.get("client_name") or "",
     )
     return {

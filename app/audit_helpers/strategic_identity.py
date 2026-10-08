@@ -72,13 +72,14 @@ IMAGE_GUIDE_FILES: dict[str, str] = {
 }
 
 CATEGORY_VOCABULARY: dict[str, dict[str, str]] = {
+    # Fix note: Broad patio fallback must not assume the product is a plant or gardening tool.
     "garden_patio": {
-        "benefit": "outdoor comfort and garden care benefits",
+        "benefit": "outdoor product features and suitability",
         "ingredient": "outdoor materials and weather resistance",
-        "usage": "gardening and patio gathering guidance",
-        "education": "plant care and outdoor maintenance education",
+        "usage": "outdoor setup and use guidance",
+        "education": "outdoor product setup and care guidance",
         "visual": "inviting gardens and outdoor living spaces",
-        "navigation": "outdoor space and gardening task navigation",
+        "navigation": "outdoor purpose and space navigation",
     },
     "everything_else": {
         "benefit": "practical value and distinctive product benefits",
@@ -704,35 +705,65 @@ def _record_text(record: dict[str, Any]) -> str:
     return " ".join(_safe_text(part) for part in parts if _safe_text(part)).lower()
 
 
+# Fix note: Match specific product identity from titles or supplied types, rather than generic description terms.
 def _match_style_product_type(
     normalized_style: dict[str, Any],
     product_type: str,
     text_blob: str,
+    *,
+    identity_text: str | None = None,
 ) -> tuple[str, str, dict[str, Any], dict[str, Any], int]:
-    best = ("", product_type, {}, {}, 0)
+    # Description ingredients, serving suggestions, and shared benefit words
+    # may support a match, but cannot establish the product's identity.
+    fallback = ("", product_type, {}, {}, 0)
     wanted = _norm(product_type)
+    primary = _norm(text_blob if identity_text is None else identity_text)
+    blob = _norm(text_blob)
+    generic_words = {
+        "toy", "toys", "set", "sets", "play", "and", "with", "product",
+        "products", "pieces", "piece", "pack", "kit", "type", "other",
+        "material", "color", "features", "age", "group", "included",
+        "items", "retail", "packaging", "protein", "nutrition", "benefit",
+        "benefits", "food", "beverage", "beverages", "fresh", "natural",
+    }
+
+    def contains(text: str, term: str) -> bool:
+        return bool(term and re.search(r"(?<!\w)" + re.escape(term) + r"(?!\w)", text))
+
+    matches = []
     for family_key, family in (normalized_style.get("families") or {}).items():
+        if wanted and wanted in {_norm(family_key), _norm(family.get("family_display"))}:
+            fallback = (str(family_key), product_type, family, {}, 0)
         for product_key, product in (family.get("product_types") or {}).items():
-            score = 0
             display = _safe_text(product.get("product_type_display")) or str(product_key).replace("_", " ").title()
-            terms = [
-                display,
-                *_as_list(product.get("aliases")),
-                *_as_list(product.get("title_keywords")),
-                *_as_list(product.get("context_keywords")),
-            ]
-            normalized_terms = [_norm(term) for term in terms if _safe_text(term)]
-            if wanted and (wanted == _norm(display) or wanted in normalized_terms):
-                score += 10
-            for term in normalized_terms:
-                if term and term in text_blob:
-                    score += 2
-            for term in [_norm(value) for value in _as_list(product.get("negative_keywords"))]:
-                if term and term in text_blob:
-                    score -= 6
-            if score > best[4]:
-                best = (str(family_key), display, family, product, score)
-    return best
+            identifying_terms = {
+                _norm(term)
+                for term in [display, *_as_list(product.get("aliases")),
+                             *_as_list(product.get("title_keywords"))]
+                if set(_norm(term).split()) - generic_words
+            }
+            exact = wanted in identifying_terms
+            primary_matches = [term for term in identifying_terms if contains(primary, term)]
+            if not exact and not primary_matches:
+                continue
+            terms = {
+                _norm(term) for term in [*identifying_terms, *_as_list(product.get("context_keywords"))]
+                if set(_norm(term).split()) - generic_words
+            }
+            score = sum(2 for term in terms if contains(blob, term))
+            score -= sum(6 for term in _as_list(product.get("negative_keywords")) if contains(blob, _norm(term)))
+            # Exact supplied types outrank incidental text. Longer identifying
+            # phrases outrank a shared word such as "seafood" or "orange".
+            specificity = max((len(term.split()) for term in primary_matches), default=0)
+            rank = (int(exact), specificity, score)
+            if exact or score > 0:
+                matches.append((rank, (str(family_key), display, family, product, max(1, score) + (10 if exact else 0))))
+    if not matches:
+        return fallback
+    matches.sort(key=lambda item: item[0], reverse=True)
+    if len(matches) > 1 and matches[0][0] == matches[1][0]:
+        return fallback
+    return matches[0][1]
 
 
 def _clean_phrase(value: str, fallback: str) -> str:
@@ -765,6 +796,7 @@ def build_identity_phrases(
     }
 
 
+# Fix note: Respect the supplied category and keep ambiguous products on a safe fallback.
 def resolve_strategic_identity(
     records: list[dict[str, Any]],
     *,
@@ -790,12 +822,13 @@ def resolve_strategic_identity(
         fallback_product_type or category or "category",
     )
     text_blob = " ".join(_record_text(record) for record in usable)
-    category_key = resolve_category_key(" ".join([category, product_type, text_blob]))
+    category_key = resolve_category_key(category) or resolve_category_key(" ".join([product_type, text_blob]))
     guides = load_normalized_guides(category_key or category or product_type)
     family_key, product_display, family_data, product_data, score = _match_style_product_type(
         guides.get("style", {}),
         product_type,
         text_blob,
+        identity_text=" ".join(_safe_text(_record_value(record, "product_title", "title", "productTitle")) for record in usable),
     )
     product_display = product_display or product_type or category or "category"
     family_display = _safe_text(family_data.get("family_display")) if family_data else ""
@@ -812,13 +845,27 @@ def resolve_strategic_identity(
         product_type_display=product_display,
     )
     vocab = CATEGORY_VOCABULARY.get(category_key, {})
+    # Fix note: Outdoor furniture needs setup and care wording, rather than plant-care cues.
+    if category_key == "garden_patio" and re.search(
+        r"\b(?:furniture|conversation sets?|dining sets?|chairs?|sofas?|tables?|seating|benches|sectionals?)\b",
+        f"{family_display} {product_display}", re.I,
+    ):
+        vocab = {
+            "benefit": "outdoor seating comfort and space fit",
+            "ingredient": "furniture materials and construction",
+            "usage": "patio seating and gathering guidance",
+            "education": "furniture setup and care guidance",
+            "visual": "outdoor furniture in patio settings",
+            "navigation": "furniture size and seating layout navigation",
+        }
     source_guides = guides.get("source_guides_used") or []
     notes = list(guides.get("normalization_notes") or [])
-    if not family_key:
-        notes.append("style product type was resolved from evidence fallback")
+    if not product_data:
+        notes.append("No unique supported style product type matched; retained the supplied product or category label.")
 
     return {
         "category_key": category_key,
+        "category_vocabulary": vocab,
         "category_display": category_display,
         "family_key": family_key,
         "family_display": family_display,
