@@ -13,6 +13,11 @@ class Slide2AccuracyTest(unittest.TestCase):
         line = build_slide2_summary_payload([record])["sections"]["consumer_demand"]["bullets"][0]
         self.assertEqual(line, "Cushioning helps shoppers choose comfortable patio seating")
 
+    def test_health_mouthguard_gets_specific_identity(self):
+        from app.audit_helpers.strategic_identity import resolve_strategic_identity
+        identity = resolve_strategic_identity([product("Health Products", "Health & Personal Care", product_title="DenTek Professional Fit Dental Guard")])
+        self.assertEqual(identity["product_type_display"], "Mouthguards")
+
     def test_broad_patio_identity_does_not_assume_gardening(self):
         from app.audit_helpers.strategic_identity import resolve_strategic_identity
         from app.audit_helpers.strategic_cues import _category_vocab

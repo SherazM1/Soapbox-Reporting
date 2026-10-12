@@ -21,6 +21,7 @@ from app.audit_helpers.image_guides import (
     resolve_image_guide_category,
 )
 from app.audit_helpers.bullet_uniqueness import normalize_bullet_text
+from app.audit_helpers.deck_copy import simplify_deck_copy
 from app.audit_helpers.slide4_findings import build_slide4_group_findings
 from app.audit_helpers.audit_language_resolver import INVALID_LANGUAGE_GUARDS, strategic_bullet_text
 from app.audit_helpers.strategic_cue_engine import aggregate_strategic_cues
@@ -625,37 +626,38 @@ def _slide4_content_blob(facts: dict[str, Any]) -> str:
     ).lower()
 
 
+# Fix note: Product examples are evidence-matched; unknown items retain neutral family labels.
 SLIDE4_SCOPE_FALLBACKS: dict[str, dict[str, tuple[str, ...]]] = {
     "beauty": {
-        "product": ("face cleanser", "face wash", "hydrating cleanser", "gentle cleanser"),
+        "product": ("face cleanser", "face wash", "hydrating cleanser", "gentle cleanser", "shampoo", "conditioner", "body wash", "moisturizer", "sunscreen", "lip balm", "mascara",),
         "family": ("skin care product", "beauty product", "facial care product"),
     },
     "health": {
-        "product": ("antacid", "stomach relief product", "heartburn relief product", "acid reducer"),
-        "family": ("over-the-counter medicine", "OTC product", "health product"),
+        "product": ("antacid", "stomach relief product", "heartburn relief product", "acid reducer", "mouthguard", "night guard", "toothbrush", "mouthwash", "bandage", "thermometer", "heating pad", "mobility aid",),
+        "family": ("health product", "personal care product", "OTC product"),
     },
     "food": {
-        "product": ("peanut butter", "fruit spread", "protein shake", "beverage item"),
+        "product": ("peanut butter", "fruit spread", "protein shake", "beverage item", "canned salmon", "canned tuna", "seafood", "coffee", "tea", "soda", "cereal", "pasta", "snack bar",),
         "family": ("food product", "beverage product", "pantry staple"),
     },
     "pet": {
-        "product": ("dog treats", "cat treats", "flea treatment", "pet treatment"),
+        "product": ("dog treats", "cat treats", "flea treatment", "pet treatment", "dog food", "cat food", "pet bed", "pet carrier", "aquarium filter", "cat litter", "dog leash",),
         "family": ("pet care product", "pet product", "pet item"),
     },
     "electronics": {
-        "product": ("phone charger", "wireless earbuds", "bluetooth speaker", "tech accessory"),
+        "product": ("phone charger", "wireless earbuds", "bluetooth speaker", "tech accessory", "laptop", "tablet", "monitor", "keyboard", "computer mouse", "power bank", "smartwatch", "router",),
         "family": ("electronics product", "tech product", "device accessory"),
     },
     "artsandcrafts": {
-        "product": ("paint brush", "craft kit", "yarn",),
+        "product": ("paint brush", "craft kit", "yarn", "sewing kit", "crochet hook", "knitting needle", "acrylic paint", "sketchbook", "modeling clay",),
         "family": ("craft supply",),
     },
     "baby": {
-        "product": ("baby bottle", "diaper", "stroller",),
+        "product": ("baby bottle", "diaper", "stroller", "pacifier", "baby carrier", "baby monitor", "baby wipe", "crib", "high chair",),
         "family": ("baby product",),
     },
     "businessandindustrial": {
-        "product": ("pallet jack", "commercial equipment", "industrial tool",),
+        "product": ("pallet jack", "commercial equipment", "industrial tool", "shelving unit", "hand truck", "workbench", "shipping scale", "packing tape",),
         "family": ("industrial supply",),
     },
     "everythingelse": {
@@ -663,63 +665,63 @@ SLIDE4_SCOPE_FALLBACKS: dict[str, dict[str, tuple[str, ...]]] = {
         "family": ("the product",),
     },
     "fashion": {
-        "product": ("shirt", "shoe", "jewelry", "clothing", "apparel",),
+        "product": ("shirt", "shoe", "jewelry", "clothing", "apparel", "t-shirt", "running shoe", "sandal", "boot", "jacket", "jeans", "dress", "handbag",),
         "family": ("fashion item",),
     },
     "furniture": {
-        "product": ("sofa", "desk", "chair",),
+        "product": ("sofa", "desk", "chair", "dining chair", "conversation set", "sectional sofa", "coffee table", "bed frame", "bookcase", "patio chair",),
         "family": ("furniture item",),
     },
     "gardenandpatio": {
-        "product": ("garden hose", "patio umbrella", "outdoor grill",),
+        "product": ("garden hose", "patio umbrella", "outdoor grill", "outdoor conversation set", "outdoor dining chair", "patio furniture", "planter", "watering can", "pruning shears", "outdoor cushion",),
         "family": ("garden and patio product",),
     },
     "home": {
-        "product": ("air fryer", "coffee maker", "cookware", "bedding", "kitchen appliance",),
+        "product": ("air fryer", "coffee maker", "cookware", "bedding", "kitchen appliance", "vacuum cleaner", "blender", "toaster", "bath towel", "bed sheet", "storage basket", "curtain",),
         "family": ("home product",),
     },
     "homeimprovement": {
-        "product": ("power drill", "light fixture", "faucet",),
+        "product": ("power drill", "light fixture", "faucet", "screwdriver", "door handle", "shower head", "paint roller", "extension cord", "measuring tape",),
         "family": ("home improvement product",),
     },
     "householdclean": {
-        "product": ("laundry detergent", "surface cleaner", "storage bin",),
+        "product": ("laundry detergent", "surface cleaner", "storage bin", "dish soap", "disinfectant wipe", "glass cleaner", "toilet cleaner", "mop", "broom", "trash bag",),
         "family": ("household care product",),
     },
     "media": {
-        "product": ("book", "movie", "music album",),
+        "product": ("book", "movie", "music album", "dvd", "blu-ray", "vinyl record", "audiobook", "video game",),
         "family": ("media product",),
     },
     "musicalinstruments": {
-        "product": ("guitar", "digital piano", "drum kit",),
+        "product": ("guitar", "digital piano", "drum kit", "violin", "ukulele", "keyboard instrument", "microphone", "guitar string", "music stand",),
         "family": ("musical instrument",),
     },
     "officeandstationary": {
-        "product": ("notebook", "printer paper", "ballpoint pen",),
+        "product": ("notebook", "printer paper", "ballpoint pen", "marker", "binder", "desk organizer", "sticky note", "pencil", "stapler",),
         "family": ("office supply",),
     },
     "photography": {
-        "product": ("camera lens", "camera", "tripod",),
+        "product": ("camera lens", "camera", "tripod", "camera bag", "camera battery", "lens filter", "flash unit", "light stand",),
         "family": ("photography product",),
     },
     "safetyemergency": {
-        "product": ("fire extinguisher", "smoke alarm", "emergency kit",),
+        "product": ("fire extinguisher", "smoke alarm", "emergency kit", "carbon monoxide alarm", "first aid kit", "safety goggles", "reflective vest", "emergency blanket",),
         "family": ("safety product",),
     },
     "seasonal": {
-        "product": ("holiday decoration", "party supply", "gift wrap",),
+        "product": ("holiday decoration", "party supply", "gift wrap", "string light", "christmas ornament", "halloween decoration", "party balloon", "greeting card",),
         "family": ("seasonal product",),
     },
     "sportsoutdoors": {
-        "product": ("yoga mat", "tent", "basketball",),
+        "product": ("yoga mat", "tent", "basketball", "exercise bike", "dumbbell", "sleeping bag", "hiking backpack", "water bottle", "sports mouthguard",),
         "family": ("sports and outdoor product",),
     },
     "toys": {
-        "product": ("action figure", "board game", "building block",),
+        "product": ("action figure", "board game", "building block", "squishy toy", "plush toy", "doll", "puzzle", "toy car", "craft toy", "sensory toy",),
         "family": ("toy",),
     },
     "vehiclespartsandaccessories": {
-        "product": ("car part", "motor oil", "tire",),
+        "product": ("car part", "motor oil", "tire", "windshield wiper", "car battery", "air filter", "brake pad", "seat cover", "phone mount",),
         "family": ("automotive product",),
     },
     "generic": {
@@ -1410,6 +1412,11 @@ def _slide4_product_fallback(facts: dict[str, Any], family: str, *, prefer_gener
     if prefer_generic or family == "generic":
         return "the product"
     blob = _slide4_identity_blob(facts)
+    # Prefer the longest supported example; never pick the first product merely because of its category.
+    examples = SLIDE4_SCOPE_FALLBACKS.get(family, {}).get("product", ())
+    for example in sorted(examples, key=lambda text: (len(text.split()), len(text)), reverse=True):
+        if example != "the product" and re.search(r"(?<!\w)" + re.escape(example) + r"s?(?!\w)", blob):
+            return example
     for required_terms, fallback in SLIDE4_PRODUCT_FALLBACK_SIGNALS.get(family, ()):
         if all(re.search(r"(?<!\w)" + re.escape(term) + r"s?(?!\w)", blob) for term in required_terms):
             return fallback
@@ -1432,6 +1439,15 @@ def _slide4_scope_safe_phrase(phrase: str, facts: dict[str, Any], *, prefer_gene
             return "soft drink"
         if normalized in {"food", "food product", "beverage item", "beverage product"} and re.search(r"\bbeverages?\b", identity_text):
             return "beverage"
+    # Fix note: Preserve a supported niche type instead of forcing it into a broad department fallback.
+    supplied = re.sub(r"\s+", " ", _safe_text(facts.get("product_type")).lower().replace("&", "and")).strip(" .;")
+    if (not prefer_generic and normalized == supplied and len(normalized.split()) <= 5
+            and normalized not in {"health", "health product", "personal care", "category", "products", "other"}
+            and not SLIDE4_SCOPE_METADATA_RE.search(normalized)
+            and not SLIDE4_SCOPE_NOISE_RE.search(normalized)):
+        return normalized
+    if not prefer_generic and family == "health" and re.search(r"\b(?:mouth ?guards?|night ?guards?|dental guards?)\b", identity_text):
+        return "mouthguard"
     if normalized.endswith("s") and not normalized.endswith(("ss", "ics")):
         singular = normalized[:-1]
     else:
@@ -3727,6 +3743,12 @@ def _apply_slide2_summary(slide: Any, payload: dict[str, Any]) -> None:
             if updated != text:
                 _replace_shape_text_preserve_style(intro_shape, updated)
                 left_replaced = True
+    # Fix note: Use the evidence-based introduction instead of the template's blanket trust claim.
+    intro_copy = _safe_text(payload.get("intro_copy"))
+    if intro_copy:
+        for shape in shapes:
+            if _shape_contains_any(shape, ("has built strong consumer trust", "has established shopper relevance")):
+                _replace_shape_text_preserve_style(shape, intro_copy)
     payload.setdefault("debug", {})["left_category_phrase_replacement_succeeded"] = left_replaced
     if category_phrase and not left_replaced:
         print(
@@ -4010,6 +4032,23 @@ def generate_new_audit_powerpoint_from_template(
             export_plan.get("slide6_visibility", {}) or {},
         )
 
+    # Fix note: Simplify final visible copy after template matching, preserving paragraph layout and fonts.
+    for slide in prs.slides:
+        for shape in _walk_shapes(slide.shapes):
+            frames = [shape.text_frame] if getattr(shape, "has_text_frame", False) else []
+            if getattr(shape, "has_table", False):
+                frames.extend(cell.text_frame for row in shape.table.rows for cell in row.cells)
+            for frame in frames:
+                for paragraph in frame.paragraphs:
+                    original = paragraph.text
+                    simplified = simplify_deck_copy(original)
+                    if simplified != original:
+                        if paragraph.runs:
+                            paragraph.runs[0].text = simplified
+                            for run in paragraph.runs[1:]:
+                                run.text = ""
+                        else:
+                            paragraph.text = simplified
     clear_unresolved_placeholder_text(prs)
     
     out = io.BytesIO()

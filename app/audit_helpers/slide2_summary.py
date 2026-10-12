@@ -1245,6 +1245,9 @@ def _product_benefit_bullet(records: list[dict[str, Any]]) -> dict[str, Any]:
                   _safe_text(identity.get("product_type_display")), re.I)
         for identity in identities
     )
+    # Fix note: Explain toy selection without repeating the retailer's broad novelty/gag label.
+    if not benefit and identities and all(identity.get("category_key") == "toys" for identity in identities):
+        text = "Play features help shoppers choose a suitable toy"
     if apparel and not benefit:
         text = f"Sizing and fabric details help shoppers choose {label}"
     if footwear and not benefit:

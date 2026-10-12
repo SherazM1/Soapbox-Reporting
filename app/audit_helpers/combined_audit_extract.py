@@ -343,6 +343,16 @@ def parse_combined_audit_html(uploaded_file: Any) -> dict[str, Any]:
         evidence_label="Brand Shop",
         warnings=result["warnings"],
     )
+    # Fix note: A success flag does not make an empty client capture usable for an audit.
+    for record in pdp_roles["Client"]:
+        if not _safe_text(_first(record, "data.productTitle", "productTitle", "product_title", default="")):
+            row = _first(record, "sourceRow", "rowNumber", default="unknown")
+            brand = _safe_text(_first(record, "inputBrandName", "brandName", default="Client"))
+            result["errors"].append(
+                f"Row {row}: {brand} product capture has no product title. "
+                "Open the product page, wait until the title and product details are visible, "
+                "then capture it again and export a new HTML report."
+            )
     result["client_pdps"] = pdp_roles["Client"]
     result["competitor_pdps"] = pdp_roles["Competitor"]
     result["current_searches"] = search_roles["Current"]

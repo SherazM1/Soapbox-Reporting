@@ -11519,6 +11519,52 @@
           ]
         }
       }
+    },
+    "oral_protection": {
+      "display_name": "Oral Protection",
+      "product_types": {
+        "mouthguards": {
+          "display_name": "Mouthguards",
+          "formula": [
+            "Brand",
+            "Product Type",
+            "Intended Use",
+            "Count"
+          ],
+          "attributes": [
+            "Intended Use",
+            "Fit",
+            "Material",
+            "Count"
+          ],
+          "aliases": [
+            "mouthguard",
+            "mouthguards",
+            "mouth guard",
+            "mouth guards",
+            "dental guard",
+            "night guard",
+            "nightguard"
+          ],
+          "title_keywords": [
+            "mouthguard",
+            "mouth guard",
+            "dental guard",
+            "night guard",
+            "nightguard"
+          ],
+          "context_keywords": [
+            "oral protection",
+            "fit",
+            "dental",
+            "teeth grinding"
+          ],
+          "negative_keywords": [
+            "mouthwash",
+            "toothpaste"
+          ]
+        }
+      }
     }
   }
 }
