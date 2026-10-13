@@ -582,6 +582,8 @@ def map_schema2_pdp_to_cached_record(
         source_record,
         "keyFeatures",
         "data.keyFeatures",
+        "keyFeaturesText",
+        "data.keyFeaturesText",
     )
     key_features = [
         make_key_feature(index + 1, text)

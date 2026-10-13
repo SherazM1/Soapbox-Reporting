@@ -22,6 +22,7 @@ from app.audit_helpers.image_guides import (
 )
 from app.audit_helpers.bullet_uniqueness import normalize_bullet_text
 from app.audit_helpers.deck_copy import simplify_deck_copy
+from app.audit_helpers.product_evidence import product_evidence_bullets
 from app.audit_helpers.slide4_findings import build_slide4_group_findings
 from app.audit_helpers.audit_language_resolver import INVALID_LANGUAGE_GUARDS, strategic_bullet_text
 from app.audit_helpers.strategic_cue_engine import aggregate_strategic_cues
@@ -1888,6 +1889,12 @@ def _slide4_build_candidate_pool(
             **kwargs,
         )
 
+    # Fix note: Rank specific captured evidence above generic guide-based recommendations.
+    for supported in product_evidence_bullets(record):
+        add(text=supported["text"], family=supported["family"], evidence_source=supported["source"],
+            score=96, bullet_type="strength", dimension="html_" + supported["dimension"],
+            signals=[supported["dimension"], supported["evidence"]],
+            reason="Supported by captured listing text: " + supported["evidence"])
     theme = _slide4_evidence_theme(facts)
     if theme == "hazelnut_cocoa":
         add(

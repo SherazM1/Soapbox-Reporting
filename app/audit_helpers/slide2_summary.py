@@ -5,6 +5,7 @@ from statistics import mean
 from typing import Any
 
 from app.audit_helpers.strategic_identity import resolve_strategic_identity
+from app.audit_helpers.product_evidence import product_evidence_bullets
 from app.audit_helpers.bullet_uniqueness import normalize_bullet_text
 from app.audit_helpers.strategic_cues import aggregate_pdp_cues, translate_cues
 
@@ -1252,6 +1253,12 @@ def _product_benefit_bullet(records: list[dict[str, Any]]) -> dict[str, Any]:
         text = f"Sizing and fabric details help shoppers choose {label}"
     if footwear and not benefit:
         text = f"{label.capitalize()}: explain sizing and use for shopper fit"
+    # Fix note: Prefer shared concrete HTML evidence when no explicit benefit is available.
+    evidence_lists = [product_evidence_bullets(record) for record in records]
+    shared_dimensions = set.intersection(*[{item["dimension"] for item in items} for items in evidence_lists]) if evidence_lists else set()
+    supported = next((item for item in evidence_lists[0] if item["dimension"] in shared_dimensions), None) if evidence_lists else None
+    if not benefit and supported:
+        text = supported["text"]
     return _custom_bullet(
         "consumer_demand", "product_specific_benefits", text,
         signals=[f"client_product_type={label}", *([f"client_benefit={benefit}"] if benefit else [])],

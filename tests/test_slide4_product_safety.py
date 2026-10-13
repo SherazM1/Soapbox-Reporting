@@ -140,7 +140,7 @@ class Slide4ProductSafetyTests(unittest.TestCase):
         )
         presentation = Presentation(io.BytesIO(deck))
         slide = next(slide for slide in presentation.slides if any(
-            "PDP Content Benchmarking" in (getattr(shape, "text", "") or "") for shape in slide.shapes
+            "Product Page Comparison" in (getattr(shape, "text", "") or "") for shape in slide.shapes
         ))
         text = " ".join(getattr(shape, "text", "") for shape in slide.shapes).lower()
         self.assertNotIn("peanut", text)
