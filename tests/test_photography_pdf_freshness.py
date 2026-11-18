@@ -114,11 +114,10 @@ class PdfFreshnessTests(unittest.TestCase):
 
     def test_save_preserves_pdf_and_start_new_clears_bytes_and_snapshot(self):
         from app.photography_pricing import draft_ui
-        from app.photography_pricing.draft_models import QuoteDraft, QuoteDraftVersion
+        from app.photography_pricing.draft_models import QuoteDraft
         draft = QuoteDraft('draft', 'Saved', 'draft', 'client', 'internal', 1, None, None)
-        version = QuoteDraftVersion('version', 'draft', 1, {}, 'internal', None, None)
         self.generate()
-        with patch.object(draft_ui.draft_repository, 'create_draft', return_value=(draft, version)) as save:
+        with patch.object(draft_ui.draft_repository, 'create_editable_draft', return_value=draft) as save:
             self.app.button(key='photo_pricing_save_draft').click().run()
             save.assert_called_once()
         self.assertFalse(self.app.exception)

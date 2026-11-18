@@ -4,7 +4,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from app.photography_pricing import draft_ui
-from app.photography_pricing.draft_models import QuoteDraftVersion
+from app.photography_pricing.draft_models import QuoteDraft, QuoteDraftVersion
 from app.photography_pricing.draft_repository import (
     DuplicateDraftVersionError,
     create_draft,
@@ -191,17 +191,67 @@ class PhotographyDraftTests(unittest.TestCase):
             build_draft_name({"quote_metadata": {"quote_created_date": "2026-07-28"}}),
         )
 
-    def test_draft_ui_uses_requested_draft_name_when_saving_new_draft(self):
-        self.assertEqual(
-            "test 4",
-            draft_ui._draft_name_for_save(sample_payload(), None, " test 4 "),
-        )
+    def test_save_draft_names_automatically_and_repeated_saves_update_active_draft(self):
+        from streamlit.testing.v1 import AppTest
 
-    def test_draft_ui_falls_back_to_generated_draft_name(self):
-        self.assertIn(
-            "Spring Apparel Estimate",
-            draft_ui._draft_name_for_save(sample_payload(), None, ""),
+        saved = QuoteDraft(*draft_row(1))
+        app = AppTest.from_string(
+            "from app.contact_management.models import ClientContact, InternalContact\n"
+            "from app.photography_pricing.draft_ui import render_drafts_section\n"
+            "render_drafts_section(\n"
+            "    selected_client=ClientContact('client-1', None, 'SunVilla', 'First', 'Last', 'client@example.com'),\n"
+            "    selected_internal=InternalContact('internal-1', 'Producer', 'Lead', 'producer@example.com'),\n"
+            ")\n"
         )
+        for key, value in sample_state().items():
+            app.session_state[key] = value
+        # A name from an older session must not override automatic naming.
+        app.session_state["photo_pricing_draft_name"] = "Old custom name"
+
+        with patch.object(draft_ui, "draft_repository") as repository:
+            repository.list_drafts.return_value = [saved]
+            repository.create_editable_draft.return_value = saved
+
+            app.run()
+            self.assertFalse(app.exception)
+            self.assertEqual("Save Draft", app.button(key="photo_pricing_save_draft").label)
+            self.assertEqual({"Create Draft", "Edit Draft", "Save Draft"}, {button.label for button in app.button})
+            self.assertNotIn("Draft Name", [widget.label for widget in app.text_input])
+            app.button(key="photo_pricing_save_draft").click().run()
+            self.assertFalse(app.exception)
+            repository.create_editable_draft.assert_called_once()
+            save_args = repository.create_editable_draft.call_args.kwargs
+            self.assertEqual(build_draft_name(sample_payload(), "SunVilla"), save_args["draft_name"])
+            self.assertEqual(sample_payload(), save_args["payload"])
+            self.assertEqual(saved.id, app.session_state[draft_ui.ACTIVE_DRAFT_ID_KEY])
+            self.assertNotIn(draft_ui.ACTIVE_VERSION_KEY, app.session_state)
+            repository.create_version.assert_not_called()
+
+            app.session_state["photo_pricing_on_model_image_quantity"] = 20
+            app.button(key="photo_pricing_save_draft").click().run()
+            self.assertFalse(app.exception)
+            repository.save_editable_draft.assert_called_once()
+            save_args = repository.save_editable_draft.call_args
+            self.assertEqual((saved.id,), save_args.args)
+            self.assertEqual(20, save_args.kwargs["payload"]["pricing"]["on_model_image_quantity"])
+            self.assertEqual(saved.id, app.session_state[draft_ui.ACTIVE_DRAFT_ID_KEY])
+            repository.create_editable_draft.assert_called_once()
+            repository.create_version.assert_not_called()
+            repository.restore_version_as_latest.assert_not_called()
+            repository.delete_draft.assert_not_called()
+
+            # Create starts a blank form without touching saved contents.
+            app.button(key="photo_pricing_start_new_draft").click().run()
+            self.assertNotIn(draft_ui.ACTIVE_DRAFT_ID_KEY, app.session_state)
+            separate = QuoteDraft("draft-2", saved.draft_name, "draft", "client-1", "internal-1", 1, None, None)
+            repository.create_editable_draft.return_value = separate
+            repository.list_drafts.return_value = [separate, saved]
+            app.button(key="photo_pricing_save_draft").click().run()
+            self.assertFalse(app.exception)
+            self.assertEqual(2, repository.create_editable_draft.call_count)
+            repository.save_editable_draft.assert_called_once()
+            self.assertEqual(separate.id, app.session_state[draft_ui.ACTIVE_DRAFT_ID_KEY])
+            self.assertEqual(separate.id, app.session_state[draft_ui.SELECTED_DRAFT_ID_KEY])
 
     def test_draft_ui_migrates_legacy_state_without_overwriting_explicit_state(self):
         state = {
@@ -213,7 +263,7 @@ class PhotographyDraftTests(unittest.TestCase):
         draft_ui._migrate_legacy_draft_state(state)
 
         self.assertEqual("legacy-active", state[draft_ui.ACTIVE_DRAFT_ID_KEY])
-        self.assertEqual(2, state[draft_ui.ACTIVE_VERSION_KEY])
+        self.assertNotIn(draft_ui.ACTIVE_VERSION_KEY, state)
         self.assertEqual("legacy-selected", state[draft_ui.SELECTED_DRAFT_ID_KEY])
 
         state[draft_ui.ACTIVE_DRAFT_ID_KEY] = "explicit-active"
@@ -245,26 +295,25 @@ class PhotographyDraftTests(unittest.TestCase):
         state = {}
 
         with patch("app.photography_pricing.draft_ui.st.session_state", state):
-            draft_ui._set_active_draft("draft-2", 1, "test 4")
+            draft_ui._set_active_draft("draft-2", "test 4", sync_selected_draft=True)
 
         self.assertEqual("draft-2", state[draft_ui.ACTIVE_DRAFT_ID_KEY])
         self.assertEqual("draft-2", state[draft_ui.SELECTED_DRAFT_ID_KEY])
-        self.assertEqual(1, state[draft_ui.ACTIVE_VERSION_KEY])
+        self.assertNotIn(draft_ui.ACTIVE_VERSION_KEY, state)
         self.assertEqual("test 4", state[draft_ui.ACTIVE_DRAFT_NAME_KEY])
         self.assertNotIn("photo_pricing_draft_name", state)
 
-    def test_draft_ui_pending_load_can_sync_draft_name_before_widgets_render(self):
+    def test_draft_ui_keeps_loaded_name_without_a_separate_name_input(self):
         state = {}
 
         with patch("app.photography_pricing.draft_ui.st.session_state", state):
             draft_ui._set_active_draft(
                 "draft-2",
-                1,
                 "test 4",
-                sync_draft_name_input=True,
             )
 
-        self.assertEqual("test 4", state["photo_pricing_draft_name"])
+        self.assertEqual("test 4", state[draft_ui.ACTIVE_DRAFT_NAME_KEY])
+        self.assertNotIn("photo_pricing_draft_name", state)
 
     def test_missing_optional_fields_receive_defaults(self):
         normalized = normalize_draft_payload({})
@@ -471,7 +520,7 @@ class StartNewQuoteTests(unittest.TestCase):
         self.assertNotIn("photo_pricing_client_contact_id", state)
         self.assertNotIn("photo_pricing_internal_contact_id", state)
         self.assertEqual("draft-1", state[draft_ui.SELECTED_DRAFT_ID_KEY])
-        self.assertEqual(2, state["photo_pricing_restore_version_number"])
+        self.assertNotIn("photo_pricing_restore_version_number", state)
         self.assertEqual("photography_pricing", state["hub_view"])
 
     def test_start_new_quote_through_real_streamlit_widgets(self):
@@ -510,7 +559,7 @@ class StartNewQuoteTests(unittest.TestCase):
             self.assertFalse(app.button(key="photo_pricing_start_new_draft").disabled)
             app.button(key="photo_pricing_start_new_draft").click().run()
             self.assertEqual(0, len(app.exception))
-            self.assertTrue(app.button(key="photo_pricing_start_new_draft").disabled)
+            self.assertFalse(app.button(key="photo_pricing_start_new_draft").disabled)
             self.assertEqual("", app.text_input(key="photo_pricing_quote_title").value)
             self.assertEqual(0, app.number_input(key="photo_pricing_on_model_image_quantity").value)
             self.assertEqual("", app.text_input(key="photo_pricing_comments_project_name_0").value)
@@ -522,10 +571,10 @@ class StartNewQuoteTests(unittest.TestCase):
             app.run()
             self.assertEqual(0, len(app.exception))
             self.assertNotIn(draft_ui.ACTIVE_DRAFT_ID_KEY, app.session_state)
-            self.assertTrue(app.button(key="photo_pricing_save_new_version").disabled)
+            self.assertNotIn("Save Version", [button.label for button in app.button])
             self.assertFalse(app.button(key="photo_pricing_open_draft").disabled)
             for call in repository.mock_calls:
-                self.assertIn(call[0], ("list_drafts", "list_versions"))
+                self.assertEqual("list_drafts", call[0])
             self.assertEqual(saved_before, saved)
 
 

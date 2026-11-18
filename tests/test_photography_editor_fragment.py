@@ -95,7 +95,7 @@ class EditorFragmentTests(unittest.TestCase):
         self.assertEqual('client', kwargs['page1_header_payload']['selected_client']['id'])
         self.assertEqual('internal', kwargs['page1_header_payload']['selected_internal']['id'])
         block = kwargs['page1_comments_payload']['rendered_comments_block']
-        for text in ('Colors=8', 'Latest notes', '65 images total'):
+        for text in ('Colors= 8', 'Latest notes', '65 images total'):
             self.assertIn(text, block)
 
     def test_fragment_project_callbacks_preserve_reindexed_colors(self):

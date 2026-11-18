@@ -87,6 +87,12 @@ def build_apparel_quote(inputs: ApparelInputs) -> QuotePayload:
             laydown_silo_rate(inputs.laydown_silo_type),
         ),
         _line(
+            "ai_generation",
+            "AI generation markup",
+            inputs.ai_generation_quantity,
+            AI_GENERATION_MARKUP_RATE,
+        ),
+        _line(
             "color_corrections",
             "Color corrections from existing images",
             inputs.color_corrections_quantity,
@@ -100,7 +106,6 @@ def build_apparel_quote(inputs: ApparelInputs) -> QuotePayload:
         ),
         *_model_hour_lines(inputs),
         _line("model_fitting", "Model fitting", _model_fitting_quantity(inputs), MODEL_FITTING_FLAT_FEE),
-        _line("ai_generation", "AI generation markup", inputs.ai_generation_quantity, AI_GENERATION_MARKUP_RATE),
         _line("account_management", "Account management", 1, account_amount_used),
     )
     subtotal = round(sum(line.total for line in line_items), 2)

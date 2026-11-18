@@ -6,12 +6,12 @@ PDF_ROW_ORDER = (
     "on_model_image",
     "on_model_detail",
     "laydown_silo",
+    "ai_generation",
     "color_corrections",
+    "model_fitting",
     "post_production",
     "kid_model_hours",
     "adult_model_hours",
-    "model_fitting",
-    "ai_generation",
     "account_management",
 )
 

@@ -99,11 +99,11 @@ def render_project_detail_line(entry: ProjectCommentEntry) -> str:
     if entry.on_model_detail > 0:
         parts.append(f"On Model Details= {_format_number(entry.on_model_detail)}")
     if entry.laydown_detail > 0:
-        parts.append(f"Laydown={_format_number(entry.laydown_detail)}")
+        parts.append(f"Laydown= {_format_number(entry.laydown_detail)}")
     if entry.color_correct > 0:
-        parts.append(f"Color correct: {_format_number(entry.color_correct)}")
+        parts.append(f"Color correct= {_format_number(entry.color_correct)}")
     if entry.colors > 0:
-        parts.append(f"Colors={_format_number(entry.colors)}")
+        parts.append(f"Colors= {_format_number(entry.colors)}")
     if entry.post > 0:
         parts.append(f"Post= {_format_number(entry.post)}")
     if entry.model_hours > 0:

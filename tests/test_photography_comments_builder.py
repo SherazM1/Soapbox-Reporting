@@ -113,7 +113,7 @@ class PhotographyCommentsBuilderTests(unittest.TestCase):
             "Spring27 - Bangladesh\n"
             "Estimate includes the following projects:\n\n"
             "Kids Denim\n"
-            "On Model= 12, On Model Details= 2, Color correct: 3, Model hrs= 4\n\n"
+            "On Model= 12, On Model Details= 2, Color correct= 3, Model hrs= 4\n\n"
             "Rush timing requested.\n\n"
             "1 project=",
         )
@@ -162,8 +162,8 @@ class PhotographyCommentsBuilderTests(unittest.TestCase):
         self.assertIn("Photography Estimate for Sam's Club Kids Apparel Project:", payload.rendered_comments_block)
         self.assertIn("Spring27 - Bangladesh", payload.rendered_comments_block)
         self.assertIn("Kids Denim", payload.rendered_comments_block)
-        self.assertIn("On Model= 12, On Model Details= 2, Color correct: 3, Model hrs= 4", payload.rendered_comments_block)
-        self.assertNotIn("Laydown=0", payload.rendered_comments_block)
+        self.assertIn("On Model= 12, On Model Details= 2, Color correct= 3, Model hrs= 4", payload.rendered_comments_block)
+        self.assertNotIn("Laydown= 0", payload.rendered_comments_block)
         self.assertIn("Rush timing requested.", payload.rendered_comments_block)
 
     def test_many_project_rendering_uses_plural_count(self) -> None:
@@ -220,7 +220,7 @@ class LaydownWordingTests(unittest.TestCase):
         self.assertEqual(0, len(app.exception))
         self.assertEqual("Laydown", app.number_input(key="photo_pricing_comments_laydown_detail_0").label)
         comments = app.session_state["photo_pricing_page1_comments_payload"]
-        self.assertIn("Laydown=12", app.text[0].value)
+        self.assertIn("Laydown= 12", app.text[0].value)
         self.assertIn("On Model Details= 2", comments["rendered_comments_block"])
         self.assertNotIn("Laydown/Detail", comments["rendered_comments_block"])
         self.assertEqual(12.0, comments["project_entries"][0]["laydown_detail"])
@@ -230,7 +230,7 @@ class LaydownWordingTests(unittest.TestCase):
         self.assertEqual("On-Model Detail", rows["on_model_detail"].label)
         self.assertEqual(1665, quote.total)
         reader = PdfReader(BytesIO(generate_page2_pricing_pdf(quote, page1_comments_payload=comments)))
-        self.assertIn("Laydown=12", reader.pages[0].extract_text())
+        self.assertIn("Laydown= 12", reader.pages[0].extract_text())
         self.assertNotIn("Laydown/Detail", reader.pages[0].extract_text())
         self.assertIn("Laydown Silo", reader.pages[1].extract_text())
         self.assertIn("On-Model Detail", reader.pages[1].extract_text())

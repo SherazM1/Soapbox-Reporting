@@ -35,7 +35,7 @@ def _handle_contact_error(exc: Exception) -> None:
     if isinstance(exc, ContactValidationError):
         st.error(str(exc))
     elif isinstance(exc, ContactManagementError):
-        st.error("Contact database operation failed.")
+        st.error(str(exc))
     else:
         st.error("Contact operation failed.")
 
@@ -134,7 +134,7 @@ def render_client_contact_select() -> Optional[ClientContact]:
 
     contacts = safe_list_active_client_contacts()
     if not contacts:
-        st.warning("No active client contacts are available.")
+        st.warning("No active client contacts are available. Add a client in Contact Management.")
         return None
 
     active_ids = {contact.id for contact in contacts}
@@ -154,7 +154,7 @@ def render_client_contact_select() -> Optional[ClientContact]:
 def render_internal_contact_select() -> Optional[InternalContact]:
     contacts = safe_list_active_internal_contacts()
     if not contacts:
-        st.warning("No active internal contacts are available.")
+        st.warning("No active internal contacts are available. Add an internal contact in Contact Management.")
         return None
 
     active_ids = {contact.id for contact in contacts}

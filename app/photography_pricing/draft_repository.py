@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from contextlib import nullcontext
+from pathlib import Path
 from typing import Any
 
 from app.contact_management.database import DatabaseOperationError, get_connection
@@ -92,6 +93,92 @@ def _fetchall(conn: object, sql: str, params: tuple[Any, ...] = ()) -> list[tupl
     with conn.cursor() as cur:
         cur.execute(sql, params)
         return list(cur.fetchall())
+
+
+def _ensure_working_copy_table(conn: object) -> None:
+    schema = Path(__file__).resolve().parents[2] / "database" / "draft_working_copies.sql"
+    with conn.cursor() as cur:
+        cur.execute(schema.read_text(encoding="utf-8"))
+
+
+def _write_working_copy(conn: object, draft_id: str, payload: dict[str, Any]) -> None:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            INSERT INTO quote_draft_working_copies (draft_id, payload)
+            VALUES (%s, %s)
+            ON CONFLICT (draft_id) DO UPDATE
+            SET payload = EXCLUDED.payload, updated_at = NOW()
+            """,
+            (draft_id, _json_payload(payload)),
+        )
+
+
+def create_editable_draft(
+    *,
+    draft_name: str,
+    payload: dict[str, Any],
+    client_contact_id: str | None = None,
+    internal_contact_id: str | None = None,
+    conn: object | None = None,
+) -> QuoteDraft:
+    """Create a draft and its editable contents without creating any versions."""
+    with _connection_context(conn) as active_conn:
+        try:
+            _ensure_working_copy_table(active_conn)
+            row = _fetchone(
+                active_conn,
+                f"""
+                INSERT INTO quote_drafts (draft_name, status, client_contact_id, internal_contact_id)
+                VALUES (%s, 'draft', %s, %s)
+                RETURNING {DRAFT_COLUMNS}
+                """,
+                (draft_name.strip() or "Untitled Quote Draft", client_contact_id, internal_contact_id),
+            )
+            if row is None:
+                raise DraftRepositoryError("Quote draft insert returned no row.")
+            draft = _draft_from_row(row)
+            _write_working_copy(active_conn, draft.id, payload)
+            if conn is None:
+                active_conn.commit()
+            return draft
+        except Exception as exc:
+            if conn is None:
+                active_conn.rollback()
+            raise DraftRepositoryError("Draft could not be created.") from exc
+
+
+def save_editable_draft(
+    draft_id: str,
+    *,
+    payload: dict[str, Any],
+    conn: object | None = None,
+) -> None:
+    """Replace current contents only; historical draft/version rows remain intact."""
+    with _connection_context(conn) as active_conn:
+        try:
+            _ensure_working_copy_table(active_conn)
+            row = _fetchone(active_conn, "SELECT id FROM quote_drafts WHERE id = %s FOR UPDATE", (draft_id,))
+            if row is None:
+                raise DraftRepositoryError("Quote draft was not found.")
+            _write_working_copy(active_conn, draft_id, payload)
+            if conn is None:
+                active_conn.commit()
+        except Exception as exc:
+            if conn is None:
+                active_conn.rollback()
+            raise DraftRepositoryError("Draft could not be saved.") from exc
+
+
+def get_editable_draft_payload(draft_id: str, *, conn: object | None = None) -> dict[str, Any] | None:
+    """Read current contents, or read the latest legacy version without changing it."""
+    with _connection_context(conn) as active_conn:
+        _ensure_working_copy_table(active_conn)
+        row = _fetchone(active_conn, "SELECT payload FROM quote_draft_working_copies WHERE draft_id = %s", (draft_id,))
+        if row is not None:
+            return _payload_from_db(row[0])
+        legacy = get_latest_version(draft_id, conn=active_conn)
+        return legacy.payload if legacy is not None else None
 
 
 def create_draft(

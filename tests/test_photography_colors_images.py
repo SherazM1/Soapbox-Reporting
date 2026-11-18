@@ -19,7 +19,7 @@ class ColorsImagesTests(unittest.TestCase):
         self.assertEqual(0, normalize_project_entry({}).colors)
         self.assertNotIn("Colors=", render_project_detail_line(normalize_project_entry({"colors": 0})))
         payload = comments([{"colors": 3, "color_correct": 2}], 194)
-        self.assertIn("Color correct: 2, Colors=3", payload.rendered_comments_block)
+        self.assertIn("Color correct= 2, Colors= 3", payload.rendered_comments_block)
         self.assertEqual(1, comments([{"colors": 3}], 0).project_count)
         self.assertTrue(payload.rendered_comments_block.endswith("1 project= 194 images total"))
         self.assertTrue(comments([], 0).rendered_comments_block.endswith("0 projects= 0 images total"))
@@ -54,9 +54,9 @@ class ColorsImagesTests(unittest.TestCase):
         self.assertGreater(len(reader.pages), 4)
         text = "\n".join(page.extract_text() or "" for page in reader.pages)
         for index in range(18):
-            self.assertIn(f"Colors={index + 1}", text)
+            self.assertIn(f"Colors= {index + 1}", text)
         self.assertIn("18 projects= 194 images total", text)
-        self.assertIn("Laydown=6", text)
+        self.assertIn("Laydown= 6", text)
         self.assertNotIn("Laydown/Detail", text)
 
 

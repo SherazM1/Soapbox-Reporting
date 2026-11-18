@@ -79,6 +79,9 @@ class PhotographyLayoutTests(unittest.TestCase):
             self.assertEqual("primary", app.button(key="photo_pricing_generate_pdf").proto.type)
             self.assertEqual(apparel_estimator._line_table_rows(expected_quote.to_payload()),
                              app.dataframe[0].value.to_dict("records"))
+            pricing_labels = app.dataframe[0].value["Item"].tolist()
+            self.assertEqual(pricing_labels.index("AI Generation Markup") + 1,
+                             pricing_labels.index("Color Corrections From Existing Images"))
             self.assertEqual("Laydown", app.number_input(key="photo_pricing_comments_laydown_detail_0").label)
             self.assertEqual(0.0, app.number_input(key="photo_pricing_comments_colors_0").value)
             app.number_input(key="photo_pricing_comments_colors_0").set_value(4.0).run()
@@ -92,8 +95,8 @@ class PhotographyLayoutTests(unittest.TestCase):
             self.assertEqual(expected_quote, generate.call_args.args[0])
             comments = generate.call_args.kwargs["page1_comments_payload"]
             self.assertEqual(app.session_state["photo_pricing_page1_comments_payload"], comments)
-            self.assertIn("Laydown=12", comments["rendered_comments_block"])
-            self.assertIn("Colors=4", comments["rendered_comments_block"])
+            self.assertIn("Laydown= 12", comments["rendered_comments_block"])
+            self.assertIn("Colors= 4", comments["rendered_comments_block"])
             self.assertIn("1 project= 5 images total", comments["rendered_comments_block"])
             self.assertEqual("client-1", generate.call_args.kwargs["page1_header_payload"]["selected_client"]["id"])
             self.assertEqual(b"pdf fixture", app.session_state["photo_pricing_generated_pdf"])

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import importlib
 import os
 from contextlib import contextmanager
 from pathlib import Path
@@ -23,7 +22,10 @@ def resolve_database_url() -> str:
     url = _database_url_from_streamlit_secrets() or os.environ.get("DATABASE_URL", "")
     url = url.strip()
     if not url:
-        raise DatabaseConfigurationError("DATABASE_URL is not configured.")
+        raise DatabaseConfigurationError(
+            "DATABASE_URL is not configured. Connect this app to the existing cloud database "
+            "using Streamlit secrets or the DATABASE_URL environment variable."
+        )
     return url
 
 
@@ -39,17 +41,18 @@ def _database_url_from_streamlit_secrets() -> str:
 
 @contextmanager
 def get_connection() -> Iterator[object]:
+    database_url = resolve_database_url()
     try:
         import psycopg
-    except Exception as exc:
+    except ImportError:
         raise DatabaseConfigurationError("psycopg is not installed.") from None
 
     try:
-        with psycopg.connect(resolve_database_url()) as conn:
+        with psycopg.connect(database_url) as conn:
             yield conn
     except ContactManagementError:
         raise
-    except Exception:
+    except psycopg.Error:
         raise DatabaseOperationError("Database operation failed.") from None
 
 
@@ -58,8 +61,8 @@ def schema_path() -> Path:
 
 
 def initialize_schema() -> None:
-    sql = schema_path().read_text(encoding="utf-8")
     with get_connection() as conn:
+        sql = schema_path().read_text(encoding="utf-8")
         try:
             with conn.cursor() as cur:
                 cur.execute(sql)

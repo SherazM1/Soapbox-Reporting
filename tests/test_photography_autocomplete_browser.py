@@ -39,7 +39,7 @@ draft = QuoteDraft("draft", "Saved draft", "draft", "lee", "producer", 1, None, 
 version = QuoteDraftVersion("v1", "draft", 1, saved, "producer", None, None)
 draft_ui.draft_repository.list_drafts = lambda: [draft]
 draft_ui.draft_repository.list_versions = lambda _id: [version]
-draft_ui.draft_repository.get_latest_version = lambda _id: version
+draft_ui.draft_repository.get_editable_draft_payload = lambda _id: saved
 apparel_estimator.render_photography_pricing()
 st.caption("Selected ID: " + st.session_state["photo_pricing_client_contact_id"])
 '''
@@ -103,14 +103,14 @@ class AutocompleteBrowserTests(unittest.TestCase):
                         expect(page.get_by_text("No matching client contacts.", exact=True)).to_be_visible()
                         expect(page.get_by_text("Selected ID: a", exact=True)).to_be_visible()
                         page.get_by_text("Drafts", exact=True).click()
-                        page.get_by_role("button", name="Load Draft", exact=True).click()
+                        page.get_by_role("button", name="Edit Draft", exact=True).click()
                         expect(page.get_by_text("Selected ID: lee", exact=True)).to_be_visible()
                         expect(search).to_have_value("")
                         search.fill("Lisa")
                         expect(options).to_have_count(1)
                         options.first.click()
                         expect(page.get_by_text("Selected ID: lisa", exact=True)).to_be_visible()
-                        page.get_by_role("button", name="Start New Quote", exact=True).click()
+                        page.get_by_role("button", name="Create Draft", exact=True).click()
                         expect(page.get_by_text("Selected ID: a", exact=True)).to_be_visible()
                         expect(search).to_have_value("")
                         expect(page.locator(".katex")).to_have_count(0)
